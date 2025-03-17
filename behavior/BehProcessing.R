@@ -11,7 +11,7 @@ datDir = '/Users/liuq13/SPCD_data'
 mapping = c('1' = "B1>B3", '2' = "B2>B3", '3' = "B1>B2", 
             '4' = "A1>A3", '5' = "A2>A3", '6' = "A1>A2")
 
-for(j in 1:40){
+for(j in 1:42){
 
 SubID = paste0('Sub',j,'_done')
 path <- list.files(path = file.path(datDir,SubID), pattern = "Sub*", 

@@ -4,7 +4,7 @@
 datDir = '/Users/liuq13/SPCD_data'
 outDir = '/Users/liuq13/Library/CloudStorage/Box-Box/SPCD_beh_data'
 
-for(j in 1:40){
+for(j in 1:42){
   
   SubfolderID = paste0('Sub',j,'_done')
   SubID = paste0('Sub',j)
