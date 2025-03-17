@@ -20,7 +20,7 @@ SampleRate = 1000;
 trig_height = 5;  % trigger height from visualization
 
 %%
-for subj = 21 %1:nSubIDlist
+for subj = 30 %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;
     SubDir = fullfile(HomeDir,SubID);
@@ -41,6 +41,12 @@ for day = 1:2
     % handle sub25-day1 differently by cutting the first 1.5e6 data
     if contains(SubID, '25') && day==1
         dat = dat(1.5e6+1:end, :);
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % handle sub37-day2 differently by cutting the first 2e6 data
+    if contains(SubID, '37') && day==2
+        dat = dat(2e6+1:end, :);
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

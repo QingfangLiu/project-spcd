@@ -4,7 +4,7 @@ library(tidyverse)
 datDir = '/Users/liuq13/SPCD_data'
 all_odor_pred_df = NULL
 
-for(j in 1:40){
+for(j in 1:42){
   
   SubID = paste0('Sub',j,'_done')
   outdir = file.path(datDir,SubID,'beh')
