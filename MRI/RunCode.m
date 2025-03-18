@@ -22,7 +22,7 @@ pattern_list = {'place', 'character', 'odor_scan', 'odorpred', 'premeal', 'postm
 
 %%
 
-for subj = 32
+for subj = 25
 
     SubID = SubIDlist(subj).name;
     disp(['Processing: ', SubID]);
