@@ -20,7 +20,7 @@ SampleRate = 1000;
 trig_height = 5;  % trigger height from visualization
 
 %%
-for subj = 30 %1:nSubIDlist
+for subj = [15,30] %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;
     SubDir = fullfile(HomeDir,SubID);
