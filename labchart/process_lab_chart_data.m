@@ -20,7 +20,7 @@ SampleRate = 1000;
 trig_height = 5;  % trigger height from visualization
 
 %%
-for subj = [16,20] %1:nSubIDlist
+for subj = 24 %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;
     SubDir = fullfile(HomeDir,SubID);
@@ -64,6 +64,10 @@ for day = 1:2
 
     % handle sub7-day1 differently (redid odor scans in the end)
     % handle sub33-day1 differently (redid odor scans in the end)
+
+
+    % handle sub35-day2 differently (missing MRI frames during run3 of odor
+    % prediction task)
 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
