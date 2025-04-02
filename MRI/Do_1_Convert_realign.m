@@ -3,6 +3,7 @@ spm fmri
 
 %%    
 % convert dicom to nifti files
+% and put in folders "1" and "2"
 for s = 1:2 % two scan sessions
 
     fromdir = fullfile(SubDir,sprintf('Scan%d',s));
@@ -13,6 +14,8 @@ for s = 1:2 % two scan sessions
         system(sprintf('%s -o %s %s', dcm2niipath, outdir, fromdir))
     end
 end
+
+%%
 
 % organize images to different tasks
 % need the following: T1 MPRAGE, 'place', 'character', 'odor_scan'
@@ -33,7 +36,7 @@ for k = 1:length(pattern_list)
     nifti_files = dir(fullfile(nii_folder, '**', ['*' pattern '*.nii']));
     nifti_files = nifti_files([nifti_files.bytes] > size_threshold);  % Filter the files based on the size limit (greater than 2 MB)
 
-    % Copy all matching files to the 'place' folder
+    % Copy all matching files to the individual folder
     for i = 1:length(nifti_files)
         source_file = fullfile(nifti_files(i).folder, nifti_files(i).name);
         destination_file = fullfile(tmp_out_folder, nifti_files(i).name);
@@ -55,6 +58,8 @@ if ~exist(tmp_out_folder, 'dir')
     end
 end
 
+%%
+
 % organize echo 1 images across runs and sessions
 % note different runs have different volume numbers
     
@@ -75,6 +80,8 @@ for i = 1:nscans(r)
     filename{r}{i,1} = sprintf('%s,%01d',tmp_file, i);
 end
 end
+
+%%
 
 disp('Realign using e1 data from all runs and sessions.')
 matlabbatch = [];
@@ -104,6 +111,7 @@ if ~isempty(spm_ps_file)
     movefile(fullfile(pwd,outputPDF),jobdir)
 end
 
+%%
 % apply the voxel-to-world mapping from the realigned echo 1 to other echoes by updating header files
 for r = 1:nruns
     tmp_file = fullfile(n_e1(r).folder, n_e1(r).name);

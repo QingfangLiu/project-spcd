@@ -3,7 +3,7 @@ addpath('/Users/liuq13/Applications/spm12/')
 addpath('/Users/liuq13/xjview10/xjview/')
 
 HomeDir = '/Users/liuq13/SPCD_data';
-SubIDlist = dir(fullfile(HomeDir, 'Sub*'));
+SubIDlist = dir(fullfile(HomeDir, 'Sub*_done'));
 SubIDlist = SubIDlist([SubIDlist.isdir]); % only keep directories
 nSubIDlist = length(SubIDlist);
 
@@ -22,7 +22,7 @@ pattern_list = {'place', 'character', 'odor_scan', 'odorpred', 'premeal', 'postm
 
 %%
 
-for subj = 24
+for subj = 2:31
 
     SubID = SubIDlist(subj).name;
     disp(['Processing: ', SubID]);
@@ -43,6 +43,8 @@ for subj = 24
     Do_4_post_PAID
     disp('Code: Do_4_post_PAID_forDecoding');
     Do_4_post_PAID_forDecoding
+
+    Do_1_half_recopy_raw_nifti
 
 end
 
