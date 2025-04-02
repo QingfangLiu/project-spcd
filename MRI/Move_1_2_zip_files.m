@@ -3,9 +3,19 @@
 % the two zip files are prepared after running the
 % "Do_1_half_recopy_raw_nifti" script
 % this is copied to external drive
-% I don't expect that I still need those files
-% but it contains nifti files for each useful runs and SBref files, json
+% 
+% The two zipped files contain nifti files for all runs and related SBref files, json
 % files
+% But I don't expect that I still need those files
+% because BIDS version of this dataset has been uploaded to OpenNeuro
+
+% another backup can be found on NIDA lab server with the original and
+% uncleaned DCM files (uploaded by Taaseen)
+
+% if I ever want to reuse those zipped files, go back to Do_1* and
+% Do_1_half* scripts to continue.
+
+% rerun this script will skip those already done
 
 % Set your source and external drive base paths
 sourceRoot = '/Users/liuq13/SPCD_data/';
