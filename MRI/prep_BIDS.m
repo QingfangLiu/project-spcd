@@ -7,7 +7,7 @@ subjectDirs = dir(fullfile(baseDir, 'Sub*_done'));
 
 %%
 
-for i = 1 %:length(subjectDirs)
+for i = 2:length(subjectDirs)
     origSub = subjectDirs(i).name;
     subjNum = regexp(origSub, '\d+', 'match');
     bidsSub = sprintf('sub-%02d', str2double(subjNum{1}));
