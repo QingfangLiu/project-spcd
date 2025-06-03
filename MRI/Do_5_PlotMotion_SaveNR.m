@@ -133,8 +133,26 @@ for r = 1:nruns
     idx2 = 2:2:60;   % even slices
 
     funcfilenames = dir(fullfile(mpfilename(r).folder,sprintf('Scan*%s*_e1.nii',match))); 
-    y = spm_vol(fullfile(mpfilename(r).folder,funcfilenames(1).name)); 
-    
+
+    % if nii does not exist in the folder (I zipped all nii files in a
+    % different script to save space)
+    if ~isempty(funcfilenames)
+        y = spm_vol(fullfile(mpfilename(r).folder,funcfilenames(1).name)); 
+    else
+        % search for nii.gz files instead
+        funcfilenames = dir(fullfile(mpfilename(r).folder, sprintf('Scan*%s*_e1.nii.gz', match)));
+
+        % Full path to .nii.gz file
+        gz_path = fullfile(mpfilename(r).folder, funcfilenames(1).name);
+
+        % Unzip temporarily
+        gunzip(gz_path);
+        nii_path = erase(gz_path, '.gz');
+
+        % Load volume info using SPM
+        y = spm_vol(nii_path);
+    end
+
     for vol = 1:nscans(r)
         v = spm_read_vols(y(vol));   %dimensions of v show that there are 60 slices
         odd_slice = nanmean(nanmean(nanmean(v(:,:,idx1),3)));
@@ -142,6 +160,12 @@ for r = 1:nruns
         slicediff{r}(vol) = odd_slice - even_slice; % diff b/t odd and even slices
         slicevar{r}(vol) = var(nanmean(squeeze(nanmean(v)))); % var across all 60 slices
     end
+
+    % Delete the temporary .nii file to save space
+    if exist(nii_path,'file')
+        delete(nii_path) 
+    end
+
 
 end % end of the run
 

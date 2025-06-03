@@ -20,7 +20,7 @@ SampleRate = 1000;
 trig_height = 5;  % trigger height from visualization
 
 %%
-for subj = 24 %1:nSubIDlist
+for subj = 25 %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;
     SubDir = fullfile(HomeDir,SubID);
@@ -44,6 +44,15 @@ for day = 1:2
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % handle sub36-day1 differently by cutting the scanning run to be
+    % discarded
+    if contains(SubID, '36') && day==1
+        start_loc = 1.8e6;
+        end_loc = 3e6;
+        dat(start_loc:end_loc, :) = [];
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % handle sub37-day2 differently by cutting the first 2e6 data
     if contains(SubID, '37') && day==2
         dat = dat(2e6+1:end, :);
@@ -55,6 +64,14 @@ for day = 1:2
     if contains(SubID, '29') && day==2
         start_loc = 9458780;
         end_loc = 10054800;
+        dat(start_loc:end_loc, :) = [];
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % handle sub38-day2 differently by cutting the wrong short scan
+    if contains(SubID, '38') && day==2
+        start_loc = 2.8e6;
+        end_loc = 3e6;
         dat(start_loc:end_loc, :) = [];
     end
 

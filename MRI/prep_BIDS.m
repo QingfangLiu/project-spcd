@@ -7,7 +7,7 @@ subjectDirs = dir(fullfile(baseDir, 'Sub*_done'));
 
 %%
 
-for i = 2:length(subjectDirs)
+for i = [23,25,27]  %2:length(subjectDirs)
     origSub = subjectDirs(i).name;
     subjNum = regexp(origSub, '\d+', 'match');
     bidsSub = sprintf('sub-%02d', str2double(subjNum{1}));
@@ -154,28 +154,3 @@ end
     
 
 end % end of subject folders
-
-
-%% Create dataset_description.json
-descriptionFile = fullfile(BIDSDir, 'dataset_description.json');
-
-if ~exist(descriptionFile, 'file')
-    fid = fopen(descriptionFile, 'w');
-    fprintf(fid, '{\n');
-    fprintf(fid, '  "Name": "SPCD Study",\n');
-    fprintf(fid, '  "BIDSVersion": "1.8.0",\n');
-    fprintf(fid, '  "DatasetType": "raw",\n');
-    fprintf(fid, '  "Authors": ["Qingfang Liu"]\n');  % <-- Add your name here
-    fprintf(fid, '}\n');
-    fclose(fid);
-end
-
-readmeFile = fullfile(BIDSDir, 'README');
-
-if ~exist(readmeFile, 'file')
-    fid = fopen(readmeFile, 'w');
-    fprintf(fid, 'This dataset contains MRI scans collected as part of the SPCD Study.\n');
-    fprintf(fid, 'Data were collected at NIDA, using Simens.\n');
-    fprintf(fid, 'Contact: Qingfang Liu (psychliuqf@gmail.com)\n');
-    fclose(fid);
-end

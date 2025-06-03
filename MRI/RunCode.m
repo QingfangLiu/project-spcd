@@ -22,7 +22,7 @@ pattern_list = {'place', 'character', 'odor_scan', 'odorpred', 'premeal', 'postm
 
 %%
 
-for subj = 2:31
+for subj = 23
 
     SubID = SubIDlist(subj).name;
     disp(['Processing: ', SubID]);
@@ -44,9 +44,13 @@ for subj = 2:31
     disp('Code: Do_4_post_PAID_forDecoding');
     Do_4_post_PAID_forDecoding
 
-    Do_1_half_recopy_raw_nifti
+    %Do_1_half_recopy_raw_nifti
 
 end
+
+
+
+
 
 
 
