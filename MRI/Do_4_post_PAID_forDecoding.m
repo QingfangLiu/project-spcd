@@ -11,13 +11,13 @@ defaults.stats.resmem = true; % allow temp files to be kept in memory
 
 %%
 func_4d = {};    
-n = dir(fullfile(SubDir,'nii', 'func_PAID', '*', 'w2*.nii')); 
+n = dir(fullfile(SubDir,'func_PAID', '*', 'w2*.nii')); 
 nruns = length(n);
 for r = 1:nruns
     func_4d{r,1} = fullfile(n(r).folder,n(r).name);
 end
 
-if isempty(dir(fullfile(SubDir,'nii','func_PAID','*','s2w2*.nii')))
+if isempty(dir(fullfile(SubDir,'func_PAID','*','s2w2*.nii')))
     matlabbatch = [];
     
     % Smooth EPI to 2mm 

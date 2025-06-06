@@ -11,12 +11,12 @@ defaults.stats.resmem = true; % allow temp files to be kept in memory
 %%
 
 % get anatomical image
-aname = dir(fullfile(SubDir,'nii','anat','*MPRAGE*.nii'));
-afile = fullfile(SubDir,'nii','anat',aname(1).name);
+aname = dir(fullfile(SubDir,'anat','*MPRAGE*.nii'));
+afile = fullfile(SubDir,'anat',aname(1).name);
 % mean func vol across sessions
-func_mean = fullfile(SubDir,'nii','func_PAID', 'mean_fvol.nii');
+func_mean = fullfile(SubDir,'func_PAID', 'mean_fvol.nii');
 
-if isempty(dir(fullfile(SubDir,'nii','anat','w*.nii')))
+if isempty(dir(fullfile(SubDir,'anat','w*.nii')))
     % Normalize T1 to generate warping parameters
     matlabbatch = [];
     matlabbatch{1}.spm.spatial.normalise.estwrite.subj.vol = {afile};
@@ -41,13 +41,13 @@ if isempty(dir(fullfile(SubDir,'nii','anat','w*.nii')))
 end
 
     func_4d = {};    
-    n = dir(fullfile(SubDir,'nii', 'func_PAID', '*', '*.nii')); 
+    n = dir(fullfile(SubDir, 'func_PAID', '*', '*.nii')); 
     nruns = length(n);
     for r = 1:nruns
         func_4d{r,1} = fullfile(n(r).folder,n(r).name);
     end
     
-    if isempty(dir(fullfile(SubDir,'nii','func_PAID','*','s6w2*.nii')))
+    if isempty(dir(fullfile(SubDir,'func_PAID','*','s6w2*.nii')))
         matlabbatch = [];
         % Coregister mean realigned EPI to T1, and bring along the realigned EPIs 
         matlabbatch{1}.spm.spatial.coreg.estimate.ref = {afile};
@@ -59,7 +59,7 @@ end
         matlabbatch{1}.spm.spatial.coreg.estimate.eoptions.fwhm = [7 7];
 
         % Normalise write
-        fname = fullfile(SubDir,'nii','anat', sprintf('y_%s', aname(1).name));
+        fname = fullfile(SubDir,'anat', sprintf('y_%s', aname(1).name));
         matlabbatch{2}.spm.spatial.normalise.write.subj.def = {fname};
         matlabbatch{2}.spm.spatial.normalise.write.subj.resample = func_4d;
         matlabbatch{2}.spm.spatial.normalise.write.woptions.bb = [-78 -112 -70; 78 76 85];

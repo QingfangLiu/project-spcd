@@ -1,13 +1,17 @@
 
+% this code runs independently to copy files in compliance with BIDS format
+
+
 % Set your base directory here
-baseDir = '/Users/liuq13/SPCD_data';
+baseDir = '/Users/liuq13/SPCD_data/nii';
 BIDSDir = '/Users/liuq13/SPCD_data_BIDS';
 
-subjectDirs = dir(fullfile(baseDir, 'Sub*_done'));
+subjectDirs = dir(fullfile(baseDir, 'sub-*'));
 
 %%
 
-for i = [23,25,27]  %2:length(subjectDirs)
+for i = [5]  
+    
     origSub = subjectDirs(i).name;
     subjNum = regexp(origSub, '\d+', 'match');
     bidsSub = sprintf('sub-%02d', str2double(subjNum{1}));
@@ -19,7 +23,7 @@ for i = [23,25,27]  %2:length(subjectDirs)
     end
     
     % Path to raw functional data
-    funcRawDir = fullfile(baseDir, origSub, 'nii', 'func_raw');
+    funcRawDir = fullfile(baseDir, origSub, 'func_raw');
     taskDirs = dir(funcRawDir);
     
     for j = 1:length(taskDirs)
@@ -31,14 +35,31 @@ for i = [23,25,27]  %2:length(subjectDirs)
 
             for k = 1:length(files)
                 fname = files(k).name;
-
-                % Example: Scan1_character_run_1_20241220124945_9_e1.nii.gz              
-                tokens = regexp(fname, '.*_([\w_]+)_run_(\d+)_.*_e(\d+)\.nii(\.gz)?', 'tokens');
-
+                
+                % Modified to also extract series number (after the timestamp)
+                % Example: Scan2_premeal_run_3_20250412101822_15_e1.nii.gz
+                tokens = regexp(fname, '.*_([\w_]+)_run_(\d+)_\d+_(\d+)_e(\d+)\.nii(\.gz)?', 'tokens');
+                
                 info = tokens{1};
-                run = info{2};
-                echo = info{3};
                 rawTask = info{1};
+                run = info{2};
+                series = info{3};  % NEW: sequence number (like 15 or 17)
+                echo = info{4};
+                
+                % Special handling for subject 36 (interrupted run)
+                % === Special case ===
+                % For subject 36, task "premeal" run-3 was interrupted and saved as two sequences:
+                % - Sequence 15 → treated as run-3
+                % - Sequence 17 → treated as run-4
+                % This is handled in the parsing logic using the extracted sequence number.
+
+                if str2double(subjNum{1}) == 36 & strcmp(rawTask,'premeal')
+                    if strcmp(series, '15')
+                        run = '3';
+                    elseif strcmp(series, '17')
+                        run = '4';
+                    end
+                end
 
                 % === Task name mapping ===
                 taskMap = containers.Map( ...
@@ -89,7 +110,7 @@ for i = [23,25,27]  %2:length(subjectDirs)
 
 
     % === Anatomical directory ===
-    anatRawDir = fullfile(baseDir, origSub, 'nii', 'anat');
+    anatRawDir = fullfile(baseDir, origSub, 'anat');
     bidsAnatDir = fullfile(BIDSDir, bidsSub, 'anat');
     if ~exist(bidsAnatDir, 'dir')
         mkdir(bidsAnatDir);
@@ -108,45 +129,45 @@ for i = [23,25,27]  %2:length(subjectDirs)
 
 
     %% labchart data
-srcDir = fullfile(baseDir, origSub, 'labchart'); 
-destBase = fullfile(BIDSDir, 'derivatives', 'labchart_processed');
-
-% Files to copy (only Day1 and Day2, .mat and .bmp)
-fileList = dir(fullfile(srcDir, '*.*'));
-validExts = {'.mat', '.bmp'};
-
-% Loop through files
-for k = 1:length(fileList)
-    fileName = fileList(k).name;
-
-    [~, ~, ext] = fileparts(fileName);
-
-    % Check file extension
-    if ~ismember(lower(ext), validExts)
-        continue;
-    end
-    
-    % Determine day
-    if contains(fileName, 'Day1')
-        day = 'day1';
-    elseif contains(fileName, 'Day2')
-        day = 'day2';
-    else
-        continue; % Skip anything else
-    end
-
-    % Create destination folder if it doesn't exist
-    destDir = fullfile(destBase, bidsSub, day);
-    if ~exist(destDir, 'dir')
-        mkdir(destDir);
-    end
-
-    % Copy file
-    srcPath = fullfile(srcDir, fileName);
-    destPath = fullfile(destDir, fileName);
-    copyfile(srcPath, destPath);
-    fprintf('Copied %s to %s\n', fileName, destPath);
-end
+% srcDir = fullfile(baseDir, origSub, 'labchart'); 
+% destBase = fullfile(BIDSDir, 'derivatives', 'labchart_processed');
+% 
+% % Files to copy (only Day1 and Day2, .mat and .bmp)
+% fileList = dir(fullfile(srcDir, '*.*'));
+% validExts = {'.mat', '.bmp'};
+% 
+% % Loop through files
+% for k = 1:length(fileList)
+%     fileName = fileList(k).name;
+% 
+%     [~, ~, ext] = fileparts(fileName);
+% 
+%     % Check file extension
+%     if ~ismember(lower(ext), validExts)
+%         continue;
+%     end
+% 
+%     % Determine day
+%     if contains(fileName, 'Day1')
+%         day = 'day1';
+%     elseif contains(fileName, 'Day2')
+%         day = 'day2';
+%     else
+%         continue; % Skip anything else
+%     end
+% 
+%     % Create destination folder if it doesn't exist
+%     destDir = fullfile(destBase, bidsSub, day);
+%     if ~exist(destDir, 'dir')
+%         mkdir(destDir);
+%     end
+% 
+%     % Copy file
+%     srcPath = fullfile(srcDir, fileName);
+%     destPath = fullfile(destDir, fileName);
+%     copyfile(srcPath, destPath);
+%     fprintf('Copied %s to %s\n', fileName, destPath);
+% end
 
 
 

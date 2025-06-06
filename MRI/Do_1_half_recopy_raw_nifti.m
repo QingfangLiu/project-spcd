@@ -46,6 +46,8 @@ for k = 1:length(pattern_list)
 
 end
 
+%%
+
 % in the end, zip the 1 and 2 folder to save some space
 % deciding not to delete, because those *_SBRef files are not copied over
 % and they may be useful for some special purposes
@@ -56,6 +58,8 @@ for f = 1:2
     zip(zip_name, folder_to_zip);
     rmdir(folder_to_zip, 's');  % 's' = recursive deletion
 end
+
+%%
 
 
 % also zip all nifti files under 'func' folder to save space

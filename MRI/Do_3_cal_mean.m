@@ -1,9 +1,9 @@
 
 %%    
     % if the mean has been created
-    mean_file = fullfile(SubDir,'nii', 'func_PAID', 'mean_fvol.nii');
+    mean_file = fullfile(SubDir,'func_PAID', 'mean_fvol.nii');
     
-    n = dir(fullfile(SubDir,'nii', 'func_PAID', '*', '*.nii')); 
+    n = dir(fullfile(SubDir, 'func_PAID', '*', '*.nii')); 
     nruns = length(n);
     sum_mri_data = []; 
     total_volumes = 0;

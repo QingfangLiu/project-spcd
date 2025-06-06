@@ -2,8 +2,8 @@
 addpath('/Users/liuq13/Applications/spm12/')
 addpath('/Users/liuq13/xjview10/xjview/')
 
-HomeDir = '/Users/liuq13/SPCD_data';
-SubIDlist = dir(fullfile(HomeDir, 'Sub*_done'));
+HomeDir = '/Users/liuq13/SPCD_data/nii';
+SubIDlist = dir(fullfile(HomeDir, 'sub-*'));
 SubIDlist = SubIDlist([SubIDlist.isdir]); % only keep directories
 nSubIDlist = length(SubIDlist);
 
@@ -11,18 +11,12 @@ TEs = [12.60, 29.16, 45.72, 62.28];
 nechos = 4;
 
 dcm2niipath = '/Applications/MRIcroGL.app/Contents/Resources/dcm2niix';
-ghostscriptPath = '/opt/homebrew/bin/gs'; 
-
-if ~exist(ghostscriptPath)
-    error('The ghostscript folder does not exist: %s', ghostscriptPath);
-end
-
 size_threshold = 2 * 1024 * 1024; % Set size threshold (2 MB)
 pattern_list = {'place', 'character', 'odor_scan', 'odorpred', 'premeal', 'postmeal'}; 
 
 %%
 
-for subj = 23
+for subj = 5
 
     SubID = SubIDlist(subj).name;
     disp(['Processing: ', SubID]);
@@ -33,12 +27,12 @@ for subj = 23
     end
 
     % a series of code
-    disp('Code: Do_1_Convert_realign');
-    Do_1_Convert_realign
-    disp('Code: Do_2_Reslice');
-    Do_2_Reslice
-    disp('Code: Do_3_cal_mean');
-    Do_3_cal_mean
+    %disp('Code: Do_1_Convert_realign');
+    %Do_1_Convert_realign
+    %disp('Code: Do_2_Reslice');
+    %Do_2_Reslice
+    %disp('Code: Do_3_cal_mean');
+    %Do_3_cal_mean
     disp('Code: Do_4_post_PAID');
     Do_4_post_PAID
     disp('Code: Do_4_post_PAID_forDecoding');
