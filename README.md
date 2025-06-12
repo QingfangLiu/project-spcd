@@ -37,22 +37,18 @@ The SPCD task is a multi-day, fMRI-compatible behavioral paradigm designed to st
 - **Pre-conditioning Refresher (outside scanner)**  
   A brief session to reinforce previously learned character-place associations.  
   - **1–3 runs** (max 3); task may end after 1 run if **≥90% accuracy** is achieved.
-- **Odor Review**  
-  A quick re-exposure to the selected odors for reminder purposes and to verify odor delivery equipment.  
-  - **1 trial per odor**
 - **Odor Prediction Task (in scanner)**  
   Participants predict which odor follows a given conditioned cue.  
-  - **3 runs**, **48 trials per run**
 - **Pre-meal Probe (in scanner)**  
   Tests participants’ responses to **pre-conditioned and conditioned cues**, without any odor delivery.  
 - **Meal & Devaluation Manipulation**  
-  - Participants complete pre-meal odor ratings and answer questions.
+  - Pre-meal odor ratings and questions.
   - Participants consume a meal flavored with one of the two previously conditioned odors.
-  - **Post-meal odor ratings** assess the effect of devaluation.
+  - Post-meal odor ratings and questions.
 - **Post-meal Probe (in scanner)**  
   Identical to the pre-meal probe but administered after devaluation.  
 - **Recognition Memory Task (outside scanner)**  
-  Participants judge whether specific character-place pairs were seen during the pre-conditioning phase.  
+  Participants judge whether specific character-place pairs were seen during pre-conditioning.  
 - **Post-experiment Interview**  
   A short debriefing or follow-up assessment to gather subjective feedback or check for awareness.
 
