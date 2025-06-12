@@ -23,7 +23,7 @@ The SPCD task is a multi-day, fMRI-compatible behavioral paradigm designed to st
 ### Day 1 – Pre-conditioning & Localizer (fMRI)
 - **Localizer Task (in scanner)**  
   Participants undergo fMRI scans to measure neural responses to individual images and odors, before any associative learning has occurred.  
-  - 2 odor runs  
+  - 2 odor runs 
   - 4 character runs  
   - 4 place runs  
   - 1 anatomical scan
@@ -60,3 +60,72 @@ The SPCD task is a multi-day, fMRI-compatible behavioral paradigm designed to st
   A short debriefing or follow-up assessment to gather subjective feedback or check for awareness.
 
 ---
+
+
+## Task Timing and Run Structure Details
+
+This section summarizes the trial timing, run structure, and duration for each task used in the SPCD paradigm.
+
+### Day 1 (MRI Localizer + Pre-conditioning)
+
+#### **Odor Scan (in scanner)**
+- **Trial**: 2s sniff cue → 2s odor → 9–13s ITI  
+- **Structure**: 3 odors × 10 repetitions = 30 trials per run  
+- **Duration**: ~7.5 min per run  
+- **Runs**: 2  
+- **Notes**: Suitable for single-trial decoding
+
+#### **Character Image Scan**
+- **Trial**: 2s image cue → 2s odor → 5–8s ITI  
+- **Structure**: 8 images (6 task + 2 filler) × 4 repetitions = 32 trials  
+- **Duration**: ~5.6 min per run  
+- **Runs**: 4  
+- **Notes**: Run-wise decoding
+
+#### **Place Image Scan**
+- Same as above  
+- **Runs**: 4  
+
+#### **Pre-conditioning (outside scanner)**
+- **Trial**: 3s first cue → 0.3s gap → 3s second cue (choice) → 3–8s ITI  
+- **Structure**: 6 cue pairs × 2 alternatives × L/R = 24 trials  
+- **Duration**: ~5 min per run  
+- **Runs**: 3–5 (based on ≥90% accuracy)  
+
+---
+
+### Day 2 (Refresher + Conditioning + Devaluation + Memory)
+
+#### **Pre-conditioning Refresher (outside scanner)**
+- Same structure as Day 1  
+- **Runs**: 1–3  
+
+#### **Odor Prediction (in scanner)**
+- **Trial**: 2s cue → 3s prediction → 4s odor delay + delivery → 4–10s ITI  
+- **Structure**: 6 cues × 6 orderings = 36 trials  
+- **Duration**: ~10 min per run  
+- **Runs**: 3  
+- **Notes**: Each cue appears 18 times across all runs
+
+#### **Pre-meal Probe (in scanner)**
+- **Trial**: 3s cue1 → 4–10s gap → 3s cue2 → 2s decision → 4–10s ITI  
+- **Structure**: 6 pairs × 2 sets × L/R = 24 trials  
+- **Duration**: ~9 min per run  
+- **Runs**: 3  
+- **Notes**: Each cue appears 12 times across all runs
+
+#### **Post-meal Probe**
+- Identical to pre-meal probe  
+- **Runs**: 3  
+
+#### **Recognition Memory (outside scanner)**
+- **Trial**: 3s cue1 → 0.3s gap → 3s cue2 → 3–8s ITI  
+- **Structure**: 6 cue pairs × old/foil × 3 repetitions = 36 trials  
+- **Duration**: ~7 min  
+- **Runs**: 1  
+
+---
+
+## Meal Time
+- ~15 min meal + additional time for ratings and transition
+
