@@ -36,17 +36,17 @@ The SPCD task is a multi-day fMRI-compatible behavioral paradigm designed to stu
   - Quick exposure to odors for reminder and equipment testing purposes (**1 trial each**).
 - **Odor Prediction Task**  
   - Participants predict which odor will follow a conditioned cue.  
-  - **3 runs**, **48 trials per run** (~30 minutes total).  
+  - **3 runs**, **48 trials per run**.  
   - Conducted in the scanner.
 - **Pre-meal Probe**  
   - Tests responses to **pre-conditioned and conditioned cues** without odor delivery.  
-  - **3 runs**, **32 trials per run** (~30 minutes total).
+  - **3 runs**, **32 trials per run**.
 - **Meal / Devaluation Manipulation**  
-  - Participants eat a meal involving one of the previously conditioned odors.  
-  - **Pre- and Post-meal Odor Rating** to assess devaluation effect (~20 minutes total including meal).
+  - Participants eat a meal with flavor matched to one of the two odors.  
+  - **Pre- and Post-meal Odor Rating** to assess devaluation effect.
 - **Post-meal Probe**  
   - Same as Probe 1 but occurs after devaluation.  
-  - **3 runs**, **32 trials per run** (~30 minutes total).
+  - **3 runs**, **32 trials per run**.
 - **Recognition Memory Task (outside the scanner)**  
   - Participants judge whether they have seen specific character-place pairs before. 
   - **1 run**, **48 trials**.
