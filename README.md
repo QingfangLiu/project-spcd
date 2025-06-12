@@ -2,7 +2,9 @@
 **Sensory Preconditioning and Devaluation**
 
 ## Summary  
-The SPCD task is a multi-day, fMRI-compatible behavioral paradigm designed to study outcome devaluation and sensory preconditioning. It includes multiple phases such as cue-cue learning, odor-outcome conditioning, value updating through devaluation, and recognition memory testing. Participants complete tasks both inside and outside the MRI scanner.
+The SPCD task is a multi-day, fMRI-compatible behavioral paradigm designed to study outcome devaluation and sensory preconditioning. It includes multiple phases such as cue-cue learning, cue-odor conditioning, value updating through devaluation, and recognition memory testing. Participants complete tasks both inside and outside the MRI scanner.
+
+Participants are asked to **fast for 2–4 hours before arrival** to ensure consistent hunger state for the devaluation manipulation. The full study is completed over **three sessions (Day 0, Day 1, and Day 2)**, typically scheduled within a **2-week window**, although exceptions may occur in practice.
 
 ---
 
@@ -27,7 +29,7 @@ The SPCD task is a multi-day, fMRI-compatible behavioral paradigm designed to st
   - character runs  
   - place runs  
   - anatomical scan
-- **Pre-conditioning Task (outside scanner)**  
+- **Pre-conditioning Training (outside scanner)**  
   Participants learn associations between characters and places.  
   
 
@@ -78,7 +80,7 @@ This section summarizes the trial timing, run structure, and duration for each t
 - Same as above  
 - **Runs**: 4  
 
-#### **Pre-conditioning training (outside scanner)**
+#### **Pre-conditioning Training (outside scanner)**
 - **Trial**: 3s first cue → 0.3s gap → 3s second cue (choice) → 3–8s ITI  
 - **Structure**: 6 cue pairs × 2 alternatives × L/R = 24 trials  
 - **Duration**: ~5 min per run  
