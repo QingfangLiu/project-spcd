@@ -45,17 +45,14 @@ The SPCD task is a multi-day, fMRI-compatible behavioral paradigm designed to st
   - **3 runs**, **48 trials per run**
 - **Pre-meal Probe (in scanner)**  
   Tests participants’ responses to **pre-conditioned and conditioned cues**, without any odor delivery.  
-  - **3 runs**, **32 trials per run**
 - **Meal & Devaluation Manipulation**  
   - Participants complete pre-meal odor ratings and answer questions.
   - Participants consume a meal flavored with one of the two previously conditioned odors.
   - **Post-meal odor ratings** assess the effect of devaluation.
 - **Post-meal Probe (in scanner)**  
   Identical to the pre-meal probe but administered after devaluation.  
-  - **3 runs**, **32 trials per run**
 - **Recognition Memory Task (outside scanner)**  
   Participants judge whether specific character-place pairs were seen during the pre-conditioning phase.  
-  - **1 run**, **48 trials**
 - **Post-experiment Interview**  
   A short debriefing or follow-up assessment to gather subjective feedback or check for awareness.
 
@@ -114,7 +111,7 @@ This section summarizes the trial timing, run structure, and duration for each t
 - **Runs**: 3  
 - **Notes**: Each cue appears 12 times across all runs
 
-#### **Post-meal Probe**
+#### **Post-meal Probe (in scanner)**
 - Identical to pre-meal probe  
 - **Runs**: 3  
 
