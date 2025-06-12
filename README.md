@@ -23,20 +23,19 @@ The SPCD task is a multi-day, fMRI-compatible behavioral paradigm designed to st
 ### Day 1 – Pre-conditioning & Localizer (fMRI)
 - **Localizer Task (in scanner)**  
   Participants undergo fMRI scans to measure neural responses to individual images and odors, before any associative learning has occurred.  
-  - 2 odor runs 
-  - 4 character runs  
-  - 4 place runs  
-  - 1 anatomical scan
+  - odor runs 
+  - character runs  
+  - place runs  
+  - anatomical scan
 - **Pre-conditioning Task (outside scanner)**  
   Participants learn associations between characters and places.  
-  - Completed over **3–5 runs** (max 5); task may end after the 3rd or 4th run if **≥90% accuracy** is achieved.
+  
 
 ---
 
 ### Day 2 – Conditioning, Probe, Devaluation
 - **Pre-conditioning Refresher (outside scanner)**  
   A brief session to reinforce previously learned character-place associations.  
-  - **1–3 runs** (max 3); task may end after 1 run if **≥90% accuracy** is achieved.
 - **Odor Prediction Task (in scanner)**  
   Participants predict which odor follows a given conditioned cue.  
 - **Pre-meal Probe (in scanner)**  
@@ -79,11 +78,11 @@ This section summarizes the trial timing, run structure, and duration for each t
 - Same as above  
 - **Runs**: 4  
 
-#### **Pre-conditioning (outside scanner)**
+#### **Pre-conditioning training (outside scanner)**
 - **Trial**: 3s first cue → 0.3s gap → 3s second cue (choice) → 3–8s ITI  
 - **Structure**: 6 cue pairs × 2 alternatives × L/R = 24 trials  
 - **Duration**: ~5 min per run  
-- **Runs**: 3–5 (based on ≥90% accuracy)  
+- **Runs**: 3–5; task may end after the 3rd or 4th run if **≥90% accuracy** is achieved.
 
 ---
 
@@ -91,7 +90,7 @@ This section summarizes the trial timing, run structure, and duration for each t
 
 #### **Pre-conditioning Refresher (outside scanner)**
 - Same structure as Day 1  
-- **Runs**: 1–3  
+- **1–3 runs** (max 3); task may end after 1 run if **≥90% accuracy** is achieved.
 
 #### **Odor Prediction (in scanner)**
 - **Trial**: 2s cue → 3s prediction → 4s odor delay + delivery → 4–10s ITI  
@@ -120,5 +119,5 @@ This section summarizes the trial timing, run structure, and duration for each t
 ---
 
 ## Meal Time
-- ~15 min meal + additional time for ratings and transition
+- ~15 min meal
 
