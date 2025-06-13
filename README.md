@@ -128,10 +128,10 @@ This section summarizes the trial timing, run structure, and duration for each t
 | Subject   | Day | Task               | Run     | Issue Description                                                              | Affected Components               | Status       |
 |-----------|-----|--------------------|---------|---------------------------------------------------------------------------------|-----------------------------------|--------------|
 | sub-02    | 1   | Pre-Conditioning   | Run 1–4 | Task was accidentally **restarted once**, resulting in **4 runs** instead of 3 | Behavioral logs, task order       | 🟥 Unresolved |
-| sub-11    | 1   | Odor               | Run 1   | LabChart recording **started late**                                            | LabChart (not behavior or MRI)    | 🟥 Unresolved |
+| sub-11    | 1   | Odor               | Run 1   | LabChart recording **started late**                                            | LabChart only		      | 🟥 Unresolved |
 | sub-35    | 2   | Odor Prediction    | Run 3   | Scan stopped early due to emergency ball press                                 | Imaging, LabChart (not behavior)  | 🟥 Unresolved |
 | sub-33    | 2   | Probe              | Run 3   | Missing breathing signals, likely due to connection issue                      | Physiological (breathing signal)  | 🟥 Unresolved |
-| sub-33    | 1   | Odor               | Reran   | Two odor task runs had to be rerun at the end of session                       | Behavioral, possibly timing logs  | 🟥 Unresolved |
+| sub-33    | 1   | Odor               | Reran   | Two odor task runs had to be rerun at the end of session                       | LabChart data		      | 🟥 Unresolved |
 | sub-36    | 2   | Probe (Pre-Meal)   | Run 6   | Run was interrupted; short first recording followed by a second correct run    | MRI, LabChart (not behavior)      | 🟥 Unresolved |
 
 
