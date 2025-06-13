@@ -121,25 +121,18 @@ This section summarizes the trial timing, run structure, and duration for each t
 
 ---
 
+
 ## Notes on Missing Data Handling
 
-> This section only documents issues that **affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
+> This table only documents issues that **affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
 
-### Subject-Specific Notes
+| Subject   | Day   | Task                         | Run     | Issue Description                                                                 | Affected Components               | Status       |
+|-----------|-------|------------------------------|---------|------------------------------------------------------------------------------------|-----------------------------------|--------------|
+| sub-35    | Day 2 | Odor Prediction              | Run 3   | Scan stopped early due to emergency ball press                                    | Imaging, LabChart (not behavior)  | 🟥 Unresolved |
+| sub-33    | Day 2 | Probe                        | Run 3   | Missing breathing signals, likely due to connection issue                         | Physiological (breathing signal)  | 🟥 Unresolved |
+| sub-33    | Day 1 | Odor                         | Reran   | Two odor task runs had to be rerun at the end of session                          | Behavioral, possibly timing logs  | 🟥 Unresolved |
+| sub-36    | Day 2 | Probe (Pre-Meal)             | Run 6   | Run was interrupted; short first recording followed by a second correct run       | MRI, LabChart (not behavior)      | 🟥 Unresolved |
 
-- **sub-35** 🟥 **[Unresolved]**
-  - **Day 2, Odor Prediction Task, Run 3**: Scan stopped early due to emergency ball press.  
-    - ➤ Affects **imaging** and **LabChart data** handling.  
-    - ➤ Behavioral data **not affected**.
-
-- **sub-33** 🟥 **[Unresolved]**
-  - **Day 2, Probe Task, Run 3**: Missing **breathing signals**, likely due to a connection issue.
-  - **Day 1**: Reran two **odor task runs** at the end of the session.
-
-- **sub-36** 🟥 **[Unresolved]**
-  - **Day 2, Probe Task (Pre-Meal), Run 6**: Original Run 6 was **interrupted**, resulting in two recordings.
-    - ➤ Requires correction in **run indexing** for both **MRI** and **physiological data** (e.g., LabChart).
-    - ➤ Behavioral data **not affected**.
 
 
 
