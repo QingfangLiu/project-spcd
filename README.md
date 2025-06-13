@@ -136,6 +136,12 @@ This section summarizes the trial timing, run structure, and duration for each t
   - **Day 2, Probe Run 3**: Missing **breathing signals**, likely due to a connection issue.
   - **Day 1**: Reran two **odor task runs** at the end of the session.
 
+- **sub-36**
+  - **Day 2, Probe Task (Pre-Meal), Run 6**: Original Run 6 was **interrupted**, resulting in two recordings.
+    - ➤ Requires correction in **run indexing** for both MRI and physiological data (e.g., LabChart).
+    - ➤ Behavioral data **not affected**.
+
+
 
 
 
