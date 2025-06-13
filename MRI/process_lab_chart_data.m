@@ -38,7 +38,7 @@ for subj = 29 %1:nSubIDlist
 
     fprintf('Working on %s\n',SubID)
 
-for day = 1:2
+for day = 2
 
     LC_Day_list = dir(fullfile(SubLCDir,sprintf('day%d',day),sprintf('*MRI*Day%d.mat',day)));
     LC_mat = fullfile(LC_Day_list.folder,LC_Day_list.name);
@@ -138,11 +138,10 @@ for day = 1:2
          end
     
     elseif is_partial_third_run_day2
-    expected_vols = sum(default_vols);  
-    actual_vols = length(MRI_trig_idx);
-    missing = expected_vols - actual_vols;
+        expected_vols = sum(default_vols);  
+        actual_vols = length(MRI_trig_idx);
+        missing = expected_vols - actual_vols;
 
-    
         fprintf('%s Day %d: Run 3 is partially recorded (%d missing). Will pad.\n', SubID, day, missing);
         seg_lengths = default_vols;
         seg_lengths(3) = seg_lengths(3) - missing;
@@ -154,26 +153,45 @@ for day = 1:2
         num_vols = default_vols;
     
     elseif is_split_run_day2
-    actual_vols = length(MRI_trig_idx);
-    if actual_vols > sum(default_vols) && actual_vols < sum(default_vols) + 400
-        fprintf('%s Day 2: Detected split pre-meal run, using 10 total runs.\n', SubID);
+        actual_vols = length(MRI_trig_idx);
+        expected_vols = sum(default_vols);
 
-        % Estimate volumes per run from previous default, except add 1 split
-        % Insert an extra run after the 6th
-        num_vols = [default_vols(1:6), round(actual_vols - sum(default_vols)), default_vols(7:end)];
-        if sum(num_vols) ~= actual_vols
-            error('sub-36 Day 2: Mismatch after adding split run.');
-        end
+        if actual_vols > expected_vols && actual_vols < expected_vols + 400
+            fprintf('%s Day 2: Detected split pre-meal run, using 10 total runs.\n', SubID);
 
-        cut_points = [0, cumsum(num_vols)];
-        MRI_trig_idx_segments = cell(1, length(num_vols));
-        for r = 1:length(num_vols)
-            MRI_trig_idx_segments{r} = MRI_trig_idx(cut_points(r)+1 : cut_points(r+1));
-        end
-    else
-        error('Unexpected number of triggers for sub-36 Day 2 split run.');
-    end
+            % === Automatically find the split point ===
+            gap_lengths = diff(MRI_trig_idx);
+            gap_threshold = 10 * median(gap_lengths);
+            gap_idx = find(gap_lengths > gap_threshold);
     
+            if isempty(gap_idx)
+                error('No gap detected to split run 6.');
+            end
+    
+            split_point = gap_idx(1);  % assume first large gap marks the split
+            short_run6_vol = split_point;
+            extra_split_run_vol = actual_vols - short_run6_vol;
+    
+            num_vols = [ ...
+                default_vols(1:5), ...
+                short_run6_vol, ...
+                extra_split_run_vol, ...
+                default_vols(7:end) ...
+            ];
+    
+            if sum(num_vols) ~= actual_vols
+                error('sub-36 Day 2: Volume mismatch after auto split correction.');
+            end
+    
+            % === Segment triggers ===
+            cut_points = [0, cumsum(num_vols)];
+            MRI_trig_idx_segments = cell(1, length(num_vols));
+            for r = 1:length(num_vols)
+                MRI_trig_idx_segments{r} = MRI_trig_idx(cut_points(r)+1 : cut_points(r+1));
+            end
+        else
+            error('Unexpected number of triggers for sub-36 Day 2 split run.');
+        end
     
     else
         if sum(default_vols) ~= length(MRI_trig_idx)

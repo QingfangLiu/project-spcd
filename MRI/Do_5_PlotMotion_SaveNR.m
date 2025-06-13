@@ -17,8 +17,8 @@ clc; clear; close all;
 addpath('/Users/liuq13/Applications/spm12/')
 addpath('/Users/liuq13/xjview10/xjview/')
 
-HomeDir = '/Users/liuq13/SPCD_data';
-SubIDlist = dir(fullfile(HomeDir, 'Sub*'));
+HomeDir = '/Users/liuq13/SPCD_data/labchart_processed';
+SubIDlist = dir(fullfile(HomeDir, 'sub-*'));
 SubIDlist = SubIDlist([SubIDlist.isdir]); % only keep directories
 nSubIDlist = length(SubIDlist);
 
@@ -29,17 +29,16 @@ for subj = 1:nSubIDlist
 
     SubID = SubIDlist(subj).name;
     SubDir = fullfile(HomeDir,SubID);
-    SubLCDir = fullfile(SubDir,'labchart');
-
-    Day1mat = fullfile(SubLCDir,'AllssR_Day1.mat');
-    Day2mat = fullfile(SubLCDir,'AllssR_Day2.mat');
+    
+    Day1mat = fullfile(SubDir,'day1','AllssR_Day1.mat');
+    Day2mat = fullfile(SubDir,'day2','AllssR_Day2.mat');
 
     if ~(exist(Day1mat,'file') && exist(Day2mat,'file'))
         continue;  % if this subj does not contain the two .mat files, proceed to next subj
     end
 
     % where to save nuisance regressors
-    NROutdir = fullfile(SubDir,'NRegressor');
+    NROutdir = fullfile('/Users/liuq13/SPCD_data/','NRegressor',SubID);
     if ~exist(NROutdir,'dir')
         mkdir(NROutdir)
     end
@@ -50,7 +49,7 @@ for subj = 1:nSubIDlist
 
     disp(['Processing: ', SubID]);
     
-    mpfilename = dir(fullfile(SubDir, 'nii', 'func', '*', 'rp*.txt')); 
+    mpfilename = dir(fullfile('/Users/liuq13/SPCD_data/', 'nii', SubID, 'func', '*', 'rp*.txt')); 
     nruns = length(mpfilename);
     
     % initiate some variables for curr subject
