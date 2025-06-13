@@ -66,19 +66,18 @@ This section summarizes the trial timing, run structure, and duration for each t
 - **Trial**: 2s sniff cue → 2s odor → 9–13s ITI  
 - **Structure**: 3 odors × 10 repetitions = 30 trials per run  
 - **Duration**: ~7.5 min per run  
-- **Runs**: 2  
+- **Runs**: 2, 320 volumes per run  
 - **Notes**: Suitable for single-trial decoding
 
 #### **Character Image Scan**
 - **Trial**: 2s image cue → 2s odor → 5–8s ITI  
 - **Structure**: 8 images (6 task + 2 filler) × 4 repetitions = 32 trials  
 - **Duration**: ~5.6 min per run  
-- **Runs**: 4  
+- **Runs**: 4, 244 volumes per run  
 - **Notes**: Run-wise decoding
 
 #### **Place Image Scan**
 - Same as above  
-- **Runs**: 4  
 
 #### **Pre-conditioning Training (outside scanner)**
 - **Trial**: 3s first cue → 0.3s gap → 3s second cue (choice) → 3–8s ITI  
@@ -98,19 +97,18 @@ This section summarizes the trial timing, run structure, and duration for each t
 - **Trial**: 2s cue → 3s prediction → 4s odor delay + delivery → 4–10s ITI  
 - **Structure**: 6 cues × 6 orderings = 36 trials  
 - **Duration**: ~10 min per run  
-- **Runs**: 3  
+- **Runs**: 3, 404 volumes per run  
 - **Notes**: Each cue appears 18 times across all runs
 
 #### **Pre-meal Probe (in scanner)**
 - **Trial**: 3s cue1 → 4–10s gap → 3s cue2 → 2s decision → 4–10s ITI  
 - **Structure**: 6 pairs × 2 sets × L/R = 24 trials  
 - **Duration**: ~9 min per run  
-- **Runs**: 3  
+- **Runs**: 3, 372 volumes per run  
 - **Notes**: Each cue appears 12 times across all runs
 
 #### **Post-meal Probe (in scanner)**
 - Identical to pre-meal probe  
-- **Runs**: 3  
 
 #### **Recognition Memory (outside scanner)**
 - **Trial**: 3s cue1 → 0.3s gap → 3s cue2 → 3–8s ITI  
