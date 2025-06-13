@@ -127,20 +127,19 @@ This section summarizes the trial timing, run structure, and duration for each t
 
 ### Subject-Specific Notes
 
-- **sub-35**
-  - **Day 2, Odor Prediction Task Run 3**: Scan stopped early due to emergency ball press.  
-    - ➤ Affects **imaging and LabChart data** handling.  
+- **sub-35** 🟥 **[Unresolved]**
+  - **Day 2, Odor Prediction Task, Run 3**: Scan stopped early due to emergency ball press.  
+    - ➤ Affects **imaging** and **LabChart data** handling.  
     - ➤ Behavioral data **not affected**.
 
-- **sub-33**
-  - **Day 2, Probe Run 3**: Missing **breathing signals**, likely due to a connection issue.
+- **sub-33** 🟥 **[Unresolved]**
+  - **Day 2, Probe Task, Run 3**: Missing **breathing signals**, likely due to a connection issue.
   - **Day 1**: Reran two **odor task runs** at the end of the session.
 
-- **sub-36**
+- **sub-36** 🟥 **[Unresolved]**
   - **Day 2, Probe Task (Pre-Meal), Run 6**: Original Run 6 was **interrupted**, resulting in two recordings.
-    - ➤ Requires correction in **run indexing** for both MRI and physiological data (e.g., LabChart).
+    - ➤ Requires correction in **run indexing** for both **MRI** and **physiological data** (e.g., LabChart).
     - ➤ Behavioral data **not affected**.
-
 
 
 
