@@ -1,23 +1,19 @@
 
-% This script is used to find the time onsets of task events aligned with
-% the scan timing.
-% do this for the odor scan task
+function run_odor_scan_GLM(cfg, SubID)
 
-clear; clc;
 
-%%
+    % This script is used to find the time onsets of task events aligned with
+    % the scan timing.
+    % do this for the odor scan task
 
-subj = 1;
-SubID = SubIDlist(subj).name;
-disp(['Processing: ', SubID]);
-SubDir = fullfile(HomeDir,SubID);
-
-modelname = 'odor_scan_m1';
-modeldir = fullfile(SubDir,'univariate',modelname);
-if ~exist(modeldir,'dir')
-    mkdir(modeldir)
-else
-end
+    GLMDir = cfg.GLMDir;
+    
+    modelname = 'odor_scan';
+    modeldir = fullfile(GLMDir, modelname, SubID);
+    if ~exist(modeldir,'dir')
+        mkdir(modeldir)
+    else
+    end
 
 % calculate time onsets
 % 10s blank after first volume
@@ -35,7 +31,7 @@ for r = 1:nruns
 
     % load task design xls
     task_design_file = sprintf('IndepScanOdorConds%d.xlsx',r);
-    task_design = readtable(fullfile(SubDir,SubID,task_design_file));
+    task_design = readtable(fullfile(HomeDir,'beh_raw',SubID,task_design_file));
     odor_num = task_design.odor_num;
     ITIDur = task_design.ITIDur;
     ntrials = size(task_design,1);
@@ -48,7 +44,7 @@ for r = 1:nruns
     sniff_onsets(1) = blank + white_cross;
     
     for t = 2:ntrials
-        sniff_onsets(t) = sniff_onsets(t-1) + blue_cross + ITIDur(t-1) + white_cross;
+        sniff_onsets(t) = sniff_onsets(t-1) + white_cross + blue_cross + ITIDur(t-1);
     end
     
     odor_0_onsets = sniff_onsets(odor_0_idx);
@@ -66,10 +62,12 @@ for r = 1:nruns
     num_onsets = length(onsets);
     durations = cell(1,num_onsets);
     for i = 1:num_onsets
-        durations{i} = zeros(size(onsets{i}));
+        durations{i} = repmat(blue_cross, size(onsets{i}));
     end
 
     matfile = fullfile(modeldir,sprintf('Run%d_Onsets.mat',r));
     save(matfile,'names','onsets','durations');
 
 end 
+
+end

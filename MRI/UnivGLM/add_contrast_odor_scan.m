@@ -1,18 +1,6 @@
 
 
-%% Setup
-
-clear; clc;
-
-subj = 1;
-SubID = SubIDlist(subj).name;
-disp(['Processing: ', SubID]);
-SubDir = fullfile(HomeDir,SubID);
-jobdir = fullfile(SubDir, 'jobs');
-
-modelname = 'odor_scan_m1';
-modeldir = fullfile(SubDir,'Univariate',modelname);
-
+function add_contrast_odor_scan(cfg, SubID)
 
 %% define contrast names and weights
 
@@ -22,8 +10,6 @@ clear contr_name contr sessrep
 contr_name{1} = 'odor>clean-air'; 
 contr{1} = [-1,1/2,1/2]; % weights replicated across runs
 sessrep{1} = 'repl';
-
-% compare sweet vs. savory odor
 
 %% SPM contrast
 matlabbatch = cell(1,length(contr_name));
@@ -42,3 +28,5 @@ end
 fname = fullfile(jobdir, sprintf('AddContrasts_%s_%s.mat',modelname,SubID));
 save(fname, 'matlabbatch');
 spm_jobman('run', matlabbatch);  
+
+end
