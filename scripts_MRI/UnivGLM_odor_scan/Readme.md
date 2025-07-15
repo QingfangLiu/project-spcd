@@ -6,6 +6,7 @@ This project contains code for running a General Linear Model (GLM) analysis on 
 
 - Used 4D fMRI data (smoothed using a 6mm kernel)
 - Onsets were defined per run using task design files.
+- Using 3 conditions: odor 0, 1, 2, duration of 2s
 - Nuisance regressors (e.g., motion parameters) were included in the GLM.
 
 ## Group-Level Results
@@ -30,5 +31,8 @@ These findings confirm robust engagement of the olfactory network during odor pr
 
 - [ ] Set up or verify nuisance regressors for `sub-35` and `sub-36`
 - [ ] Re-run the GLM pipeline for those subjects
+- [ ] Also need to recode odor 1 and 2 for that subject with meal feed issue.
+- [ ] Now the folders contain both nii files and nii.gz files; need to clean up to save space
+- [ ] To add an external gray matter mask on group level analysis
 
 
