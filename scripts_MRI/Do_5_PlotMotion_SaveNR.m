@@ -25,7 +25,7 @@ nSubIDlist = length(SubIDlist);
 pattern_list = {'place', 'character', 'odor_scan', 'odorpred', 'premeal', 'postmeal'}; 
 
 %%
-for subj = 1:nSubIDlist
+for subj = 5 %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;
     SubDir = fullfile(HomeDir,SubID);

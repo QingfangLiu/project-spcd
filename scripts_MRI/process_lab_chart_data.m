@@ -6,7 +6,7 @@
     % handle sub7-day1 differently (redid odor scans in the end)
     % handle sub33-day1 differently (redid odor scans in the end)
 
-% Special handling for sub-11 Day 1: sub7-day2:
+% Special handling for sub-11-day1 and sub7-day2:
 % LabChart recording starts late, missing part of run 1.
 % We keep the available data and pad the beginning with NaNs 
 % to maintain expected length (320 volumes) for nuisance regression.
@@ -21,7 +21,7 @@ clear; clc; close all;
 
 addpath('/Users/liuq13/Applications/spm12/')
 
-HomeDir = '/Users/liuq13/SPCD_data_BIDS/derivatives/labchart_processed';
+HomeDir = '/Users/liuq13/SPCD_data/labchart_processed';
 SubIDlist = dir(fullfile(HomeDir, 'sub-*'));
 SubIDlist = SubIDlist([SubIDlist.isdir]); % only keep directories
 nSubIDlist = length(SubIDlist);
@@ -30,7 +30,7 @@ SampleRate = 1000;
 trig_height = 5;  % trigger height from visualization
 
 %%
-for subj = 29 %1:nSubIDlist
+for subj = 5 %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;    
     SubLCDir = fullfile(HomeDir,SubID);
@@ -124,19 +124,16 @@ for day = 2
         actual_vols = length(MRI_trig_idx);        % e.g. 2572
         missing = expected_vols - actual_vols;     % e.g. 20
 
-        if missing >= 5 && missing < 100  % flexible range for partial
-            fprintf('%s Day %d: Partial run 1 (%d triggers missing), will pad with NaN.\n', SubID, day, missing);
-            partial_run1_len = default_vols(1) - missing;
-            seg_lengths = [partial_run1_len, default_vols(2:end)];
-            cut_points = [0, cumsum(seg_lengths)];
-            MRI_trig_idx_segments = cell(1, length(default_vols));
-            for r = 1:length(default_vols)
-                MRI_trig_idx_segments{r} = MRI_trig_idx(cut_points(r)+1 : cut_points(r+1));
-            end
-            num_vols = default_vols;
-        else
-            error('Unexpected missing triggers in partial run.');
-         end
+        fprintf('%s Day %d: Partial run 1 (%d triggers missing), will pad with zeros.\n', SubID, day, missing);
+        partial_run1_len = default_vols(1) - missing;
+        seg_lengths = [partial_run1_len, default_vols(2:end)];
+        cut_points = [0, cumsum(seg_lengths)];
+        MRI_trig_idx_segments = cell(1, length(default_vols));
+        for r = 1:length(default_vols)
+            MRI_trig_idx_segments{r} = MRI_trig_idx(cut_points(r)+1 : cut_points(r+1));
+        end
+        num_vols = default_vols;
+        
     
     elseif is_partial_third_run_day2
         expected_vols = sum(default_vols);  
@@ -235,16 +232,13 @@ for day = 2
     if r == 1 && ...
    ((strcmp(SubID, 'sub-11') && day == 1) || (strcmp(SubID, 'sub-07') && day == 2))
 
-    expected_len = num_vols(1);
-    actual_len = size(this_run, 1);
-    missing = expected_len - actual_len;
+        expected_len = num_vols(1);
+        actual_len = size(this_run, 1);
+        missing = expected_len - actual_len;
 
-    if missing > 0 && missing < 100  % tolerate small recording loss
-        fprintf('%s Day %d Run 1: Detected %d missing volumes. Padding with NaNs at start.\n', SubID, day, missing);
-        this_run = [nan(missing, 4); this_run];
-    else
-        error('Unexpected number of volumes in partial Run 1 for %s Day %d', SubID, day);
-    end
+        fprintf('%s Day %d Run 1: Detected %d missing volumes. Padding with Zeros at start.\n', SubID, day, missing);
+        this_run = [zeros(missing, 4); this_run];
+    
     end
 
     if strcmp(SubID, 'sub-35') && day == 2 && r == 3

@@ -23,7 +23,7 @@ size_threshold = 2 * 1024 * 1024; % Set size threshold (2 MB)
 pattern_list = {'place', 'character', 'odor_scan', 'odorpred', 'premeal', 'postmeal'}; 
 
 
-addpath(fullfile(pwd, 'UnivGLM'));
+addpath(fullfile(pwd, 'UnivGLM_odor_scan'));
 
 for subj = 1:length(subjectFolders)
     SubID = subjectFolders(subj).name;

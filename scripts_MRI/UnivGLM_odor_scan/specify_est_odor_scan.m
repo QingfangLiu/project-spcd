@@ -12,15 +12,30 @@ matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t0 = 8;
 
 for r = 1:nruns
     
-    scandir = fullfile(niiDir,SubID,'func_PAID','odor_scan');
-    Scan_4D = dir(fullfile(scandir,sprintf('s6w2*run_%d*.nii.gz',r))); 
+    scandir = fullfile(niiDir, SubID, 'func_PAID', 'odor_scan');
 
-    gz_file = fullfile(scandir, Scan_4D.name);
-    [~, name_noext] = fileparts(Scan_4D.name);  % remove .gz
-    nii_file = fullfile(scandir, name_noext);   % path to unzipped .nii
+    % First try to find the .nii.gz file
+    gz_files = dir(fullfile(scandir, sprintf('s6w2*run_%d*.nii.gz', r)));
+
+    if ~isempty(gz_files)
+        gz_file = fullfile(scandir, gz_files(1).name);
+        [~, name_noext] = fileparts(gz_file);  % removes .gz
+        nii_file = fullfile(scandir, name_noext);
     
-    if ~exist(nii_file, 'file')
-        gunzip(gz_file, scandir);
+        if ~exist(nii_file, 'file')
+            fprintf('🌀 Unzipping %s\n', gz_file);
+            gunzip(gz_file, scandir);
+        end
+
+    elseif isempty(gz_files)
+        % Try to find .nii file directly
+        nii_files = dir(fullfile(scandir, sprintf('s6w2*run_%d*.nii', r)));
+    
+        if isempty(nii_files)
+            error('❌ No .nii or .nii.gz file found for run %d in %s', r, scandir);
+        end
+    
+        nii_file = fullfile(scandir, nii_files(1).name);
     end
 
     ims = spm_select('expand', nii_file);  % get 3D image names from 4D
