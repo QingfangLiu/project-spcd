@@ -1,8 +1,6 @@
 
-
-function add_contrast_odor_scan(cfg, SubID)
-
-%% define contrast names and weights
+%% Add contrasts for odor scan GLM
+% define contrast names and weights
 
 clear contr_name contr sessrep
 
@@ -28,5 +26,3 @@ end
 fname = fullfile(jobdir, sprintf('AddContrasts_%s_%s.mat',modelname,SubID));
 save(fname, 'matlabbatch');
 spm_jobman('run', matlabbatch);  
-
-end

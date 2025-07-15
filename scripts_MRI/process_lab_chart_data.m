@@ -11,6 +11,12 @@
 % We keep the available data and pad the beginning with NaNs 
 % to maintain expected length (320 volumes) for nuisance regression.
 
+% chan1: task marker
+% chan2 & 3: MFC display
+% chan4: breathing traces from spirometer
+% chan5: MRI triggers
+
+
 clear; clc; close all;
 
 addpath('/Users/liuq13/Applications/spm12/')
@@ -21,11 +27,6 @@ SubIDlist = SubIDlist([SubIDlist.isdir]); % only keep directories
 nSubIDlist = length(SubIDlist);
 
 SampleRate = 1000;
-
-% chan1: task marker
-% chan2 & 3: MFC display
-% chan4: breathing traces from spirometer
-% chan5: MRI triggers
 trig_height = 5;  % trigger height from visualization
 
 %%
