@@ -64,7 +64,7 @@ for r = 1:nruns
         matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t = 16;
         matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t0 = 8;
         matlabbatch{1}.spm.stats.fmri_spec.sess.scans = cellstr(vols);
-        matlabbatch{1}.spm.stats.fmri_spec.masking.thresh = 0.1;
+        matlabbatch{1}.spm.stats.fmri_spec.mthresh = 0.1;  
         matlabbatch{1}.spm.stats.fmri_spec.global = 'None';
 
         % Regressor 1: trial of interest
