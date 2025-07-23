@@ -30,7 +30,7 @@ SampleRate = 1000;
 trig_height = 5;  % trigger height from visualization
 
 %%
-for subj = 5 %1:nSubIDlist
+for subj = 28 %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;    
     SubLCDir = fullfile(HomeDir,SubID);
@@ -62,9 +62,11 @@ for day = 2
     
     % handle sub35-day2 differently (missing MRI frames during run3 of odor
     % prediction task)
-    % handle sub36-day2 differently (two parts of scan for pre-meal run3)
+    is_partial_third_run_day2 = strcmp(SubID, 'sub-35') && day == 2;
 
-    
+    % handle sub36-day2 differently (two parts of scan for pre-meal run3)
+    is_split_run_day2 = strcmp(SubID, 'sub-36') && day == 2;
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % take a quick look at the labchart data
@@ -102,8 +104,9 @@ for day = 2
     is_extra_odor_runs_day1 = ismember(SubID, {'sub-07', 'sub-33'}) && day == 1;
     is_partial_first_run_day1 = strcmp(SubID, 'sub-11') && day == 1;
     is_partial_first_run_day2 = strcmp(SubID, 'sub-07') && day == 2;
-    is_partial_third_run_day2 = strcmp(SubID, 'sub-35') && day == 2;
-    is_split_run_day2 = strcmp(SubID, 'sub-36') && day == 2;
+
+    
+    
 
 
     % === Segment trigger indices
@@ -136,19 +139,17 @@ for day = 2
         
     
     elseif is_partial_third_run_day2
-        expected_vols = sum(default_vols);  
-        actual_vols = length(MRI_trig_idx);
-        missing = expected_vols - actual_vols;
+        
+        n_missing = sum(default_vols) - length(MRI_trig_idx);
 
-        fprintf('%s Day %d: Run 3 is partially recorded (%d missing). Will pad.\n', SubID, day, missing);
-        seg_lengths = default_vols;
-        seg_lengths(3) = seg_lengths(3) - missing;
-        cut_points = [0, cumsum(seg_lengths)];
-        MRI_trig_idx_segments = cell(1, length(default_vols));
-        for r = 1:length(default_vols)
-            MRI_trig_idx_segments{r} = MRI_trig_idx(cut_points(r)+1 : cut_points(r+1));
-        end
-        num_vols = default_vols;
+        fprintf('Detected %d missing volumes — adjusting last odor run.\n', n_missing);
+
+        adjusted_vols = default_vols;
+        adjusted_vols(3) = adjusted_vols(3) - n_missing;  % Only modify 3rd odor run
+
+        MRI_trig_idx_segments = mat2cell(MRI_trig_idx', 1, adjusted_vols);
+        num_vols = adjusted_vols;
+        
     
     elseif is_split_run_day2
         actual_vols = length(MRI_trig_idx);
@@ -241,19 +242,7 @@ for day = 2
     
     end
 
-    if strcmp(SubID, 'sub-35') && day == 2 && r == 3
-    expected_len = num_vols(r);
-    actual_len = size(this_run, 1);
-    missing = expected_len - actual_len;
-
-    if missing > 0 
-        fprintf('sub-35 Day 2 Run 3: Padding %d NaNs at END of run.\n', missing);
-        this_run = [this_run; nan(missing, 4)];
-    else
-        error('Mismatch in sub-35 Day 2 Run 3 volume length');
-    end
-    end
-
+    
     AllssR{r} = this_run;
     end
 

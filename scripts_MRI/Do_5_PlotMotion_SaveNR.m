@@ -25,7 +25,7 @@ nSubIDlist = length(SubIDlist);
 pattern_list = {'place', 'character', 'odor_scan', 'odorpred', 'premeal', 'postmeal'}; 
 
 %%
-for subj = 5 %1:nSubIDlist
+for subj = 28 %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;
     SubDir = fullfile(HomeDir,SubID);
@@ -107,6 +107,31 @@ for r = 1:nruns
 
     % add diff, squared mp, and squared diff
     NR{r} = [mp, [zeros(1,6); diff(mp)], mp.^2, [zeros(1,6); diff(mp).^2]];
+
+
+    % --- NOTE ---
+    % This adjustment is specifically for sub-35, Day 2, odor prediction Run 3.
+    % In this session, the MRI scan was stopped early, resulting in only 293 volumes.
+    % However, motion parameters were generated assuming 292 volumes,
+    % likely due to realignment stopping at the last valid functional volume.
+    %
+    % As a result, AllssR{9} (breathing signal) has 293 rows,
+    % while NR{9} (motion regressors) has 292 rows.
+    % To avoid dimension mismatch during horizontal concatenation,
+    % we truncate both to the shorter length (292).
+
+    % Ensure same number of volumes before concatenation
+    nR = size(AllssR{r}, 1);
+    nM = size(NR{r}, 1);
+
+    if nR ~= nM
+        fprintf('⚠️ Run %d: Adjusting size mismatch (AllssR: %d, NR: %d)\n', r, nR, nM);
+        min_len = min(nR, nM);
+        AllssR{r} = AllssR{r}(1:min_len, :);
+        NR{r} = NR{r}(1:min_len, :);
+    end
+
+    % --- End of NOTE ---
 
     figure;
     subplot(2,4,1); plot(NR{r}(:,1:3)); xlabel('scans'); ylabel('mm'); 
