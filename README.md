@@ -123,14 +123,24 @@ This section summarizes the trial timing, run structure, and duration for each t
 
 ## Notes on Missing Data Handling
 
-> This table only documents issues that **affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
+> This only documents issues that **affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
+
+### Subject-Specific Notes
+
+- **Sub-35 – Day 2, Odor Prediction Run 3**  
+  The scan did not complete all expected volumes. Processed the LabChart trigger data to use only the partial scan. Also corrected a minor mismatch with the number of motion parameters.
+
+- **Sub-36 – Day 2, Pre-Meal Probe Run 3**  
+  The scan was interrupted mid-run, resulting in a short initial recording followed by a second, longer segment. Both were excluded from analysis to avoid alignment issues, since the behavioral task was not paused.
+
+
+
 
 | Subject   | Day | Task               | Run     | Issue Description                                                              | Affected Components               | Status       |
 |-----------|-----|--------------------|---------|---------------------------------------------------------------------------------|-----------------------------------|--------------|
 
 | sub-33    | 2   | Probe              | Run 3   | Missing breathing signals, likely due to connection issue                      | Physiological (breathing signal)  | 🟥 Unresolved |
 | sub-33    | 1   | Odor               | Reran   | Two odor task runs had to be rerun at the end of session                       | LabChart data		      | 🟥 Unresolved |
-| sub-36    | 2   | Probe (Pre-Meal)   | Run 6   | Run was interrupted; short first recording followed by a second correct run    | MRI, LabChart (not behavior)      | 🟥 Unresolved |
 
 
 
