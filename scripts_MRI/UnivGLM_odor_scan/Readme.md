@@ -19,20 +19,7 @@ We conducted a second-level random-effects analysis for the contrast **odor > cl
 
 These findings confirm robust engagement of the olfactory network during odor presentation and validate the task design and GLM specification.
 
-
-
-## Known Issues
-
-- **sub-35** and **sub-36** were **not processed** successfully due to missing nuisance regressors.
-- These regressors need to be generated.
-
-
 ## Next Steps
 
-- [ ] Set up or verify nuisance regressors for `sub-35` and `sub-36`
-- [ ] Re-run the GLM pipeline for those subjects
 - [ ] Also need to recode odor 1 and 2 for that subject with meal feed issue.
-- [ ] Now the folders contain both nii files and nii.gz files; need to clean up to save space
 - [ ] To add an external gray matter mask on group level analysis
-
-
