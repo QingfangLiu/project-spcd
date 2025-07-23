@@ -27,7 +27,7 @@ error_log = {};
 log_index = 1;
 
 % Loop over subjects
-for subj = 1:length(subjectFolders)
+for subj = [28,29]   % 1:length(subjectFolders)
     SubID = subjectFolders(subj).name;
     fprintf('\n\n=== Processing: %s ===\n', SubID);
 

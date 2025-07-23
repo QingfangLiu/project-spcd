@@ -23,7 +23,7 @@ size_threshold = 2 * 1024 * 1024; % Set size threshold (2 MB)
 pattern_list = {'place', 'character', 'odor_scan', 'odorpred', 'premeal', 'postmeal'}; 
 
 
-for subj = 28 %1:length(subjectFolders)
+for subj = 29 %1:length(subjectFolders)
     SubID = subjectFolders(subj).name;
     fprintf('\n\n=== Processing: %s ===\n', SubID);
 
