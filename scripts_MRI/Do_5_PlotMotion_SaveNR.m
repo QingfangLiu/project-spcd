@@ -25,7 +25,7 @@ nSubIDlist = length(SubIDlist);
 pattern_list = {'place', 'character', 'odor_scan', 'odorpred', 'premeal', 'postmeal'}; 
 
 %%
-for subj = 28 %1:nSubIDlist
+for subj = 29 %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;
     SubDir = fullfile(HomeDir,SubID);
@@ -50,6 +50,12 @@ for subj = 28 %1:nSubIDlist
     disp(['Processing: ', SubID]);
     
     mpfilename = dir(fullfile('/Users/liuq13/SPCD_data/', 'nii', SubID, 'func', '*', 'rp*.txt')); 
+
+    % for sub-36, not use the latter pre-meal runs
+    if strcmp(SubID, 'sub-36')
+        mpfilename = mpfilename(1:end-2);
+    end
+
     nruns = length(mpfilename);
     
     % initiate some variables for curr subject
@@ -88,6 +94,17 @@ for subj = 28 %1:nSubIDlist
     AllssR(10:13) = AllssR_Day1(7:10);
     AllssR(14:16) = AllssR_Day2(7:9);
     AllssR(17:19) = AllssR_Day2(4:6);
+
+    % Identify and remove empty cells
+    empty_idx = cellfun(@isempty, AllssR);
+    num_empty = sum(empty_idx);
+
+    if num_empty > 0
+        AllssR = AllssR(~empty_idx);
+        fprintf('Removed %d empty cells from AllssR. Remaining cells: %d\n', ...
+            num_empty, numel(AllssR));
+    end
+
 
 for r = 1:nruns
    

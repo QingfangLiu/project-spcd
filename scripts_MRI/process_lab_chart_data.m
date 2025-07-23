@@ -30,7 +30,7 @@ SampleRate = 1000;
 trig_height = 5;  % trigger height from visualization
 
 %%
-for subj = 28 %1:nSubIDlist
+for subj = 29 %1:nSubIDlist
 
     SubID = SubIDlist(subj).name;    
     SubLCDir = fullfile(HomeDir,SubID);
@@ -105,10 +105,6 @@ for day = 2
     is_partial_first_run_day1 = strcmp(SubID, 'sub-11') && day == 1;
     is_partial_first_run_day2 = strcmp(SubID, 'sub-07') && day == 2;
 
-    
-    
-
-
     % === Segment trigger indices
     if is_extra_odor_runs_day1
         full_vols = [repmat(320, 1, 2), repmat(244, 1, 8), repmat(320, 1, 2)];
@@ -137,62 +133,40 @@ for day = 2
         end
         num_vols = default_vols;
         
-    
     elseif is_partial_third_run_day2
         
         n_missing = sum(default_vols) - length(MRI_trig_idx);
-
         fprintf('Detected %d missing volumes — adjusting last odor run.\n', n_missing);
-
         adjusted_vols = default_vols;
         adjusted_vols(3) = adjusted_vols(3) - n_missing;  % Only modify 3rd odor run
-
         MRI_trig_idx_segments = mat2cell(MRI_trig_idx', 1, adjusted_vols);
         num_vols = adjusted_vols;
         
-    
     elseif is_split_run_day2
-        actual_vols = length(MRI_trig_idx);
-        expected_vols = sum(default_vols);
 
-        if actual_vols > expected_vols && actual_vols < expected_vols + 400
-            fprintf('%s Day 2: Detected split pre-meal run, using 10 total runs.\n', SubID);
+        fprintf('⚠️ Excluding interrupted pre-meal run 3 (Run 6)\n');
 
-            % === Automatically find the split point ===
-            gap_lengths = diff(MRI_trig_idx);
-            gap_threshold = 10 * median(gap_lengths);
-            gap_idx = find(gap_lengths > gap_threshold);
+        % Volumes you want to keep
+        vols_keep_first = 404 + 404 + 404 + 372 + 372;  % = 1956
+        vols_keep_last = 3 * 372;                      % = 1116
+        
+        % Use MRI_trig_idx directly
+        MRI_trig_idx_clean = [
+        MRI_trig_idx(1:vols_keep_first);
+        MRI_trig_idx(end - vols_keep_last + 1:end)];
+
+        % New volume structure (without run 6)
+        default_vols = [404, 404, 404, 372, 372, 372, 372, 372];
+
+        % Assign cleaned result
+        MRI_trig_idx = MRI_trig_idx_clean;
+
+        MRI_trig_idx_segments = mat2cell(MRI_trig_idx', 1, default_vols);
+        num_vols = default_vols;
+        
     
-            if isempty(gap_idx)
-                error('No gap detected to split run 6.');
-            end
-    
-            split_point = gap_idx(1);  % assume first large gap marks the split
-            short_run6_vol = split_point;
-            extra_split_run_vol = actual_vols - short_run6_vol;
-    
-            num_vols = [ ...
-                default_vols(1:5), ...
-                short_run6_vol, ...
-                extra_split_run_vol, ...
-                default_vols(7:end) ...
-            ];
-    
-            if sum(num_vols) ~= actual_vols
-                error('sub-36 Day 2: Volume mismatch after auto split correction.');
-            end
-    
-            % === Segment triggers ===
-            cut_points = [0, cumsum(num_vols)];
-            MRI_trig_idx_segments = cell(1, length(num_vols));
-            for r = 1:length(num_vols)
-                MRI_trig_idx_segments{r} = MRI_trig_idx(cut_points(r)+1 : cut_points(r+1));
-            end
-        else
-            error('Unexpected number of triggers for sub-36 Day 2 split run.');
-        end
-    
-    else
+    else % normally without interruption
+
         if sum(default_vols) ~= length(MRI_trig_idx)
             error('Mismatch in expected vs actual MRI triggers. Stopping.');
         end
@@ -230,20 +204,22 @@ for day = 2
         this_run = [ssR, ssR.^2, IntssR, IntssR.^2];
         
         % Handle any subject with partial first run (e.g., sub-11 Day 1, sub-07 Day 2)
-    if r == 1 && ...
-   ((strcmp(SubID, 'sub-11') && day == 1) || (strcmp(SubID, 'sub-07') && day == 2))
+        if r == 1 && ...
+        ((strcmp(SubID, 'sub-11') && day == 1) || (strcmp(SubID, 'sub-07') && day == 2))
+            expected_len = num_vols(1);
+            actual_len = size(this_run, 1);
+            missing = expected_len - actual_len;
+            fprintf('%s Day %d Run 1: Detected %d missing volumes. Padding with Zeros at start.\n', SubID, day, missing);
+            this_run = [zeros(missing, 4); this_run];
+        end
 
-        expected_len = num_vols(1);
-        actual_len = size(this_run, 1);
-        missing = expected_len - actual_len;
+        AllssR{r} = this_run;
 
-        fprintf('%s Day %d Run 1: Detected %d missing volumes. Padding with Zeros at start.\n', SubID, day, missing);
-        this_run = [zeros(missing, 4); this_run];
-    
     end
 
-    
-    AllssR{r} = this_run;
+    if is_split_run_day2
+        % Insert empty cell at position 6
+        AllssR = [AllssR(1:5), {[]}, AllssR(6:end)];
     end
 
     mat_name = sprintf('AllssR_Day%d.mat',day);
