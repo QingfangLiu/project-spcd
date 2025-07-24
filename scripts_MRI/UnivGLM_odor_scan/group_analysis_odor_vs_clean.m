@@ -1,5 +1,19 @@
 
 
+clear; clc;
+
+addpath('/Users/liuq13/Applications/spm12/')
+addpath('/Users/liuq13/xjview10/xjview/')
+
+%
+HomeDir = '/Users/liuq13/SPCD_data';
+niiDir = fullfile(HomeDir, 'nii');
+GLMDir = fullfile(HomeDir, 'GLM');
+
+% Get list of subject folders (those starting with 'sub-')
+allEntries = dir(fullfile(niiDir, 'sub-*'));
+subjectFolders = allEntries([allEntries.isdir]);  % keep only directories
+
 %% Group-Level Analysis: Odor > Clean Air
 
 % === Settings ===
