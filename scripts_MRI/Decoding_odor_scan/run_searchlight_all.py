@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # ---- Paths ----
     base_dir = "/Users/liuq13/SPCD_data"
     mask_img = load_img('/Users/liuq13/SPCD_data/masks/gm_0.1.nii')
-    out_dir = os.path.join(base_dir, "searchlight_maps")
+    out_dir = os.path.join(base_dir, "searchlight_maps", "odor_scan")
     os.makedirs(out_dir, exist_ok=True)
 
     # ---- Subject list ----
