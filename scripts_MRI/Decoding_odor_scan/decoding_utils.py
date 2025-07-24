@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from nilearn.image import load_img
 
-def load_betas(sub, run, base_dir):
+def load_betas(sub, run, base_dir, normalization='none'):
     """
     Load beta images and binary labels (0 = odor_1, 1 = odor_2) for one run.
     normalization: 'none', 'across_trials', or 'across_voxels'
