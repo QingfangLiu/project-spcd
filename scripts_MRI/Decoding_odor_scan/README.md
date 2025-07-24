@@ -40,8 +40,20 @@ This pipeline decodes brain activity patterns for two food odors (`odor_1` vs. `
 
 ---
 
-## Output Summary
+## Output
 
 - Individual maps: `searchlight_maps/odor_scan_2odors`
 - Group-level: SPM t-maps showing above-chance decoding
 
+
+---
+
+## Normalization Notes
+
+We tested three normalization options for trial-wise beta images:
+
+- **none**: raw beta images without normalization  
+- **across_trials**: voxel-wise z-scoring across all trials within a run  
+- **across_voxels**: image-wise z-scoring across all voxels per trial
+
+Both `none` and `across_trials` yielded clear above-chance decoding in expected olfactory regions, especially the **left piriform cortex**. In contrast, `across_voxels` severely reduced decoding accuracy, likely due to the loss of spatial pattern information critical for searchlight decoding. Therefore, we focus on the first two normalization options in group-level analyses.
