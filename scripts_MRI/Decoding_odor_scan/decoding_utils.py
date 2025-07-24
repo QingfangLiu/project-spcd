@@ -6,7 +6,29 @@ from nilearn.image import load_img
 def load_betas(sub, run, base_dir):
     """
     Load beta images and binary labels (0 = odor_1, 1 = odor_2) for one run.
+    normalization: 'none', 'across_trials', or 'across_voxels'
     """
+    
+    from nilearn.image import get_data, new_img_like
+
+    def normalize_across_trials(img_list):
+        data_stack = np.stack([get_data(img) for img in img_list])
+        mean = data_stack.mean(axis=0)
+        std = data_stack.std(axis=0)
+        norm_imgs = [(new_img_like(img, (get_data(img) - mean) / std)) for img in img_list]
+        return norm_imgs
+
+    def normalize_across_voxels(img_list):
+        norm_imgs = []
+        for img in img_list:
+            data = get_data(img)
+            flat = data.flatten()
+            mean = flat.mean()
+            std = flat.std()
+            norm_data = ((flat - mean) / std).reshape(data.shape)
+            norm_imgs.append(new_img_like(img, norm_data))
+        return norm_imgs
+
     tsv_dir = os.path.join(base_dir, 'nii', sub, 'func_PAID', 'odor_scan')
     beta_dir = os.path.join(base_dir, 'GLM', 'odor_scan_trialwise_2mm', sub)
     tsv_file = os.path.join(tsv_dir, f'{sub}_task-odor_run-{run}_events.tsv')
@@ -21,9 +43,17 @@ def load_betas(sub, run, base_dir):
         beta_file = os.path.join(beta_dir, f'beta_run{run}_trial{trial_num:02d}.nii')
         imgs.append(load_img(beta_file))
 
+    # --- Apply normalization if needed ---
+    if normalization == 'across_trials':
+        imgs = normalize_across_trials(imgs)
+    elif normalization == 'across_voxels':
+        imgs = normalize_across_voxels(imgs)
+    elif normalization != 'none':
+        raise ValueError(f"Unknown normalization: {normalization}")
+
     return imgs, events['label'].values
 
-def load_decoding_data(sub, base_dir, run_list=[1, 2]):
+def load_decoding_data(sub, base_dir, run_list=[1, 2], normalization='none'):
     """
     Load and stack beta images and labels for decoding across multiple runs.
 
@@ -53,7 +83,7 @@ def load_decoding_data(sub, base_dir, run_list=[1, 2]):
     all_groups = []
 
     for run in run_list:
-        imgs, y = load_betas(sub, run, base_dir)
+        imgs, y = load_betas(sub, run, base_dir, normalization=normalization)
         all_imgs_list.extend(imgs)
         all_labels.extend(y)
         all_groups.extend([run] * len(y))
