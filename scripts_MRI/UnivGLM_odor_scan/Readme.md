@@ -1,6 +1,6 @@
 # Odor Scan GLM Analysis
 
-This project contains code for running a General Linear Model (GLM) analysis on fMRI data from the odor scan task. The analysis includes onset specification, and model estimation using SPM. Both subject and group level. 
+This section contains code for running a General Linear Model (GLM) analysis on fMRI data from the odor scan task. The analysis includes onset specification, and model estimation using SPM. Both subject and group level. 
 
 ## Overview
 
