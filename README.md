@@ -69,7 +69,7 @@ This section summarizes the trial timing, run structure, and duration for each t
 - **Runs**: 2 (320 volumes/run)  
 
 #### **Character Image Scan**
-- **Trial**: 2s image cue → 2s odor → 5–8s ITI  
+- **Trial**: 2s image cue → 2s image → 5–8s ITI  
 - **Structure**: 8 images (6 task + 2 filler) × 4 repetitions = 32 trials  
 - **Duration**: ~5.6 min per run  
 - **Runs**: 4 (244 volumes/run)  
