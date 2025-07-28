@@ -123,30 +123,28 @@ This section summarizes the trial timing, run structure, and duration for each t
 
 ## Notes on data issue handling
 
-> This only documents issues that **affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
+> This only documents issues that **may affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
 
-### Subject-Specific Notes
+---
 
 - **Sub-35 – Day 2, Odor Prediction Run 3**  
   The scan did not complete all expected volumes. Processed the LabChart trigger data to use only the partial scan. Also corrected a minor mismatch with the number of motion parameters.
 
+---
+
 - **Sub-36 – Day 2, Pre-Meal Probe Run 3**  
   The scan was interrupted mid-run, resulting in a short initial recording followed by a second, longer segment. Both were excluded from analysis to avoid alignment issues, since the behavioral task was not paused.
 
+---
+
 - **Sub-14 – Day 2, Meal**  
-  This subject was originally assigned as a savory-devaluation group but due to lack of pizza in storage, this person was fed sweet meal instead. However, no change was made in the code to keep consistency. 
+  - Subject was initially assigned to the savory–devaluation group, but due to a lack of pizza in storage, was fed the sweet meal instead.  
+  - No code changes were made to preserve consistent labeling across tasks.
 
+---
 
-
-
-| Subject   | Day | Task               | Run     | Issue Description                                                              | Affected Components               | Status       |
-|-----------|-----|--------------------|---------|---------------------------------------------------------------------------------|-----------------------------------|--------------|
-
-| sub-33    | 2   | Probe              | Run 3   | Missing breathing signals, likely due to connection issue                      | Physiological (breathing signal)  | 🟥 Unresolved |
-| sub-33    | 1   | Odor               | Reran   | Two odor task runs had to be rerun at the end of session                       | LabChart data		      | 🟥 Unresolved |
-
-
-
-
+- **Sub-33 – Day 2, Post-Meal Probe Task, Run 3**  
+  - Breathing signals were missing, likely due to a connection issue.  
+  - No correction was applied; breathing signals were extracted as usual.
 
 
