@@ -1,4 +1,17 @@
 
+% =============================================================
+% This script generates BIDS-compatible events.tsv files for
+% the odor scan task using subject-specific Excel design files.
+%
+% - Iterates over subjects and 2 runs
+% - Loads timing info from 'IndepScanOdorConds*.xlsx'
+% - Computes odor onsets using fixed cue durations and ITIs
+% - Maps odor labels (0/1/2) to trial types (clean_air, odor_1, odor_2)
+% - For sub-14, swaps odor_1 and odor_2 labels due to devaluation mismatch
+% - Saves onset, duration (2s), and trial_type to .tsv file
+% - Output path: /nii/sub-XX/func_PAID/odor_scan/
+% =============================================================
+
 clear; clc;
 
 % ---------- USER CONFIG ----------
@@ -64,6 +77,16 @@ for subj = 1:length(subjectFolders)
         design.trial_type = cell(ntrials, 1);
         for t = 1:ntrials
             odor_val = design.odor_num(t);
+
+            % Fix: For sub-14, swap odor_1 and odor_2
+            if strcmp(SubID, 'sub-14')
+                if odor_val == 1
+                    odor_val = 2;
+                elseif odor_val == 2
+                    odor_val = 1;
+                end
+            end
+
             if isKey(odor_map, odor_val)
                 design.trial_type{t} = odor_map(odor_val);
             else
