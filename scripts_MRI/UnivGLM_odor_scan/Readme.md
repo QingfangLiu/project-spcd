@@ -19,7 +19,7 @@ We conducted a second-level random-effects analysis for the contrast **odor > cl
 
 These findings confirm robust engagement of the olfactory network during odor presentation and validate the task design and GLM specification.
 
-## Next Steps
+## Note
 
-- [ ] Also need to recode odor 1 and 2 for that subject with meal feed issue.
+- In this analysis, no correction was made on sub-14 with swapped odor 1 and 2, but it does not matter because we are interested in odor>clean-air in the contrast.
 - [ ] To add an external gray matter mask on group level analysis
