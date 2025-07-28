@@ -121,7 +121,7 @@ This section summarizes the trial timing, run structure, and duration for each t
 
 ---
 
-## Notes on Missing Data Handling
+## Notes on data issue handling
 
 > This only documents issues that **affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
 
@@ -132,6 +132,9 @@ This section summarizes the trial timing, run structure, and duration for each t
 
 - **Sub-36 – Day 2, Pre-Meal Probe Run 3**  
   The scan was interrupted mid-run, resulting in a short initial recording followed by a second, longer segment. Both were excluded from analysis to avoid alignment issues, since the behavioral task was not paused.
+
+- **Sub-14 – Day 2, Meal**  
+  This subject was originally assigned as a savory-devaluation group but due to lack of pizza in storage, this person was fed sweet meal instead. However, no change was made in the code to keep consistency. 
 
 
 
