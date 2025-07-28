@@ -32,7 +32,7 @@ blank_dur       = 10;
 white_cross_dur = 2;
 blue_cross_dur  = 2;
 
-% ---------- LOOP ----------
+%% ---------- LOOP ----------
 for subj = 1:length(subjectFolders)
     SubID = subjectFolders(subj).name;
     fprintf('\n\n=== Processing: %s ===\n', SubID);
