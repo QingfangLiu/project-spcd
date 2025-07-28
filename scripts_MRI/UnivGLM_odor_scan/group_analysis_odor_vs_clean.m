@@ -10,6 +10,8 @@ HomeDir = '/Users/liuq13/SPCD_data';
 niiDir = fullfile(HomeDir, 'nii');
 GLMDir = fullfile(HomeDir, 'GLM');
 
+maskPath = fullfile(HomeDir, 'masks', 'gm_0.1.nii'); 
+
 % Get list of subject folders (those starting with 'sub-')
 allEntries = dir(fullfile(niiDir, 'sub-*'));
 subjectFolders = allEntries([allEntries.isdir]);  % keep only directories
@@ -46,7 +48,7 @@ matlabbatch{1}.spm.stats.factorial_design.des.t1.scans = con_images;
 matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
 matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
 matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
-matlabbatch{1}.spm.stats.factorial_design.masking.em = {''};  % optional explicit mask
+matlabbatch{1}.spm.stats.factorial_design.masking.em = {maskPath};
 matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
 matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
 matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
