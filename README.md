@@ -124,6 +124,8 @@ This section summarizes the trial timing, run structure, and duration for each t
 ## Notes on data issue handling
 
 > This only documents issues that **may affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
+> Most issue-related corrections (e.g., scan truncation, trigger adjustments) are handled in the [`Do_5_process_labchart.m`](./scripts_MRI/Do_5_process_labchart.m) script under [`SPCD_scripts/scripts_MRI`](https://github.com/YourRepoName/SPCD_scripts/tree/main/scripts_MRI).
+
 
 ---
 
