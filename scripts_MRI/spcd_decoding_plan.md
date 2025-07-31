@@ -90,7 +90,7 @@ Do **conditioned cues (B1–B6, Day 2 Odor Prediction)** evoke neural patterns s
 ### **Design**
 
 **Train on:**  
-- Pre-conditioned cues (A1–A6) from Day 1 character scan  
+- Pre-conditioned cues (A1–A6) from Day 1 scan  
 - Each trial labeled by A cue identity (0–5)
 
 **Test on:**  
@@ -115,5 +115,4 @@ Does the similarity between cue responses and odor templates reflect **devaluati
 
 ### **Interpretation**
 - Similarity to **devalued odor template** should **decrease** post-meal  
-- Strongest effects expected in **value-sensitive regions** (e.g., vmPFC, OFC)
 
