@@ -8,10 +8,7 @@ This pipeline decodes brain activity patterns for two food odors (`odor_1` vs. `
 
 - Single-trial GLMs generate beta maps for each odor trial.
 - Labels (`odor_1` → 0, `odor_2` → 1) are extracted from `*_events.tsv`.
-- Implemented in [`decoding_utils.py`](./decoding_utils.py):
-  - `load_betas()`, `load_decoding_data()`
-  - Three normalization options supported: none, across trials, across voxels
-  - Use `prepare_decoding_subset.py` to create subject-level decoding inputs.
+- Three normalization options supported: none, across trials, across voxels
   
 ---
 
@@ -19,9 +16,7 @@ This pipeline decodes brain activity patterns for two food odors (`odor_1` vs. `
 
 - Linear SVM + Leave-One-Run-Out CV
 - Radius: 4mm (2 voxels)  
-- Run via [`run_searchlight_one.py`](./run_searchlight_one.py), which performs decoding for a single subject and one normalization option
-- Use `make_searchlight_swarm.py` to launch batch jobs across all subjects/options on Biowulf
-
+  *I also tried a larger radius (8mm), but the decoding performance was not as good.*
 ---
 
 
@@ -29,7 +24,6 @@ This pipeline decodes brain activity patterns for two food odors (`odor_1` vs. `
 
 - Smoothed decoding maps are smoothed and aggregated across subjects
 - One-sample t-test is used to identify regions with above-chance decoding
-- Notebook: [`aggregate_searchlight_group_level.ipynb`](./aggregate_searchlight_group_level.ipynb)
 
 ---
 
