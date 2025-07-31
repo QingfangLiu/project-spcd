@@ -18,7 +18,7 @@ This pipeline decodes brain activity patterns for two food odors (`odor_1` vs. `
 ## Step 2: Searchlight Decoding (Subject Level)
 
 - Linear SVM + Leave-One-Run-Out CV
-- Radius: 3 voxels  
+- Radius: 4mm (2 voxels)  
 - Run via [`run_searchlight_one.py`](./run_searchlight_one.py), which performs decoding for a single subject and one normalization option
 - Use `make_searchlight_swarm.py` to launch batch jobs across all subjects/options on Biowulf
 
