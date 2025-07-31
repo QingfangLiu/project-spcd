@@ -24,17 +24,10 @@ This pipeline decodes brain activity patterns for two food odors (`odor_1` vs. `
 
 ---
 
-## Step 3: Smoothing
 
-- Applies spatial smoothing (e.g., 6mm FWHM) to individual decoding maps
-- Run via `run_smooth_one.py`
-- Use `make_smooth_swarm.py` to batch the smoothing jobs
+## Step 3: Group-Level Analysis
 
----
-
-## Step 4: Group-Level Analysis
-
-- Smoothed decoding maps are aggregated across subjects
+- Smoothed decoding maps are smoothed and aggregated across subjects
 - One-sample t-test is used to identify regions with above-chance decoding
 - Notebook: [`aggregate_searchlight_group_level.ipynb`](./aggregate_searchlight_group_level.ipynb)
 
