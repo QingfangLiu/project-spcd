@@ -5,7 +5,7 @@ from nilearn.decoding import SearchLight
 from sklearn.svm import SVC
 from sklearn.model_selection import LeaveOneGroupOut
 from nilearn.image import load_img, new_img_like
-from decoding_utils import load_decoding_data
+from char_decoding_utils import load_decoding_data
 
 def run_one_subject(sub, base_dir, mask_img_path, normalization):
     out_dir = os.path.join(base_dir, "searchlight_maps", "character_scan", normalization)
