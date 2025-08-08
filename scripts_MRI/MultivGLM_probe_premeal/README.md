@@ -42,9 +42,40 @@ Converts trial-level behavioral CSV files into BIDS-like `events.tsv` files for 
 - Non-cue events (`decision`, `button`) have `NaN` for `cue_index`, `odor_index`, and `set`.
 - Pre-run blank = 10 s; cue1 duration = 3 s; ISI = trial-specific `ISIDur`; cue2 duration = 3 s; decision = 2 s; ITI = trial-specific `ITIDur`.
 
+
 ---
 
-## 2. GLM Beta Index Logger
+## 2. GLM Design
+
+**Goal:**  
+Estimate a separate beta for each cue presentation (Least-Squares-All design).
+
+### Conditions per run
+For each cue event _k_:
+- **Regressor of interest**
+  - `target_cue_k` — 3 s boxcar at onset of the specific cue (either `cue_img1` or `cue_img2`)
+- **Nuisance/task regressors**
+  - `other_cues` — 3 s boxcar; all cue events except k
+  - `decision_all` — 2 s boxcar; all decision events
+  - `button_all` — stick (0 s); all button presses
+- **Nuisance regressors from file**
+  - Motion parameters / physio / other columns from run’s nuisance regressor file
+- **Run constants & filtering**
+  - SPM run constant
+  - High-pass filter (default in SPM for fMRI)
+
+### HRF & masking
+- Canonical HRF
+- threshold = **0.1**
+
+### Betas saved
+- One beta image per `target_cue_k`
+- Filename format: `beta_run%02d_img%03d.nii`
+
+
+---
+
+## 3. GLM Beta Index Logger
 
 ### Purpose
 Links each single-trial beta image from the trial-wise GLM to its source event information.
@@ -75,33 +106,3 @@ Links each single-trial beta image from the trial-wise GLM to its source event i
   - `cue_index` = `cue_right_idx`
   - `odor_index` = `odor_right`
 - `set` is always copied from the trial’s row.
-
----
-
-## 3. GLM Design (conditions)
-
-**Goal:**  
-Estimate a separate beta for each cue presentation (Least-Squares-All design).
-
-### Conditions per run
-For each cue event _k_:
-- **Regressor of interest**
-  - `target_cue_k` — 3 s boxcar at onset of the specific cue (either `cue_img1` or `cue_img2`)
-- **Nuisance/task regressors**
-  - `other_cues` — 3 s boxcar; all cue events except k
-  - `decision_all` — 2 s boxcar; all decision events
-  - `button_all` — stick (0 s); all button presses
-- **Nuisance regressors from file**
-  - Motion parameters / physio / other columns from run’s nuisance regressor file
-- **Run constants & filtering**
-  - SPM run constant
-  - High-pass filter (default in SPM for fMRI)
-
-### HRF & masking
-- Canonical HRF
-- threshold = **0.1**
-
-### Betas saved
-- One beta image per `target_cue_k`
-- Filename format: `beta_run%02d_img%03d.nii`
-
