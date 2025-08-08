@@ -13,7 +13,6 @@
 %    - NIfTI:  SPCD_data/nii/<subID>/func_PAID/premeal/s2w2Scan2_premeal_run_<r>_*_PAID.nii
 %    - Events: SPCD_data/nii/<subID>/func_PAID/premeal/<subID>_task-premeal_run-<r>_events.tsv
 %    - Nuisance: SPCD_data/NRegressor/<subID>/nuisance_regressors_premeal_run_<r>_zscored.txt
-%    - Mask: SPCD_data/masks/gm_0.1.nii
 %
 %  Outputs:
 %    - Betas moved to: SPCD_data/GLM/premeal_trialwise_2mm/<subID>/beta_run<r>_img<k>.nii
@@ -21,7 +20,7 @@
 %
 %  Notes:
 %    - Skips sub-36 run 3 (bad MRI data)
-%    - Uses SPM12; assumes TR known from NIfTI header
+%    - Uses SPM12
 %% ========================================================================
 
 clear; clc;
@@ -40,7 +39,7 @@ TR = 1.5;
 % ---- SUBJECTS ----
 subs = dir(fullfile(niiRoot, 'sub-*')); subs = subs([subs.isdir]);
 
-for s = 1 %:numel(subs)
+for s = 2:numel(subs)
     SubID = subs(s).name;
     fprintf('\n=== LSS | %s ===\n', SubID);
 
@@ -213,7 +212,7 @@ for s = 1 %:numel(subs)
         out_csv = fullfile(subj_beta_dir, sprintf('%s_premeal_run-%d_beta_index.csv', SubID, r));
         writetable(beta_log, out_csv);
         fprintf('✅ Saved beta index for run %d: %s\n', r, out_csv);
-        
+
     end
 
 end
