@@ -1,6 +1,4 @@
-# SPCD Pre-meal Probe Event & GLM Beta Index Pipeline
-
-This folder contains MATLAB scripts for generating BIDS-like event files for the **pre-meal probe** task and for mapping single-trial GLM betas back to their originating events.
+# SPCD Pre-meal Probe Event & GLM 
 
 ---
 
@@ -57,6 +55,7 @@ Links each single-trial beta image from the trial-wise GLM to its source event i
 
 ### Outputs
 - `<SubID>_premeal_run-<r>_beta_index.csv` in subject’s GLM beta directory
+- GLM beta logs are saved **per run**.
 
 ### Columns
 - `beta_file` — beta image filename
@@ -100,17 +99,9 @@ For each cue event _k_:
 
 ### HRF & masking
 - Canonical HRF
-- Explicit gray matter mask, threshold = **0.1**
+- threshold = **0.1**
 
 ### Betas saved
 - One beta image per `target_cue_k`
 - Filename format: `beta_run%02d_img%03d.nii`
 
----
-
-## 4. Usage Notes
-- Run the **event generator** before the GLM beta logging so events contain the extra columns.
-- GLM beta logs are saved **per run**.
-- If an events file is missing columns (`cue_index`, `odor_index`, `set`), those fields will be `NaN` in the beta log.
-
----
