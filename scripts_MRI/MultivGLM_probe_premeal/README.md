@@ -72,6 +72,8 @@ For each cue event _k_:
 - One beta image per `target_cue_k`
 - Filename format: `beta_run%02d_img%03d.nii`
 
+### Skipped `sub-36` run 3 due to scanning issue
+
 
 ---
 
@@ -106,3 +108,20 @@ Links each single-trial beta image from the trial-wise GLM to its source event i
   - `cue_index` = `cue_right_idx`
   - `odor_index` = `odor_right`
 - `set` is always copied from the trial’s row.
+
+
+
+---
+
+## 4. Posthoc odor_index correction for sub-14
+
+Swapped all `odor_index` values of `1` and `2` (i.e., `1 → 2` and `2 → 1`) for **sub-14** in the premeal task.
+
+**Applied to:**
+- Event files in `nii/sub-14/func_PAID/premeal/` (`*_events.tsv`)
+- Beta index files in `GLM/premeal_trialwise_2mm/sub-14/` (`*_beta_index.csv`)
+
+Original files were preserved with an `_orig` suffix before overwriting.
+
+
+
