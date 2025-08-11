@@ -7,7 +7,7 @@ from nilearn.image import load_img, concat_imgs, get_data, new_img_like
 
 def _subject_run_dir(base_dir: str, sub: str, session_folder: str = "premeal_trialwise_2mm"):
     """Return the subject/session folder that holds CSVs and beta NIfTIs."""
-    return os.path.join(base_dir, session_folder, sub)
+    return os.path.join(base_dir, "GLM", session_folder, sub)
 
 def _csv_path_for_run(sub_dir: str, sub: str, run: int, session: str = "premeal"):
     """CSV name is like sub-01_premeal_run-1_beta_index.csv, in the subject dir."""

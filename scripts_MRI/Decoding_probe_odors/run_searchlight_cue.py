@@ -148,7 +148,7 @@ def run_one_subject(sub, base_dir, mask_img_path,
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sub", required=True, help="e.g., sub-01")
-    parser.add_argument("--base_dir", default="/Users/liuq13/SPCD_data/GLM")
+    parser.add_argument("--base_dir", default="/Users/liuq13/SPCD_data")
     parser.add_argument("--mask_img", default="/Users/liuq13/SPCD_data/masks/gm_0.1.nii")
     parser.add_argument("--cue_type", choices=["A", "B"], default="A")
     parser.add_argument("--n_classes", type=int, choices=[2, 3], default=2)  # default: odor_1 vs odor_2
