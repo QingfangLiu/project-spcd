@@ -6,7 +6,7 @@
 
 | **Cue Set** | **Pre-conditioned Cue** | **Conditioned Cue** | **Associated Outcome (Odor)** |
 |-------------|--------------------------|----------------------|-------------------------------|
-| Set 1       | A1                       | B1                   | odor_1                        |
+| Set 1       | A1<sub>1</sub>           | B1                   | odor_1                        |
 | Set 1       | A2                       | B2                   | odor_2                        |
 | Set 1       | A3                       | B3                   | clean air                     |
 | Set 2       | A4                       | B4                   | odor_1                        |
