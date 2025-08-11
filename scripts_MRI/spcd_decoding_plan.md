@@ -83,6 +83,7 @@ Is **odor identity** represented in a form that generalizes across:
 - **Test:** On **Set 2** cues of the *same* cue type  
   - Pre-conditioned: A1<sub>2</sub>, A2<sub>2</sub>, A3<sub>2</sub>  
   - Conditioned: B1<sub>2</sub>, B2<sub>2</sub>, B3<sub>2</sub>
+
 👉 Tests generalization across visually distinct cues of the **same type**
 
 ### **Approach 2: Cross-Cue-Type + Cross-Set Decoding**
@@ -90,6 +91,7 @@ Is **odor identity** represented in a form that generalizes across:
   - Example: Pre-conditioned (A1<sub>1</sub>, A2<sub>1</sub>, A3<sub>1</sub>)
 - **Test:** On **Set 2** cues of the *other* cue type  
   - Example: Conditioned (B1<sub>2</sub>, B2<sub>2</sub>, B3<sub>2</sub>)
+  
 👉 Tests generalization across both **cue type** and **cue set**
 
 ⚠️ Controls for cue–cue association confound by using **non-overlapping sets**
