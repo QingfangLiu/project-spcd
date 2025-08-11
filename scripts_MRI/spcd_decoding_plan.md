@@ -4,18 +4,6 @@
 
 ## 🗂 Cue Mapping Structure
 
-| **Cue Set** | **Pre-conditioned Cue** | **Conditioned Cue** | **Associated Outcome (Odor)** |
-|-------------|-------------------------|---------------------|--------------------------------|
-| Set 1       | A1<sub>1</sub>          | B1<sub>1</sub>      | odor_1                         |
-| Set 1       | A2<sub>1</sub>          | B2<sub>1</sub>      | odor_2                         |
-| Set 1       | A3<sub>1</sub>          | B3<sub>1</sub>      | clean air                      |
-| Set 2       | A1<sub>2</sub>          | B1<sub>2</sub>      | odor_1                         |
-| Set 2       | A2<sub>2</sub>          | B2<sub>2</sub>      | odor_2                         |
-| Set 2       | A3<sub>2</sub>          | B3<sub>2</sub>      | clean air                      |
-
-
-## 🗂 Cue Mapping Structure
-
 | **Cue Index** | **Cue Set** | **Pre-conditioned Cue** | **Conditioned Cue** | **Associated Outcome (Odor)** |
 |---------------|-------------|-------------------------|---------------------|--------------------------------|
 | 1             | Set 1       | A1<sub>1</sub>          |                     | odor_1                         |
@@ -30,7 +18,6 @@
 | 10            | Set 2       |                         | B2<sub>2</sub>      | odor_2                         |
 | 11            | Set 2       | A3<sub>2</sub>          |                     | clean air                      |
 | 12            | Set 2       |                         | B3<sub>2</sub>      | clean air                      |
-
 
 
 - A cues = **Pre-conditioned** (learned through A→B pairing)
@@ -89,13 +76,20 @@ Is **odor identity** represented in a form that generalizes across:
 - Different **cue sets** (Set 1 vs Set 2)?
 
 ### **Approach 1: Cross-Set Decoding (within cue type)**
-- **Train:** On Set 1 conditioned (or pre-conditioned) cues labeled by odor identity  
-- **Test:** On Set 2 conditioned (or pre-conditioned) cues  
+- **Train:** On **Set 1** cues of one cue type  
+  - Pre-conditioned: A1<sub>1</sub>, A2<sub>1</sub>, A3<sub>1</sub>  
+  - Conditioned: B1<sub>1</sub>, B2<sub>1</sub>, B3<sub>1</sub>  
+  (labeled by odor identity)
+- **Test:** On **Set 2** cues of the *same* cue type  
+  - Pre-conditioned: A1<sub>2</sub>, A2<sub>2</sub>, A3<sub>2</sub>  
+  - Conditioned: B1<sub>2</sub>, B2<sub>2</sub>, B3<sub>2</sub>
 👉 Tests generalization across visually distinct cues of the **same type**
 
 ### **Approach 2: Cross-Cue-Type + Cross-Set Decoding**
-- **Train:** On **Set 1 cues** of one cue type (e.g., A1–A3 or B1–B3), labeled by odor identity  
-- **Test:** On **Set 2 cues** of the **other cue type** (e.g., B4–B6 or A4–A6), labeled by odor identity  
+- **Train:** On **Set 1** cues of one cue type  
+  - Example: Pre-conditioned (A1<sub>1</sub>, A2<sub>1</sub>, A3<sub>1</sub>)
+- **Test:** On **Set 2** cues of the *other* cue type  
+  - Example: Conditioned (B1<sub>2</sub>, B2<sub>2</sub>, B3<sub>2</sub>)
 👉 Tests generalization across both **cue type** and **cue set**
 
 ⚠️ Controls for cue–cue association confound by using **non-overlapping sets**
