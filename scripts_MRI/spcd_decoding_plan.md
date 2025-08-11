@@ -2,20 +2,40 @@
 
 ---
 
-## 🗂️ Cue Mapping Structure
+## 🗂 Cue Mapping Structure
 
 | **Cue Set** | **Pre-conditioned Cue** | **Conditioned Cue** | **Associated Outcome (Odor)** |
-|-------------|--------------------------|----------------------|-------------------------------|
-| Set 1       | A1<sub>1</sub>           | B1                   | odor_1                        |
-| Set 1       | A2                       | B2                   | odor_2                        |
-| Set 1       | A3                       | B3                   | clean air                     |
-| Set 2       | A4                       | B4                   | odor_1                        |
-| Set 2       | A5                       | B5                   | odor_2                        |
-| Set 2       | A6                       | B6                   | clean air                     |
+|-------------|-------------------------|---------------------|--------------------------------|
+| Set 1       | A1<sub>1</sub>          | B1<sub>1</sub>      | odor_1                         |
+| Set 1       | A2<sub>1</sub>          | B2<sub>1</sub>      | odor_2                         |
+| Set 1       | A3<sub>1</sub>          | B3<sub>1</sub>      | clean air                      |
+| Set 2       | A1<sub>2</sub>          | B1<sub>2</sub>      | odor_1                         |
+| Set 2       | A2<sub>2</sub>          | B2<sub>2</sub>      | odor_2                         |
+| Set 2       | A3<sub>2</sub>          | B3<sub>2</sub>      | clean air                      |
+
+
+## 🗂 Cue Mapping Structure
+
+| **Cue Index** | **Cue Set** | **Pre-conditioned Cue** | **Conditioned Cue** | **Associated Outcome (Odor)** |
+|---------------|-------------|-------------------------|---------------------|--------------------------------|
+| 1             | Set 1       | A1<sub>1</sub>          |                     | odor_1                         |
+| 2             | Set 1       |                         | B1<sub>1</sub>      | odor_1                         |
+| 3             | Set 1       | A2<sub>1</sub>          |                     | odor_2                         |
+| 4             | Set 1       |                         | B2<sub>1</sub>      | odor_2                         |
+| 5             | Set 1       | A3<sub>1</sub>          |                     | clean air                      |
+| 6             | Set 1       |                         | B3<sub>1</sub>      | clean air                      |
+| 7             | Set 2       | A1<sub>2</sub>          |                     | odor_1                         |
+| 8             | Set 2       |                         | B1<sub>2</sub>      | odor_1                         |
+| 9             | Set 2       | A2<sub>2</sub>          |                     | odor_2                         |
+| 10            | Set 2       |                         | B2<sub>2</sub>      | odor_2                         |
+| 11            | Set 2       | A3<sub>2</sub>          |                     | clean air                      |
+| 12            | Set 2       |                         | B3<sub>2</sub>      | clean air                      |
+
+
 
 - A cues = **Pre-conditioned** (learned through A→B pairing)
 - B cues = **Conditioned** (directly paired with odors)
-- Odor outcomes: **odor_1**, **odor_2**, or **clean air**
+- Odor outcomes: **odor_1**, **odor_2** (odor that was devalued via meal), or **clean air**
 
 ---
 
