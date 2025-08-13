@@ -7,6 +7,8 @@ Two decoding modes are supported:
 - **strict** — run-matched cross-set CV: for each run, train on one set from the *other runs*, test on the opposite set from the held-out run. Controls for run-specific effects.  
 - **set2set** — pooled set-to-set generalization: train on all runs of one set, test on all runs of the other set (then swap). Maximizes training data but does not control for run effects.
 
+
+```  
 STRICT (for each held-out run r)
   Fold A_r: Train = Set1 from runs != r  --> Test = Set2 from run r
   Fold B_r: Train = Set2 from runs != r  --> Test = Set1 from run r
@@ -14,7 +16,7 @@ STRICT (for each held-out run r)
 SET2SET
   Fold 1: Train = Set1 (all runs)        --> Test = Set2 (all runs)
   Fold 2: Train = Set2 (all runs)        --> Test = Set1 (all runs)
-
+```  
 
 ---
 
