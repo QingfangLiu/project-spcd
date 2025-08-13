@@ -106,29 +106,32 @@ Saved to:
 - **Normalization:** set‑wise within each run; avoids leakage  
 - **Performance:** use `n_jobs` to parallelize searchlight on a cluster
 
+
 ---
 
-## Summary of findings
+*(Note: for both **3-class** and **2-class** decoding, **strict** mode maps were visualized with a **lower threshold** for better sensitivity.)*
 
-### 1. Set2set – Cue B – 3 classes
+## Summary of findings — 3 classes
+
+### 1. Set2set — Cue B — 3 classes
 - **Extensive activation** across frontal, parietal, and temporal cortices.
 - Strong bilateral clusters in **orbitofrontal cortex (OFC)**, particularly ventral/lateral OFC.
 - Additional engagement in dorsomedial prefrontal cortex, posterior cingulate/precuneus, lateral parietal, and ventral temporal regions.
 - OFC signal is broad and symmetrical across hemispheres.
 
-### 2. Strict – Cue B – 3 classes
+### 2. Strict — Cue B — 3 classes
 - **More focal** activation compared to Set2set.
 - Frontal activation is smaller and less extensive in OFC, but still present in right lateral/ventrolateral regions.
 - Clusters in posterior cingulate, ventral temporal, and occipital cortex.
 - Reduced coverage suggests stricter run-matching controls reduced variance but also statistical power.
 
-### 3. Set2set – Cue A – 3 classes
+### 3. Set2set — Cue A — 3 classes
 - Widespread activation across frontal, temporal, and parietal regions.
 - OFC activation present, especially in right ventrolateral OFC, but **less bilateral symmetry** compared to Cue B.
 - Strong midline activity (medial prefrontal/anterior cingulate) and large clusters in ventral temporal cortex.
 - More posterior activity (parietal, occipital) than Strict Cue A.
 
-### 4. Strict – Cue A – 3 classes
+### 4. Strict — Cue A — 3 classes
 - **Least extensive** activation pattern among the four.
 - OFC involvement is minimal; only a small right ventrolateral cluster may overlap OFC.
 - Strongest activity in medial prefrontal/anterior cingulate, right ventral temporal cortex, and cerebellum.
@@ -136,9 +139,35 @@ Saved to:
 
 ---
 
-**Overall pattern:**
+## Summary of findings — 2 classes
+
+### 1. Set2set — Cue B — 2 classes
+- **Extensive activation** in bilateral **occipital** visual cortex (dorsal + ventral).
+- Robust clusters in **posterior temporal / fusiform** cortex.
+- **Ventral prefrontal / OFC** activity, stronger on the **right**.
+- Additional clusters in **parietal** cortex and **cerebellum**.
+
+### 2. Strict — Cue B — 2 classes *(lower threshold)*
+- Core **occipital** and **posterior temporal** clusters remain but are **reduced in extent**.
+- A smaller, focal **right OFC** cluster persists.
+- **Parietal** activity is diminished relative to set2set.
+
+### 3. Set2set — Cue A — 2 classes
+- Predominantly **occipital** activation, more **lateralized** and with **less ventral extension** than Cue B.
+- Sparse **temporal** clusters (limited fusiform involvement).
+- Little or **no OFC** activity.
+
+### 4. Strict — Cue A — 2 classes *(lower threshold)*
+- **Small, focal** clusters mainly in **occipital** cortex.
+- No clear **OFC** or broader frontal involvement.
+
+---
+
+**Overall patterns:**
 - **Set2set** mode yields **more widespread and robust activation**, especially in OFC and distributed associative networks, but doesn’t control for run-specific effects.
 - **Strict** mode produces **more conservative, focal maps**, with reduced OFC engagement.
-- Cue B generally shows stronger and more bilateral OFC activation than Cue A in both modes.
+- Cue B consistently shows stronger and more bilateral OFC activation than Cue A in both class schemes.
+- In the 2-class scheme, occipital and fusiform activations dominate, especially for Cue A, while Cue B maintains a broader network extending into OFC.
+
 
 
