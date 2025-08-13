@@ -147,7 +147,7 @@ Saved to:
 - **Ventral prefrontal / OFC** activity, stronger on the **right**.
 - Additional clusters in **parietal** cortex and **cerebellum**.
 
-### 2. Strict — Cue B — 2 classes *(lower threshold)*
+### 2. Strict — Cue B — 2 classes 
 - Core **occipital** and **posterior temporal** clusters remain but are **reduced in extent**.
 - A smaller, focal **right OFC** cluster persists.
 - **Parietal** activity is diminished relative to set2set.
@@ -157,7 +157,7 @@ Saved to:
 - Sparse **temporal** clusters (limited fusiform involvement).
 - Little or **no OFC** activity.
 
-### 4. Strict — Cue A — 2 classes *(lower threshold)*
+### 4. Strict — Cue A — 2 classes
 - **Small, focal** clusters mainly in **occipital** cortex.
 - No clear **OFC** or broader frontal involvement.
 
