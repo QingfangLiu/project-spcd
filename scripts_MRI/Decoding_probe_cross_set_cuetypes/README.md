@@ -33,3 +33,13 @@ This analysis extends the **cross-set decoding** procedure to test **cross-cue g
    - New script: `make_searchlight_swarm_crosscue.py` generates job files for both modes and class counts.
    - Supports the same run-on-Biowulf workflow as cross-set decoding.
 
+---   
+
+### Summary of group-level results (t = 1.5–4)
+
+| Mode | Main clusters (t = 1.5–4) | OFC involvement? | Overall pattern |
+|------|--------------------------|------------------|-----------------|
+| **Set2set, 2-class** | • Right anterior insula / inferior frontal gyrus  <br> • Medial prefrontal / anterior cingulate  <br> • Right cerebellum  <br> • Left fusiform / inferior temporal cortex (small) | No | Bilateral but right-lateralized; strongest in right frontal–insula network; includes frontal, temporal, and cerebellar areas |
+| **Strict, 2-class** | • Right superior frontal gyrus  <br> • Right precuneus / posterior cingulate  <br> • Right lateral occipital cortex (small) | No | More dorsal frontal + posterior-parietal; less widespread than set2set |
+| **Set2set, 3-class** | • Right anterior insula / inferior frontal gyrus  <br> • Bilateral dorsolateral prefrontal cortex (R > L)  <br> • Medial prefrontal cortex / anterior cingulate  <br> • Bilateral superior parietal lobule + precuneus/posterior cingulate  <br> • Right cerebellum  <br> • Smaller temporal cortex clusters | No | Much more widespread than 2-class; strong frontoparietal network recruitment, likely reflecting higher cognitive demands of 3-way classification |
+| **Strict, 3-class** | • Right lateral occipital cortex  <br> • Right superior parietal lobule / precuneus  <br> • Right inferior temporal cortex  <br> • Right cerebellum | No | Posterior-dominant (parietal, occipital, cerebellar) with minimal frontal involvement; least extensive among 3-class maps |
