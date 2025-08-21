@@ -92,7 +92,7 @@ This section summarizes the trial timing, run structure, and duration for each t
 - **1–3 runs** (max 3); task may end after 1 run if **≥90% accuracy** is achieved.
 
 #### **Odor Prediction (in scanner)**
-- **Trial**: 2s cue → 3s prediction → 4s odor delay + delivery → 4–10s ITI  
+- **Trial**: 2s cue → 3s prediction → 2s delay → 2s odor delivery → 4–10s ITI  
 - **Structure**: 6 cues × 6 orderings = 36 trials  
 - **Duration**: ~10 min per run  
 - **Runs**: 3 (404 volumes/run)  
