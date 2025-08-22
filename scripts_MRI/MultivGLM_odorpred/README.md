@@ -69,8 +69,60 @@ Estimate a **separate beta per odor event** using least-squares single-trial (LS
 
 ---
 
-## Workflow Summary
+## 4. Trial-wise GLM Design for Cues (Least-Squares Single-Trial)
 
-1. Generate `events.tsv` for each subject/run.
-2. Apply **odor index swap for sub-14** (if applicable).
-3. Run trial-wise GLMs using corrected events.
+**Scripts:**  
+- `run_trialwise_glms_cueEARLY.m`  
+- `run_trialwise_glms_cueEXT5s.m`
+
+### Goal  
+Estimate a **separate beta per cue presentation** (`cue_stim`) to study visual cue representations and possible associative reactivation.
+
+### Model specification (per cue event *k*)  
+
+**Cue EARLY (2 s window)**  
+- **Regressor of interest:** `cue_target_2s` (2 s at cue onset, *t → t+2*)  
+- **Task regressors:**  
+  - `cue_others_2s` (all other cues, 2 s)  
+  - `prediction_all` (3 s, *t+2 → t+5*)  
+  - `delay_all` (2 s, responded only)  
+  - `odor_all` (2 s, responded only)  
+  - `fixation_miss` (4 s, missed only)  
+  - `button_all` (sticks, responded only)  
+- **Nuisance regressors:** subject-specific motion/outlier regressors (z-scored)
+
+**Cue EXT5s (5 s window, no prediction regressor)**  
+- **Regressor of interest:** `cue_target_5s` (5 s at cue onset, *t → t+5*)  
+- **Task regressors:**  
+  - `cue_others_5s` (all other cues, 5 s)  
+  - `delay_all` (2 s, responded only)  
+  - `odor_all` (2 s, responded only)  
+  - `fixation_miss` (4 s, missed only)  
+  - `button_all` (sticks, responded only)  
+- **Nuisance regressors:** subject-specific motion/outlier regressors (z-scored)
+
+### Inputs  
+- Preprocessed NIfTI runs  
+- Corrected `events.tsv` files (after swap if sub-14)  
+- Nuisance regressor text files  
+
+### Outputs  
+- Trial-wise betas: `beta_run-<r>_trial-<k>.nii`  
+- Beta index log (per run): `<subID>_odorpred_run-<r>_beta_index.csv`  
+
+### Notes  
+- Canonical HRF, AR(1), HPF = 128 s, 2 mm smoothing  
+- **All cue_stim trials are modeled as targets** (responded + missed)  
+- Cue betas named by **trial number** (consistent with odor GLM)  
+- `cueEARLY` variant emphasizes **visual cue onset**, while `cueEXT5s` variant captures **visual + predictive processes**
+
+---
+
+### Workflow Summary  
+1. Generate `events.tsv` for each subject/run  
+2. Apply **odor index swap for sub-14** (if applicable)  
+3. Run odorpred GLM 
+3. Run both cue GLM variants 
+
+
+
