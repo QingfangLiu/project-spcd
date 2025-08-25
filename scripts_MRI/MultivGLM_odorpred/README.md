@@ -124,5 +124,12 @@ Estimate a **separate beta per cue presentation** (`cue_stim`) to study visual c
 3. Run odorpred GLM 
 3. Run both cue GLM variants 
 
+### Note
+Sub-35 – Day 2, Odor Prediction Run 3
+This run ended early, missing the last 111 volumes (TR = 1.5s).  
+- Expected scan length: 404 volumes (606 s)  
+- Actual scan length: 293 volumes (≈ 439.5 s)  
+- Behavioral data were unaffected, and GLM onsets were derived from behavioral events.  
+- Single-trial GLM results are valid only for trials with onset < 440 s. Trials with onset ≥ 440 s have no corresponding fMRI data.
 
 
