@@ -38,9 +38,10 @@ premeal_trialwise_2mm/sub-XX/
 
 **Leakage-safe within-dataset normalization (voxel-wise z-score):**
 
-- **Odor training data:** z-scored across trials within the odor dataset (Day-1 runs).  
-- **Probe test data:** z-scored within each run/set (Day-2 probe).  
-- Ensures no statistics are shared across train/test tasks.  
+- **Odor training data:** z-scored across trials within each run.  
+- **Probe test data:** z-scored within each run/set.  
+- Ensures no statistics are shared across train/test tasks.
+- Consistent with normalization procedure when decoding within each task. 
 
 ---
 
