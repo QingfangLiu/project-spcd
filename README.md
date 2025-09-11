@@ -119,6 +119,27 @@ This section summarizes the trial timing, run structure, and duration for each t
 
 ---
 
+### Odor–Food Mapping
+
+The table below lists the specific foods that were used to devalue each odor.
+
+| Odor           | Food(s)                                   |
+|----------------|-------------------------------------------|
+| Potato Chip    | Potato chips                              |
+| Garlic         | Minced garlic jars, Naan                  |
+| Cheddar        | Mac n cheese, Goldfish crackers, Cheeze-Its |
+| Pizza          | Frozen pizzas, Tomato sauce jars          |
+| Tuna           | Canned tuna, Crackers                     |
+| Strawberry     | Strawberry strudels                       |
+| Chocolate      | Clif bars                                 |
+| Apple cinnamon | Nutrigrain bars, Apple crisps             |
+| Peach          | Fruit cups, Peach strudels                |
+| Vanilla        | Vanilla cookies                           |
+
+
+
+---
+
 ## Notes on data issue handling
 
 > This only documents issues that **may affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
