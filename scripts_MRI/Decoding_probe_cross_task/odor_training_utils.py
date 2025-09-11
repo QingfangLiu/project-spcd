@@ -55,61 +55,57 @@ def load_decoding_data_odor(sub: str,
                             runs=(1, 2),
                             n_classes: int = 2,
                             normalize: bool = True):
-    """Build odor training set (images + labels) from Day-1 odor scan.
-
-    Parameters
-    ----------
-    sub : str
-        Subject id (e.g., 'sub-01').
-    base_dir : str
-        Root directory of the project.
-    runs : tuple[int, ...]
-        Runs to include.
-    n_classes : int
-        2 => keep {'odor_1','odor_2'}; 3 => keep {'clean_air','odor_1','odor_2'}.
-    normalize : bool
-        If True (default), perform voxelwise z-scoring *within the odor dataset*.
+    """
+    Build odor training set with optional per-run voxelwise z-scoring.
 
     Returns
     -------
-    all_imgs : nibabel.Nifti1Image
-        4D image stack of trialwise betas.
-    y : np.ndarray
-        Labels aligned to the 4D image's first dimension.
+    all_imgs : nibabel.Nifti1Image  # trials concatenated across runs
+    y : np.ndarray[int]             # labels aligned to trials
     """
-    imgs_all, y_all = [], []
+    imgs_all_4d = []   # list of 4D stacks, one per run
+    y_all = []
+
     for run in runs:
         tsv = _odor_events_path(base_dir, sub, run)
         if not os.path.exists(tsv):
             raise FileNotFoundError(f"Events TSV not found: {tsv}")
-        ev = pd.read_csv(tsv, sep='\t')
+        ev = pd.read_csv(tsv, sep="\t")
 
         if n_classes == 2:
-            ev = ev[ev['trial_type'].isin(['odor_1', 'odor_2'])].copy()
-            ev['y'] = ev['trial_type'].map({'odor_1': 0, 'odor_2': 1})
+            ev = ev[ev["trial_type"].isin(["odor_1", "odor_2"])].copy()
+            ev["y"] = ev["trial_type"].map({"odor_1": 0, "odor_2": 1})
         elif n_classes == 3:
-            ev = ev[ev['trial_type'].isin(['clean_air', 'odor_1', 'odor_2'])].copy()
-            ev['y'] = ev['trial_type'].map({'clean_air': 0, 'odor_1': 1, 'odor_2': 2})
+            ev = ev[ev["trial_type"].isin(["clean_air", "odor_1", "odor_2"])].copy()
+            ev["y"] = ev["trial_type"].map({"clean_air": 0, "odor_1": 1, "odor_2": 2})
         else:
-            raise ValueError('n_classes must be 2 or 3')
+            raise ValueError("n_classes must be 2 or 3")
 
-        # One beta per row, sequentially numbered within the run
+        # load this run's betas in order
+        run_imgs = []
+        run_labels = []
         for i, row in ev.reset_index(drop=True).iterrows():
             trial_num = i + 1
             beta_path = _odor_beta_path(base_dir, sub, run, trial_num)
             if not os.path.exists(beta_path):
                 raise FileNotFoundError(f"Beta not found: {beta_path}")
-            imgs_all.append(load_img(beta_path))
-            y_all.append(int(row['y']))
+            run_imgs.append(load_img(beta_path))
+            run_labels.append(int(row["y"]))
 
-    if len(imgs_all) == 0:
+        if len(run_imgs) == 0:
+            continue
+
+        run_4d = concat_imgs(run_imgs)          # (n_trials_in_run, X, Y, Z)
+        if normalize:
+            run_4d = _zscore_4d_by_voxel(run_4d) # <-- per-run z-scoring
+
+        imgs_all_4d.append(run_4d)
+        y_all.extend(run_labels)
+
+    if len(imgs_all_4d) == 0:
         raise RuntimeError(f"No odor data found for {sub} with runs={runs}")
 
-    all_imgs = concat_imgs(imgs_all)
+    all_imgs = concat_imgs(imgs_all_4d)         # concat runs after per-run z-score
     y = np.array(y_all, dtype=int)
-
-    # Within-dataset normalization (recommended for cross-task decoding)
-    if normalize:
-        all_imgs = _zscore_4d_by_voxel(all_imgs)
-
     return all_imgs, y
+
