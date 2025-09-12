@@ -84,3 +84,25 @@ Saved to:
 - **Runs:** odor uses runs 1–2; probe uses runs 1–3 (skips missing).  
 - **Normalization:** performed separately within odor vs probe datasets; avoids leakage.  
 - **Performance:** `n_jobs` controls parallelism for cluster runs.  
+
+---
+
+## Findings
+- **No lateral OFC clusters** detected.  
+- **Fusiform gyrus** appeared consistently, with additional effects in **posterior OFC** and **piriform cortex**.  
+- **Effects modest overall**; some emerging trends but not strongly robust.  
+
+---
+
+## Next Steps
+- **Cue collapsing:** Combine cue A and cue B to increase statistical power, assuming both elicit odor outcome expectations similarly.  
+- **Expanded decoding:** Add an option for decoding **odors (odor_1 or odor_2) vs non-odors**.
+- **Temporal dynamics:** Examine time-course of decoding accuracy, restricted to **pre-selected ROIs**.  
+
+
+
+
+
+
+
+
