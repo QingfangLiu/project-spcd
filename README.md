@@ -143,7 +143,7 @@ The table below lists the specific foods that were used to devalue each odor.
 ## Notes on data issue handling
 
 > This only documents issues that **may affect later analysis**. Some abnormal data collection events are **not noted here** if they have already been well handled and do **not impact** downstream analyses.
-> Most issue-related corrections (e.g., scan truncation, trigger adjustments) are handled in the [`Do_5_process_labchart.m`](./scripts_MRI/Do_5_process_labchart.m) script.
+> Most issue-related corrections (e.g., scan truncation, trigger adjustments) are handled in the [`Do_5_process_labchart.m`](./scripts_MRI/preproc_organize_imaging/Do_5_process_labchart.m) script.
 
 - **Sub-35 – Day 2, Odor Prediction Run 3**  
   The scan did not complete all expected volumes. Processed the LabChart trigger data to use only the partial scan. Also corrected a minor mismatch with the number of motion parameters.
