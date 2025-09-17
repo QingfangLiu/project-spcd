@@ -1,4 +1,45 @@
 
+%% ========================================================================
+% Multi-echo fMRI Preprocessing — DICOM Conversion, File Organization,
+% and Realignment (SPM)
+%
+% This script performs the following steps for a single subject:
+%
+% 1) Convert raw DICOMs (per session) into NIfTI format using dcm2niix,
+%    storing them under SubDir/nii/{session}.
+%
+% 2) Organize NIfTI files into:
+%       - Task-specific folders under SubDir/nii/func/<pattern>
+%         (patterns provided in pattern_list)
+%       - An anatomical folder (MPRAGE) under SubDir/nii/anat
+%
+% 3) Collect all echo-1 functional runs across sessions, count volumes,
+%    and build SPM filename lists.
+%
+% 4) Run SPM realignment (estimate only) on echo-1 data across all runs
+%    and sessions; save realignment batch/job files and QC outputs.
+%
+% 5) Apply echo-1 motion/space transforms to other echoes by copying
+%    header information (no resampling performed).
+%
+% INPUTS (must be defined in workspace):
+%   SubDir          - subject directory containing raw data
+%   dcm2niipath     - path to dcm2niix executable
+%   jobdir          - directory for saving batch/QC outputs
+%   ghostscriptPath - path to Ghostscript binary
+%   pattern_list    - cell array of task name patterns (e.g. {'place','odor_scan'})
+%   size_threshold  - minimum NIfTI file size (bytes) to keep
+%   nechos          - number of echoes per run
+%
+% DEPENDENCIES:
+%   - SPM (spm_vol, spm_get_space, spm_jobman)
+%   - Ghostscript (for PS→PDF conversion)
+%
+% NOTE:
+%   - Realignment is "estimate only" (no reslice)
+%   - Echo-1 transforms are assumed valid for all other echoes
+% ========================================================================
+
 spm fmri
 
 %%    
