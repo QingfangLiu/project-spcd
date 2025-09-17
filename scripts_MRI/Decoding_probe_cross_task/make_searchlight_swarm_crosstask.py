@@ -5,7 +5,7 @@ def generate_swarm_file(
     base_dir,
     script_name="run_searchlight_crosstask_odor2probe.py",
     output_file="decode_crosstask_odor2probe.swarm",
-    cue_types=("A", "B"),
+    cue_types=("AB",), # this one uses AB; previously was A and B
     radius_mm=8.0,
     n_jobs=-1,
     session_folder="premeal_trialwise_2mm",
@@ -35,7 +35,7 @@ def generate_swarm_file(
                     f"--base_dir {base_dir} "
                     f"--mask_img {os.path.join(base_dir, 'masks', 'gm_0.1.nii')} "
                     f"--cue_type {cue} "
-                    f"--n_classes 2 "
+                    f"--n_classes 3 "
                     f"--radius_mm {radius_mm} "
                     f"--n_jobs {n_jobs} "
                     f"--session_folder {session_folder} "

@@ -71,7 +71,7 @@ if __name__ == "__main__":
     parser.add_argument("--sub", required=True, help="e.g., sub-01")
     parser.add_argument("--base_dir", required=True)
     parser.add_argument("--mask_img", required=True)
-    parser.add_argument("--cue_type", choices=["A", "B"], default="A")
+    parser.add_argument("--cue_type", choices=["A", "B", "AB"], default="A")
     parser.add_argument("--n_classes", type=int, choices=[2, 3], default=2)
     parser.add_argument("--radius_mm", type=float, default=8.0)
     parser.add_argument("--n_jobs", type=int, default=-1)

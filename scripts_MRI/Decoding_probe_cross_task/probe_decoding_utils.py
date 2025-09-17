@@ -18,9 +18,19 @@ def _cue_type_from_index(cue_index: int) -> str:
     return "A" if (cue_index % 2 == 1) else "B"
 
 def _filter_by_cue_type(df: pd.DataFrame, cue_type: str) -> pd.DataFrame:
-    # Keep only rows whose cue_index matches the cue type (A=odd, B=even).
+    """
+    Keep rows by cue type:
+      - 'A'  -> odd cue_index
+      - 'B'  -> even cue_index
+      - 'AB' or 'ALL' -> no filtering (keep both)
+    """
+    cue_type = (cue_type or "").upper()
+    if cue_type in ("AB", "ALL"):
+        return df.copy()
+
     if cue_type not in ("A", "B"):
-        raise ValueError("cue_type must be 'A' or 'B'")
+        raise ValueError("cue_type must be 'A', 'B', or 'AB'/'ALL'")
+
     is_A = (df["cue_index"] % 2 == 1)
     return df[is_A] if cue_type == "A" else df[~is_A]
 
@@ -97,6 +107,7 @@ def load_betas_cue(sub: str,
     # Load beta images + labels for ONE run, filtered by cue type and class setting.
     # - Resolves CSV and beta paths from: <base_dir>/<session_folder>/<sub>/
     # - Filters by cue type via cue_index parity (A=odd, B=even).
+    # - cue_type: 'A', 'B', or 'AB'/'ALL' (keeps both A & B)
     # - Labels from odor_index; 2-class keeps {1,2} (odor_1 vs odor_2), 3-class keeps {0,1,2}.
     # - If normalize=True: **set-wise** run normalization (voxel-wise) to avoid cross-set leakage.
     #

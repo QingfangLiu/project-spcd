@@ -11,7 +11,7 @@ base_dir    = "/Users/liuq13/SPCD_data/searchlight_maps"
 subfolder   = "probe_crosstask"
 
 # Aggregate both cue types and class schemes
-cue_types   = ["A", "B"]        # cue type for PROBE test data
+cue_types   = ["A", "B", "AB"]        # cue type for PROBE test data
 class_list  = [2, 3]
 
 # Session tag must match what you used when saving maps (e.g., "premeal" or "postmeal")
