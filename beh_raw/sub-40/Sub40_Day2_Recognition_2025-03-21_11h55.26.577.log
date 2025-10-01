@@ -1,0 +1,795 @@
+9.4478 	WARNING 	User requested fullscreen with size [1536  864], but screen is actually [1920, 1080]. Using actual size
+10.1195 	EXP 	Created window1 = Window(allowGUI=True, allowStencil=False, autoLog=True, backendConf=UNKNOWN, backgroundFit=<method-wrapper '__getattribute__' of attributeSetter object at 0x00000232B77E8F10>, backgroundImage=<method-wrapper '__getattribute__' of attributeSetter object at 0x00000232B77E8EB0>, bitsMode=UNKNOWN, blendMode='avg', bpc=(8, 8, 8), color=array([0, 0, 0]), colorSpace='rgb', depthBits=8, fullscr=<method-wrapper '__getattribute__' of attributeSetter object at 0x00000232B77E8CD0>, gamma=None, gammaErrorPolicy='raise', lms=UNKNOWN, monitor=<psychopy.monitors.calibTools.Monitor object at 0x00000232B79F28E0>, multiSample=False, name='window1', numSamples=2, pos=(0, 0), screen=0, size=array([1920, 1080]), stencilBits=0, stereo=False, title='PsychoPy', units='height', useFBO=True, useRetina=False, viewOri=0.0, viewPos=None, viewScale=None, waitBlanking=True, winType='pyglet')
+10.1196 	EXP 	window1: mouseVisible = True
+10.1197 	EXP 	window1: backgroundImage = ''
+10.1197 	EXP 	window1: backgroundFit = 'none'
+10.1231 	EXP 	window1: Attempting to measure frame rate of screen (0) ...
+10.1232 	EXP 	window1: recordFrameIntervals = False
+10.2853 	EXP 	window1: recordFrameIntervals = True
+10.4692 	EXP 	Screen (0) actual frame rate measured at 59.99Hz
+10.4692 	EXP 	window1: recordFrameIntervals = False
+10.4693 	EXP 	window1: mouseVisible = False
+11.5330 	EXP 	Recognition: status = STARTED
+11.5333 	EXP 	window1: mouseVisible = True
+11.5677 	EXP 	Created text_welcome = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_welcome', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='Please wait for the experimenter to continue.', units='height', win=Window(...), wrapWidth=1)
+11.5678 	EXP 	window1: mouseVisible = True
+11.5725 	EXP 	Created text_back = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_back', opacity=1.0, ori=0.0, pos=array([-0.3, -0.3]), rgb=UNKNOWN, text='< Press Left to go back', units='height', win=Window(...), wrapWidth=1)
+11.5726 	EXP 	window1: mouseVisible = True
+11.5763 	EXP 	Created text_next = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_next', opacity=1.0, ori=0.0, pos=array([ 0.3, -0.3]), rgb=UNKNOWN, text='Press Right to go next >', units='height', win=Window(...), wrapWidth=1)
+11.5764 	EXP 	window1: mouseVisible = True
+11.5771 	EXP 	Created text_instruct = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_instruct', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+11.5771 	EXP 	window1: mouseVisible = True
+11.5793 	EXP 	Created text_wait = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_wait', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='Please wait for the task to start. ', units='height', win=Window(...), wrapWidth=1)
+11.5794 	EXP 	window1: mouseVisible = True
+11.5906 	EXP 	Created Cue1_fractal = ImageStim(__class__=<class 'psychopy.visual.image.ImageStim'>, anchor=('center', 'center'), autoLog=True, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, image='default.png', interpolate=True, mask=None, maskParams=None, name='Cue1_fractal', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([0.3, 0.3]), texRes=128.0, units='height', win=Window(...))
+11.5907 	EXP 	window1: mouseVisible = True
+11.5953 	EXP 	Created Fixation_bt = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='Fixation_bt', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+11.5954 	EXP 	window1: mouseVisible = True
+11.6025 	EXP 	Created Cue2_fractal = ImageStim(__class__=<class 'psychopy.visual.image.ImageStim'>, anchor=('center', 'center'), autoLog=True, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, draggable=False, flipHoriz=False, flipVert=False, image='default.png', interpolate=True, mask=None, maskParams=None, name='Cue2_fractal', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([0.3, 0.3]), texRes=128.0, units='height', win=Window(...))
+11.6026 	EXP 	window1: mouseVisible = True
+11.6034 	EXP 	Created text_corr_fixation = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_corr_fixation', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+11.6034 	EXP 	window1: mouseVisible = True
+11.6041 	EXP 	Created text_wrong_fixation = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_wrong_fixation', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+11.6042 	EXP 	window1: mouseVisible = True
+11.6087 	EXP 	Created text_slow = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_slow', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='Too Slow!', units='height', win=Window(...), wrapWidth=1)
+11.6087 	EXP 	window1: mouseVisible = True
+11.6157 	EXP 	Created task_over_txt = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='task_over_txt', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+0.0070 	EXP 	text_welcome: autoDraw = True
+2.9047 	EXP 	Created sequence: sequential, trialTypes=1, nReps=10000, seed=None
+2.9317 	EXP 	New trial (rep=0, index=0): None
+2.9348 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+2.9351 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+2.9352 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Please read the task instructions carefully. You will be asked to explain the instructions back to the experimenter before beginning the task.'}
+2.9462 	EXP 	text_welcome: autoDraw = False
+2.9462 	EXP 	text_back: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+2.9462 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+2.9462 	EXP 	text_instruct: height = 0.05
+2.9462 	EXP 	text_instruct: height = 0.05
+2.9462 	EXP 	text_instruct: height = 0.05
+2.9462 	EXP 	text_instruct: text = 'Please read the task instructions carefully. You will be asked to explain the instructions back to the experimenter before beginning the task.'
+2.9462 	EXP 	text_back: autoDraw = True
+2.9462 	EXP 	text_next: autoDraw = True
+2.9462 	EXP 	text_instruct: autoDraw = True
+5.1175 	EXP 	New trial (rep=1, index=0): None
+5.1216 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+5.1218 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+5.1219 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'In this task, we want you to recall which place each character visited recently.'}
+5.1322 	EXP 	text_back: autoDraw = False
+5.1322 	EXP 	text_next: autoDraw = False
+5.1322 	EXP 	text_instruct: autoDraw = False
+5.1322 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+5.1322 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+5.1322 	EXP 	text_instruct: height = 0.05
+5.1322 	EXP 	text_instruct: height = 0.05
+5.1322 	EXP 	text_instruct: height = 0.05
+5.1322 	EXP 	text_instruct: text = 'In this task, we want you to recall which place each character visited recently.'
+5.1322 	EXP 	text_back: autoDraw = True
+5.1322 	EXP 	text_next: autoDraw = True
+5.1322 	EXP 	text_instruct: autoDraw = True
+5.7921 	EXP 	New trial (rep=2, index=0): None
+5.7950 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+5.7952 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+5.7953 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Press Right key if you HAVE learned that this character went to that place.'}
+5.8062 	EXP 	text_back: autoDraw = False
+5.8062 	EXP 	text_next: autoDraw = False
+5.8062 	EXP 	text_instruct: autoDraw = False
+5.8062 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+5.8062 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+5.8062 	EXP 	text_instruct: height = 0.05
+5.8062 	EXP 	text_instruct: height = 0.05
+5.8062 	EXP 	text_instruct: height = 0.05
+5.8062 	EXP 	text_instruct: text = 'Press Right key if you HAVE learned that this character went to that place.'
+5.8062 	EXP 	text_back: autoDraw = True
+5.8062 	EXP 	text_next: autoDraw = True
+5.8062 	EXP 	text_instruct: autoDraw = True
+6.6835 	EXP 	New trial (rep=3, index=0): None
+6.6864 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+6.6866 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+6.6867 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Press Left key if you HAVE NOT previously learned that this character went to that place.'}
+6.6947 	EXP 	text_back: autoDraw = False
+6.6947 	EXP 	text_next: autoDraw = False
+6.6947 	EXP 	text_instruct: autoDraw = False
+6.6947 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+6.6947 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+6.6947 	EXP 	text_instruct: height = 0.05
+6.6947 	EXP 	text_instruct: height = 0.05
+6.6947 	EXP 	text_instruct: height = 0.05
+6.6947 	EXP 	text_instruct: text = 'Press Left key if you HAVE NOT previously learned that this character went to that place.'
+6.6947 	EXP 	text_back: autoDraw = True
+6.6947 	EXP 	text_next: autoDraw = True
+6.6947 	EXP 	text_instruct: autoDraw = True
+7.8872 	EXP 	New trial (rep=4, index=0): None
+7.8900 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+7.8902 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+7.8903 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'You have 3 seconds to make a response.'}
+7.9040 	EXP 	text_back: autoDraw = False
+7.9040 	EXP 	text_next: autoDraw = False
+7.9040 	EXP 	text_instruct: autoDraw = False
+7.9040 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+7.9040 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+7.9040 	EXP 	text_instruct: height = 0.05
+7.9040 	EXP 	text_instruct: height = 0.05
+7.9040 	EXP 	text_instruct: height = 0.05
+7.9040 	EXP 	text_instruct: text = 'You have 3 seconds to make a response.'
+7.9040 	EXP 	text_back: autoDraw = True
+7.9040 	EXP 	text_next: autoDraw = True
+7.9040 	EXP 	text_instruct: autoDraw = True
+8.5550 	EXP 	New trial (rep=5, index=0): None
+8.5578 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+8.5580 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+8.5581 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Please repeat these instructions back to the experimenter to show that you understand the instructions. If not, go back and read them again.'}
+8.5650 	EXP 	text_back: autoDraw = False
+8.5650 	EXP 	text_next: autoDraw = False
+8.5650 	EXP 	text_instruct: autoDraw = False
+8.5650 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+8.5650 	EXP 	text_next: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+8.5650 	EXP 	text_instruct: height = 0.05
+8.5650 	EXP 	text_instruct: height = 0.05
+8.5650 	EXP 	text_instruct: height = 0.05
+8.5650 	EXP 	text_instruct: text = 'Please repeat these instructions back to the experimenter to show that you understand the instructions. If not, go back and read them again.'
+8.5650 	EXP 	text_back: autoDraw = True
+8.5650 	EXP 	text_next: autoDraw = True
+8.5650 	EXP 	text_instruct: autoDraw = True
+10.0858 	EXP 	text_back: autoDraw = False
+10.0858 	EXP 	text_next: autoDraw = False
+10.0858 	EXP 	text_instruct: autoDraw = False
+10.0858 	EXP 	text_wait: autoDraw = True
+13.0848 	EXP 	Imported Sub40/RecogConds.xlsx as conditions, 36 conditions, 7 params
+13.0854 	EXP 	Created sequence: sequential, trialTypes=36, nReps=1, seed=None
+13.0855 	EXP 	New trial (rep=0, index=0): {'trial': 1, 'pair': 3, 'rep': 1, 'cue1_idx': 5, 'cue2_idx': 8, 'correct': 'left', 'ITIDur': 3}
+13.1041 	EXP 	text_wait: autoDraw = False
+13.1041 	EXP 	text_wait: autoDraw = False
+13.1041 	EXP 	Cue1_fractal: image = 'Sub40/cues/5.jpg'
+13.1041 	EXP 	Cue2_fractal: image = 'Sub40/cues/8.jpg'
+13.1041 	EXP 	Cue1_fractal: autoDraw = True
+16.0859 	EXP 	Fixation_bt: autoDraw = True
+16.1192 	EXP 	Cue1_fractal: autoDraw = False
+16.3860 	EXP 	Fixation_bt: autoDraw = False
+16.3860 	EXP 	Cue2_fractal: autoDraw = True
+17.3535 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+17.3537 	EXP 	New trial (rep=0, index=0): None
+17.3690 	EXP 	Cue1_fractal: autoDraw = False
+17.3690 	EXP 	Fixation_bt: autoDraw = False
+17.3690 	EXP 	Cue2_fractal: autoDraw = False
+17.3690 	EXP 	text_corr_fixation: height = 0.1
+17.3690 	EXP 	text_corr_fixation: height = 0.1
+17.3690 	EXP 	text_corr_fixation: height = 0.1
+17.3690 	EXP 	text_corr_fixation: text = '+'
+17.3690 	EXP 	text_corr_fixation: autoDraw = True
+20.3539 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+20.3544 	EXP 	New trial (rep=0, index=1): {'trial': 2, 'pair': 4, 'rep': 1, 'cue1_idx': 7, 'cue2_idx': 4, 'correct': 'left', 'ITIDur': 3}
+20.3729 	EXP 	text_corr_fixation: autoDraw = False
+20.3729 	EXP 	text_corr_fixation: autoDraw = False
+20.3729 	EXP 	Cue1_fractal: image = 'Sub40/cues/7.jpg'
+20.3729 	EXP 	Cue2_fractal: image = 'Sub40/cues/4.jpg'
+20.3729 	EXP 	Cue1_fractal: autoDraw = True
+23.3526 	EXP 	Fixation_bt: autoDraw = True
+23.3857 	EXP 	Cue1_fractal: autoDraw = False
+23.6527 	EXP 	Fixation_bt: autoDraw = False
+23.6527 	EXP 	Cue2_fractal: autoDraw = True
+24.2530 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+24.2531 	EXP 	New trial (rep=0, index=0): None
+24.2689 	EXP 	Cue1_fractal: autoDraw = False
+24.2689 	EXP 	Fixation_bt: autoDraw = False
+24.2689 	EXP 	Cue2_fractal: autoDraw = False
+24.2689 	EXP 	text_corr_fixation: text = '+'
+24.2689 	EXP 	text_corr_fixation: autoDraw = True
+27.2543 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+27.2547 	EXP 	New trial (rep=0, index=2): {'trial': 3, 'pair': 5, 'rep': 1, 'cue1_idx': 9, 'cue2_idx': 2, 'correct': 'left', 'ITIDur': 8}
+27.2693 	EXP 	text_corr_fixation: autoDraw = False
+27.2693 	EXP 	text_corr_fixation: autoDraw = False
+27.2693 	EXP 	Cue1_fractal: image = 'Sub40/cues/9.jpg'
+27.2693 	EXP 	Cue2_fractal: image = 'Sub40/cues/2.jpg'
+27.2693 	EXP 	Cue1_fractal: autoDraw = True
+30.2689 	EXP 	Cue1_fractal: autoDraw = False
+30.2689 	EXP 	Fixation_bt: autoDraw = True
+30.5692 	EXP 	Fixation_bt: autoDraw = False
+30.5692 	EXP 	Cue2_fractal: autoDraw = True
+31.2030 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+31.2031 	EXP 	New trial (rep=0, index=0): None
+31.2189 	EXP 	Cue1_fractal: autoDraw = False
+31.2189 	EXP 	Fixation_bt: autoDraw = False
+31.2189 	EXP 	Cue2_fractal: autoDraw = False
+31.2189 	EXP 	text_corr_fixation: text = '+'
+31.2189 	EXP 	text_corr_fixation: autoDraw = True
+39.2040 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+39.2043 	EXP 	New trial (rep=0, index=3): {'trial': 4, 'pair': 6, 'rep': 1, 'cue1_idx': 11, 'cue2_idx': 10, 'correct': 'left', 'ITIDur': 8}
+39.2188 	EXP 	text_corr_fixation: autoDraw = False
+39.2188 	EXP 	text_corr_fixation: autoDraw = False
+39.2188 	EXP 	Cue1_fractal: image = 'Sub40/cues/11.jpg'
+39.2188 	EXP 	Cue2_fractal: image = 'Sub40/cues/10.jpg'
+39.2188 	EXP 	Cue1_fractal: autoDraw = True
+42.2187 	EXP 	Cue1_fractal: autoDraw = False
+42.2187 	EXP 	Fixation_bt: autoDraw = True
+42.5191 	EXP 	Fixation_bt: autoDraw = False
+42.5191 	EXP 	Cue2_fractal: autoDraw = True
+44.2701 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+44.2703 	EXP 	New trial (rep=0, index=0): None
+44.2851 	EXP 	Cue1_fractal: autoDraw = False
+44.2851 	EXP 	Fixation_bt: autoDraw = False
+44.2851 	EXP 	Cue2_fractal: autoDraw = False
+44.2851 	EXP 	text_corr_fixation: text = '+'
+44.2851 	EXP 	text_corr_fixation: autoDraw = True
+52.2700 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+52.2704 	EXP 	New trial (rep=0, index=4): {'trial': 5, 'pair': 2, 'rep': 1, 'cue1_idx': 3, 'cue2_idx': 4, 'correct': 'right', 'ITIDur': 6}
+52.2861 	EXP 	text_corr_fixation: autoDraw = False
+52.2861 	EXP 	text_corr_fixation: autoDraw = False
+52.2861 	EXP 	Cue1_fractal: image = 'Sub40/cues/3.jpg'
+52.2861 	EXP 	Cue2_fractal: image = 'Sub40/cues/4.jpg'
+52.2861 	EXP 	Cue1_fractal: autoDraw = True
+55.2687 	EXP 	Fixation_bt: autoDraw = True
+55.2850 	EXP 	Cue1_fractal: autoDraw = False
+55.5688 	EXP 	Fixation_bt: autoDraw = False
+55.5688 	EXP 	Cue2_fractal: autoDraw = True
+56.0865 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+56.0867 	EXP 	New trial (rep=0, index=0): None
+56.1018 	EXP 	Cue1_fractal: autoDraw = False
+56.1018 	EXP 	Fixation_bt: autoDraw = False
+56.1018 	EXP 	Cue2_fractal: autoDraw = False
+56.1018 	EXP 	text_corr_fixation: text = '+'
+56.1018 	EXP 	text_corr_fixation: autoDraw = True
+62.0859 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+62.0862 	EXP 	New trial (rep=0, index=5): {'trial': 6, 'pair': 5, 'rep': 1, 'cue1_idx': 9, 'cue2_idx': 10, 'correct': 'right', 'ITIDur': 5}
+62.1017 	EXP 	text_corr_fixation: autoDraw = False
+62.1017 	EXP 	text_corr_fixation: autoDraw = False
+62.1017 	EXP 	Cue1_fractal: image = 'Sub40/cues/9.jpg'
+62.1017 	EXP 	Cue2_fractal: image = 'Sub40/cues/10.jpg'
+62.1017 	EXP 	Cue1_fractal: autoDraw = True
+65.0848 	EXP 	Fixation_bt: autoDraw = True
+65.1015 	EXP 	Cue1_fractal: autoDraw = False
+65.3850 	EXP 	Fixation_bt: autoDraw = False
+65.3850 	EXP 	Cue2_fractal: autoDraw = True
+66.6356 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+66.6357 	EXP 	New trial (rep=0, index=0): None
+66.6515 	EXP 	Cue1_fractal: autoDraw = False
+66.6515 	EXP 	Fixation_bt: autoDraw = False
+66.6515 	EXP 	Cue2_fractal: autoDraw = False
+66.6515 	EXP 	text_corr_fixation: text = '+'
+66.6515 	EXP 	text_corr_fixation: autoDraw = True
+71.6360 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+71.6364 	EXP 	New trial (rep=0, index=6): {'trial': 7, 'pair': 4, 'rep': 1, 'cue1_idx': 7, 'cue2_idx': 8, 'correct': 'right', 'ITIDur': 5}
+71.6514 	EXP 	text_corr_fixation: autoDraw = False
+71.6514 	EXP 	text_corr_fixation: autoDraw = False
+71.6514 	EXP 	Cue1_fractal: image = 'Sub40/cues/7.jpg'
+71.6514 	EXP 	Cue2_fractal: image = 'Sub40/cues/8.jpg'
+71.6514 	EXP 	Cue1_fractal: autoDraw = True
+74.6347 	EXP 	Fixation_bt: autoDraw = True
+74.6514 	EXP 	Cue1_fractal: autoDraw = False
+74.9349 	EXP 	Fixation_bt: autoDraw = False
+74.9349 	EXP 	Cue2_fractal: autoDraw = True
+75.7519 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+75.7520 	EXP 	New trial (rep=0, index=0): None
+75.7680 	EXP 	Cue1_fractal: autoDraw = False
+75.7680 	EXP 	Fixation_bt: autoDraw = False
+75.7680 	EXP 	Cue2_fractal: autoDraw = False
+75.7680 	EXP 	text_corr_fixation: text = '+'
+75.7680 	EXP 	text_corr_fixation: autoDraw = True
+80.7531 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+80.7535 	EXP 	New trial (rep=0, index=7): {'trial': 8, 'pair': 1, 'rep': 1, 'cue1_idx': 1, 'cue2_idx': 12, 'correct': 'left', 'ITIDur': 3}
+80.7682 	EXP 	text_corr_fixation: autoDraw = False
+80.7682 	EXP 	text_corr_fixation: autoDraw = False
+80.7682 	EXP 	Cue1_fractal: image = 'Sub40/cues/1.jpg'
+80.7682 	EXP 	Cue2_fractal: image = 'Sub40/cues/12.jpg'
+80.7682 	EXP 	Cue1_fractal: autoDraw = True
+83.7677 	EXP 	Cue1_fractal: autoDraw = False
+83.7677 	EXP 	Fixation_bt: autoDraw = True
+84.0681 	EXP 	Fixation_bt: autoDraw = False
+84.0681 	EXP 	Cue2_fractal: autoDraw = True
+85.7039 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+85.7041 	EXP 	New trial (rep=0, index=0): None
+85.7177 	EXP 	Cue1_fractal: autoDraw = False
+85.7177 	EXP 	Fixation_bt: autoDraw = False
+85.7177 	EXP 	Cue2_fractal: autoDraw = False
+85.7177 	EXP 	text_corr_fixation: text = '+'
+85.7177 	EXP 	text_corr_fixation: autoDraw = True
+88.7027 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+88.7031 	EXP 	New trial (rep=0, index=8): {'trial': 9, 'pair': 1, 'rep': 1, 'cue1_idx': 1, 'cue2_idx': 2, 'correct': 'right', 'ITIDur': 3}
+88.7182 	EXP 	text_corr_fixation: autoDraw = False
+88.7182 	EXP 	text_corr_fixation: autoDraw = False
+88.7182 	EXP 	Cue1_fractal: image = 'Sub40/cues/1.jpg'
+88.7182 	EXP 	Cue2_fractal: image = 'Sub40/cues/2.jpg'
+88.7182 	EXP 	Cue1_fractal: autoDraw = True
+91.7177 	EXP 	Cue1_fractal: autoDraw = False
+91.7177 	EXP 	Fixation_bt: autoDraw = True
+92.0180 	EXP 	Fixation_bt: autoDraw = False
+92.0180 	EXP 	Cue2_fractal: autoDraw = True
+93.0370 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+93.0373 	EXP 	New trial (rep=0, index=0): None
+93.0508 	EXP 	Cue1_fractal: autoDraw = False
+93.0508 	EXP 	Fixation_bt: autoDraw = False
+93.0508 	EXP 	Cue2_fractal: autoDraw = False
+93.0508 	EXP 	text_corr_fixation: text = '+'
+93.0508 	EXP 	text_corr_fixation: autoDraw = True
+96.0357 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+96.0361 	EXP 	New trial (rep=0, index=9): {'trial': 10, 'pair': 2, 'rep': 1, 'cue1_idx': 3, 'cue2_idx': 6, 'correct': 'left', 'ITIDur': 8}
+96.0511 	EXP 	text_corr_fixation: autoDraw = False
+96.0511 	EXP 	text_corr_fixation: autoDraw = False
+96.0511 	EXP 	Cue1_fractal: image = 'Sub40/cues/3.jpg'
+96.0511 	EXP 	Cue2_fractal: image = 'Sub40/cues/6.jpg'
+96.0511 	EXP 	Cue1_fractal: autoDraw = True
+99.0343 	EXP 	Fixation_bt: autoDraw = True
+99.0511 	EXP 	Cue1_fractal: autoDraw = False
+99.3343 	EXP 	Fixation_bt: autoDraw = False
+99.3343 	EXP 	Cue2_fractal: autoDraw = True
+100.0367 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+100.0369 	EXP 	New trial (rep=0, index=0): None
+100.0508 	EXP 	Cue1_fractal: autoDraw = False
+100.0508 	EXP 	Fixation_bt: autoDraw = False
+100.0508 	EXP 	Cue2_fractal: autoDraw = False
+100.0508 	EXP 	text_corr_fixation: text = '+'
+100.0508 	EXP 	text_corr_fixation: autoDraw = True
+108.0352 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+108.0355 	EXP 	New trial (rep=0, index=10): {'trial': 11, 'pair': 6, 'rep': 1, 'cue1_idx': 11, 'cue2_idx': 12, 'correct': 'right', 'ITIDur': 4}
+108.0510 	EXP 	text_corr_fixation: autoDraw = False
+108.0510 	EXP 	text_corr_fixation: autoDraw = False
+108.0510 	EXP 	Cue1_fractal: image = 'Sub40/cues/11.jpg'
+108.0510 	EXP 	Cue2_fractal: image = 'Sub40/cues/12.jpg'
+108.0510 	EXP 	Cue1_fractal: autoDraw = True
+111.0341 	EXP 	Fixation_bt: autoDraw = True
+111.0507 	EXP 	Cue1_fractal: autoDraw = False
+111.3341 	EXP 	Fixation_bt: autoDraw = False
+111.3341 	EXP 	Cue2_fractal: autoDraw = True
+111.9528 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+111.9530 	EXP 	New trial (rep=0, index=0): None
+111.9670 	EXP 	Cue1_fractal: autoDraw = False
+111.9670 	EXP 	Fixation_bt: autoDraw = False
+111.9670 	EXP 	Cue2_fractal: autoDraw = False
+111.9670 	EXP 	text_corr_fixation: text = '+'
+111.9670 	EXP 	text_corr_fixation: autoDraw = True
+115.9519 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+115.9523 	EXP 	New trial (rep=0, index=11): {'trial': 12, 'pair': 3, 'rep': 1, 'cue1_idx': 5, 'cue2_idx': 6, 'correct': 'right', 'ITIDur': 3}
+115.9677 	EXP 	text_corr_fixation: autoDraw = False
+115.9677 	EXP 	text_corr_fixation: autoDraw = False
+115.9677 	EXP 	Cue1_fractal: image = 'Sub40/cues/5.jpg'
+115.9677 	EXP 	Cue2_fractal: image = 'Sub40/cues/6.jpg'
+115.9677 	EXP 	Cue1_fractal: autoDraw = True
+118.9676 	EXP 	Cue1_fractal: autoDraw = False
+118.9676 	EXP 	Fixation_bt: autoDraw = True
+119.2675 	EXP 	Fixation_bt: autoDraw = False
+119.2675 	EXP 	Cue2_fractal: autoDraw = True
+119.9037 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+119.9040 	EXP 	New trial (rep=0, index=0): None
+119.9169 	EXP 	Cue1_fractal: autoDraw = False
+119.9169 	EXP 	Fixation_bt: autoDraw = False
+119.9169 	EXP 	Cue2_fractal: autoDraw = False
+119.9169 	EXP 	text_corr_fixation: text = '+'
+119.9169 	EXP 	text_corr_fixation: autoDraw = True
+122.9021 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+122.9026 	EXP 	New trial (rep=0, index=12): {'trial': 13, 'pair': 2, 'rep': 2, 'cue1_idx': 3, 'cue2_idx': 12, 'correct': 'left', 'ITIDur': 7}
+122.9176 	EXP 	text_corr_fixation: autoDraw = False
+122.9176 	EXP 	text_corr_fixation: autoDraw = False
+122.9176 	EXP 	Cue1_fractal: image = 'Sub40/cues/3.jpg'
+122.9176 	EXP 	Cue2_fractal: image = 'Sub40/cues/12.jpg'
+122.9176 	EXP 	Cue1_fractal: autoDraw = True
+125.9170 	EXP 	Cue1_fractal: autoDraw = False
+125.9170 	EXP 	Fixation_bt: autoDraw = True
+126.2171 	EXP 	Fixation_bt: autoDraw = False
+126.2171 	EXP 	Cue2_fractal: autoDraw = True
+126.6371 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+126.6373 	EXP 	New trial (rep=0, index=0): None
+126.6501 	EXP 	Cue1_fractal: autoDraw = False
+126.6501 	EXP 	Fixation_bt: autoDraw = False
+126.6501 	EXP 	Cue2_fractal: autoDraw = False
+126.6501 	EXP 	text_corr_fixation: text = '+'
+126.6501 	EXP 	text_corr_fixation: autoDraw = True
+133.6350 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+133.6355 	EXP 	New trial (rep=0, index=13): {'trial': 14, 'pair': 3, 'rep': 2, 'cue1_idx': 5, 'cue2_idx': 6, 'correct': 'right', 'ITIDur': 6}
+133.6505 	EXP 	text_corr_fixation: autoDraw = False
+133.6505 	EXP 	text_corr_fixation: autoDraw = False
+133.6505 	EXP 	Cue1_fractal: image = 'Sub40/cues/5.jpg'
+133.6505 	EXP 	Cue2_fractal: image = 'Sub40/cues/6.jpg'
+133.6505 	EXP 	Cue1_fractal: autoDraw = True
+136.6334 	EXP 	Fixation_bt: autoDraw = True
+136.6502 	EXP 	Cue1_fractal: autoDraw = False
+136.9336 	EXP 	Fixation_bt: autoDraw = False
+136.9336 	EXP 	Cue2_fractal: autoDraw = True
+138.1192 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+138.1194 	EXP 	New trial (rep=0, index=0): None
+138.1332 	EXP 	Cue1_fractal: autoDraw = False
+138.1332 	EXP 	Fixation_bt: autoDraw = False
+138.1332 	EXP 	Cue2_fractal: autoDraw = False
+138.1332 	EXP 	text_corr_fixation: text = '+'
+138.1332 	EXP 	text_corr_fixation: autoDraw = True
+144.1179 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+144.1182 	EXP 	New trial (rep=0, index=14): {'trial': 15, 'pair': 3, 'rep': 2, 'cue1_idx': 5, 'cue2_idx': 10, 'correct': 'left', 'ITIDur': 7}
+144.1331 	EXP 	text_corr_fixation: autoDraw = False
+144.1331 	EXP 	text_corr_fixation: autoDraw = False
+144.1331 	EXP 	Cue1_fractal: image = 'Sub40/cues/5.jpg'
+144.1331 	EXP 	Cue2_fractal: image = 'Sub40/cues/10.jpg'
+144.1331 	EXP 	Cue1_fractal: autoDraw = True
+147.1166 	EXP 	Fixation_bt: autoDraw = True
+147.1331 	EXP 	Cue1_fractal: autoDraw = False
+147.4168 	EXP 	Fixation_bt: autoDraw = False
+147.4168 	EXP 	Cue2_fractal: autoDraw = True
+148.1345 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+148.1347 	EXP 	New trial (rep=0, index=0): None
+148.1496 	EXP 	Cue1_fractal: autoDraw = False
+148.1496 	EXP 	Fixation_bt: autoDraw = False
+148.1496 	EXP 	Cue2_fractal: autoDraw = False
+148.1496 	EXP 	text_corr_fixation: text = '+'
+148.1496 	EXP 	text_corr_fixation: autoDraw = True
+155.1347 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+155.1351 	EXP 	New trial (rep=0, index=15): {'trial': 16, 'pair': 6, 'rep': 2, 'cue1_idx': 11, 'cue2_idx': 12, 'correct': 'right', 'ITIDur': 8}
+155.1535 	EXP 	text_corr_fixation: autoDraw = False
+155.1535 	EXP 	text_corr_fixation: autoDraw = False
+155.1535 	EXP 	Cue1_fractal: image = 'Sub40/cues/11.jpg'
+155.1535 	EXP 	Cue2_fractal: image = 'Sub40/cues/12.jpg'
+155.1535 	EXP 	Cue1_fractal: autoDraw = True
+158.1330 	EXP 	Fixation_bt: autoDraw = True
+158.1663 	EXP 	Cue1_fractal: autoDraw = False
+158.4331 	EXP 	Fixation_bt: autoDraw = False
+158.4498 	EXP 	Cue2_fractal: autoDraw = True
+159.5526 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+159.5529 	EXP 	New trial (rep=0, index=0): None
+159.5661 	EXP 	Cue1_fractal: autoDraw = False
+159.5661 	EXP 	Fixation_bt: autoDraw = False
+159.5661 	EXP 	Cue2_fractal: autoDraw = False
+159.5661 	EXP 	text_corr_fixation: text = '+'
+159.5661 	EXP 	text_corr_fixation: autoDraw = True
+167.5510 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+167.5513 	EXP 	New trial (rep=0, index=16): {'trial': 17, 'pair': 1, 'rep': 2, 'cue1_idx': 1, 'cue2_idx': 2, 'correct': 'right', 'ITIDur': 5}
+167.5663 	EXP 	text_corr_fixation: autoDraw = False
+167.5663 	EXP 	text_corr_fixation: autoDraw = False
+167.5663 	EXP 	Cue1_fractal: image = 'Sub40/cues/1.jpg'
+167.5663 	EXP 	Cue2_fractal: image = 'Sub40/cues/2.jpg'
+167.5663 	EXP 	Cue1_fractal: autoDraw = True
+170.5661 	EXP 	Cue1_fractal: autoDraw = False
+170.5661 	EXP 	Fixation_bt: autoDraw = True
+170.8663 	EXP 	Fixation_bt: autoDraw = False
+170.8663 	EXP 	Cue2_fractal: autoDraw = True
+172.3179 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+172.3181 	EXP 	New trial (rep=0, index=0): None
+172.3324 	EXP 	Cue1_fractal: autoDraw = False
+172.3324 	EXP 	Fixation_bt: autoDraw = False
+172.3324 	EXP 	Cue2_fractal: autoDraw = False
+172.3324 	EXP 	text_corr_fixation: text = '+'
+172.3324 	EXP 	text_corr_fixation: autoDraw = True
+177.3176 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+177.3180 	EXP 	New trial (rep=0, index=17): {'trial': 18, 'pair': 1, 'rep': 2, 'cue1_idx': 1, 'cue2_idx': 4, 'correct': 'left', 'ITIDur': 4}
+177.3324 	EXP 	text_corr_fixation: autoDraw = False
+177.3324 	EXP 	text_corr_fixation: autoDraw = False
+177.3324 	EXP 	Cue1_fractal: image = 'Sub40/cues/1.jpg'
+177.3324 	EXP 	Cue2_fractal: image = 'Sub40/cues/4.jpg'
+177.3324 	EXP 	Cue1_fractal: autoDraw = True
+180.3324 	EXP 	Cue1_fractal: autoDraw = False
+180.3324 	EXP 	Fixation_bt: autoDraw = True
+180.6328 	EXP 	Fixation_bt: autoDraw = False
+180.6328 	EXP 	Cue2_fractal: autoDraw = True
+181.3345 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+181.3347 	EXP 	New trial (rep=0, index=0): None
+181.3492 	EXP 	Cue1_fractal: autoDraw = False
+181.3492 	EXP 	Fixation_bt: autoDraw = False
+181.3492 	EXP 	Cue2_fractal: autoDraw = False
+181.3492 	EXP 	text_corr_fixation: text = '+'
+181.3492 	EXP 	text_corr_fixation: autoDraw = True
+185.3340 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+185.3345 	EXP 	New trial (rep=0, index=18): {'trial': 19, 'pair': 5, 'rep': 2, 'cue1_idx': 9, 'cue2_idx': 10, 'correct': 'right', 'ITIDur': 5}
+185.3491 	EXP 	text_corr_fixation: autoDraw = False
+185.3491 	EXP 	text_corr_fixation: autoDraw = False
+185.3491 	EXP 	Cue1_fractal: image = 'Sub40/cues/9.jpg'
+185.3491 	EXP 	Cue2_fractal: image = 'Sub40/cues/10.jpg'
+185.3491 	EXP 	Cue1_fractal: autoDraw = True
+188.3323 	EXP 	Fixation_bt: autoDraw = True
+188.3491 	EXP 	Cue1_fractal: autoDraw = False
+188.6323 	EXP 	Fixation_bt: autoDraw = False
+188.6492 	EXP 	Cue2_fractal: autoDraw = True
+189.2517 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+189.2520 	EXP 	New trial (rep=0, index=0): None
+189.2656 	EXP 	Cue1_fractal: autoDraw = False
+189.2656 	EXP 	Fixation_bt: autoDraw = False
+189.2656 	EXP 	Cue2_fractal: autoDraw = False
+189.2656 	EXP 	text_corr_fixation: text = '+'
+189.2656 	EXP 	text_corr_fixation: autoDraw = True
+194.2507 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+194.2511 	EXP 	New trial (rep=0, index=19): {'trial': 20, 'pair': 6, 'rep': 2, 'cue1_idx': 11, 'cue2_idx': 8, 'correct': 'left', 'ITIDur': 4}
+194.2659 	EXP 	text_corr_fixation: autoDraw = False
+194.2659 	EXP 	text_corr_fixation: autoDraw = False
+194.2659 	EXP 	Cue1_fractal: image = 'Sub40/cues/11.jpg'
+194.2659 	EXP 	Cue2_fractal: image = 'Sub40/cues/8.jpg'
+194.2659 	EXP 	Cue1_fractal: autoDraw = True
+197.2656 	EXP 	Cue1_fractal: autoDraw = False
+197.2656 	EXP 	Fixation_bt: autoDraw = True
+197.5658 	EXP 	Fixation_bt: autoDraw = False
+197.5658 	EXP 	Cue2_fractal: autoDraw = True
+198.2349 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+198.2352 	EXP 	New trial (rep=0, index=0): None
+198.2488 	EXP 	Cue1_fractal: autoDraw = False
+198.2488 	EXP 	Fixation_bt: autoDraw = False
+198.2488 	EXP 	Cue2_fractal: autoDraw = False
+198.2488 	EXP 	text_corr_fixation: text = '+'
+198.2488 	EXP 	text_corr_fixation: autoDraw = True
+202.2337 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+202.2342 	EXP 	New trial (rep=0, index=20): {'trial': 21, 'pair': 2, 'rep': 2, 'cue1_idx': 3, 'cue2_idx': 4, 'correct': 'right', 'ITIDur': 5}
+202.2495 	EXP 	text_corr_fixation: autoDraw = False
+202.2495 	EXP 	text_corr_fixation: autoDraw = False
+202.2495 	EXP 	Cue1_fractal: image = 'Sub40/cues/3.jpg'
+202.2495 	EXP 	Cue2_fractal: image = 'Sub40/cues/4.jpg'
+202.2495 	EXP 	Cue1_fractal: autoDraw = True
+205.2486 	EXP 	Cue1_fractal: autoDraw = False
+205.2486 	EXP 	Fixation_bt: autoDraw = True
+205.5489 	EXP 	Fixation_bt: autoDraw = False
+205.5489 	EXP 	Cue2_fractal: autoDraw = True
+206.0344 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+206.0347 	EXP 	New trial (rep=0, index=0): None
+206.0486 	EXP 	Cue1_fractal: autoDraw = False
+206.0486 	EXP 	Fixation_bt: autoDraw = False
+206.0486 	EXP 	Cue2_fractal: autoDraw = False
+206.0486 	EXP 	text_corr_fixation: text = '+'
+206.0486 	EXP 	text_corr_fixation: autoDraw = True
+211.0334 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+211.0337 	EXP 	New trial (rep=0, index=21): {'trial': 22, 'pair': 5, 'rep': 2, 'cue1_idx': 9, 'cue2_idx': 2, 'correct': 'left', 'ITIDur': 5}
+211.0487 	EXP 	text_corr_fixation: autoDraw = False
+211.0487 	EXP 	text_corr_fixation: autoDraw = False
+211.0487 	EXP 	Cue1_fractal: image = 'Sub40/cues/9.jpg'
+211.0487 	EXP 	Cue2_fractal: image = 'Sub40/cues/2.jpg'
+211.0487 	EXP 	Cue1_fractal: autoDraw = True
+214.0319 	EXP 	Fixation_bt: autoDraw = True
+214.0485 	EXP 	Cue1_fractal: autoDraw = False
+214.3320 	EXP 	Fixation_bt: autoDraw = False
+214.3320 	EXP 	Cue2_fractal: autoDraw = True
+215.1008 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+215.1011 	EXP 	New trial (rep=0, index=0): None
+215.1151 	EXP 	Cue1_fractal: autoDraw = False
+215.1151 	EXP 	Fixation_bt: autoDraw = False
+215.1151 	EXP 	Cue2_fractal: autoDraw = False
+215.1151 	EXP 	text_corr_fixation: text = '+'
+215.1151 	EXP 	text_corr_fixation: autoDraw = True
+220.1000 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+220.1004 	EXP 	New trial (rep=0, index=22): {'trial': 23, 'pair': 4, 'rep': 2, 'cue1_idx': 7, 'cue2_idx': 6, 'correct': 'left', 'ITIDur': 8}
+220.1153 	EXP 	text_corr_fixation: autoDraw = False
+220.1153 	EXP 	text_corr_fixation: autoDraw = False
+220.1153 	EXP 	Cue1_fractal: image = 'Sub40/cues/7.jpg'
+220.1153 	EXP 	Cue2_fractal: image = 'Sub40/cues/6.jpg'
+220.1153 	EXP 	Cue1_fractal: autoDraw = True
+223.1150 	EXP 	Cue1_fractal: autoDraw = False
+223.1150 	EXP 	Fixation_bt: autoDraw = True
+223.4153 	EXP 	Fixation_bt: autoDraw = False
+223.4153 	EXP 	Cue2_fractal: autoDraw = True
+223.9176 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+223.9178 	EXP 	New trial (rep=0, index=0): None
+223.9312 	EXP 	Cue1_fractal: autoDraw = False
+223.9312 	EXP 	Fixation_bt: autoDraw = False
+223.9312 	EXP 	Cue2_fractal: autoDraw = False
+223.9312 	EXP 	text_corr_fixation: text = '+'
+223.9312 	EXP 	text_corr_fixation: autoDraw = True
+231.9163 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+231.9166 	EXP 	New trial (rep=0, index=23): {'trial': 24, 'pair': 4, 'rep': 2, 'cue1_idx': 7, 'cue2_idx': 8, 'correct': 'right', 'ITIDur': 7}
+231.9313 	EXP 	text_corr_fixation: autoDraw = False
+231.9313 	EXP 	text_corr_fixation: autoDraw = False
+231.9313 	EXP 	Cue1_fractal: image = 'Sub40/cues/7.jpg'
+231.9313 	EXP 	Cue2_fractal: image = 'Sub40/cues/8.jpg'
+231.9313 	EXP 	Cue1_fractal: autoDraw = True
+234.9149 	EXP 	Fixation_bt: autoDraw = True
+234.9314 	EXP 	Cue1_fractal: autoDraw = False
+235.2149 	EXP 	Fixation_bt: autoDraw = False
+235.2149 	EXP 	Cue2_fractal: autoDraw = True
+235.7676 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+235.7678 	EXP 	New trial (rep=0, index=0): None
+235.7813 	EXP 	Cue1_fractal: autoDraw = False
+235.7813 	EXP 	Fixation_bt: autoDraw = False
+235.7813 	EXP 	Cue2_fractal: autoDraw = False
+235.7813 	EXP 	text_corr_fixation: text = '+'
+235.7813 	EXP 	text_corr_fixation: autoDraw = True
+242.7660 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+242.7665 	EXP 	New trial (rep=0, index=24): {'trial': 25, 'pair': 3, 'rep': 3, 'cue1_idx': 5, 'cue2_idx': 2, 'correct': 'left', 'ITIDur': 6}
+242.7818 	EXP 	text_corr_fixation: autoDraw = False
+242.7818 	EXP 	text_corr_fixation: autoDraw = False
+242.7818 	EXP 	Cue1_fractal: image = 'Sub40/cues/5.jpg'
+242.7818 	EXP 	Cue2_fractal: image = 'Sub40/cues/2.jpg'
+242.7818 	EXP 	Cue1_fractal: autoDraw = True
+245.7646 	EXP 	Fixation_bt: autoDraw = True
+245.7810 	EXP 	Cue1_fractal: autoDraw = False
+246.0645 	EXP 	Fixation_bt: autoDraw = False
+246.0645 	EXP 	Cue2_fractal: autoDraw = True
+246.5000 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+246.5003 	EXP 	New trial (rep=0, index=0): None
+246.5143 	EXP 	Cue1_fractal: autoDraw = False
+246.5143 	EXP 	Fixation_bt: autoDraw = False
+246.5143 	EXP 	Cue2_fractal: autoDraw = False
+246.5143 	EXP 	text_corr_fixation: text = '+'
+246.5143 	EXP 	text_corr_fixation: autoDraw = True
+252.4991 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+252.4995 	EXP 	New trial (rep=0, index=25): {'trial': 26, 'pair': 2, 'rep': 3, 'cue1_idx': 3, 'cue2_idx': 10, 'correct': 'left', 'ITIDur': 6}
+252.5145 	EXP 	text_corr_fixation: autoDraw = False
+252.5145 	EXP 	text_corr_fixation: autoDraw = False
+252.5145 	EXP 	Cue1_fractal: image = 'Sub40/cues/3.jpg'
+252.5145 	EXP 	Cue2_fractal: image = 'Sub40/cues/10.jpg'
+252.5145 	EXP 	Cue1_fractal: autoDraw = True
+255.4978 	EXP 	Fixation_bt: autoDraw = True
+255.5143 	EXP 	Cue1_fractal: autoDraw = False
+255.7977 	EXP 	Fixation_bt: autoDraw = False
+255.8146 	EXP 	Cue2_fractal: autoDraw = True
+256.8674 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+256.8677 	EXP 	New trial (rep=0, index=0): None
+256.8809 	EXP 	Cue1_fractal: autoDraw = False
+256.8809 	EXP 	Fixation_bt: autoDraw = False
+256.8809 	EXP 	Cue2_fractal: autoDraw = False
+256.8809 	EXP 	text_corr_fixation: text = '+'
+256.8809 	EXP 	text_corr_fixation: autoDraw = True
+262.8659 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+262.8663 	EXP 	New trial (rep=0, index=26): {'trial': 27, 'pair': 4, 'rep': 3, 'cue1_idx': 7, 'cue2_idx': 12, 'correct': 'left', 'ITIDur': 7}
+262.8810 	EXP 	text_corr_fixation: autoDraw = False
+262.8810 	EXP 	text_corr_fixation: autoDraw = False
+262.8810 	EXP 	Cue1_fractal: image = 'Sub40/cues/7.jpg'
+262.8810 	EXP 	Cue2_fractal: image = 'Sub40/cues/12.jpg'
+262.8810 	EXP 	Cue1_fractal: autoDraw = True
+265.8806 	EXP 	Cue1_fractal: autoDraw = False
+265.8806 	EXP 	Fixation_bt: autoDraw = True
+266.1807 	EXP 	Fixation_bt: autoDraw = False
+266.1807 	EXP 	Cue2_fractal: autoDraw = True
+267.1838 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+267.1841 	EXP 	New trial (rep=0, index=0): None
+267.1973 	EXP 	Cue1_fractal: autoDraw = False
+267.1973 	EXP 	Fixation_bt: autoDraw = False
+267.1973 	EXP 	Cue2_fractal: autoDraw = False
+267.1973 	EXP 	text_corr_fixation: text = '+'
+267.1973 	EXP 	text_corr_fixation: autoDraw = True
+274.1823 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+274.1827 	EXP 	New trial (rep=0, index=27): {'trial': 28, 'pair': 1, 'rep': 3, 'cue1_idx': 1, 'cue2_idx': 2, 'correct': 'right', 'ITIDur': 7}
+274.1974 	EXP 	text_corr_fixation: autoDraw = False
+274.1974 	EXP 	text_corr_fixation: autoDraw = False
+274.1974 	EXP 	Cue1_fractal: image = 'Sub40/cues/1.jpg'
+274.1974 	EXP 	Cue2_fractal: image = 'Sub40/cues/2.jpg'
+274.1974 	EXP 	Cue1_fractal: autoDraw = True
+277.1804 	EXP 	Fixation_bt: autoDraw = True
+277.1973 	EXP 	Cue1_fractal: autoDraw = False
+277.4805 	EXP 	Fixation_bt: autoDraw = False
+277.4975 	EXP 	Cue2_fractal: autoDraw = True
+278.2999 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+278.3002 	EXP 	New trial (rep=0, index=0): None
+278.3138 	EXP 	Cue1_fractal: autoDraw = False
+278.3138 	EXP 	Fixation_bt: autoDraw = False
+278.3138 	EXP 	Cue2_fractal: autoDraw = False
+278.3138 	EXP 	text_corr_fixation: text = '+'
+278.3138 	EXP 	text_corr_fixation: autoDraw = True
+285.2986 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+285.2992 	EXP 	New trial (rep=0, index=28): {'trial': 29, 'pair': 2, 'rep': 3, 'cue1_idx': 3, 'cue2_idx': 4, 'correct': 'right', 'ITIDur': 4}
+285.3137 	EXP 	text_corr_fixation: autoDraw = False
+285.3137 	EXP 	text_corr_fixation: autoDraw = False
+285.3137 	EXP 	Cue1_fractal: image = 'Sub40/cues/3.jpg'
+285.3137 	EXP 	Cue2_fractal: image = 'Sub40/cues/4.jpg'
+285.3137 	EXP 	Cue1_fractal: autoDraw = True
+288.3136 	EXP 	Cue1_fractal: autoDraw = False
+288.3136 	EXP 	Fixation_bt: autoDraw = True
+288.6138 	EXP 	Fixation_bt: autoDraw = False
+288.6138 	EXP 	Cue2_fractal: autoDraw = True
+289.3009 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+289.3012 	EXP 	New trial (rep=0, index=0): None
+289.3137 	EXP 	Cue1_fractal: autoDraw = False
+289.3137 	EXP 	Fixation_bt: autoDraw = False
+289.3137 	EXP 	Cue2_fractal: autoDraw = False
+289.3137 	EXP 	text_corr_fixation: text = '+'
+289.3137 	EXP 	text_corr_fixation: autoDraw = True
+293.2987 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+293.2991 	EXP 	New trial (rep=0, index=29): {'trial': 30, 'pair': 1, 'rep': 3, 'cue1_idx': 1, 'cue2_idx': 4, 'correct': 'left', 'ITIDur': 3}
+293.3135 	EXP 	text_corr_fixation: autoDraw = False
+293.3135 	EXP 	text_corr_fixation: autoDraw = False
+293.3135 	EXP 	Cue1_fractal: image = 'Sub40/cues/1.jpg'
+293.3135 	EXP 	Cue2_fractal: image = 'Sub40/cues/4.jpg'
+293.3135 	EXP 	Cue1_fractal: autoDraw = True
+296.3136 	EXP 	Cue1_fractal: autoDraw = False
+296.3136 	EXP 	Fixation_bt: autoDraw = True
+296.6136 	EXP 	Fixation_bt: autoDraw = False
+296.6136 	EXP 	Cue2_fractal: autoDraw = True
+297.5662 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+297.5665 	EXP 	New trial (rep=0, index=0): None
+297.5801 	EXP 	Cue1_fractal: autoDraw = False
+297.5801 	EXP 	Fixation_bt: autoDraw = False
+297.5801 	EXP 	Cue2_fractal: autoDraw = False
+297.5801 	EXP 	text_corr_fixation: text = '+'
+297.5801 	EXP 	text_corr_fixation: autoDraw = True
+300.5648 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+300.5652 	EXP 	New trial (rep=0, index=30): {'trial': 31, 'pair': 5, 'rep': 3, 'cue1_idx': 9, 'cue2_idx': 10, 'correct': 'right', 'ITIDur': 8}
+300.5799 	EXP 	text_corr_fixation: autoDraw = False
+300.5799 	EXP 	text_corr_fixation: autoDraw = False
+300.5799 	EXP 	Cue1_fractal: image = 'Sub40/cues/9.jpg'
+300.5799 	EXP 	Cue2_fractal: image = 'Sub40/cues/10.jpg'
+300.5799 	EXP 	Cue1_fractal: autoDraw = True
+303.5635 	EXP 	Fixation_bt: autoDraw = True
+303.5800 	EXP 	Cue1_fractal: autoDraw = False
+303.8633 	EXP 	Fixation_bt: autoDraw = False
+303.8800 	EXP 	Cue2_fractal: autoDraw = True
+304.7991 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+304.7993 	EXP 	New trial (rep=0, index=0): None
+304.8133 	EXP 	Cue1_fractal: autoDraw = False
+304.8133 	EXP 	Fixation_bt: autoDraw = False
+304.8133 	EXP 	Cue2_fractal: autoDraw = False
+304.8133 	EXP 	text_corr_fixation: text = '+'
+304.8133 	EXP 	text_corr_fixation: autoDraw = True
+312.7983 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+312.7987 	EXP 	New trial (rep=0, index=31): {'trial': 32, 'pair': 3, 'rep': 3, 'cue1_idx': 5, 'cue2_idx': 6, 'correct': 'right', 'ITIDur': 4}
+312.8132 	EXP 	text_corr_fixation: autoDraw = False
+312.8132 	EXP 	text_corr_fixation: autoDraw = False
+312.8132 	EXP 	Cue1_fractal: image = 'Sub40/cues/5.jpg'
+312.8132 	EXP 	Cue2_fractal: image = 'Sub40/cues/6.jpg'
+312.8132 	EXP 	Cue1_fractal: autoDraw = True
+315.8131 	EXP 	Cue1_fractal: autoDraw = False
+315.8131 	EXP 	Fixation_bt: autoDraw = True
+316.1132 	EXP 	Fixation_bt: autoDraw = False
+316.1132 	EXP 	Cue2_fractal: autoDraw = True
+316.4989 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+316.4991 	EXP 	New trial (rep=0, index=0): None
+316.5129 	EXP 	Cue1_fractal: autoDraw = False
+316.5129 	EXP 	Fixation_bt: autoDraw = False
+316.5129 	EXP 	Cue2_fractal: autoDraw = False
+316.5129 	EXP 	text_corr_fixation: text = '+'
+316.5129 	EXP 	text_corr_fixation: autoDraw = True
+320.4977 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+320.4981 	EXP 	New trial (rep=0, index=32): {'trial': 33, 'pair': 4, 'rep': 3, 'cue1_idx': 7, 'cue2_idx': 8, 'correct': 'right', 'ITIDur': 4}
+320.5131 	EXP 	text_corr_fixation: autoDraw = False
+320.5131 	EXP 	text_corr_fixation: autoDraw = False
+320.5131 	EXP 	Cue1_fractal: image = 'Sub40/cues/7.jpg'
+320.5131 	EXP 	Cue2_fractal: image = 'Sub40/cues/8.jpg'
+320.5131 	EXP 	Cue1_fractal: autoDraw = True
+323.4964 	EXP 	Fixation_bt: autoDraw = True
+323.5129 	EXP 	Cue1_fractal: autoDraw = False
+323.7962 	EXP 	Fixation_bt: autoDraw = False
+323.8132 	EXP 	Cue2_fractal: autoDraw = True
+324.7491 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+324.7494 	EXP 	New trial (rep=0, index=0): None
+324.7630 	EXP 	Cue1_fractal: autoDraw = False
+324.7630 	EXP 	Fixation_bt: autoDraw = False
+324.7630 	EXP 	Cue2_fractal: autoDraw = False
+324.7630 	EXP 	text_corr_fixation: text = '+'
+324.7630 	EXP 	text_corr_fixation: autoDraw = True
+328.7474 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+328.7478 	EXP 	New trial (rep=0, index=33): {'trial': 34, 'pair': 5, 'rep': 3, 'cue1_idx': 9, 'cue2_idx': 8, 'correct': 'left', 'ITIDur': 6}
+328.7628 	EXP 	text_corr_fixation: autoDraw = False
+328.7628 	EXP 	text_corr_fixation: autoDraw = False
+328.7628 	EXP 	Cue1_fractal: image = 'Sub40/cues/9.jpg'
+328.7628 	EXP 	Cue2_fractal: image = 'Sub40/cues/8.jpg'
+328.7628 	EXP 	Cue1_fractal: autoDraw = True
+331.7460 	EXP 	Fixation_bt: autoDraw = True
+331.7627 	EXP 	Cue1_fractal: autoDraw = False
+332.0463 	EXP 	Fixation_bt: autoDraw = False
+332.0463 	EXP 	Cue2_fractal: autoDraw = True
+332.6821 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+332.6824 	EXP 	New trial (rep=0, index=0): None
+332.6961 	EXP 	Cue1_fractal: autoDraw = False
+332.6961 	EXP 	Fixation_bt: autoDraw = False
+332.6961 	EXP 	Cue2_fractal: autoDraw = False
+332.6961 	EXP 	text_corr_fixation: text = '+'
+332.6961 	EXP 	text_corr_fixation: autoDraw = True
+338.6806 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+338.6810 	EXP 	New trial (rep=0, index=34): {'trial': 35, 'pair': 6, 'rep': 3, 'cue1_idx': 11, 'cue2_idx': 12, 'correct': 'right', 'ITIDur': 6}
+338.6963 	EXP 	text_corr_fixation: autoDraw = False
+338.6963 	EXP 	text_corr_fixation: autoDraw = False
+338.6963 	EXP 	Cue1_fractal: image = 'Sub40/cues/11.jpg'
+338.6963 	EXP 	Cue2_fractal: image = 'Sub40/cues/12.jpg'
+338.6963 	EXP 	Cue1_fractal: autoDraw = True
+341.6792 	EXP 	Fixation_bt: autoDraw = True
+341.6960 	EXP 	Cue1_fractal: autoDraw = False
+341.9793 	EXP 	Fixation_bt: autoDraw = False
+341.9793 	EXP 	Cue2_fractal: autoDraw = True
+342.4990 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+342.4993 	EXP 	New trial (rep=0, index=0): None
+342.5124 	EXP 	Cue1_fractal: autoDraw = False
+342.5124 	EXP 	Fixation_bt: autoDraw = False
+342.5124 	EXP 	Cue2_fractal: autoDraw = False
+342.5124 	EXP 	text_corr_fixation: text = '+'
+342.5124 	EXP 	text_corr_fixation: autoDraw = True
+348.4971 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+348.4974 	EXP 	New trial (rep=0, index=35): {'trial': 36, 'pair': 6, 'rep': 3, 'cue1_idx': 11, 'cue2_idx': 6, 'correct': 'left', 'ITIDur': 7}
+348.5125 	EXP 	text_corr_fixation: autoDraw = False
+348.5125 	EXP 	text_corr_fixation: autoDraw = False
+348.5125 	EXP 	Cue1_fractal: image = 'Sub40/cues/11.jpg'
+348.5125 	EXP 	Cue2_fractal: image = 'Sub40/cues/6.jpg'
+348.5125 	EXP 	Cue1_fractal: autoDraw = True
+351.4957 	EXP 	Fixation_bt: autoDraw = True
+351.5123 	EXP 	Cue1_fractal: autoDraw = False
+351.7961 	EXP 	Fixation_bt: autoDraw = False
+351.7961 	EXP 	Cue2_fractal: autoDraw = True
+352.8156 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+352.8159 	EXP 	New trial (rep=0, index=0): None
+352.8289 	EXP 	Cue1_fractal: autoDraw = False
+352.8289 	EXP 	Fixation_bt: autoDraw = False
+352.8289 	EXP 	Cue2_fractal: autoDraw = False
+352.8289 	EXP 	text_corr_fixation: text = '+'
+352.8289 	EXP 	text_corr_fixation: autoDraw = True
+359.8138 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+359.8321 	EXP 	text_corr_fixation: autoDraw = False
+359.8321 	EXP 	text_corr_fixation: autoDraw = False
+359.8321 	EXP 	task_over_txt: autoDraw = True
+500.4924 	EXP 	task_over_txt: autoDraw = False
+500.4925 	EXP 	Recognition: status = STOPPED
+500.5864 	EXP 	window1: mouseVisible = True

@@ -1,0 +1,278 @@
+5.4855 	WARNING 	User requested fullscreen with size [1536  864], but screen is actually [1920, 1080]. Using actual size
+6.0063 	EXP 	Created window1 = Window(allowGUI=True, allowStencil=False, autoLog=True, backendConf=UNKNOWN, backgroundFit=<method-wrapper '__getattribute__' of attributeSetter object at 0x000001BE42401DC0>, backgroundImage=<method-wrapper '__getattribute__' of attributeSetter object at 0x000001BE42401D60>, bitsMode=UNKNOWN, blendMode='avg', bpc=(8, 8, 8), color=array([0, 0, 0]), colorSpace='rgb', depthBits=8, fullscr=<method-wrapper '__getattribute__' of attributeSetter object at 0x000001BE42401B80>, gamma=None, gammaErrorPolicy='raise', lms=UNKNOWN, monitor=<psychopy.monitors.calibTools.Monitor object at 0x000001BE42609850>, multiSample=False, name='window1', numSamples=2, pos=(0, 0), screen=0, size=array([1920, 1080]), stencilBits=0, stereo=False, title='PsychoPy', units='height', useFBO=True, useRetina=False, viewOri=0.0, viewPos=None, viewScale=None, waitBlanking=True, winType='pyglet')
+6.0065 	EXP 	window1: mouseVisible = True
+6.0065 	EXP 	window1: backgroundImage = ''
+6.0066 	EXP 	window1: backgroundFit = 'none'
+6.0098 	EXP 	window1: Attempting to measure frame rate of screen (0) ...
+6.0099 	EXP 	window1: recordFrameIntervals = False
+6.1718 	EXP 	window1: recordFrameIntervals = True
+6.3560 	EXP 	Screen (0) actual frame rate measured at 59.85Hz
+6.3561 	EXP 	window1: recordFrameIntervals = False
+6.3562 	EXP 	window1: mouseVisible = False
+7.4222 	EXP 	Probe_pre: status = STARTED
+7.4308 	EXP 	window1: mouseVisible = True
+7.4669 	EXP 	Created text_welcome = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.07, italic=False, languageStyle='LTR', name='text_welcome', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='Please wait for the experimenter to continue.', units='height', win=Window(...), wrapWidth=1)
+7.4670 	EXP 	window1: mouseVisible = True
+7.4727 	EXP 	Created text_back = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.07, italic=False, languageStyle='LTR', name='text_back', opacity=1.0, ori=0.0, pos=array([-0.3, -0.4]), rgb=UNKNOWN, text='< Left to go back', units='height', win=Window(...), wrapWidth=1)
+7.4728 	EXP 	window1: mouseVisible = True
+7.4769 	EXP 	Created text_next = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.07, italic=False, languageStyle='LTR', name='text_next', opacity=1.0, ori=0.0, pos=array([ 0.3, -0.4]), rgb=UNKNOWN, text='Right to go next >', units='height', win=Window(...), wrapWidth=1)
+7.4770 	EXP 	window1: mouseVisible = True
+7.4777 	EXP 	Created text_instruct = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.07, italic=False, languageStyle='LTR', name='text_instruct', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+7.4778 	EXP 	window1: mouseVisible = True
+7.4860 	EXP 	Created text_wait = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.07, italic=False, languageStyle='LTR', name='text_wait', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+7.4861 	EXP 	window1: mouseVisible = True
+7.4901 	EXP 	Created text_long = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_long', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+7.4901 	EXP 	window1: mouseVisible = True
+7.5005 	EXP 	Created image_L0 = ImageStim(__class__=<class 'psychopy.visual.image.ImageStim'>, anchor=('center', 'center'), autoLog=True, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, image='default.png', interpolate=True, mask=None, maskParams=None, name='image_L0', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([0.4, 0.4]), texRes=128.0, units='height', win=Window(...))
+7.5006 	EXP 	window1: mouseVisible = True
+7.5014 	EXP 	Created text_ITI_within = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_ITI_within', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+7.5015 	EXP 	window1: mouseVisible = True
+7.5110 	EXP 	Created image_R0 = ImageStim(__class__=<class 'psychopy.visual.image.ImageStim'>, anchor=('center', 'center'), autoLog=True, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, image='default.png', interpolate=True, mask=None, maskParams=None, name='image_R0', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([0.4, 0.4]), texRes=128.0, units='height', win=Window(...))
+7.5111 	EXP 	window1: mouseVisible = True
+7.5122 	EXP 	Created polygon_L = Rect(__class__=<class 'psychopy.visual.rect.Rect'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=-1.0, draggable=False, fillColor=array([1, 1, 1]), fillColorSpace='rgb', fillRGB=array([1, 1, 1]), interpolate=True, lineColor=array([1., 1., 1.]), lineColorSpace='rgb', lineRGB=array([1, 1, 1]), lineWidth=10.0, name='polygon_L', opacity=0.0, ori=0.0, pos=array([-0.3,  0. ]), size=array([0.31, 0.31]), units='height', vertices=ndarray(...), win=Window(...))
+7.5123 	EXP 	window1: mouseVisible = True
+7.5133 	EXP 	Created polygon_R = Rect(__class__=<class 'psychopy.visual.rect.Rect'>, anchor=('center', 'center'), autoDraw=False, autoLog=True, closeShape=True, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=-2.0, draggable=False, fillColor=array([1, 1, 1]), fillColorSpace='rgb', fillRGB=array([1, 1, 1]), interpolate=True, lineColor=array([1., 1., 1.]), lineColorSpace='rgb', lineRGB=array([1, 1, 1]), lineWidth=10.0, name='polygon_R', opacity=0.0, ori=0.0, pos=array([0.3, 0. ]), size=array([0.31, 0.31]), units='height', vertices=ndarray(...), win=Window(...))
+7.5133 	EXP 	window1: mouseVisible = True
+7.5150 	EXP 	Created text_cross = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_cross', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+7.5151 	EXP 	window1: mouseVisible = True
+7.5201 	EXP 	Created text_L = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-5.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.12, italic=False, languageStyle='LTR', name='text_L', opacity=1.0, ori=0.0, pos=array([-0.3,  0. ]), rgb=UNKNOWN, text='1', units='height', win=Window(...), wrapWidth=1)
+7.5202 	EXP 	window1: mouseVisible = True
+7.5228 	EXP 	Created text_R = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-6.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.12, italic=False, languageStyle='LTR', name='text_R', opacity=1.0, ori=0.0, pos=array([0.3, 0. ]), rgb=UNKNOWN, text='2', units='height', win=Window(...), wrapWidth=1)
+7.5229 	EXP 	window1: mouseVisible = True
+7.5236 	EXP 	Created text = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+7.5237 	EXP 	window1: mouseVisible = True
+7.5292 	EXP 	Created text_TooSlow = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.07, italic=False, languageStyle='LTR', name='text_TooSlow', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='Too Slow!', units='height', win=Window(...), wrapWidth=1)
+7.5293 	EXP 	window1: mouseVisible = True
+7.5300 	EXP 	Created text_ITI_2 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_ITI_2', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+7.5301 	EXP 	window1: mouseVisible = True
+7.5328 	EXP 	Created text_long = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_long', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+7.5329 	EXP 	window1: mouseVisible = True
+7.5344 	EXP 	Created text_long = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_long', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+7.5345 	EXP 	window1: mouseVisible = True
+7.5494 	EXP 	Created text_bye = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.07, italic=False, languageStyle='LTR', name='text_bye', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+7.5495 	EXP 	window1: mouseVisible = True
+7.5632 	EXP 	Created text_2 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.07, italic=False, languageStyle='LTR', name='text_2', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+7.5633 	EXP 	window1: mouseVisible = True
+7.5648 	EXP 	Created fixation_white = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='fixation_white', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+7.5649 	EXP 	window1: mouseVisible = True
+7.5661 	EXP 	Created fixation_blue_2 = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([-1., -1.,  1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='fixation_blue_2', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+7.5662 	EXP 	window1: mouseVisible = True
+7.5669 	EXP 	Created fixation_ITI = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='fixation_ITI', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+7.5669 	EXP 	window1: mouseVisible = True
+7.5716 	EXP 	Created task_over_txt = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.07, italic=False, languageStyle='LTR', name='task_over_txt', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+0.0166 	EXP 	text_welcome: autoDraw = True
+2.1005 	EXP 	Created sequence: sequential, trialTypes=1, nReps=10000, seed=None
+2.1228 	EXP 	New trial (rep=0, index=0): None
+2.1263 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+2.1269 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+2.1270 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Please read the task instructions carefully. You will be asked to explain the instructions back to the experimenter before beginning the task.'}
+2.1413 	EXP 	text_welcome: autoDraw = False
+2.1413 	EXP 	text_back: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+2.1413 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+2.1413 	EXP 	text_instruct: height = 0.07
+2.1413 	EXP 	text_instruct: height = 0.07
+2.1413 	EXP 	text_instruct: height = 0.07
+2.1413 	EXP 	text_instruct: text = 'Please read the task instructions carefully. You will be asked to explain the instructions back to the experimenter before beginning the task.'
+2.1413 	EXP 	text_back: autoDraw = True
+2.1413 	EXP 	text_next: autoDraw = True
+2.1413 	EXP 	text_instruct: autoDraw = True
+15.2454 	EXP 	New trial (rep=1, index=0): None
+15.2485 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+15.2487 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+15.2488 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'In the next task, we want you to make choices either between two characters or between two places.'}
+15.2613 	EXP 	text_back: autoDraw = False
+15.2613 	EXP 	text_next: autoDraw = False
+15.2613 	EXP 	text_instruct: autoDraw = False
+15.2613 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+15.2613 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+15.2613 	EXP 	text_instruct: height = 0.07
+15.2613 	EXP 	text_instruct: height = 0.07
+15.2613 	EXP 	text_instruct: height = 0.07
+15.2613 	EXP 	text_instruct: text = 'In the next task, we want you to make choices either between two characters or between two places.'
+15.2613 	EXP 	text_back: autoDraw = True
+15.2613 	EXP 	text_next: autoDraw = True
+15.2613 	EXP 	text_instruct: autoDraw = True
+27.9925 	EXP 	New trial (rep=2, index=0): None
+27.9955 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+27.9957 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+27.9958 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Two characters or two places will appear on the screen one by one. You will then see numbers 1 and 2. Number 1 refers to the first image and number 2 refers to the second image.'}
+28.0109 	EXP 	text_back: autoDraw = False
+28.0109 	EXP 	text_next: autoDraw = False
+28.0109 	EXP 	text_instruct: autoDraw = False
+28.0109 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+28.0109 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+28.0109 	EXP 	text_instruct: height = 0.07
+28.0109 	EXP 	text_instruct: height = 0.07
+28.0109 	EXP 	text_instruct: height = 0.07
+28.0109 	EXP 	text_instruct: text = 'Two characters or two places will appear on the screen one by one. You will then see numbers 1 and 2. Number 1 refers to the first image and number 2 refers to the second image.'
+28.0109 	EXP 	text_back: autoDraw = True
+28.0109 	EXP 	text_next: autoDraw = True
+28.0109 	EXP 	text_instruct: autoDraw = True
+42.0824 	EXP 	New trial (rep=3, index=0): None
+42.0853 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+42.0856 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+42.0857 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Use the Left or Right key to make your choice within 2 seconds.'}
+42.0975 	EXP 	text_back: autoDraw = False
+42.0975 	EXP 	text_next: autoDraw = False
+42.0975 	EXP 	text_instruct: autoDraw = False
+42.0975 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+42.0975 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+42.0975 	EXP 	text_instruct: height = 0.07
+42.0975 	EXP 	text_instruct: height = 0.07
+42.0975 	EXP 	text_instruct: height = 0.07
+42.0975 	EXP 	text_instruct: text = 'Use the Left or Right key to make your choice within 2 seconds.'
+42.0975 	EXP 	text_back: autoDraw = True
+42.0975 	EXP 	text_next: autoDraw = True
+42.0975 	EXP 	text_instruct: autoDraw = True
+49.4414 	EXP 	New trial (rep=4, index=0): None
+49.4444 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+49.4446 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+49.4447 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Two characters or two places will appear on the screen one by one. You will then see numbers 1 and 2. Number 1 refers to the first image and number 2 refers to the second image.'}
+49.4577 	EXP 	text_back: autoDraw = False
+49.4577 	EXP 	text_next: autoDraw = False
+49.4577 	EXP 	text_instruct: autoDraw = False
+49.4577 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+49.4577 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+49.4577 	EXP 	text_instruct: height = 0.07
+49.4577 	EXP 	text_instruct: height = 0.07
+49.4577 	EXP 	text_instruct: height = 0.07
+49.4577 	EXP 	text_instruct: text = 'Two characters or two places will appear on the screen one by one. You will then see numbers 1 and 2. Number 1 refers to the first image and number 2 refers to the second image.'
+49.4577 	EXP 	text_back: autoDraw = True
+49.4577 	EXP 	text_next: autoDraw = True
+49.4577 	EXP 	text_instruct: autoDraw = True
+51.2608 	EXP 	New trial (rep=5, index=0): None
+51.2639 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+51.2641 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+51.2643 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'In the next task, we want you to make choices either between two characters or between two places.'}
+51.2730 	EXP 	text_back: autoDraw = False
+51.2730 	EXP 	text_next: autoDraw = False
+51.2730 	EXP 	text_instruct: autoDraw = False
+51.2730 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+51.2730 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+51.2730 	EXP 	text_instruct: height = 0.07
+51.2730 	EXP 	text_instruct: height = 0.07
+51.2730 	EXP 	text_instruct: height = 0.07
+51.2730 	EXP 	text_instruct: text = 'In the next task, we want you to make choices either between two characters or between two places.'
+51.2730 	EXP 	text_back: autoDraw = True
+51.2730 	EXP 	text_next: autoDraw = True
+51.2730 	EXP 	text_instruct: autoDraw = True
+54.8251 	EXP 	New trial (rep=6, index=0): None
+54.8281 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+54.8283 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+54.8284 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Two characters or two places will appear on the screen one by one. You will then see numbers 1 and 2. Number 1 refers to the first image and number 2 refers to the second image.'}
+54.8414 	EXP 	text_back: autoDraw = False
+54.8414 	EXP 	text_next: autoDraw = False
+54.8414 	EXP 	text_instruct: autoDraw = False
+54.8414 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+54.8414 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+54.8414 	EXP 	text_instruct: height = 0.07
+54.8414 	EXP 	text_instruct: height = 0.07
+54.8414 	EXP 	text_instruct: height = 0.07
+54.8414 	EXP 	text_instruct: text = 'Two characters or two places will appear on the screen one by one. You will then see numbers 1 and 2. Number 1 refers to the first image and number 2 refers to the second image.'
+54.8414 	EXP 	text_back: autoDraw = True
+54.8414 	EXP 	text_next: autoDraw = True
+54.8414 	EXP 	text_instruct: autoDraw = True
+55.1537 	EXP 	New trial (rep=7, index=0): None
+55.1569 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+55.1572 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+55.1573 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Use the Left or Right key to make your choice within 2 seconds.'}
+55.1648 	EXP 	text_back: autoDraw = False
+55.1648 	EXP 	text_next: autoDraw = False
+55.1648 	EXP 	text_instruct: autoDraw = False
+55.1648 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+55.1648 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+55.1648 	EXP 	text_instruct: height = 0.07
+55.1648 	EXP 	text_instruct: height = 0.07
+55.1648 	EXP 	text_instruct: height = 0.07
+55.1648 	EXP 	text_instruct: text = 'Use the Left or Right key to make your choice within 2 seconds.'
+55.1648 	EXP 	text_back: autoDraw = True
+55.1648 	EXP 	text_next: autoDraw = True
+55.1648 	EXP 	text_instruct: autoDraw = True
+56.5583 	EXP 	New trial (rep=8, index=0): None
+56.5617 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+56.5620 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+56.5622 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Choose based on your current preference of smelling the odor or the clean air.'}
+56.5730 	EXP 	text_back: autoDraw = False
+56.5730 	EXP 	text_next: autoDraw = False
+56.5730 	EXP 	text_instruct: autoDraw = False
+56.5730 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+56.5730 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+56.5730 	EXP 	text_instruct: height = 0.07
+56.5730 	EXP 	text_instruct: height = 0.07
+56.5730 	EXP 	text_instruct: height = 0.07
+56.5730 	EXP 	text_instruct: text = 'Choose based on your current preference of smelling the odor or the clean air.'
+56.5730 	EXP 	text_back: autoDraw = True
+56.5730 	EXP 	text_next: autoDraw = True
+56.5730 	EXP 	text_instruct: autoDraw = True
+66.9745 	EXP 	New trial (rep=9, index=0): None
+66.9773 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+66.9776 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+66.9777 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'In other words, if you want to smell a certain odor, then select the character or place that has the odor. If you want to smell clean air, then select the character or place with no odor.'}
+66.9877 	EXP 	text_back: autoDraw = False
+66.9877 	EXP 	text_next: autoDraw = False
+66.9877 	EXP 	text_instruct: autoDraw = False
+66.9877 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+66.9877 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+66.9877 	EXP 	text_instruct: height = 0.07
+66.9877 	EXP 	text_instruct: height = 0.07
+66.9877 	EXP 	text_instruct: height = 0.07
+66.9877 	EXP 	text_instruct: text = 'In other words, if you want to smell a certain odor, then select the character or place that has the odor. If you want to smell clean air, then select the character or place with no odor.'
+66.9877 	EXP 	text_back: autoDraw = True
+66.9877 	EXP 	text_next: autoDraw = True
+66.9877 	EXP 	text_instruct: autoDraw = True
+87.5184 	EXP 	New trial (rep=10, index=0): None
+87.5214 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+87.5217 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+87.5218 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'You will not immediately receive the odor or clean air of your choices but your choices will be recorded. '}
+87.5313 	EXP 	text_back: autoDraw = False
+87.5313 	EXP 	text_next: autoDraw = False
+87.5313 	EXP 	text_instruct: autoDraw = False
+87.5313 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+87.5313 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+87.5313 	EXP 	text_instruct: height = 0.07
+87.5313 	EXP 	text_instruct: height = 0.07
+87.5313 	EXP 	text_instruct: height = 0.07
+87.5313 	EXP 	text_instruct: text = 'You will not immediately receive the odor or clean air of your choices but your choices will be recorded. '
+87.5313 	EXP 	text_back: autoDraw = True
+87.5313 	EXP 	text_next: autoDraw = True
+87.5313 	EXP 	text_instruct: autoDraw = True
+98.2065 	EXP 	New trial (rep=11, index=0): None
+98.2094 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+98.2096 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+98.2097 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'At the end of this task, we will randomly select five characters or places of your choices. You will smell the odor or the clean air of those characters or places. Think carefully what you want to smell!'}
+98.2217 	EXP 	text_back: autoDraw = False
+98.2217 	EXP 	text_next: autoDraw = False
+98.2217 	EXP 	text_instruct: autoDraw = False
+98.2217 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+98.2217 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+98.2217 	EXP 	text_instruct: height = 0.07
+98.2217 	EXP 	text_instruct: height = 0.07
+98.2217 	EXP 	text_instruct: height = 0.07
+98.2217 	EXP 	text_instruct: text = 'At the end of this task, we will randomly select five characters or places of your choices. You will smell the odor or the clean air of those characters or places. Think carefully what you want to smell!'
+98.2217 	EXP 	text_back: autoDraw = True
+98.2217 	EXP 	text_next: autoDraw = True
+98.2217 	EXP 	text_instruct: autoDraw = True
+119.5365 	EXP 	New trial (rep=12, index=0): None
+119.5394 	EXP 	Imported instructions_common/ProbeInstruct.xlsx as conditions, 1 conditions, 1 params
+119.5396 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+119.5397 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Please repeat these instructions back to the experimenter to show that you understand the instructions. If not, go back and read them again.'}
+119.5536 	EXP 	text_back: autoDraw = False
+119.5536 	EXP 	text_next: autoDraw = False
+119.5536 	EXP 	text_instruct: autoDraw = False
+119.5536 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+119.5536 	EXP 	text_next: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+119.5536 	EXP 	text_instruct: height = 0.07
+119.5536 	EXP 	text_instruct: height = 0.07
+119.5536 	EXP 	text_instruct: height = 0.07
+119.5536 	EXP 	text_instruct: text = 'Please repeat these instructions back to the experimenter to show that you understand the instructions. If not, go back and read them again.'
+119.5536 	EXP 	text_back: autoDraw = True
+119.5536 	EXP 	text_next: autoDraw = True
+119.5536 	EXP 	text_instruct: autoDraw = True
+198.6734 	EXP 	Imported ctr_files/Probe1_ctr.xlsx as conditions, 3 conditions, 2 params
+198.6739 	EXP 	Created sequence: sequential, trialTypes=3, nReps=1, seed=None
+198.6741 	EXP 	New trial (rep=0, index=0): {'id': 1, 'cond_file': 'Probe1Conds_Run1.xlsx'}
+198.6798 	EXP 	text_back: autoDraw = False
+198.6798 	EXP 	text_next: autoDraw = False
+198.6798 	EXP 	text_instruct: autoDraw = False
+198.6798 	EXP 	text_wait: autoDraw = True
+232.1001 	EXP 	window1: mouseVisible = True

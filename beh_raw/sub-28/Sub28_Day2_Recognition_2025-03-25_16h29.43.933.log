@@ -1,0 +1,207 @@
+3.9804 	WARNING 	User requested fullscreen with size [1536  864], but screen is actually [1920, 1080]. Using actual size
+4.6738 	EXP 	Created window1 = Window(allowGUI=True, allowStencil=False, autoLog=True, backendConf=UNKNOWN, backgroundFit=<method-wrapper '__getattribute__' of attributeSetter object at 0x000001DED5318FD0>, backgroundImage=<method-wrapper '__getattribute__' of attributeSetter object at 0x000001DED5318F70>, bitsMode=UNKNOWN, blendMode='avg', bpc=(8, 8, 8), color=array([0, 0, 0]), colorSpace='rgb', depthBits=8, fullscr=<method-wrapper '__getattribute__' of attributeSetter object at 0x000001DED5318D90>, gamma=None, gammaErrorPolicy='raise', lms=UNKNOWN, monitor=<psychopy.monitors.calibTools.Monitor object at 0x000001DED55229A0>, multiSample=False, name='window1', numSamples=2, pos=(0, 0), screen=0, size=array([1920, 1080]), stencilBits=0, stereo=False, title='PsychoPy', units='height', useFBO=True, useRetina=False, viewOri=0.0, viewPos=None, viewScale=None, waitBlanking=True, winType='pyglet')
+4.6740 	EXP 	window1: mouseVisible = True
+4.6740 	EXP 	window1: backgroundImage = ''
+4.6740 	EXP 	window1: backgroundFit = 'none'
+4.6779 	EXP 	window1: Attempting to measure frame rate of screen (0) ...
+4.6780 	EXP 	window1: recordFrameIntervals = False
+4.8397 	EXP 	window1: recordFrameIntervals = True
+5.0235 	EXP 	Screen (0) actual frame rate measured at 60.03Hz
+5.0235 	EXP 	window1: recordFrameIntervals = False
+5.0236 	EXP 	window1: mouseVisible = False
+6.1937 	EXP 	Recognition: status = STARTED
+6.1942 	EXP 	window1: mouseVisible = True
+6.2431 	EXP 	Created text_welcome = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_welcome', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='Please wait for the experimenter to continue.', units='height', win=Window(...), wrapWidth=1)
+6.2432 	EXP 	window1: mouseVisible = True
+6.2516 	EXP 	Created text_back = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_back', opacity=1.0, ori=0.0, pos=array([-0.3, -0.3]), rgb=UNKNOWN, text='< Press Left to go back', units='height', win=Window(...), wrapWidth=1)
+6.2517 	EXP 	window1: mouseVisible = True
+6.2583 	EXP 	Created text_next = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_next', opacity=1.0, ori=0.0, pos=array([ 0.3, -0.3]), rgb=UNKNOWN, text='Press Right to go next >', units='height', win=Window(...), wrapWidth=1)
+6.2584 	EXP 	window1: mouseVisible = True
+6.2591 	EXP 	Created text_instruct = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_instruct', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+6.2591 	EXP 	window1: mouseVisible = True
+6.2621 	EXP 	Created text_wait = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_wait', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='Please wait for the task to start. ', units='height', win=Window(...), wrapWidth=1)
+6.2623 	EXP 	window1: mouseVisible = True
+6.2783 	EXP 	Created Cue1_fractal = ImageStim(__class__=<class 'psychopy.visual.image.ImageStim'>, anchor=('center', 'center'), autoLog=True, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, image='default.png', interpolate=True, mask=None, maskParams=None, name='Cue1_fractal', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([0.3, 0.3]), texRes=128.0, units='height', win=Window(...))
+6.2784 	EXP 	window1: mouseVisible = True
+6.2831 	EXP 	Created Fixation_bt = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='Fixation_bt', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+6.2832 	EXP 	window1: mouseVisible = True
+6.2906 	EXP 	Created Cue2_fractal = ImageStim(__class__=<class 'psychopy.visual.image.ImageStim'>, anchor=('center', 'center'), autoLog=True, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, draggable=False, flipHoriz=False, flipVert=False, image='default.png', interpolate=True, mask=None, maskParams=None, name='Cue2_fractal', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([0.3, 0.3]), texRes=128.0, units='height', win=Window(...))
+6.2907 	EXP 	window1: mouseVisible = True
+6.2914 	EXP 	Created text_corr_fixation = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_corr_fixation', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+6.2915 	EXP 	window1: mouseVisible = True
+6.2922 	EXP 	Created text_wrong_fixation = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text_wrong_fixation', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+6.2923 	EXP 	window1: mouseVisible = True
+6.2970 	EXP 	Created text_slow = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_slow', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='Too Slow!', units='height', win=Window(...), wrapWidth=1)
+6.2971 	EXP 	window1: mouseVisible = True
+6.3070 	EXP 	Created task_over_txt = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='task_over_txt', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+0.0147 	EXP 	text_welcome: autoDraw = True
+0.6013 	EXP 	Created sequence: sequential, trialTypes=1, nReps=10000, seed=None
+0.6225 	EXP 	New trial (rep=0, index=0): None
+0.6260 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+0.6263 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+0.6264 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Please read the task instructions carefully. You will be asked to explain the instructions back to the experimenter before beginning the task.'}
+0.6416 	EXP 	text_welcome: autoDraw = False
+0.6416 	EXP 	text_back: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+0.6416 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+0.6416 	EXP 	text_instruct: height = 0.05
+0.6416 	EXP 	text_instruct: height = 0.05
+0.6416 	EXP 	text_instruct: height = 0.05
+0.6416 	EXP 	text_instruct: text = 'Please read the task instructions carefully. You will be asked to explain the instructions back to the experimenter before beginning the task.'
+0.6416 	EXP 	text_back: autoDraw = True
+0.6416 	EXP 	text_next: autoDraw = True
+0.6416 	EXP 	text_instruct: autoDraw = True
+5.3544 	EXP 	New trial (rep=1, index=0): None
+5.3572 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+5.3574 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+5.3575 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'In this task, we want you to recall which place each character visited recently.'}
+5.3676 	EXP 	text_back: autoDraw = False
+5.3676 	EXP 	text_next: autoDraw = False
+5.3676 	EXP 	text_instruct: autoDraw = False
+5.3676 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+5.3676 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+5.3676 	EXP 	text_instruct: height = 0.05
+5.3676 	EXP 	text_instruct: height = 0.05
+5.3676 	EXP 	text_instruct: height = 0.05
+5.3676 	EXP 	text_instruct: text = 'In this task, we want you to recall which place each character visited recently.'
+5.3676 	EXP 	text_back: autoDraw = True
+5.3676 	EXP 	text_next: autoDraw = True
+5.3676 	EXP 	text_instruct: autoDraw = True
+8.6325 	EXP 	New trial (rep=2, index=0): None
+8.6353 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+8.6355 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+8.6356 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Press Right key if you HAVE learned that this character went to that place.'}
+8.6452 	EXP 	text_back: autoDraw = False
+8.6452 	EXP 	text_next: autoDraw = False
+8.6452 	EXP 	text_instruct: autoDraw = False
+8.6452 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+8.6452 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+8.6452 	EXP 	text_instruct: height = 0.05
+8.6452 	EXP 	text_instruct: height = 0.05
+8.6452 	EXP 	text_instruct: height = 0.05
+8.6452 	EXP 	text_instruct: text = 'Press Right key if you HAVE learned that this character went to that place.'
+8.6452 	EXP 	text_back: autoDraw = True
+8.6452 	EXP 	text_next: autoDraw = True
+8.6452 	EXP 	text_instruct: autoDraw = True
+14.2344 	EXP 	New trial (rep=3, index=0): None
+14.2373 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+14.2376 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+14.2377 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Press Left key if you HAVE NOT previously learned that this character went to that place.'}
+14.2494 	EXP 	text_back: autoDraw = False
+14.2494 	EXP 	text_next: autoDraw = False
+14.2494 	EXP 	text_instruct: autoDraw = False
+14.2494 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+14.2494 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+14.2494 	EXP 	text_instruct: height = 0.05
+14.2494 	EXP 	text_instruct: height = 0.05
+14.2494 	EXP 	text_instruct: height = 0.05
+14.2494 	EXP 	text_instruct: text = 'Press Left key if you HAVE NOT previously learned that this character went to that place.'
+14.2494 	EXP 	text_back: autoDraw = True
+14.2494 	EXP 	text_next: autoDraw = True
+14.2494 	EXP 	text_instruct: autoDraw = True
+17.9564 	EXP 	New trial (rep=4, index=0): None
+17.9593 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+17.9595 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+17.9596 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'You have 3 seconds to make a response.'}
+17.9694 	EXP 	text_back: autoDraw = False
+17.9694 	EXP 	text_next: autoDraw = False
+17.9694 	EXP 	text_instruct: autoDraw = False
+17.9694 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+17.9694 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+17.9694 	EXP 	text_instruct: height = 0.05
+17.9694 	EXP 	text_instruct: height = 0.05
+17.9694 	EXP 	text_instruct: height = 0.05
+17.9694 	EXP 	text_instruct: text = 'You have 3 seconds to make a response.'
+17.9694 	EXP 	text_back: autoDraw = True
+17.9694 	EXP 	text_next: autoDraw = True
+17.9694 	EXP 	text_instruct: autoDraw = True
+29.6028 	EXP 	New trial (rep=5, index=0): None
+29.6056 	EXP 	Imported instructions_common/RecogInstruct.xlsx as conditions, 1 conditions, 1 params
+29.6059 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+29.6060 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Please repeat these instructions back to the experimenter to show that you understand the instructions. If not, go back and read them again.'}
+29.6153 	EXP 	text_back: autoDraw = False
+29.6153 	EXP 	text_next: autoDraw = False
+29.6153 	EXP 	text_instruct: autoDraw = False
+29.6153 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+29.6153 	EXP 	text_next: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+29.6153 	EXP 	text_instruct: height = 0.05
+29.6153 	EXP 	text_instruct: height = 0.05
+29.6153 	EXP 	text_instruct: height = 0.05
+29.6153 	EXP 	text_instruct: text = 'Please repeat these instructions back to the experimenter to show that you understand the instructions. If not, go back and read them again.'
+29.6153 	EXP 	text_back: autoDraw = True
+29.6153 	EXP 	text_next: autoDraw = True
+29.6153 	EXP 	text_instruct: autoDraw = True
+31.0816 	EXP 	text_back: autoDraw = False
+31.0816 	EXP 	text_next: autoDraw = False
+31.0816 	EXP 	text_instruct: autoDraw = False
+31.0816 	EXP 	text_wait: autoDraw = True
+34.0871 	EXP 	Imported Sub28/RecogConds.xlsx as conditions, 36 conditions, 7 params
+34.0875 	EXP 	Created sequence: sequential, trialTypes=36, nReps=1, seed=None
+34.0877 	EXP 	New trial (rep=0, index=0): {'trial': 1, 'pair': 5, 'rep': 1, 'cue1_idx': 9, 'cue2_idx': 2, 'correct': 'left', 'ITIDur': 6}
+34.1115 	EXP 	text_wait: autoDraw = False
+34.1115 	EXP 	text_wait: autoDraw = False
+34.1115 	EXP 	Cue1_fractal: image = 'Sub28/cues/9.jpg'
+34.1115 	EXP 	Cue2_fractal: image = 'Sub28/cues/2.jpg'
+34.1115 	EXP 	Cue1_fractal: autoDraw = True
+37.0820 	EXP 	Fixation_bt: autoDraw = True
+37.1151 	EXP 	Cue1_fractal: autoDraw = False
+37.3819 	EXP 	Fixation_bt: autoDraw = False
+37.3819 	EXP 	Cue2_fractal: autoDraw = True
+40.3672 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+40.3676 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+40.3678 	EXP 	New trial (rep=0, index=0): None
+40.3814 	EXP 	Cue2_fractal: autoDraw = False
+40.3814 	EXP 	Cue1_fractal: autoDraw = False
+40.3814 	EXP 	Fixation_bt: autoDraw = False
+40.3814 	EXP 	Cue2_fractal: autoDraw = False
+40.3814 	EXP 	text_wrong_fixation: height = 0.1
+40.3814 	EXP 	text_wrong_fixation: height = 0.1
+40.3814 	EXP 	text_wrong_fixation: height = 0.1
+40.3814 	EXP 	text_wrong_fixation: text = '+'
+40.3814 	EXP 	text_slow: autoDraw = True
+42.3816 	EXP 	text_wrong_fixation: autoDraw = True
+42.3816 	EXP 	text_slow: autoDraw = False
+46.3666 	EXP 	New trial (rep=0, index=1): {'trial': 2, 'pair': 4, 'rep': 1, 'cue1_idx': 7, 'cue2_idx': 8, 'correct': 'right', 'ITIDur': 4}
+46.3824 	EXP 	text_wrong_fixation: autoDraw = False
+46.3824 	EXP 	text_wrong_fixation: autoDraw = False
+46.3824 	EXP 	text_slow: autoDraw = False
+46.3824 	EXP 	Cue1_fractal: image = 'Sub28/cues/7.jpg'
+46.3824 	EXP 	Cue2_fractal: image = 'Sub28/cues/8.jpg'
+46.3824 	EXP 	Cue1_fractal: autoDraw = True
+49.3814 	EXP 	Cue1_fractal: autoDraw = False
+49.3814 	EXP 	Fixation_bt: autoDraw = True
+49.6817 	EXP 	Fixation_bt: autoDraw = False
+49.6817 	EXP 	Cue2_fractal: autoDraw = True
+50.8688 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+50.8690 	EXP 	New trial (rep=0, index=0): None
+50.8814 	EXP 	Cue1_fractal: autoDraw = False
+50.8814 	EXP 	Fixation_bt: autoDraw = False
+50.8814 	EXP 	Cue2_fractal: autoDraw = False
+50.8814 	EXP 	text_corr_fixation: height = 0.1
+50.8814 	EXP 	text_corr_fixation: height = 0.1
+50.8814 	EXP 	text_corr_fixation: height = 0.1
+50.8814 	EXP 	text_corr_fixation: text = '+'
+50.8814 	EXP 	text_corr_fixation: autoDraw = True
+54.8660 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+54.8663 	EXP 	New trial (rep=0, index=2): {'trial': 3, 'pair': 6, 'rep': 1, 'cue1_idx': 11, 'cue2_idx': 12, 'correct': 'right', 'ITIDur': 7}
+54.8811 	EXP 	text_corr_fixation: autoDraw = False
+54.8811 	EXP 	text_corr_fixation: autoDraw = False
+54.8811 	EXP 	Cue1_fractal: image = 'Sub28/cues/11.jpg'
+54.8811 	EXP 	Cue2_fractal: image = 'Sub28/cues/12.jpg'
+54.8811 	EXP 	Cue1_fractal: autoDraw = True
+57.8647 	EXP 	Fixation_bt: autoDraw = True
+57.8812 	EXP 	Cue1_fractal: autoDraw = False
+58.1648 	EXP 	Fixation_bt: autoDraw = False
+58.1648 	EXP 	Cue2_fractal: autoDraw = True
+61.1501 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+61.1505 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+61.1508 	EXP 	New trial (rep=0, index=0): None
+61.1650 	EXP 	Cue2_fractal: autoDraw = False
+61.1650 	EXP 	Cue1_fractal: autoDraw = False
+61.1650 	EXP 	Fixation_bt: autoDraw = False
+61.1650 	EXP 	Cue2_fractal: autoDraw = False
+61.1650 	EXP 	text_wrong_fixation: text = '+'
+61.1650 	EXP 	text_slow: autoDraw = True
+61.1818 	EXP 	Recognition: status = STOPPED
+61.1989 	EXP 	text_slow: autoDraw = False
+61.1990 	EXP 	Recognition: status = STOPPED
+61.3281 	EXP 	window1: mouseVisible = True

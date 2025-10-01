@@ -1,0 +1,864 @@
+6.4157 	EXP 	Created window1 = Window(allowGUI=True, allowStencil=False, autoLog=True, backendConf=UNKNOWN, backgroundFit=<method-wrapper '__getattribute__' of attributeSetter object at 0x0000015A87D81040>, backgroundImage=<method-wrapper '__getattribute__' of attributeSetter object at 0x0000015A87D6CFD0>, bitsMode=UNKNOWN, blendMode='avg', bpc=(8, 8, 8), color=array([0, 0, 0]), colorSpace='rgb', depthBits=8, fullscr=<method-wrapper '__getattribute__' of attributeSetter object at 0x0000015A87D6CE80>, gamma=None, gammaErrorPolicy='raise', lms=UNKNOWN, monitor=<psychopy.monitors.calibTools.Monitor object at 0x0000015A8816B490>, multiSample=False, name='window1', numSamples=2, pos=(0, 0), screen=0, size=array([1920, 1080]), stencilBits=0, stereo=False, title='PsychoPy', units='height', useFBO=True, useRetina=False, viewOri=0.0, viewPos=None, viewScale=None, waitBlanking=True, winType='pyglet')
+6.4159 	EXP 	window1: mouseVisible = True
+6.4159 	EXP 	window1: backgroundImage = ''
+6.4159 	EXP 	window1: backgroundFit = 'none'
+6.4184 	EXP 	window1: Attempting to measure frame rate of screen (0) ...
+6.4185 	EXP 	window1: recordFrameIntervals = False
+6.5823 	EXP 	window1: recordFrameIntervals = True
+6.7660 	EXP 	Screen (0) actual frame rate measured at 60.08Hz
+6.7660 	EXP 	window1: recordFrameIntervals = False
+6.7662 	EXP 	window1: mouseVisible = False
+7.8286 	EXP 	PrePostPleasantnessRatings: status = STARTED
+7.9551 	EXP 	window1: mouseVisible = True
+7.9910 	EXP 	Created text_welcome = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_welcome', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='Please wait for the experimenter to continue.', units='height', win=Window(...), wrapWidth=1)
+7.9912 	EXP 	window1: mouseVisible = True
+7.9958 	EXP 	Created text_back = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_back', opacity=1.0, ori=0.0, pos=array([-0.3, -0.3]), rgb=UNKNOWN, text='< Press Left to go back', units='height', win=Window(...), wrapWidth=1)
+7.9959 	EXP 	window1: mouseVisible = True
+7.9998 	EXP 	Created text_next = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_next', opacity=1.0, ori=0.0, pos=array([ 0.3, -0.3]), rgb=UNKNOWN, text='Press Right to go next >', units='height', win=Window(...), wrapWidth=1)
+7.9999 	EXP 	window1: mouseVisible = True
+8.0006 	EXP 	Created text_instruct = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_instruct', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+8.0007 	EXP 	window1: mouseVisible = True
+8.0046 	EXP 	Created fixation = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='fixation', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+8.0047 	EXP 	window1: mouseVisible = True
+8.0060 	EXP 	Created sniff_cue = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([-1., -1.,  1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='sniff_cue', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='+', units='height', win=Window(...), wrapWidth=1)
+8.0061 	EXP 	window1: mouseVisible = True
+8.0157 	EXP 	Created text_left = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.04, italic=False, languageStyle='LTR', name='text_left', opacity=1.0, ori=0.0, pos=array([-0.5 , -0.22]), rgb=UNKNOWN, text='Extremely unpleasant', units='height', win=Window(...), wrapWidth=0.2)
+8.0157 	EXP 	window1: mouseVisible = True
+8.0180 	EXP 	Created text_right = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.04, italic=False, languageStyle='LTR', name='text_right', opacity=1.0, ori=0.0, pos=array([ 0.5 , -0.22]), rgb=UNKNOWN, text='Extremely pleasant', units='height', win=Window(...), wrapWidth=0.2)
+8.0181 	EXP 	window1: mouseVisible = True
+8.0211 	EXP 	Created text_mid = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.04, italic=False, languageStyle='LTR', name='text_mid', opacity=1.0, ori=0.0, pos=array([ 0.  , -0.22]), rgb=UNKNOWN, text='Neutral', units='height', win=Window(...), wrapWidth=1)
+8.0517 	EXP 	window1: mouseVisible = True
+8.0519 	EXP 	window1: mouseVisible = True
+8.0538 	EXP 	window1: mouseVisible = True
+8.0548 	EXP 	window1: mouseVisible = True
+8.0652 	EXP 	Created slider = Slider(__class__=<class 'psychopy.visual.slider.Slider'>, autoDraw=False, autoLog=True, borderColor=None, color=None, colorSpace='rgb', depth=-4, fillColor=None, flip=False, font='Open Sans', granularity=0.5, labelColor=None, labelHeight=0.02, labelWrapWidth=None, labels=None, lineColor=None, markerColor=None, name='slider', opacity=None, ori=0.0, pos=array([ 0.  , -0.15]), readOnly=False, self=UNKNOWN, size=array([1.  , 0.05]), startValue=None, style='rating', styleTweaks=['labels45'], ticks=array([-4, -3, -2, -1,  0,  1,  2,  3,  4]), units='height', win=Window(...))
+8.0653 	EXP 	window1: mouseVisible = True
+8.0659 	EXP 	Created text = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='text', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+8.0660 	EXP 	window1: mouseVisible = True
+8.0800 	EXP 	Created text_feel_ins = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_feel_ins', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+8.0801 	EXP 	window1: mouseVisible = True
+8.0830 	EXP 	Created very_left = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.04, italic=False, languageStyle='LTR', name='very_left', opacity=1.0, ori=0.0, pos=array([-0.5 , -0.22]), rgb=UNKNOWN, text='Not at all', units='height', win=Window(...), wrapWidth=1)
+8.0831 	EXP 	window1: mouseVisible = True
+8.0853 	EXP 	Created very_right = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-1.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.04, italic=False, languageStyle='LTR', name='very_right', opacity=1.0, ori=0.0, pos=array([ 0.5 , -0.22]), rgb=UNKNOWN, text='Extremely', units='height', win=Window(...), wrapWidth=1)
+8.0854 	EXP 	window1: mouseVisible = True
+8.0875 	EXP 	Created very_mid = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-2.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.04, italic=False, languageStyle='LTR', name='very_mid', opacity=1.0, ori=0.0, pos=array([ 0.  , -0.22]), rgb=UNKNOWN, text='Neutral', units='height', win=Window(...), wrapWidth=1)
+8.0876 	EXP 	window1: mouseVisible = True
+8.0882 	EXP 	Created Question = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=-3.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='Question', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text='', units='height', win=Window(...), wrapWidth=1)
+8.0897 	EXP 	window1: mouseVisible = True
+8.0899 	EXP 	window1: mouseVisible = True
+8.0911 	EXP 	window1: mouseVisible = True
+8.0919 	EXP 	window1: mouseVisible = True
+8.1021 	EXP 	Created slider_2 = Slider(__class__=<class 'psychopy.visual.slider.Slider'>, autoDraw=False, autoLog=True, borderColor=None, color=None, colorSpace='rgb', depth=-4, fillColor=None, flip=False, font='Open Sans', granularity=0.5, labelColor=None, labelHeight=0.02, labelWrapWidth=None, labels=None, lineColor=None, markerColor=None, name='slider_2', opacity=None, ori=0.0, pos=array([ 0.  , -0.15]), readOnly=False, self=UNKNOWN, size=array([1.  , 0.05]), startValue=0, style='rating', styleTweaks=['labels45'], ticks=array([-4, -3, -2, -1,  0,  1,  2,  3,  4]), units='height', win=Window(...))
+8.1021 	EXP 	window1: mouseVisible = True
+8.1219 	EXP 	Created mealtime_text = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.04, italic=False, languageStyle='LTR', name='mealtime_text', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+8.1220 	EXP 	window1: mouseVisible = True
+8.1256 	EXP 	Created text_feel_ins = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='text_feel_ins', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+8.1258 	EXP 	window1: mouseVisible = True
+8.1302 	EXP 	Created task_over_txt = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz=method-wrapper(...), alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoDraw=False, autoLog=True, bold=False, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0.0, draggable=False, flipHoriz=False, flipVert=False, font='Open Sans', fontFiles=[], height=0.05, italic=False, languageStyle='LTR', name='task_over_txt', opacity=1.0, ori=0.0, pos=array([0., 0.]), rgb=UNKNOWN, text=str(...), units='height', win=Window(...), wrapWidth=1)
+0.0024 	EXP 	slider: autoLog = True
+0.0024 	EXP 	slider: styleTweaks = []
+0.0024 	EXP 	slider: styleTweaks = []
+0.0024 	EXP 	slider: styleTweaks = ['labels45']
+0.0024 	EXP 	slider: styleTweaks = ['labels45']
+0.0024 	EXP 	slider: contrast = 1.0
+0.0024 	EXP 	slider: markerPos = None
+0.0024 	EXP 	slider: autoLog = True
+0.0024 	EXP 	slider_2: autoLog = True
+0.0024 	EXP 	slider_2: styleTweaks = []
+0.0024 	EXP 	slider_2: styleTweaks = []
+0.0024 	EXP 	slider_2: styleTweaks = ['labels45']
+0.0024 	EXP 	slider_2: styleTweaks = ['labels45']
+0.0024 	EXP 	slider_2: contrast = 1.0
+0.0024 	EXP 	slider_2: markerPos = 0
+0.0024 	EXP 	slider_2: autoLog = True
+0.0183 	EXP 	text_welcome: autoDraw = True
+1.8956 	EXP 	Imported ctr_files/PrePostRatings_ctr.xlsx as conditions, 2 conditions, 4 params
+1.8960 	EXP 	Created sequence: sequential, trialTypes=2, nReps=1, seed=None
+1.8962 	EXP 	New trial (rep=0, index=0): {'id': 1, 'instruct_file': 'SimplePleasantnessRatingInstruct.xlsx', 'cond_file': 'PrePleasantnessRatingConds.xlsx', 'type': 'p'}
+1.9062 	EXP 	Created sequence: sequential, trialTypes=1, nReps=10000, seed=None
+1.9296 	EXP 	New trial (rep=0, index=0): None
+1.9334 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+1.9338 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+1.9340 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'You will now rate the pleasantness of some odors, meaning how much you like each odor.'}
+1.9472 	EXP 	text_welcome: autoDraw = False
+1.9472 	EXP 	text_back: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+1.9472 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+1.9472 	EXP 	text_instruct: height = 0.05
+1.9472 	EXP 	text_instruct: height = 0.05
+1.9472 	EXP 	text_instruct: height = 0.05
+1.9472 	EXP 	text_instruct: text = 'You will now rate the pleasantness of some odors, meaning how much you like each odor.'
+1.9472 	EXP 	text_back: autoDraw = True
+1.9472 	EXP 	text_next: autoDraw = True
+1.9472 	EXP 	text_instruct: autoDraw = True
+7.1821 	EXP 	New trial (rep=1, index=0): None
+7.1853 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+7.1856 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+7.1857 	EXP 	New trial (rep=0, index=0): {'instruct_text': "Make a deep sniff when you see the blue cross '+' on the screen."}
+7.1958 	EXP 	text_back: autoDraw = False
+7.1958 	EXP 	text_next: autoDraw = False
+7.1958 	EXP 	text_instruct: autoDraw = False
+7.1958 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+7.1958 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+7.1958 	EXP 	text_instruct: height = 0.05
+7.1958 	EXP 	text_instruct: height = 0.05
+7.1958 	EXP 	text_instruct: height = 0.05
+7.1958 	EXP 	text_instruct: text = "Make a deep sniff when you see the blue cross '+' on the screen."
+7.1958 	EXP 	text_back: autoDraw = True
+7.1958 	EXP 	text_next: autoDraw = True
+7.1958 	EXP 	text_instruct: autoDraw = True
+11.0594 	EXP 	New trial (rep=2, index=0): None
+11.0628 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+11.0630 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+11.0631 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'For each odor pleasantness rating, please first use the Left and Right keys to move the slider and then Middle key to submit your rating. '}
+11.0734 	EXP 	text_back: autoDraw = False
+11.0734 	EXP 	text_next: autoDraw = False
+11.0734 	EXP 	text_instruct: autoDraw = False
+11.0734 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+11.0734 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+11.0734 	EXP 	text_instruct: height = 0.05
+11.0734 	EXP 	text_instruct: height = 0.05
+11.0734 	EXP 	text_instruct: height = 0.05
+11.0734 	EXP 	text_instruct: text = 'For each odor pleasantness rating, please first use the Left and Right keys to move the slider and then Middle key to submit your rating. '
+11.0734 	EXP 	text_back: autoDraw = True
+11.0734 	EXP 	text_next: autoDraw = True
+11.0734 	EXP 	text_instruct: autoDraw = True
+19.1442 	EXP 	New trial (rep=3, index=0): None
+19.1473 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+19.1475 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+19.1476 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Try to use the full range of the rating scale.'}
+19.1554 	EXP 	text_back: autoDraw = False
+19.1554 	EXP 	text_next: autoDraw = False
+19.1554 	EXP 	text_instruct: autoDraw = False
+19.1554 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+19.1554 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+19.1554 	EXP 	text_instruct: height = 0.05
+19.1554 	EXP 	text_instruct: height = 0.05
+19.1554 	EXP 	text_instruct: height = 0.05
+19.1554 	EXP 	text_instruct: text = 'Try to use the full range of the rating scale.'
+19.1554 	EXP 	text_back: autoDraw = True
+19.1554 	EXP 	text_next: autoDraw = True
+19.1554 	EXP 	text_instruct: autoDraw = True
+20.3124 	EXP 	New trial (rep=4, index=0): None
+20.3158 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+20.3161 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+20.3162 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'For each odor pleasantness rating, please first use the Left and Right keys to move the slider and then Middle key to submit your rating. '}
+20.3253 	EXP 	text_back: autoDraw = False
+20.3253 	EXP 	text_next: autoDraw = False
+20.3253 	EXP 	text_instruct: autoDraw = False
+20.3253 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+20.3253 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+20.3253 	EXP 	text_instruct: height = 0.05
+20.3253 	EXP 	text_instruct: height = 0.05
+20.3253 	EXP 	text_instruct: height = 0.05
+20.3253 	EXP 	text_instruct: text = 'For each odor pleasantness rating, please first use the Left and Right keys to move the slider and then Middle key to submit your rating. '
+20.3253 	EXP 	text_back: autoDraw = True
+20.3253 	EXP 	text_next: autoDraw = True
+20.3253 	EXP 	text_instruct: autoDraw = True
+20.9815 	EXP 	New trial (rep=5, index=0): None
+20.9847 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+20.9849 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+20.9850 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Try to use the full range of the rating scale.'}
+20.9926 	EXP 	text_back: autoDraw = False
+20.9926 	EXP 	text_next: autoDraw = False
+20.9926 	EXP 	text_instruct: autoDraw = False
+20.9926 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+20.9926 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+20.9926 	EXP 	text_instruct: height = 0.05
+20.9926 	EXP 	text_instruct: height = 0.05
+20.9926 	EXP 	text_instruct: height = 0.05
+20.9926 	EXP 	text_instruct: text = 'Try to use the full range of the rating scale.'
+20.9926 	EXP 	text_back: autoDraw = True
+20.9926 	EXP 	text_next: autoDraw = True
+20.9926 	EXP 	text_instruct: autoDraw = True
+22.6101 	EXP 	New trial (rep=6, index=0): None
+22.6130 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+22.6133 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+22.6134 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Press Middle key to begin the ratings if you are ready.'}
+22.6211 	EXP 	text_back: autoDraw = False
+22.6211 	EXP 	text_next: autoDraw = False
+22.6211 	EXP 	text_instruct: autoDraw = False
+22.6211 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+22.6211 	EXP 	text_next: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+22.6211 	EXP 	text_instruct: height = 0.05
+22.6211 	EXP 	text_instruct: height = 0.05
+22.6211 	EXP 	text_instruct: height = 0.05
+22.6211 	EXP 	text_instruct: text = 'Press Middle key to begin the ratings if you are ready.'
+22.6211 	EXP 	text_back: autoDraw = True
+22.6211 	EXP 	text_next: autoDraw = True
+22.6211 	EXP 	text_instruct: autoDraw = True
+23.3267 	EXP 	New trial (rep=7, index=0): None
+23.3304 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+23.3309 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+23.3313 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Press Middle key to begin the ratings if you are ready.'}
+23.3361 	EXP 	text_back: autoDraw = False
+23.3361 	EXP 	text_next: autoDraw = False
+23.3361 	EXP 	text_instruct: autoDraw = False
+23.3361 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+23.3361 	EXP 	text_next: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+23.3361 	EXP 	text_instruct: text = 'Press Middle key to begin the ratings if you are ready.'
+23.3361 	EXP 	text_back: autoDraw = True
+23.3361 	EXP 	text_next: autoDraw = True
+23.3361 	EXP 	text_instruct: autoDraw = True
+33.1161 	EXP 	Imported Sub26/PrePleasantnessRatingConds.xlsx as conditions, 9 conditions, 5 params
+33.1166 	EXP 	Created sequence: sequential, trialTypes=9, nReps=1, seed=None
+33.1168 	EXP 	New trial (rep=0, index=0): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 1, 'odor_num': 2, 'ITIDur': 8.75}
+33.1267 	EXP 	text_back: autoDraw = False
+33.1267 	EXP 	text_next: autoDraw = False
+33.1267 	EXP 	text_instruct: autoDraw = False
+33.1267 	EXP 	fixation: autoDraw = True
+35.1547 	EXP 	fixation: autoDraw = False
+35.1547 	EXP 	slider: markerPos = None
+35.1547 	EXP 	slider: markerPos = None
+35.1547 	EXP 	slider: markerPos = 0
+35.1547 	EXP 	sniff_cue: autoDraw = True
+35.1547 	EXP 	text_left: autoDraw = True
+35.1547 	EXP 	text_right: autoDraw = True
+35.1547 	EXP 	text_mid: autoDraw = True
+35.1547 	EXP 	slider: autoDraw = True
+40.6172 	EXP 	slider: markerPos = 0.5
+40.9838 	EXP 	slider: markerPos = 1.0
+41.7005 	EXP 	slider: markerPos = 1.5
+42.2505 	EXP 	slider: markerPos = 2.0
+42.6897 	EXP 	sniff_cue: autoDraw = False
+42.6897 	EXP 	text_left: autoDraw = False
+42.6897 	EXP 	text_right: autoDraw = False
+42.6897 	EXP 	text_mid: autoDraw = False
+42.6897 	EXP 	slider: autoDraw = False
+42.6897 	EXP 	text: height = 0.1
+42.6897 	EXP 	text: height = 0.1
+42.6897 	EXP 	text: height = 0.1
+42.6897 	EXP 	text: text = '+'
+42.6897 	EXP 	text: autoDraw = True
+51.4358 	EXP 	New trial (rep=0, index=1): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 2, 'odor_num': 1, 'ITIDur': 9.25}
+51.4508 	EXP 	text: autoDraw = False
+51.4508 	EXP 	text: autoDraw = False
+51.4508 	EXP 	fixation: autoDraw = True
+53.4595 	EXP 	fixation: autoDraw = False
+53.4595 	EXP 	fixation: autoDraw = False
+53.4595 	EXP 	slider: markerPos = None
+53.4595 	EXP 	slider: markerPos = None
+53.4595 	EXP 	slider: markerPos = 0
+53.4595 	EXP 	sniff_cue: autoDraw = True
+53.4595 	EXP 	text_left: autoDraw = True
+53.4595 	EXP 	text_right: autoDraw = True
+53.4595 	EXP 	text_mid: autoDraw = True
+53.4595 	EXP 	slider: autoDraw = True
+56.9336 	EXP 	slider: markerPos = 0.5
+58.5835 	EXP 	slider: markerPos = 0.0
+59.0007 	EXP 	slider: markerPos = -0.5
+59.4167 	EXP 	sniff_cue: autoDraw = False
+59.4167 	EXP 	text_left: autoDraw = False
+59.4167 	EXP 	text_right: autoDraw = False
+59.4167 	EXP 	text_mid: autoDraw = False
+59.4167 	EXP 	slider: autoDraw = False
+59.4167 	EXP 	text: text = '+'
+59.4167 	EXP 	text: autoDraw = True
+68.6524 	EXP 	New trial (rep=0, index=2): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 3, 'odor_num': 0, 'ITIDur': 10}
+68.6670 	EXP 	text: autoDraw = False
+68.6670 	EXP 	text: autoDraw = False
+68.6670 	EXP 	fixation: autoDraw = True
+70.6723 	EXP 	fixation: autoDraw = False
+70.6723 	EXP 	fixation: autoDraw = False
+70.6723 	EXP 	slider: markerPos = None
+70.6723 	EXP 	slider: markerPos = None
+70.6723 	EXP 	slider: markerPos = 0
+70.6723 	EXP 	sniff_cue: autoDraw = True
+70.6723 	EXP 	text_left: autoDraw = True
+70.6723 	EXP 	text_right: autoDraw = True
+70.6723 	EXP 	text_mid: autoDraw = True
+70.6723 	EXP 	slider: autoDraw = True
+73.2667 	EXP 	sniff_cue: autoDraw = False
+73.2667 	EXP 	text_left: autoDraw = False
+73.2667 	EXP 	text_right: autoDraw = False
+73.2667 	EXP 	text_mid: autoDraw = False
+73.2667 	EXP 	slider: autoDraw = False
+73.2667 	EXP 	text: text = '+'
+73.2667 	EXP 	text: autoDraw = True
+83.2521 	EXP 	New trial (rep=0, index=3): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 4, 'odor_num': 2, 'ITIDur': 8.25}
+83.2671 	EXP 	text: autoDraw = False
+83.2671 	EXP 	text: autoDraw = False
+83.2671 	EXP 	fixation: autoDraw = True
+85.2731 	EXP 	fixation: autoDraw = False
+85.2731 	EXP 	fixation: autoDraw = False
+85.2731 	EXP 	slider: markerPos = None
+85.2731 	EXP 	slider: markerPos = None
+85.2731 	EXP 	slider: markerPos = 0
+85.2731 	EXP 	sniff_cue: autoDraw = True
+85.2731 	EXP 	text_left: autoDraw = True
+85.2731 	EXP 	text_right: autoDraw = True
+85.2731 	EXP 	text_mid: autoDraw = True
+85.2731 	EXP 	slider: autoDraw = True
+87.4832 	EXP 	slider: markerPos = 0.5
+87.8332 	EXP 	slider: markerPos = 1.0
+88.2332 	EXP 	slider: markerPos = 1.5
+89.0499 	EXP 	slider: markerPos = 2.0
+89.4000 	EXP 	sniff_cue: autoDraw = False
+89.4000 	EXP 	text_left: autoDraw = False
+89.4000 	EXP 	text_right: autoDraw = False
+89.4000 	EXP 	text_mid: autoDraw = False
+89.4000 	EXP 	slider: autoDraw = False
+89.4000 	EXP 	text: text = '+'
+89.4000 	EXP 	text: autoDraw = True
+97.6351 	EXP 	New trial (rep=0, index=4): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 5, 'odor_num': 1, 'ITIDur': 8.5}
+97.6505 	EXP 	text: autoDraw = False
+97.6505 	EXP 	text: autoDraw = False
+97.6505 	EXP 	fixation: autoDraw = True
+99.6622 	EXP 	fixation: autoDraw = False
+99.6622 	EXP 	fixation: autoDraw = False
+99.6622 	EXP 	slider: markerPos = None
+99.6622 	EXP 	slider: markerPos = None
+99.6622 	EXP 	slider: markerPos = 0
+99.6622 	EXP 	sniff_cue: autoDraw = True
+99.6622 	EXP 	text_left: autoDraw = True
+99.6622 	EXP 	text_right: autoDraw = True
+99.6622 	EXP 	text_mid: autoDraw = True
+99.6622 	EXP 	slider: autoDraw = True
+101.6995 	EXP 	slider: markerPos = -0.5
+102.2828 	EXP 	slider: markerPos = -1.0
+102.5664 	EXP 	sniff_cue: autoDraw = False
+102.5664 	EXP 	text_left: autoDraw = False
+102.5664 	EXP 	text_right: autoDraw = False
+102.5664 	EXP 	text_mid: autoDraw = False
+102.5664 	EXP 	slider: autoDraw = False
+102.5664 	EXP 	text: text = '+'
+102.5664 	EXP 	text: autoDraw = True
+111.0513 	EXP 	New trial (rep=0, index=5): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 6, 'odor_num': 0, 'ITIDur': 9}
+111.0662 	EXP 	text: autoDraw = False
+111.0662 	EXP 	text: autoDraw = False
+111.0662 	EXP 	fixation: autoDraw = True
+113.0784 	EXP 	fixation: autoDraw = False
+113.0784 	EXP 	fixation: autoDraw = False
+113.0784 	EXP 	slider: markerPos = None
+113.0784 	EXP 	slider: markerPos = None
+113.0784 	EXP 	slider: markerPos = 0
+113.0784 	EXP 	sniff_cue: autoDraw = True
+113.0784 	EXP 	text_left: autoDraw = True
+113.0784 	EXP 	text_right: autoDraw = True
+113.0784 	EXP 	text_mid: autoDraw = True
+113.0784 	EXP 	slider: autoDraw = True
+115.1992 	EXP 	sniff_cue: autoDraw = False
+115.1992 	EXP 	text_left: autoDraw = False
+115.1992 	EXP 	text_right: autoDraw = False
+115.1992 	EXP 	text_mid: autoDraw = False
+115.1992 	EXP 	slider: autoDraw = False
+115.1992 	EXP 	text: text = '+'
+115.1992 	EXP 	text: autoDraw = True
+124.1845 	EXP 	New trial (rep=0, index=6): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 7, 'odor_num': 0, 'ITIDur': 9.75}
+124.1995 	EXP 	text: autoDraw = False
+124.1995 	EXP 	text: autoDraw = False
+124.1995 	EXP 	fixation: autoDraw = True
+126.2054 	EXP 	fixation: autoDraw = False
+126.2054 	EXP 	fixation: autoDraw = False
+126.2054 	EXP 	slider: markerPos = None
+126.2054 	EXP 	slider: markerPos = None
+126.2054 	EXP 	slider: markerPos = 0
+126.2054 	EXP 	sniff_cue: autoDraw = True
+126.2054 	EXP 	text_left: autoDraw = True
+126.2054 	EXP 	text_right: autoDraw = True
+126.2054 	EXP 	text_mid: autoDraw = True
+126.2054 	EXP 	slider: autoDraw = True
+127.7159 	EXP 	sniff_cue: autoDraw = False
+127.7159 	EXP 	text_left: autoDraw = False
+127.7159 	EXP 	text_right: autoDraw = False
+127.7159 	EXP 	text_mid: autoDraw = False
+127.7159 	EXP 	slider: autoDraw = False
+127.7159 	EXP 	text: text = '+'
+127.7159 	EXP 	text: autoDraw = True
+137.4512 	EXP 	New trial (rep=0, index=7): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 8, 'odor_num': 1, 'ITIDur': 9.5}
+137.4661 	EXP 	text: autoDraw = False
+137.4661 	EXP 	text: autoDraw = False
+137.4661 	EXP 	fixation: autoDraw = True
+139.4723 	EXP 	fixation: autoDraw = False
+139.4723 	EXP 	fixation: autoDraw = False
+139.4723 	EXP 	slider: markerPos = None
+139.4723 	EXP 	slider: markerPos = None
+139.4723 	EXP 	slider: markerPos = 0
+139.4723 	EXP 	sniff_cue: autoDraw = True
+139.4723 	EXP 	text_left: autoDraw = True
+139.4723 	EXP 	text_right: autoDraw = True
+139.4723 	EXP 	text_mid: autoDraw = True
+139.4723 	EXP 	slider: autoDraw = True
+141.6660 	EXP 	slider: markerPos = -0.5
+142.0655 	EXP 	slider: markerPos = -1.0
+142.2486 	EXP 	sniff_cue: autoDraw = False
+142.2486 	EXP 	text_left: autoDraw = False
+142.2486 	EXP 	text_right: autoDraw = False
+142.2486 	EXP 	text_mid: autoDraw = False
+142.2486 	EXP 	slider: autoDraw = False
+142.2486 	EXP 	text: text = '+'
+142.2486 	EXP 	text: autoDraw = True
+151.7340 	EXP 	New trial (rep=0, index=8): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 9, 'odor_num': 2, 'ITIDur': 8}
+151.7490 	EXP 	text: autoDraw = False
+151.7490 	EXP 	text: autoDraw = False
+151.7490 	EXP 	fixation: autoDraw = True
+153.7612 	EXP 	fixation: autoDraw = False
+153.7612 	EXP 	fixation: autoDraw = False
+153.7612 	EXP 	slider: markerPos = None
+153.7612 	EXP 	slider: markerPos = None
+153.7612 	EXP 	slider: markerPos = 0
+153.7612 	EXP 	sniff_cue: autoDraw = True
+153.7612 	EXP 	text_left: autoDraw = True
+153.7612 	EXP 	text_right: autoDraw = True
+153.7612 	EXP 	text_mid: autoDraw = True
+153.7612 	EXP 	slider: autoDraw = True
+155.9155 	EXP 	slider: markerPos = 0.5
+156.3322 	EXP 	slider: markerPos = 1.0
+156.7489 	EXP 	slider: markerPos = 1.5
+157.1652 	EXP 	sniff_cue: autoDraw = False
+157.1652 	EXP 	text_left: autoDraw = False
+157.1652 	EXP 	text_right: autoDraw = False
+157.1652 	EXP 	text_mid: autoDraw = False
+157.1652 	EXP 	slider: autoDraw = False
+157.1652 	EXP 	text: text = '+'
+157.1652 	EXP 	text: autoDraw = True
+165.1613 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+165.1616 	EXP 	New trial (rep=0, index=0): None
+165.1663 	EXP 	text: autoDraw = False
+165.1663 	EXP 	text: autoDraw = False
+165.1663 	EXP 	text_feel_ins: autoDraw = True
+170.0295 	EXP 	Imported hunger_ratings.xlsx as conditions, 6 conditions, 2 params
+170.0300 	EXP 	Created sequence: sequential, trialTypes=6, nReps=1, seed=None
+170.0303 	EXP 	New trial (rep=0, index=0): {'idx': 0, 'ques': 'How would you rate your current level of hunger?'}
+170.0517 	EXP 	text_feel_ins: autoDraw = False
+170.0517 	EXP 	Question: height = 0.05
+170.0517 	EXP 	Question: height = 0.05
+170.0517 	EXP 	Question: height = 0.05
+170.0517 	EXP 	Question: text = 'How would you rate your current level of hunger?'
+170.0517 	EXP 	slider_2: markerPos = None
+170.0517 	EXP 	slider_2: markerPos = 0
+170.0517 	EXP 	slider_2: markerPos = 0
+170.0517 	EXP 	very_left: autoDraw = True
+170.0517 	EXP 	very_right: autoDraw = True
+170.0517 	EXP 	very_mid: autoDraw = True
+170.0517 	EXP 	Question: autoDraw = True
+170.0517 	EXP 	slider_2: autoDraw = True
+173.3151 	EXP 	slider_2: markerPos = 0.5
+173.8817 	EXP 	slider_2: markerPos = 1.0
+174.6196 	EXP 	Created sequence: random, trialTypes=1, nReps=0, seed=None
+174.6198 	EXP 	New trial (rep=0, index=1): {'idx': 0, 'ques': 'How would you rate your current level of satiety (feeling full)?'}
+174.6391 	EXP 	very_left: autoDraw = False
+174.6391 	EXP 	very_right: autoDraw = False
+174.6391 	EXP 	very_mid: autoDraw = False
+174.6391 	EXP 	Question: autoDraw = False
+174.6391 	EXP 	slider_2: autoDraw = False
+174.6391 	EXP 	Question: height = 0.05
+174.6391 	EXP 	Question: height = 0.05
+174.6391 	EXP 	Question: height = 0.05
+174.6391 	EXP 	Question: text = 'How would you rate your current level of satiety (feeling full)?'
+174.6391 	EXP 	slider_2: markerPos = None
+174.6391 	EXP 	slider_2: markerPos = 0
+174.6391 	EXP 	slider_2: markerPos = 0
+174.6391 	EXP 	very_left: autoDraw = True
+174.6391 	EXP 	very_right: autoDraw = True
+174.6391 	EXP 	very_mid: autoDraw = True
+174.6391 	EXP 	Question: autoDraw = True
+174.6391 	EXP 	slider_2: autoDraw = True
+178.1482 	EXP 	slider_2: markerPos = 0.5
+178.6483 	EXP 	slider_2: markerPos = 1.0
+180.4815 	EXP 	slider_2: markerPos = 1.5
+180.7705 	EXP 	Created sequence: random, trialTypes=1, nReps=0, seed=None
+180.7707 	EXP 	New trial (rep=0, index=2): {'idx': 1, 'ques': 'How would you rate your current desire to eat?'}
+180.7860 	EXP 	very_left: autoDraw = False
+180.7860 	EXP 	very_right: autoDraw = False
+180.7860 	EXP 	very_mid: autoDraw = False
+180.7860 	EXP 	Question: autoDraw = False
+180.7860 	EXP 	slider_2: autoDraw = False
+180.7860 	EXP 	Question: height = 0.05
+180.7860 	EXP 	Question: height = 0.05
+180.7860 	EXP 	Question: height = 0.05
+180.7860 	EXP 	Question: text = 'How would you rate your current desire to eat?'
+180.7860 	EXP 	slider_2: markerPos = None
+180.7860 	EXP 	slider_2: markerPos = 0
+180.7860 	EXP 	slider_2: markerPos = 0
+180.7860 	EXP 	very_left: autoDraw = True
+180.7860 	EXP 	very_right: autoDraw = True
+180.7860 	EXP 	very_mid: autoDraw = True
+180.7860 	EXP 	Question: autoDraw = True
+180.7860 	EXP 	slider_2: autoDraw = True
+183.9313 	EXP 	slider_2: markerPos = 0.5
+184.3814 	EXP 	slider_2: markerPos = 1.0
+186.1815 	EXP 	slider_2: markerPos = 1.5
+187.1415 	EXP 	Created sequence: random, trialTypes=1, nReps=1, seed=None
+187.1419 	EXP 	New trial (rep=0, index=0): None
+187.1483 	EXP 	very_left: autoDraw = False
+187.1483 	EXP 	very_right: autoDraw = False
+187.1483 	EXP 	very_mid: autoDraw = False
+187.1483 	EXP 	Question: autoDraw = False
+187.1483 	EXP 	slider_2: autoDraw = False
+187.1483 	EXP 	mealtime_text: autoDraw = True
+1350.3950 	EXP 	mealtime_text: autoDraw = False
+1350.3950 	EXP 	text_feel_ins: autoDraw = True
+1552.9260 	EXP 	New trial (rep=0, index=3): {'idx': 0, 'ques': 'How would you rate your current level of hunger?'}
+1552.9435 	EXP 	text_feel_ins: autoDraw = False
+1552.9435 	EXP 	Question: height = 0.05
+1552.9435 	EXP 	Question: height = 0.05
+1552.9435 	EXP 	Question: height = 0.05
+1552.9435 	EXP 	Question: text = 'How would you rate your current level of hunger?'
+1552.9435 	EXP 	slider_2: markerPos = None
+1552.9435 	EXP 	slider_2: markerPos = 0
+1552.9435 	EXP 	slider_2: markerPos = 0
+1552.9435 	EXP 	very_left: autoDraw = True
+1552.9435 	EXP 	very_right: autoDraw = True
+1552.9435 	EXP 	very_mid: autoDraw = True
+1552.9435 	EXP 	Question: autoDraw = True
+1552.9435 	EXP 	slider_2: autoDraw = True
+1553.1748 	EXP 	slider_2: markerPos = 0.5
+1553.2249 	EXP 	slider_2: markerPos = 0.0
+1566.6577 	EXP 	slider_2: markerPos = -0.5
+1566.9577 	EXP 	slider_2: markerPos = -1.0
+1567.2913 	EXP 	slider_2: markerPos = -1.5
+1567.6078 	EXP 	slider_2: markerPos = -2.0
+1567.9245 	EXP 	slider_2: markerPos = -2.5
+1569.7580 	EXP 	slider_2: markerPos = -3.0
+1571.8808 	EXP 	Created sequence: random, trialTypes=1, nReps=0, seed=None
+1571.8811 	EXP 	New trial (rep=0, index=4): {'idx': 0, 'ques': 'How would you rate your current level of satiety (feeling full)?'}
+1571.9008 	EXP 	very_left: autoDraw = False
+1571.9008 	EXP 	very_right: autoDraw = False
+1571.9008 	EXP 	very_mid: autoDraw = False
+1571.9008 	EXP 	Question: autoDraw = False
+1571.9008 	EXP 	slider_2: autoDraw = False
+1571.9008 	EXP 	Question: height = 0.05
+1571.9008 	EXP 	Question: height = 0.05
+1571.9008 	EXP 	Question: height = 0.05
+1571.9008 	EXP 	Question: text = 'How would you rate your current level of satiety (feeling full)?'
+1571.9008 	EXP 	slider_2: markerPos = None
+1571.9008 	EXP 	slider_2: markerPos = 0
+1571.9008 	EXP 	slider_2: markerPos = 0
+1571.9008 	EXP 	very_left: autoDraw = True
+1571.9008 	EXP 	very_right: autoDraw = True
+1571.9008 	EXP 	very_mid: autoDraw = True
+1571.9008 	EXP 	Question: autoDraw = True
+1571.9008 	EXP 	slider_2: autoDraw = True
+1574.5077 	EXP 	slider_2: markerPos = -0.5
+1575.0578 	EXP 	slider_2: markerPos = -1.0
+1575.3411 	EXP 	slider_2: markerPos = -1.5
+1575.5910 	EXP 	slider_2: markerPos = -2.0
+1577.4998 	EXP 	Created sequence: random, trialTypes=1, nReps=0, seed=None
+1577.5003 	EXP 	New trial (rep=0, index=5): {'idx': 0, 'ques': 'How would you rate your current desire to eat?'}
+1577.5218 	EXP 	very_left: autoDraw = False
+1577.5218 	EXP 	very_right: autoDraw = False
+1577.5218 	EXP 	very_mid: autoDraw = False
+1577.5218 	EXP 	Question: autoDraw = False
+1577.5218 	EXP 	slider_2: autoDraw = False
+1577.5218 	EXP 	Question: height = 0.05
+1577.5218 	EXP 	Question: height = 0.05
+1577.5218 	EXP 	Question: height = 0.05
+1577.5218 	EXP 	Question: text = 'How would you rate your current desire to eat?'
+1577.5218 	EXP 	slider_2: markerPos = None
+1577.5218 	EXP 	slider_2: markerPos = 0
+1577.5218 	EXP 	slider_2: markerPos = 0
+1577.5218 	EXP 	very_left: autoDraw = True
+1577.5218 	EXP 	very_right: autoDraw = True
+1577.5218 	EXP 	very_mid: autoDraw = True
+1577.5218 	EXP 	Question: autoDraw = True
+1577.5218 	EXP 	slider_2: autoDraw = True
+1581.3412 	EXP 	slider_2: markerPos = -0.5
+1581.7410 	EXP 	slider_2: markerPos = -1.0
+1582.0410 	EXP 	slider_2: markerPos = -1.5
+1582.5578 	EXP 	slider_2: markerPos = -2.0
+1585.7983 	EXP 	Created sequence: random, trialTypes=1, nReps=0, seed=None
+1585.8066 	EXP 	New trial (rep=0, index=1): {'id': 2, 'instruct_file': 'SimplePleasantnessRatingInstruct.xlsx', 'cond_file': 'PostPleasantnessRatingConds.xlsx', 'type': 'p'}
+1585.8122 	EXP 	Created sequence: sequential, trialTypes=1, nReps=10000, seed=None
+1585.8404 	EXP 	New trial (rep=0, index=0): None
+1585.8437 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+1585.8440 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+1585.8441 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'You will now rate the pleasantness of some odors, meaning how much you like each odor.'}
+1585.8525 	EXP 	very_left: autoDraw = False
+1585.8525 	EXP 	very_right: autoDraw = False
+1585.8525 	EXP 	very_mid: autoDraw = False
+1585.8525 	EXP 	Question: autoDraw = False
+1585.8525 	EXP 	slider_2: autoDraw = False
+1585.8525 	EXP 	text_back: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+1585.8525 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+1585.8525 	EXP 	text_instruct: height = 0.05
+1585.8525 	EXP 	text_instruct: height = 0.05
+1585.8525 	EXP 	text_instruct: height = 0.05
+1585.8525 	EXP 	text_instruct: text = 'You will now rate the pleasantness of some odors, meaning how much you like each odor.'
+1585.8525 	EXP 	text_back: autoDraw = True
+1585.8525 	EXP 	text_next: autoDraw = True
+1585.8525 	EXP 	text_instruct: autoDraw = True
+1592.8546 	EXP 	New trial (rep=1, index=0): None
+1592.8576 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+1592.8578 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+1592.8579 	EXP 	New trial (rep=0, index=0): {'instruct_text': "Make a deep sniff when you see the blue cross '+' on the screen."}
+1592.8646 	EXP 	text_back: autoDraw = False
+1592.8646 	EXP 	text_next: autoDraw = False
+1592.8646 	EXP 	text_instruct: autoDraw = False
+1592.8646 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+1592.8646 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+1592.8646 	EXP 	text_instruct: height = 0.05
+1592.8646 	EXP 	text_instruct: height = 0.05
+1592.8646 	EXP 	text_instruct: height = 0.05
+1592.8646 	EXP 	text_instruct: text = "Make a deep sniff when you see the blue cross '+' on the screen."
+1592.8646 	EXP 	text_back: autoDraw = True
+1592.8646 	EXP 	text_next: autoDraw = True
+1592.8646 	EXP 	text_instruct: autoDraw = True
+1594.9488 	EXP 	New trial (rep=2, index=0): None
+1594.9518 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+1594.9520 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+1594.9521 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'For each odor pleasantness rating, please first use the Left and Right keys to move the slider and then Middle key to submit your rating. '}
+1594.9615 	EXP 	text_back: autoDraw = False
+1594.9615 	EXP 	text_next: autoDraw = False
+1594.9615 	EXP 	text_instruct: autoDraw = False
+1594.9615 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+1594.9615 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+1594.9615 	EXP 	text_instruct: height = 0.05
+1594.9615 	EXP 	text_instruct: height = 0.05
+1594.9615 	EXP 	text_instruct: height = 0.05
+1594.9615 	EXP 	text_instruct: text = 'For each odor pleasantness rating, please first use the Left and Right keys to move the slider and then Middle key to submit your rating. '
+1594.9615 	EXP 	text_back: autoDraw = True
+1594.9615 	EXP 	text_next: autoDraw = True
+1594.9615 	EXP 	text_instruct: autoDraw = True
+1596.2581 	EXP 	New trial (rep=3, index=0): None
+1596.2623 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+1596.2626 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+1596.2627 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Try to use the full range of the rating scale.'}
+1596.2698 	EXP 	text_back: autoDraw = False
+1596.2698 	EXP 	text_next: autoDraw = False
+1596.2698 	EXP 	text_instruct: autoDraw = False
+1596.2698 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+1596.2698 	EXP 	text_next: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+1596.2698 	EXP 	text_instruct: height = 0.05
+1596.2698 	EXP 	text_instruct: height = 0.05
+1596.2698 	EXP 	text_instruct: height = 0.05
+1596.2698 	EXP 	text_instruct: text = 'Try to use the full range of the rating scale.'
+1596.2698 	EXP 	text_back: autoDraw = True
+1596.2698 	EXP 	text_next: autoDraw = True
+1596.2698 	EXP 	text_instruct: autoDraw = True
+1597.5931 	EXP 	New trial (rep=4, index=0): None
+1597.5996 	EXP 	Imported instructions_common/SimplePleasantnessRatingInstruct.xlsx as conditions, 1 conditions, 1 params
+1597.6000 	EXP 	Created sequence: sequential, trialTypes=1, nReps=1, seed=None
+1597.6002 	EXP 	New trial (rep=0, index=0): {'instruct_text': 'Press Middle key to begin the ratings if you are ready.'}
+1597.6081 	EXP 	text_back: autoDraw = False
+1597.6081 	EXP 	text_next: autoDraw = False
+1597.6081 	EXP 	text_instruct: autoDraw = False
+1597.6081 	EXP 	text_back: foreColor = <psychopy.colors.Color: white, alpha=1.0>
+1597.6081 	EXP 	text_next: foreColor = <psychopy.colors.Color: gray, alpha=1.0>
+1597.6081 	EXP 	text_instruct: height = 0.05
+1597.6081 	EXP 	text_instruct: height = 0.05
+1597.6081 	EXP 	text_instruct: height = 0.05
+1597.6081 	EXP 	text_instruct: text = 'Press Middle key to begin the ratings if you are ready.'
+1597.6081 	EXP 	text_back: autoDraw = True
+1597.6081 	EXP 	text_next: autoDraw = True
+1597.6081 	EXP 	text_instruct: autoDraw = True
+1601.5677 	EXP 	Imported Sub26/PostPleasantnessRatingConds.xlsx as conditions, 9 conditions, 5 params
+1601.5680 	EXP 	Created sequence: sequential, trialTypes=9, nReps=1, seed=None
+1601.5682 	EXP 	New trial (rep=0, index=0): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 1, 'odor_num': 2, 'ITIDur': 8.25}
+1601.5778 	EXP 	text_back: autoDraw = False
+1601.5778 	EXP 	text_next: autoDraw = False
+1601.5778 	EXP 	text_instruct: autoDraw = False
+1601.5778 	EXP 	fixation: autoDraw = True
+1603.5980 	EXP 	fixation: autoDraw = False
+1603.5980 	EXP 	slider: markerPos = None
+1603.5980 	EXP 	slider: markerPos = None
+1603.5980 	EXP 	slider: markerPos = 0
+1603.5980 	EXP 	sniff_cue: autoDraw = True
+1603.5980 	EXP 	text_left: autoDraw = True
+1603.5980 	EXP 	text_right: autoDraw = True
+1603.5980 	EXP 	text_mid: autoDraw = True
+1603.5980 	EXP 	slider: autoDraw = True
+1628.8234 	EXP 	slider: markerPos = -0.5
+1632.2902 	EXP 	slider: markerPos = 0.0
+1632.5902 	EXP 	slider: markerPos = 0.5
+1632.8236 	EXP 	slider: markerPos = 1.0
+1633.0405 	EXP 	slider: markerPos = 1.5
+1633.5901 	EXP 	slider: markerPos = 2.0
+1634.0403 	EXP 	sniff_cue: autoDraw = False
+1634.0403 	EXP 	text_left: autoDraw = False
+1634.0403 	EXP 	text_right: autoDraw = False
+1634.0403 	EXP 	text_mid: autoDraw = False
+1634.0403 	EXP 	slider: autoDraw = False
+1634.0403 	EXP 	text: text = '+'
+1634.0403 	EXP 	text: autoDraw = True
+1642.2751 	EXP 	New trial (rep=0, index=1): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 2, 'odor_num': 1, 'ITIDur': 8}
+1642.2902 	EXP 	text: autoDraw = False
+1642.2902 	EXP 	text: autoDraw = False
+1642.2902 	EXP 	fixation: autoDraw = True
+1644.2967 	EXP 	fixation: autoDraw = False
+1644.2967 	EXP 	fixation: autoDraw = False
+1644.2967 	EXP 	slider: markerPos = None
+1644.2967 	EXP 	slider: markerPos = None
+1644.2967 	EXP 	slider: markerPos = 0
+1644.2967 	EXP 	sniff_cue: autoDraw = True
+1644.2967 	EXP 	text_left: autoDraw = True
+1644.2967 	EXP 	text_right: autoDraw = True
+1644.2967 	EXP 	text_mid: autoDraw = True
+1644.2967 	EXP 	slider: autoDraw = True
+1647.4899 	EXP 	slider: markerPos = -0.5
+1647.9063 	EXP 	slider: markerPos = -1.0
+1648.4230 	EXP 	sniff_cue: autoDraw = False
+1648.4230 	EXP 	text_left: autoDraw = False
+1648.4230 	EXP 	text_right: autoDraw = False
+1648.4230 	EXP 	text_mid: autoDraw = False
+1648.4230 	EXP 	slider: autoDraw = False
+1648.4230 	EXP 	text: text = '+'
+1648.4230 	EXP 	text: autoDraw = True
+1656.4086 	EXP 	New trial (rep=0, index=2): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 3, 'odor_num': 0, 'ITIDur': 8.75}
+1656.4236 	EXP 	text: autoDraw = False
+1656.4236 	EXP 	text: autoDraw = False
+1656.4236 	EXP 	fixation: autoDraw = True
+1658.4288 	EXP 	fixation: autoDraw = False
+1658.4288 	EXP 	fixation: autoDraw = False
+1658.4288 	EXP 	slider: markerPos = None
+1658.4288 	EXP 	slider: markerPos = None
+1658.4288 	EXP 	slider: markerPos = 0
+1658.4288 	EXP 	sniff_cue: autoDraw = True
+1658.4288 	EXP 	text_left: autoDraw = True
+1658.4288 	EXP 	text_right: autoDraw = True
+1658.4288 	EXP 	text_mid: autoDraw = True
+1658.4288 	EXP 	slider: autoDraw = True
+1660.6395 	EXP 	sniff_cue: autoDraw = False
+1660.6395 	EXP 	text_left: autoDraw = False
+1660.6395 	EXP 	text_right: autoDraw = False
+1660.6395 	EXP 	text_mid: autoDraw = False
+1660.6395 	EXP 	slider: autoDraw = False
+1660.6395 	EXP 	text: text = '+'
+1660.6395 	EXP 	text: autoDraw = True
+1669.3755 	EXP 	New trial (rep=0, index=3): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 4, 'odor_num': 0, 'ITIDur': 9}
+1669.3900 	EXP 	text: autoDraw = False
+1669.3900 	EXP 	text: autoDraw = False
+1669.3900 	EXP 	fixation: autoDraw = True
+1671.3967 	EXP 	fixation: autoDraw = False
+1671.3967 	EXP 	fixation: autoDraw = False
+1671.3967 	EXP 	slider: markerPos = None
+1671.3967 	EXP 	slider: markerPos = None
+1671.3967 	EXP 	slider: markerPos = 0
+1671.3967 	EXP 	sniff_cue: autoDraw = True
+1671.3967 	EXP 	text_left: autoDraw = True
+1671.3967 	EXP 	text_right: autoDraw = True
+1671.3967 	EXP 	text_mid: autoDraw = True
+1671.3967 	EXP 	slider: autoDraw = True
+1674.2560 	EXP 	sniff_cue: autoDraw = False
+1674.2560 	EXP 	text_left: autoDraw = False
+1674.2560 	EXP 	text_right: autoDraw = False
+1674.2560 	EXP 	text_mid: autoDraw = False
+1674.2560 	EXP 	slider: autoDraw = False
+1674.2560 	EXP 	text: text = '+'
+1674.2560 	EXP 	text: autoDraw = True
+1683.2411 	EXP 	New trial (rep=0, index=4): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 5, 'odor_num': 1, 'ITIDur': 9.5}
+1683.2561 	EXP 	text: autoDraw = False
+1683.2561 	EXP 	text: autoDraw = False
+1683.2561 	EXP 	fixation: autoDraw = True
+1685.2626 	EXP 	fixation: autoDraw = False
+1685.2626 	EXP 	fixation: autoDraw = False
+1685.2626 	EXP 	slider: markerPos = None
+1685.2626 	EXP 	slider: markerPos = None
+1685.2626 	EXP 	slider: markerPos = 0
+1685.2626 	EXP 	sniff_cue: autoDraw = True
+1685.2626 	EXP 	text_left: autoDraw = True
+1685.2626 	EXP 	text_right: autoDraw = True
+1685.2626 	EXP 	text_mid: autoDraw = True
+1685.2626 	EXP 	slider: autoDraw = True
+1687.5727 	EXP 	slider: markerPos = -0.5
+1687.9229 	EXP 	slider: markerPos = -1.0
+1688.8895 	EXP 	slider: markerPos = -0.5
+1689.0556 	EXP 	sniff_cue: autoDraw = False
+1689.0556 	EXP 	text_left: autoDraw = False
+1689.0556 	EXP 	text_right: autoDraw = False
+1689.0556 	EXP 	text_mid: autoDraw = False
+1689.0556 	EXP 	slider: autoDraw = False
+1689.0556 	EXP 	text: text = '+'
+1689.0556 	EXP 	text: autoDraw = True
+1698.5422 	EXP 	New trial (rep=0, index=5): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 6, 'odor_num': 2, 'ITIDur': 8.5}
+1698.5564 	EXP 	text: autoDraw = False
+1698.5564 	EXP 	text: autoDraw = False
+1698.5564 	EXP 	fixation: autoDraw = True
+1700.5613 	EXP 	fixation: autoDraw = False
+1700.5613 	EXP 	fixation: autoDraw = False
+1700.5613 	EXP 	slider: markerPos = None
+1700.5613 	EXP 	slider: markerPos = None
+1700.5613 	EXP 	slider: markerPos = 0
+1700.5613 	EXP 	sniff_cue: autoDraw = True
+1700.5613 	EXP 	text_left: autoDraw = True
+1700.5613 	EXP 	text_right: autoDraw = True
+1700.5613 	EXP 	text_mid: autoDraw = True
+1700.5613 	EXP 	slider: autoDraw = True
+1702.8390 	EXP 	slider: markerPos = 0.5
+1703.1724 	EXP 	slider: markerPos = 1.0
+1703.4555 	EXP 	slider: markerPos = 1.5
+1703.9389 	EXP 	slider: markerPos = 2.0
+1704.1057 	EXP 	sniff_cue: autoDraw = False
+1704.1057 	EXP 	text_left: autoDraw = False
+1704.1057 	EXP 	text_right: autoDraw = False
+1704.1057 	EXP 	text_mid: autoDraw = False
+1704.1057 	EXP 	slider: autoDraw = False
+1704.1057 	EXP 	text: text = '+'
+1704.1057 	EXP 	text: autoDraw = True
+1712.5910 	EXP 	New trial (rep=0, index=6): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 7, 'odor_num': 1, 'ITIDur': 10}
+1712.6057 	EXP 	text: autoDraw = False
+1712.6057 	EXP 	text: autoDraw = False
+1712.6057 	EXP 	fixation: autoDraw = True
+1714.6124 	EXP 	fixation: autoDraw = False
+1714.6124 	EXP 	fixation: autoDraw = False
+1714.6124 	EXP 	slider: markerPos = None
+1714.6124 	EXP 	slider: markerPos = None
+1714.6124 	EXP 	slider: markerPos = 0
+1714.6124 	EXP 	sniff_cue: autoDraw = True
+1714.6124 	EXP 	text_left: autoDraw = True
+1714.6124 	EXP 	text_right: autoDraw = True
+1714.6124 	EXP 	text_mid: autoDraw = True
+1714.6124 	EXP 	slider: autoDraw = True
+1716.0555 	EXP 	slider: markerPos = -0.5
+1717.0384 	EXP 	slider: markerPos = -1.0
+1717.4053 	EXP 	slider: markerPos = -1.5
+1718.0387 	EXP 	slider: markerPos = -1.0
+1718.4055 	EXP 	sniff_cue: autoDraw = False
+1718.4055 	EXP 	text_left: autoDraw = False
+1718.4055 	EXP 	text_right: autoDraw = False
+1718.4055 	EXP 	text_mid: autoDraw = False
+1718.4055 	EXP 	slider: autoDraw = False
+1718.4055 	EXP 	text: text = '+'
+1718.4055 	EXP 	text: autoDraw = True
+1728.3904 	EXP 	New trial (rep=0, index=7): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 8, 'odor_num': 2, 'ITIDur': 9.25}
+1728.4054 	EXP 	text: autoDraw = False
+1728.4054 	EXP 	text: autoDraw = False
+1728.4054 	EXP 	fixation: autoDraw = True
+1730.4212 	EXP 	fixation: autoDraw = False
+1730.4212 	EXP 	fixation: autoDraw = False
+1730.4212 	EXP 	slider: markerPos = None
+1730.4212 	EXP 	slider: markerPos = None
+1730.4212 	EXP 	slider: markerPos = 0
+1730.4212 	EXP 	sniff_cue: autoDraw = True
+1730.4212 	EXP 	text_left: autoDraw = True
+1730.4212 	EXP 	text_right: autoDraw = True
+1730.4212 	EXP 	text_mid: autoDraw = True
+1730.4212 	EXP 	slider: autoDraw = True
+1732.5384 	EXP 	slider: markerPos = 0.5
+1732.9884 	EXP 	slider: markerPos = 1.0
+1733.3384 	EXP 	slider: markerPos = 1.5
+1733.9216 	EXP 	slider: markerPos = 2.0
+1733.9885 	EXP 	sniff_cue: autoDraw = False
+1733.9885 	EXP 	text_left: autoDraw = False
+1733.9885 	EXP 	text_right: autoDraw = False
+1733.9885 	EXP 	text_mid: autoDraw = False
+1733.9885 	EXP 	slider: autoDraw = False
+1733.9885 	EXP 	text: text = '+'
+1733.9885 	EXP 	text: autoDraw = True
+1743.2237 	EXP 	New trial (rep=0, index=8): {'rating_type': 'p', 'rating_when': 'pre', 'trial': 9, 'odor_num': 0, 'ITIDur': 9.75}
+1743.2385 	EXP 	text: autoDraw = False
+1743.2385 	EXP 	text: autoDraw = False
+1743.2385 	EXP 	fixation: autoDraw = True
+1745.2457 	EXP 	fixation: autoDraw = False
+1745.2457 	EXP 	fixation: autoDraw = False
+1745.2457 	EXP 	slider: markerPos = None
+1745.2457 	EXP 	slider: markerPos = None
+1745.2457 	EXP 	slider: markerPos = 0
+1745.2457 	EXP 	sniff_cue: autoDraw = True
+1745.2457 	EXP 	text_left: autoDraw = True
+1745.2457 	EXP 	text_right: autoDraw = True
+1745.2457 	EXP 	text_mid: autoDraw = True
+1745.2457 	EXP 	slider: autoDraw = True
+1746.6551 	EXP 	sniff_cue: autoDraw = False
+1746.6551 	EXP 	text_left: autoDraw = False
+1746.6551 	EXP 	text_right: autoDraw = False
+1746.6551 	EXP 	text_mid: autoDraw = False
+1746.6551 	EXP 	slider: autoDraw = False
+1746.6551 	EXP 	text: text = '+'
+1746.6551 	EXP 	text: autoDraw = True
+1756.4007 	EXP 	Created sequence: sequential, trialTypes=1, nReps=0, seed=None
+1756.4060 	EXP 	text: autoDraw = False
+1756.4060 	EXP 	text: autoDraw = False
+1756.4060 	EXP 	task_over_txt: autoDraw = True
+1759.4547 	EXP 	task_over_txt: autoDraw = False
+1759.4548 	EXP 	PrePostPleasantnessRatings: status = STOPPED
+1759.4830 	EXP 	window1: mouseVisible = True
