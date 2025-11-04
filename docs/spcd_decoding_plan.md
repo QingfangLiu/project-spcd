@@ -45,7 +45,7 @@ Above-chance accuracy (chance = 1/6) suggests associative reactivation of condit
 
 ---
 
-## 🎯 Goal 2: Odor Identity Reactivation
+## 🎯 Goal 2: Odor Identity Reactivation (completed)
 
 ### **Research Questions**
 1. Do **pre-conditioned cues** evoke reactivation of their **associated odor identity**?  
@@ -68,7 +68,7 @@ Above-chance accuracy (chance = 1/6) suggests associative reactivation of condit
 
 ---
 
-## 🎯 Goal 3: Cross-Set & Cross-Cue-Type Odor Identity Decoding
+## 🎯 Goal 3: Cross-Set & Cross-Cue-Type Odor Identity Decoding (completed)
 
 ### **Research Question**
 Is **odor identity** represented in a form that generalizes across:
@@ -112,9 +112,6 @@ Do **conditioned cues (B1–B6, Day 2 Odor Prediction)** evoke neural patterns s
 **Test on:**  
 - Conditioned cues (B1–B6) from Day 2 odor prediction task  
 - Each B cue labeled by its associated A cue (e.g., B1 → A1 → class 0)
-
-### **Interpretation**
-Above-chance decoding suggests **reactivation of pre-conditioned cue representations** during viewing of associated conditioned cues, implying **bidirectional associative structure**.
 
 ---
 
