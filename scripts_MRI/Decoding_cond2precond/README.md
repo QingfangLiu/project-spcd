@@ -84,6 +84,13 @@ Above-chance accuracy indicates **associative reactivation of conditioned cue re
 
 ## 🧪 Notes
 
-- All paths and naming conventions match existing odor→probe scripts.  
-- Supports subjects with either character or place Day-1 localizers.  
-- Can be extended for post-meal sessions (`--session_tag postmeal`).
+- Compatible with subjects using either **character** or **place** Day-1 localizers.  
+- The same decoding pipeline was also applied to **post-meal** sessions (`--session_tag postmeal`).
+- Group-level **smoothing and aggregation** were performed using `aggregate_searchlight_group_level.py`, which generates smoothed mean-accuracy and t-maps across subjects.  
+- Preliminary findings highlight **bilateral inferior temporal cortex** as the most promising site of associative cue reactivation, with some **differences between pre-meal and post-meal sessions** to be explored.
+
+
+
+
+
+
