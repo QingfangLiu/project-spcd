@@ -1,10 +1,10 @@
-# prepare_decoding_goal1_subset.py
+# prepare_decoding_cond2precond_subset.py
 #
-# Prepare a minimal data subset for Goal 1:
-#   Day-1 conditioned cues (B) → Day-2 pre-conditioned cues (A)
+# Prepare data subset for Goal 1:
+#   Day-1 conditioned cues (B) → Day-2 (or Day-3) probe A cues
 #
 # Copies, for each eligible subject:
-#   - GLM/premeal_trialwise_2mm/<sub-XX>/          (probe betas + CSVs)
+#   - GLM/<probe_folder>/<sub-XX>/          (probe betas + CSVs, e.g. premeal or postmeal)
 #   - GLM/{character|place}_trialwise_2mm/<sub-XX>/ (Day-1 localizer betas)
 #   - nii/<sub-XX>/func_PAID/{character|place}/*.tsv (localizer events)
 # And also:
@@ -13,7 +13,7 @@
 #
 # Eligibility:
 #   subject must have both:
-#     - GLM/premeal_trialwise_2mm/<sub-XX>
+#     - GLM/<probe_folder>/<sub-XX>
 #     - Day-1 GLM in the folder implied by task_info/subject_info.csv:
 #         pairing == 'c' -> character_trialwise_2mm
 #         pairing == 'p' -> place_trialwise_2mm
@@ -47,7 +47,7 @@ def _load_subject_info(full_data_dir):
 def prepare_goal1_subset(
     full_data_dir,
     subset_dir,
-    premeal_folder="premeal_trialwise_2mm",
+    probe_folder="premeal_trialwise_2mm",   # ← can be 'premeal_trialwise_2mm' or 'postmeal_trialwise_2mm'
     char_glm_folder="character_trialwise_2mm",
     place_glm_folder="place_trialwise_2mm",
 ):
@@ -60,8 +60,9 @@ def prepare_goal1_subset(
         Root of your full SPCD_data (contains GLM, nii, masks, task_info).
     subset_dir : str
         Destination root for the subset to sync to Biowulf.
-    premeal_folder : str
-        Name of the pre-meal probe GLM folder under GLM/.
+    probe_folder : str
+        Name of the probe GLM folder under GLM/ (e.g. 'premeal_trialwise_2mm'
+        or 'postmeal_trialwise_2mm').
     char_glm_folder : str
         Name of the character localizer GLM folder under GLM/.
     place_glm_folder : str
@@ -69,20 +70,20 @@ def prepare_goal1_subset(
     """
     subject_info = _load_subject_info(full_data_dir)
 
-    premeal_root = os.path.join(full_data_dir, "GLM", premeal_folder)
+    probe_root = os.path.join(full_data_dir, "GLM", probe_folder)
     char_root = os.path.join(full_data_dir, "GLM", char_glm_folder)
     place_root = os.path.join(full_data_dir, "GLM", place_glm_folder)
 
-    subs_premeal = {
+    subs_probe = {
         d
-        for d in os.listdir(premeal_root)
-        if d.startswith("sub-") and os.path.isdir(os.path.join(premeal_root, d))
+        for d in os.listdir(probe_root)
+        if d.startswith("sub-") and os.path.isdir(os.path.join(probe_root, d))
     }
 
-    # Determine, for each subject with premeal GLM, whether the required
+    # Determine, for each subject with probe GLM, whether the required
     # Day-1 GLM (character or place) exists, based on pairing.
     eligible_subs = []
-    for sub in sorted(subs_premeal):
+    for sub in sorted(subs_probe):
         if sub not in subject_info.index:
             print(f"⚠️ {sub} not in subject_info.csv, skipping.")
             continue
@@ -102,7 +103,7 @@ def prepare_goal1_subset(
 
         eligible_subs.append(sub)
 
-    print(f"🧾 Subjects eligible for Goal 1 subset: {len(eligible_subs)}")
+    print(f"🧾 Subjects eligible for Goal 1 subset ({probe_folder}): {len(eligible_subs)}")
     if not eligible_subs:
         print("No subjects found; nothing to copy.")
         return
@@ -126,10 +127,10 @@ def prepare_goal1_subset(
         pairing = subject_info.loc[sub, "pairing"]
         print(f"📦 {sub} (pairing={pairing})")
 
-        # Pre-meal GLM
-        src_premeal = os.path.join(premeal_root, sub)
-        dst_premeal = os.path.join(subset_dir, "GLM", premeal_folder, sub)
-        _copytree(src_premeal, dst_premeal)
+        # Probe GLM (premeal or postmeal)
+        src_probe = os.path.join(probe_root, sub)
+        dst_probe = os.path.join(subset_dir, "GLM", probe_folder, sub)
+        _copytree(src_probe, dst_probe)
 
         # Day-1 GLM (character or place)
         if pairing == "c":
@@ -165,7 +166,15 @@ def prepare_goal1_subset(
 
 if __name__ == "__main__":
     # ✏️ Edit these before running on your laptop
-    full_data_dir = "/Users/liuq13/SPCD_data"
-    subset_dir = "/Users/liuq13/SPCD_subset"
 
-    prepare_goal1_subset(full_data_dir, subset_dir)
+    full_data_dir = "/Users/liuq13/SPCD_data"
+
+    # Example 1: premeal subset (what you already did)
+    # subset_dir = "/Users/liuq13/SPCD_premeal_subset"
+    # prepare_goal1_subset(full_data_dir, subset_dir,
+    #                      probe_folder="premeal_trialwise_2mm")
+
+    # Example 2: **postmeal** subset (what you want now)
+    subset_dir = "/Users/liuq13/SPCD_postmeal_subset"
+    prepare_goal1_subset(full_data_dir, subset_dir,
+                         probe_folder="postmeal_trialwise_2mm")

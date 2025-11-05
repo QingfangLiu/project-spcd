@@ -68,14 +68,14 @@ def run_one_subject(
     )
 
     # Concatenate TRAIN + TEST into single dataset for nilearn SearchLight
-    X = concat_imgs([train_imgs, test_imgs])
-    y = np.concatenate([y_train, y_test])
+    X = concat_imgs([train_imgs, test_imgs]) # train_imgs and test_imgs are both 4D images: n_trials,x,y,z
+    y = np.concatenate([y_train, y_test]) # 1D arrays of labels per trial
 
-    n_train = len(y_train)
-    n_total = len(y)
+    n_train = len(y_train) # number of train trials
+    n_total = len(y) # number of all trials
     train_idx = np.arange(n_train)
     test_idx = np.arange(n_train, n_total)
-    splits = [(train_idx, test_idx)]
+    splits = [(train_idx, test_idx)] # used by SearchLight, train classifier on train_idx and test on test_idx
 
     # -----------------------------
     # Searchlight decoding
@@ -86,7 +86,7 @@ def run_one_subject(
         radius=radius_mm,
         estimator=SVC(kernel="linear", C=1.0),
         n_jobs=n_jobs,
-        cv=splits,
+        cv=splits, # a train-test transfer
         scoring="accuracy",
         verbose=1,
     )
