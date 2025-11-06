@@ -26,7 +26,7 @@
 
 ---
 
-## 🎯 Goal 1: Pre-conditioned → Conditioned Cue Reactivation
+## 🎯 Goal 1: Pre-conditioned → Conditioned Cue Reactivation (completed)
 
 ### **Research Question**
 Do **pre-conditioned cues (Day 2, Probe)** evoke neural patterns similar to **conditioned cues (Day 1)**?
