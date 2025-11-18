@@ -33,7 +33,7 @@ def _zscore_4d_by_voxel(imgs_4d, eps: float = 1e-8):
     Parameters
     ----------
     imgs_4d : nibabel.Nifti1Image
-        4D image with shape (n_trials, X, Y, Z).
+        4D image with shape (X, Y, Z, n_trials).
     eps : float
         Small floor to avoid divide-by-zero; any std < eps is set to 1.
 
@@ -42,10 +42,12 @@ def _zscore_4d_by_voxel(imgs_4d, eps: float = 1e-8):
     nibabel.Nifti1Image
         4D image of the same shape with voxelwise z-scored data.
     """
-    X = get_data(imgs_4d)  # (n_trials, X, Y, Z)
-    mu = X.mean(axis=0)
-    sd = X.std(axis=0, ddof=1)  # ddof=1 for sample std
+    X = get_data(imgs_4d)  # (X, Y, Z, n_trials)
+    
+    mu = X.mean(axis=-1, keepdims=True)
+    sd = X.std(axis=-1, ddof=1, keepdims=True)
     sd[sd < eps] = 1.0
+
     Z = (X - mu) / sd
     return new_img_like(imgs_4d, Z.astype(np.float32))
 
@@ -95,7 +97,7 @@ def load_decoding_data_odor(sub: str,
         if len(run_imgs) == 0:
             continue
 
-        run_4d = concat_imgs(run_imgs)          # (n_trials_in_run, X, Y, Z)
+        run_4d = concat_imgs(run_imgs)          # (X, Y, Z, n_trials_in_run)
         if normalize:
             run_4d = _zscore_4d_by_voxel(run_4d) # <-- per-run z-scoring
 

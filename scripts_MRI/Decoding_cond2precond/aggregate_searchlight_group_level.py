@@ -23,7 +23,7 @@ from scipy.stats import ttest_1samp
 base_dir    = "/Users/liuq13/SPCD_data/searchlight_maps"
 subfolder   = "cue_reactivation"
 
-session_tag = "postmeal"   # must match your filename
+session_tag = "premeal"   # must match your filename
 radius_str  = "8mm"       # must match your filename
 fwhm        = 6           # smoothing FWHM in mm (set 0 or None for no smoothing)
 chance      = 1.0 / 6.0   # 6-way classification

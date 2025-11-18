@@ -71,6 +71,14 @@ def run_one_subject(
     X = concat_imgs([train_imgs, test_imgs]) # train_imgs and test_imgs are both 4D images: n_trials,x,y,z
     y = np.concatenate([y_train, y_test]) # 1D arrays of labels per trial
 
+    # Add diagnostic prints in your script:
+    print(f"Train shape: {train_imgs.shape}")
+    print(f"Test shape: {test_imgs.shape}")
+    print(f"Train labels: {np.unique(y_train, return_counts=True)}")
+    print(f"Test labels: {np.unique(y_test, return_counts=True)}")
+    print(f"Train label range: {y_train.min()}-{y_train.max()}")
+    print(f"Test label range: {y_test.min()}-{y_test.max()}")
+
     n_train = len(y_train) # number of train trials
     n_total = len(y) # number of all trials
     train_idx = np.arange(n_train)
@@ -86,7 +94,7 @@ def run_one_subject(
         radius=radius_mm,
         estimator=SVC(kernel="linear", C=1.0),
         n_jobs=n_jobs,
-        cv=splits, # a train-test transfer
+        cv=splits,           # a train-test transfer
         scoring="accuracy",
         verbose=1,
     )
@@ -96,6 +104,14 @@ def run_one_subject(
         f"classes=6 | radius={radius_mm}mm | "
         f"TRAIN=B(localizer) | TEST=A(probe,{session_tag})"
     )
+
+    # Check label distribution
+    print(f"Label distribution train: {np.bincount(y_train)}")
+    print(f"Label distribution test: {np.bincount(y_test)}")
+
+    # Check if test labels actually match B-identities
+    print(f"Unique train labels: {np.unique(y_train)}")
+    print(f"Unique test labels: {np.unique(y_test)}")
 
     sl.fit(X, y)
 

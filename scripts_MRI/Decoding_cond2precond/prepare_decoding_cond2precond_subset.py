@@ -170,9 +170,9 @@ if __name__ == "__main__":
     full_data_dir = "/Users/liuq13/SPCD_data"
 
     # Example 1: premeal subset (what you already did)
-    # subset_dir = "/Users/liuq13/SPCD_premeal_subset"
-    # prepare_goal1_subset(full_data_dir, subset_dir,
-    #                      probe_folder="premeal_trialwise_2mm")
+    subset_dir = "/Users/liuq13/SPCD_premeal_subset"
+    prepare_goal1_subset(full_data_dir, subset_dir,
+                          probe_folder="premeal_trialwise_2mm")
 
     # Example 2: **postmeal** subset (what you want now)
     subset_dir = "/Users/liuq13/SPCD_postmeal_subset"
