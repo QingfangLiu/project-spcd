@@ -12,7 +12,7 @@
 base_dir   = '/Users/liuq13/SPCD_data/searchlight_maps';
 subfolder  = 'cue_reactivation';
 
-session_tag = 'postmeal';   % must match your filenames
+session_tag = 'premeal';   % must match your filenames
 radius_str  = '8mm';       % must match your filenames
 fwhm        = 6;           % mm FWHM
 chance      = 1/6;         % 6-way classification
@@ -76,6 +76,12 @@ for i = 1:numel(map_files_gz)
     % Load accuracy map
     V = spm_vol(nii_path);
     Y = spm_read_vols(V);
+
+    % Load the GM mask 
+    M = spm_read_vols(spm_vol(mask_file)) > 0;
+
+    % Set outside-brain voxels to NaN
+    Y(~M) = NaN;
 
     % Center at chance: acc - chance
     Yc = Y - chance;

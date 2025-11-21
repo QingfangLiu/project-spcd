@@ -23,8 +23,8 @@ session_tag = 'odorpred';
 
 % Choose which odor-prediction GLM variant to aggregate:
 %   'cueEARLY_trialwise_2mm'  or  'cueEXT5s_trialwise_2mm'
-% glm_tag    = 'cueEARLY_trialwise_2mm';   % <-- change to 'cueEXT5s_trialwise_2mm' if needed
-glm_tag = 'cueEXT5s_trialwise_2mm';
+glm_tag    = 'cueEARLY_trialwise_2mm';   % <-- change to 'cueEXT5s_trialwise_2mm' if needed
+% glm_tag = 'cueEXT5s_trialwise_2mm';
 
 radius_str = '8mm';       % must match your filenames
 fwhm       = 6;           % mm FWHM
@@ -90,6 +90,12 @@ for i = 1:numel(map_files_gz)
     % Load accuracy map
     V = spm_vol(nii_path);
     Y = spm_read_vols(V);
+
+    % Load the GM mask 
+    M = spm_read_vols(spm_vol(mask_file)) > 0;
+
+    % Set outside-brain voxels to NaN
+    Y(~M) = NaN;
 
     % Center at chance: acc - chance
     Yc = Y - chance;

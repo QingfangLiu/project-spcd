@@ -75,6 +75,13 @@ for n_cls = class_list
             % Load and center at chance
             V = spm_vol(nii_path);
             Y = spm_read_vols(V);
+
+            % Load the GM mask 
+            M = spm_read_vols(spm_vol(mask_file)) > 0;
+
+            % Set outside-brain voxels to NaN
+            Y(~M) = NaN;
+
             Yc = Y - chance_val;
 
             % Save centered

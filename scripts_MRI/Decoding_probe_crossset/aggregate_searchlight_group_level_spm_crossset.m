@@ -85,6 +85,12 @@ for n_cls = class_list
                 V = spm_vol(nii_path);
                 Y = spm_read_vols(V);
 
+                % Load the GM mask 
+                M = spm_read_vols(spm_vol(mask_file)) > 0;
+
+                % Set outside-brain voxels to NaN
+                Y(~M) = NaN;
+
                 % Center at chance: acc - chance
                 Yc = Y - chance_val;
 
