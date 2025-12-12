@@ -6,7 +6,7 @@ from nilearn.image import load_img
 def load_betas(sub, run, base_dir, normalization='none'):
     """
     Load beta images and binary labels (0 = odor_1, 1 = odor_2) for one run.
-    normalization: 'none', 'across_trials', or 'across_voxels'
+    normalization: 'none', 'across_trials'
     """
     
     from nilearn.image import get_data, new_img_like
@@ -16,17 +16,6 @@ def load_betas(sub, run, base_dir, normalization='none'):
         mean = data_stack.mean(axis=0)
         std = data_stack.std(axis=0)
         norm_imgs = [(new_img_like(img, (get_data(img) - mean) / std)) for img in img_list]
-        return norm_imgs
-
-    def normalize_across_voxels(img_list):
-        norm_imgs = []
-        for img in img_list:
-            data = get_data(img)
-            flat = data.flatten()
-            mean = flat.mean()
-            std = flat.std()
-            norm_data = ((flat - mean) / std).reshape(data.shape)
-            norm_imgs.append(new_img_like(img, norm_data))
         return norm_imgs
 
     tsv_dir = os.path.join(base_dir, 'nii', sub, 'func_PAID', 'odor_scan')
@@ -46,8 +35,6 @@ def load_betas(sub, run, base_dir, normalization='none'):
     # --- Apply normalization if needed ---
     if normalization == 'across_trials':
         imgs = normalize_across_trials(imgs)
-    elif normalization == 'across_voxels':
-        imgs = normalize_across_voxels(imgs)
     elif normalization != 'none':
         raise ValueError(f"Unknown normalization: {normalization}")
 
@@ -86,9 +73,10 @@ def load_decoding_data(sub, base_dir, run_list=[1, 2], normalization='none'):
         imgs, y = load_betas(sub, run, base_dir, normalization=normalization)
         all_imgs_list.extend(imgs)
         all_labels.extend(y)
-        all_groups.extend([run] * len(y))
+        all_groups.extend([run] * len(y)) # a list repeating [run] many times of len(y)
 
-    all_imgs = concat_imgs(all_imgs_list)
+    all_imgs = concat_imgs(all_imgs_list) # takes a list of nifti images and stacks them into 4D nifti image
+                                          # last dimension is number of samples
     all_y = np.array(all_labels)
     groups = np.array(all_groups)
 

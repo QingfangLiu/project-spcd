@@ -41,7 +41,7 @@ def run_one_subject(sub, base_dir, mask_img_path, normalization):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sub", required=True, help="Subject ID (e.g., sub-01)")
-    parser.add_argument("--norm", required=True, help="Normalization: none, across_voxels, across_trials")
+    parser.add_argument("--norm", required=True, help="Normalization: none, across_trials")
     parser.add_argument("--base_dir", default="/data/liuq13/SPCD_decoding_subset", help="Base directory of data")
     parser.add_argument("--mask_img", default="/data/liuq13/SPCD_decoding_subset/masks/gm_0.1.nii", help="Path to gray matter mask")
     args = parser.parse_args()
