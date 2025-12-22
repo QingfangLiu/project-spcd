@@ -1,5 +1,4 @@
-% aggregate_searchlight_group_level_spm.m
-% MATLAB/SPM12 version of your Python aggregation for searchlight maps.
+% aggregate_searchlight_group_level_spm_crosstask.m
 
 addpath('/Users/liuq13/Applications/spm12/')
 
@@ -8,12 +7,6 @@ base_dir   = '/Users/liuq13/SPCD_data/searchlight_maps';
 subfolder  = 'probe_crosstask';
 
 mask_file = '/Users/liuq13/SPCD_data/masks/gm_0.1.nii';
-
-% Check mask before running
-if ~exist(mask_file, 'file')
-    error('Mask file not found: %s', mask_file);
-end
-fprintf('Using mask: %s\n', mask_file);
 
 cue_types  = {'A','B','AB'};
 class_list = [2,3];
@@ -56,7 +49,18 @@ for n_cls = class_list
                     ['session-' session_tag], mode_tag, cue, n_cls, radius_str));
 
         map_files_gz = dir(pattern);
-        fprintf('Found %d searchlight maps.\n', numel(map_files_gz));
+
+        % subjects to skip
+        skip_subs = {'sub-19', 'sub-33'};
+
+        % filter out skipped subjects
+        keep_idx = ~arrayfun(@(f) any(contains(f.name, skip_subs)), map_files_gz);
+
+        map_files_gz = map_files_gz(keep_idx);
+
+        fprintf('Found %d searchlight maps (after skipping sub-19, sub-33).\n', ...
+                numel(map_files_gz));
+
         if isempty(map_files_gz), continue; end
 
         %% --------- Unzip and preprocess ----------

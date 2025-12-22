@@ -1,6 +1,5 @@
 
-% aggregate_odor2_searchlight_group_level_spm.m
-%
+% aggregate_searchlight_group_level_odor_scan.m
 % SPM12 group analysis for odor localizer (2-odor) searchlight maps.
 %
 % For each analysis option:
@@ -16,7 +15,6 @@
 addpath('/Users/liuq13/Applications/spm12/');
 base_dir   = '/Users/liuq13/SPCD_data/searchlight_maps';
 task_folder  = 'odor_scan_2odors';
-opt_list     = {'across_trials', 'across_voxels', 'none'}; 
 opt_list     = {'across_trials', 'none'}; 
 
 group_stats_suffix = 'group_stats_spm';
@@ -55,7 +53,18 @@ for oi = 1:numel(opt_list)
     %% ---------- Find maps (.nii.gz) ----------
     pattern = fullfile(input_dir, 'sub-*_*searchlight.nii.gz');   % sub-01_searchlight.nii.gz
     map_files_gz = dir(pattern);
-    fprintf('  Found %d searchlight maps.\n', numel(map_files_gz));
+    
+    % subjects to skip
+    skip_subs = {'sub-19', 'sub-33'};
+
+    % filter out skipped subjects
+    keep_idx = ~arrayfun(@(f) any(contains(f.name, skip_subs)), map_files_gz);
+
+    map_files_gz = map_files_gz(keep_idx);
+
+    fprintf('Found %d searchlight maps (after skipping sub-19, sub-33).\n', ...
+            numel(map_files_gz));
+
     if isempty(map_files_gz)
         fprintf('  No maps found for %s, skipping.\n', opt);
         continue;

@@ -1,9 +1,10 @@
 % aggregate_searchlight_group_level_spm_crossset.m
 %
-% SPM12 version of aggregate_searchlight_group_level.py (probe_crossset)
 % - One-sample t-test in SPM on (accuracy - chance)
 % - Explicit GM mask: base_dir/masks/gm_0.1.nii
 % - Keeps results separate in .../group_stats_spm/session-<tag>/
+
+addpath('/Users/liuq13/Applications/spm12/');
 
 %% ---------- Settings ----------
 base_dir   = '/Users/liuq13/SPCD_data/searchlight_maps';
@@ -20,9 +21,6 @@ group_stats_suffix = 'group_stats_spm';
 
 % explicit GM mask
 mask_file = '/Users/liuq13/SPCD_data/masks/gm_0.1.nii';
-if ~exist(mask_file, 'file')
-    error('Explicit mask not found: %s', mask_file);
-end
 
 %% ---------- Init SPM ----------
 spm('Defaults','fMRI');
@@ -56,7 +54,18 @@ for n_cls = class_list
                         session_tag, mode, cue, n_cls, radius_str));
 
             map_files_gz = dir(pattern);
-            fprintf('Found %d searchlight maps.\n', numel(map_files_gz));
+
+            % subjects to skip
+            skip_subs = {'sub-19', 'sub-33'};
+
+            % filter out skipped subjects
+            keep_idx = ~arrayfun(@(f) any(contains(f.name, skip_subs)), map_files_gz);
+
+            map_files_gz = map_files_gz(keep_idx);
+
+            fprintf('Found %d searchlight maps (after skipping sub-19, sub-33).\n', ...
+                numel(map_files_gz));
+
             if isempty(map_files_gz)
                 fprintf('No maps found. Skipping.\n');
                 continue;
