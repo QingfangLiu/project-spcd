@@ -18,6 +18,8 @@ The analysis:
 
 - **`rsa_utils.py`**: Core functions for data loading, RDM creation, and searchlight RSA
 - **`run_rsa_searchlight.py`**: Main script to run analysis for one subject
+- **`prepare_rsa_subset_probe.py`**: Copy a subset of files to do analysis on Biowulf
+- **`make_rsa_searchlight_swarm_probe.py`**: Script to create swarm files
 - **`README_RSA.md`**: This file
 
 ## Data Requirements
