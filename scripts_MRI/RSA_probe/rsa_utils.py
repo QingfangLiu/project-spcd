@@ -265,6 +265,44 @@ def create_identity_model_rdm():
     return rdm
 
 
+def create_value_model_rdm(diagonal: float = 1.0):
+    """
+    Create odor value model RDM (12x12) where odor1 and odor2 are treated
+    as the SAME odor class (merged), and clean is separate.
+
+    Value = 1 iff BOTH conditions are in the merged odor set (odor1 + odor2).
+    Otherwise 0.
+
+    Groups:
+    - odor_merged: A11, B11, A12, B12, A21, B21, A22, B22
+    - clean:       C1, D1, C2, D2
+    """
+    conditions = ['A11', 'A21', 'C1', 'B11', 'B21', 'D1',
+                  'A12', 'A22', 'C2', 'B12', 'B22', 'D2']
+
+    odor_merged = {'A11', 'B11', 'A12', 'B12', 'A21', 'B21', 'A22', 'B22'}
+    clean       = {'C1', 'D1', 'C2', 'D2'}
+
+    group_map = {}
+    for c in odor_merged:
+        group_map[c] = "odor"
+    for c in clean:
+        group_map[c] = "clean"
+
+    n = len(conditions)
+    rdm = np.zeros((n, n), dtype=float)
+
+    for i, ci in enumerate(conditions):
+        for j, cj in enumerate(conditions):
+            if i == j:
+                rdm[i, j] = diagonal
+            else:
+                rdm[i, j] = float(group_map[ci] == group_map[cj])
+
+    return rdm
+
+
+
 # ============================================================================
 # Neural RDM Computation
 # ============================================================================

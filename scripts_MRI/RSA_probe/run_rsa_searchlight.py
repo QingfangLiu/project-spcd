@@ -19,6 +19,7 @@ import sys
 from rsa_utils import (
     create_association_model_rdm,
     create_identity_model_rdm,
+    create_value_model_rdm,
     searchlight_rsa_single_subject,
     save_rsa_maps
 )
@@ -126,14 +127,21 @@ def main():
     
     # Create model RDMs
     print("\nCreating model RDMs...")
-    association_rdm = create_association_model_rdm()
-    identity_rdm = create_identity_model_rdm()
-    
-    model_rdms = {
-        'association': association_rdm,
-        'identity': identity_rdm
+
+
+    all_model_rdms = {
+        'association': create_association_model_rdm(),
+        'identity': create_identity_model_rdm(),
+        'value': create_value_model_rdm(),
     }
-    
+
+    USE_MODELS = ['value']  
+    model_rdms = {k: all_model_rdms[k] for k in USE_MODELS}
+
+    print("\nModels used for analysis:")
+    for name in model_rdms:
+        print(f"  - {name}")
+
     # Run searchlight RSA
     print("\nRunning searchlight RSA...")
     try:
