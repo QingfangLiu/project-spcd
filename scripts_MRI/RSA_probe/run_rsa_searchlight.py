@@ -71,6 +71,20 @@ def main():
         default=-1,
         help="Number of parallel jobs (default: -1 for all cores)"
     )
+    parser.add_argument(
+        "--rsa_method",
+        type=str,
+        choices=["regression", "spearman", "kendall"],
+        default="regression",
+        help="RSA scoring method (default: regression)"
+    )
+    parser.add_argument(
+        "--neural_metric",
+        type=str,
+        choices=["correlation", "euclidean"],
+        default="correlation",
+        help="Neural similarity metric (default: correlation)"
+    )
     
     args = parser.parse_args() # reads sys.argv, matches values to rules, convers types, returns a simple object
     
@@ -80,6 +94,12 @@ def main():
     
     if args.output_dir is None:
         args.output_dir = os.path.join(args.base_dir, "rsa_maps", "probe")
+
+    if args.rsa_method is None:
+        args.rsa_method = "regression"
+
+    if args.neural_metric is None:
+        args.neural_metric = "correlation"
     
     # Determine session folder
     session_folder = f"{args.session}_trialwise_2mm"
@@ -100,6 +120,8 @@ def main():
     print(f"Output dir:     {args.output_dir}")
     print(f"Radius:         {args.radius} mm")
     print(f"N jobs:         {args.n_jobs}")
+    print(f"RSA method:     {args.rsa_method}")
+    print(f"Neural metric:  {args.neural_metric}")
     print("=" * 80)
     
     # Create model RDMs
@@ -112,13 +134,10 @@ def main():
         'identity': identity_rdm
     }
     
-    print(f"  Association model: {association_rdm.sum()} similar pairs")
-    print(f"  Identity model: {identity_rdm.sum()} similar pairs")
-    
     # Run searchlight RSA
     print("\nRunning searchlight RSA...")
     try:
-        beta_maps = searchlight_rsa_single_subject(
+        rsa_maps = searchlight_rsa_single_subject(
             sub=args.sub,
             base_dir=args.base_dir,
             session_folder=session_folder,
@@ -126,7 +145,9 @@ def main():
             mask_file=args.mask,
             model_rdms=model_rdms,
             radius=args.radius,
-            n_jobs=args.n_jobs
+            n_jobs=args.n_jobs,
+            rsa_method=args.rsa_method,
+            neural_metric=args.neural_metric
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")
@@ -138,10 +159,12 @@ def main():
     print("\nSaving results...")
     save_rsa_maps(
         sub=args.sub,
-        beta_maps=beta_maps,
+        rsa_maps=rsa_maps,
         output_dir=args.output_dir,
         session_tag=args.session,
-        radius=args.radius
+        radius=args.radius,
+        rsa_method=args.rsa_method,
+        neural_metric=args.neural_metric
     )
     
     print("\n" + "=" * 80)

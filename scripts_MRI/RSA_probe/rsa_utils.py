@@ -8,6 +8,7 @@ import os
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import pdist, squareform
+from scipy.stats import spearmanr, kendalltau
 from sklearn.linear_model import LinearRegression
 from nilearn.image import load_img, concat_imgs, get_data, new_img_like
 
@@ -286,10 +287,12 @@ def compute_neural_rdm(patterns, metric='correlation'):
     """
     n_cond = patterns.shape[0]
     
-    if metric == 'correlation':
-        # Compute correlation-based similarity
+    if metric == 'correlation': # in [-1, 1]
+        # Compute correlation-based similarity (guardrail added)
         rdm = np.corrcoef(patterns) # correlation between all pairs of rows
-    elif metric == 'euclidean':
+        rdm = np.nan_to_num(rdm, nan=0.0) # replace NANs with 0
+        np.fill_diagonal(rdm, 1.0) # force diagonal to be 1.0
+    elif metric == 'euclidean': # in [0, 1]
         # Compute pairwise distances and convert to similarity
         distances = squareform(pdist(patterns, metric='euclidean'))
         # Convert to similarity (invert and normalize)
@@ -346,8 +349,69 @@ def rsa_multiple_regression(neural_rdm, model_rdms):
 
 
 # ============================================================================
+# RSA single model correlation
+# ============================================================================
+
+def rsa_single_model_correlation(neural_rdm, model_rdm, method: str = "spearman"):
+    """
+    Correlate neural similarity matrix with ONE model similarity matrix
+    using lower triangle (excluding diagonal).
+    
+    method: "spearman" or "kendall" (kendall = tau-b in scipy)
+    """
+    n = neural_rdm.shape[0]
+    tril_idx = np.tril_indices(n, k=-1)
+
+    y = neural_rdm[tril_idx]
+    x = model_rdm[tril_idx]
+
+    if method == "spearman":
+        r, _ = spearmanr(x, y)
+    elif method == "kendall":
+        r, _ = kendalltau(x, y)  # scipy's kendalltau is tau-b (tie-corrected)
+    else:
+        raise ValueError(f"Unknown RSA correlation method: {method}")
+
+    # be safe in searchlight: return 0.0 if nan
+    return 0.0 if np.isnan(r) else float(r)
+
+
+# ============================================================================
 # Searchlight RSA
 # ============================================================================
+
+# Create a custom scoring function for this model
+from sklearn.base import BaseEstimator
+# use BaseEstimator to provide get_params() and set_params() methods
+        
+class SingleModelRSA(BaseEstimator): 
+    def __init__(self, model_rdms=None, target_name=None,
+                 rsa_method="regression", neural_metric="correlation"):
+        self.model_rdms = model_rdms
+        self.target_name = target_name
+        self.rsa_method = rsa_method
+        self.neural_metric = neural_metric
+
+    def fit(self, X, y=None): # y is accepted by ignored
+        return self
+            
+    def score(self, X, y=None): # y is accepted by ignored
+        if X.shape[1] < 3:
+            return 0.0
+        
+        neural_rdm = compute_neural_rdm(X, metric=self.neural_metric)
+
+        if self.rsa_method == "regression":
+            betas = rsa_multiple_regression(neural_rdm, self.model_rdms)
+            return float(betas[self.target_name]) # return a scalar for the scoring function
+
+        elif self.rsa_method in ("spearman", "kendall"):
+            model_rdm = self.model_rdms[self.target_name]  # single target model
+            return rsa_single_model_correlation(neural_rdm, model_rdm, method=self.rsa_method)
+
+        else:
+            raise ValueError(f"Unknown rsa_method: {self.rsa_method}")
+
 
 def searchlight_rsa_single_subject(sub: str,
                                     base_dir: str,
@@ -356,7 +420,9 @@ def searchlight_rsa_single_subject(sub: str,
                                     mask_file: str,
                                     model_rdms: dict,
                                     radius: float = 8.0,
-                                    n_jobs: int = -1):
+                                    n_jobs: int = -1,
+                                    rsa_method: str = "regression",
+                                    neural_metric: str = "correlation"):
     """
     Run searchlight RSA for one subject.
     
@@ -373,16 +439,20 @@ def searchlight_rsa_single_subject(sub: str,
     mask_file : str
         Path to gray matter mask
     model_rdms : dict
-        Dictionary of model RDMs
+        Dictionary of model RDMs (can handle one or more)
     radius : float
         Searchlight radius in mm (default: 8.0)
     n_jobs : int
         Number of parallel jobs (default: -1 for all cores)
+    rsa_method: str
+        Method to construct rsa (regression, spearman, or kendall)
+    neural_metric: str
+        Method to conduct neural similarity: 'correlation' (default) or 'euclidean'
     
     Returns
     -------
-    beta_maps : dict
-        Dictionary mapping model names to 3D beta maps
+    rsa_maps : dict
+        Dictionary mapping model names to 3D rsa maps
     """
     from nilearn.decoding import SearchLight
     from nilearn.image import load_img
@@ -404,33 +474,18 @@ def searchlight_rsa_single_subject(sub: str,
     print(f"Running searchlight RSA (radius={radius}mm, n_jobs={n_jobs})...")
     
     # We'll run one searchlight per model to get separate maps
-    beta_maps = {}
+    rsa_maps = {}
     
     for i, model_name in enumerate(model_rdms.keys()):
         print(f"  Computing {model_name} map...")
 
-        from sklearn.base import BaseEstimator
-        # use BaseEstimator to provide get_params() and set_params() methods
-        
-        # Create a custom scoring function for this model
-        class SingleModelRSA(BaseEstimator): 
-            def __init__(self, model_rdms=None, target_name=None):
-                self.model_rdms = model_rdms
-                self.target_name = target_name
-                
-            def fit(self, X, y=None): # y is accepted by ignored
-                return self
-            
-            def score(self, X, y=None): # y is accepted by ignored
-                if X.shape[1] < 3:
-                    return 0.0
-                neural_rdm = compute_neural_rdm(X, metric='correlation')
-                betas = rsa_multiple_regression(neural_rdm, self.model_rdms)
-                return float(betas[self.target_name])
-                # return a scalar for the scoring function
-        
-        estimator = SingleModelRSA(model_rdms, model_name) # return beta for each model i
-        
+        estimator = SingleModelRSA( # return beta for each model i
+            model_rdms=model_rdms,
+            target_name=model_name,
+            rsa_method=rsa_method,
+            neural_metric=neural_metric,
+        )
+
         searchlight = SearchLight(
             mask_img=mask_img,
             radius=radius,
@@ -450,38 +505,61 @@ def searchlight_rsa_single_subject(sub: str,
         
         searchlight.fit(img_4d, y_dummy) # a 4D image was given to searchlight
         scores_img = new_img_like(mask_img, searchlight.scores_) # wrap scores into nifti
-        beta_maps[model_name] = scores_img
+        rsa_maps[model_name] = scores_img
     
-    return beta_maps
+    return rsa_maps
 
 
 def save_rsa_maps(sub: str,
-                  beta_maps: dict,
+                  rsa_maps: dict,
                   output_dir: str,
                   session_tag: str,
-                  radius: float = 8.0):
+                  radius: float = 8.0,
+                  rsa_method: str = "regression",
+                  neural_metric: str = "correlation"):
     """
-    Save RSA beta maps for one subject.
+    Save RSA score maps for one subject.
     
     Parameters
     ----------
     sub : str
         Subject ID
-    beta_maps : dict
-        Dictionary of beta maps (NIfTI images)
+    rsa_maps : dict
+        Dictionary of rsa maps (NIfTI images)
     output_dir : str
         Output directory
     session_tag : str
         Session tag (e.g., 'premeal')
     radius : float
         Searchlight radius for filename
+    rsa_method : str
+        "regression", "spearman", or "kendall"
+    neural_metric: str
+        Method to conduct neural similarity: 
+        'correlation' (default) or 'euclidean'
     """
     os.makedirs(output_dir, exist_ok=True)
-    
-    for model_name, beta_map in beta_maps.items():
+
+    # map rsa method to statistic label
+    if rsa_method == "regression":
+        stat_label = "beta"
+    elif rsa_method == "spearman":
+        stat_label = "rho"
+    elif rsa_method == "kendall":
+        stat_label = "tau"
+    else:
+        raise ValueError(f"Unknown rsa_method: {rsa_method}")
+
+    # use a mapping dictionary
+    neural_metric_label = {
+        "correlation": "corr",
+        "euclidean": "euc"
+    }.get(neural_metric, neural_metric)
+
+    for model_name, rsa_map in rsa_maps.items():
         output_file = os.path.join(
             output_dir,
-            f"{sub}_session-{session_tag}_model-{model_name}_radius-{int(radius)}mm.nii.gz"
+            f"{sub}_session-{session_tag}_{model_name}_{rsa_method}_{stat_label}_ns-{neural_metric_label}_radius-{int(radius)}mm.nii.gz"
         )
-        beta_map.to_filename(output_file)
+        rsa_map.to_filename(output_file)
         print(f"Saved: {output_file}")

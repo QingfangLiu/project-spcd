@@ -1,12 +1,14 @@
 import os
 
 def generate_swarm_file(
-    base_dir,
+    base_dir="/data/liuq13",
     script_name="run_rsa_searchlight.py",
-    output_file="rsa_probe_searchlight.swarm",
-    sessions=("premeal",),  # or ("premeal", "postmeal")
+    output_file=None,
+    sessions=("premeal", "postmeal"), 
     radius_mm=8.0,
-    n_jobs=1,  # cores per swarm job (do NOT set -1 on Biowulf)
+    n_jobs=2,  # cores per swarm job (do NOT set -1 on Biowulf)
+    rsa_method="regression",
+    neural_metric="correlation",
     mask_path=None,
     output_dir=None,
     session_folder_template="{session}_trialwise_2mm",
@@ -29,6 +31,11 @@ def generate_swarm_file(
     n_jobs : int
         Number of CPU cores used INSIDE each job (pass to --n_jobs)
         Recommended: set equal to swarm -t value.
+    rsa_method : str
+        "regression", "spearman", or "kendall"
+    neural_metric: str
+        Method to conduct neural similarity: 
+        'correlation' (default) or 'euclidean'
     mask_path : str or None
         Path to gray matter mask. If None, uses <base_dir>/masks/gm_0.1.nii
     output_dir : str or None
@@ -39,6 +46,12 @@ def generate_swarm_file(
     """
     if mask_path is None:
         mask_path = os.path.join(base_dir, "masks", "gm_0.1.nii")
+
+    if output_dir is None:
+        output_dir=os.path.join(base_dir, "rsa_maps", "probe")
+
+    if output_file is None:
+        output_file = "rsa_probe_searchlight_" + rsa_method + "_" + neural_metric + ".swarm"
 
     # Use one session folder to discover subjects (assumes same sub list across sessions)
     discover_folder = session_folder_template.format(session=sessions[0])
@@ -65,6 +78,8 @@ def generate_swarm_file(
                     "--mask", mask_path,
                     "--radius", str(radius_mm),
                     "--n_jobs", str(n_jobs),
+                    "--rsa_method", rsa_method,
+                    "--neural_metric", neural_metric,
                 ]
 
                 if output_dir is not None:
@@ -82,15 +97,5 @@ def generate_swarm_file(
 
 
 if __name__ == "__main__":
-    # Update these for Biowulf
-    base_dir = "/data/liuq13/SPCD_data"  # <-- change to your Biowulf dataset root
-    generate_swarm_file(
-        base_dir=base_dir,
-        script_name="run_rsa_searchlight.py",
-        output_file="rsa_probe_searchlight.swarm",
-        sessions=("premeal",),     # or ("premeal", "postmeal")
-        radius_mm=8.0,
-        n_jobs=1,                 # IMPORTANT: set to 1 unless you explicitly allocate threads per job
-        mask_path=os.path.join(base_dir, "masks", "gm_0.1.nii"),
-        output_dir=os.path.join(base_dir, "rsa_maps", "probe_searchlight"),
-    )
+    generate_swarm_file()
+        
