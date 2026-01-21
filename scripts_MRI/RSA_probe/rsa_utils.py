@@ -302,7 +302,6 @@ def create_value_model_rdm(diagonal: float = 1.0):
     return rdm
 
 
-
 # ============================================================================
 # Neural RDM Computation
 # ============================================================================
@@ -349,7 +348,7 @@ def compute_neural_rdm(patterns, metric='correlation'):
 # RSA Multiple Regression
 # ============================================================================
 
-def rsa_multiple_regression(neural_rdm, model_rdms):
+def rsa_multiple_regression(neural_rdm, model_rdms, pair_mask=None):
     """
     Fit multiple regression: neural_RDM = β1*model1 + β2*model2 + ... + ε
     
@@ -375,6 +374,11 @@ def rsa_multiple_regression(neural_rdm, model_rdms):
     
     # Stack model RDM vectors
     X = np.column_stack([model_rdm[tril_idx] for model_rdm in model_rdms.values()])
+
+    # optionally drop pairs not of interest
+    if pair_mask is not None:
+        y = y[pair_mask]
+        X = X[pair_mask, :]
     
     # Fit linear regression
     reg = LinearRegression(fit_intercept=True)
@@ -390,7 +394,7 @@ def rsa_multiple_regression(neural_rdm, model_rdms):
 # RSA single model correlation
 # ============================================================================
 
-def rsa_single_model_correlation(neural_rdm, model_rdm, method: str = "spearman"):
+def rsa_single_model_correlation(neural_rdm, model_rdm, method: str = "spearman", pair_mask=None):
     """
     Correlate neural similarity matrix with ONE model similarity matrix
     using lower triangle (excluding diagonal).
@@ -402,6 +406,11 @@ def rsa_single_model_correlation(neural_rdm, model_rdm, method: str = "spearman"
 
     y = neural_rdm[tril_idx]
     x = model_rdm[tril_idx]
+
+    # optionally drop pairs not of interest
+    if pair_mask is not None:
+        y = y[pair_mask]
+        x = x[pair_mask]
 
     if method == "spearman":
         r, _ = spearmanr(x, y)
@@ -424,11 +433,13 @@ from sklearn.base import BaseEstimator
         
 class SingleModelRSA(BaseEstimator): 
     def __init__(self, model_rdms=None, target_name=None,
-                 rsa_method="regression", neural_metric="correlation"):
+                 rsa_method="regression", neural_metric="correlation",
+                 pair_mask=None):
         self.model_rdms = model_rdms
         self.target_name = target_name
         self.rsa_method = rsa_method
         self.neural_metric = neural_metric
+        self.pair_mask = pair_mask
 
     def fit(self, X, y=None): # y is accepted by ignored
         return self
@@ -440,15 +451,27 @@ class SingleModelRSA(BaseEstimator):
         neural_rdm = compute_neural_rdm(X, metric=self.neural_metric)
 
         if self.rsa_method == "regression":
-            betas = rsa_multiple_regression(neural_rdm, self.model_rdms)
+            betas = rsa_multiple_regression(neural_rdm, self.model_rdms, pair_mask=self.pair_mask)
             return float(betas[self.target_name]) # return a scalar for the scoring function
 
         elif self.rsa_method in ("spearman", "kendall"):
             model_rdm = self.model_rdms[self.target_name]  # single target model
-            return rsa_single_model_correlation(neural_rdm, model_rdm, method=self.rsa_method)
+            return rsa_single_model_correlation(neural_rdm, model_rdm, method=self.rsa_method, pair_mask=self.pair_mask)
 
         else:
             raise ValueError(f"Unknown rsa_method: {self.rsa_method}")
+
+
+# a wrapper function to construct the mask
+def build_odor_pair_mask(condition_order, odor_set):
+    n = len(condition_order)
+    i, j = np.tril_indices(n, k=-1)
+    return np.array(
+        [(condition_order[ii] in odor_set) and (condition_order[jj] in odor_set)
+         for ii, jj in zip(i, j)],
+        dtype=bool
+    )
+
 
 
 def searchlight_rsa_single_subject(sub: str,
@@ -460,7 +483,8 @@ def searchlight_rsa_single_subject(sub: str,
                                     radius: float = 8.0,
                                     n_jobs: int = -1,
                                     rsa_method: str = "regression",
-                                    neural_metric: str = "correlation"):
+                                    neural_metric: str = "correlation",
+                                    use_pair_mask: bool = False):
     """
     Run searchlight RSA for one subject.
     
@@ -500,7 +524,13 @@ def searchlight_rsa_single_subject(sub: str,
     condition_imgs, condition_order = load_condition_averaged_data(
         sub, base_dir, session_folder, session_tag
     )
-    
+
+    pair_mask = None
+    if use_pair_mask:    # create a boolean mask involving the two odors
+        odor_set = {'A11','B11','A12','B12','A21','B21','A22','B22'}  # only two odors
+        pair_mask = build_odor_pair_mask(condition_order, odor_set)
+        print(f"Pair-mask: keeping {pair_mask.sum()} / {pair_mask.size} lower-triangle pairs (odor-odor only).")
+
     # Stack into 4D image
     img_list = [condition_imgs[cond] for cond in condition_order] # a list of 12 3D images
     img_4d = concat_imgs(img_list) # stack them along the 4th dimension (79*95*79*12)
@@ -522,6 +552,7 @@ def searchlight_rsa_single_subject(sub: str,
             target_name=model_name,
             rsa_method=rsa_method,
             neural_metric=neural_metric,
+            pair_mask=pair_mask,
         )
 
         searchlight = SearchLight(
@@ -554,7 +585,8 @@ def save_rsa_maps(sub: str,
                   session_tag: str,
                   radius: float = 8.0,
                   rsa_method: str = "regression",
-                  neural_metric: str = "correlation"):
+                  neural_metric: str = "correlation",
+                  use_pair_mask: bool = False):
     """
     Save RSA score maps for one subject.
     
@@ -594,10 +626,28 @@ def save_rsa_maps(sub: str,
         "euclidean": "euc"
     }.get(neural_metric, neural_metric)
 
+    mask_label = "mask-odor" if use_pair_mask else None
+
     for model_name, rsa_map in rsa_maps.items():
+
+        name_parts = [
+            f"{sub}_session-{session_tag}",
+            model_name,
+            rsa_method,
+            stat_label,
+            f"ns-{neural_metric_label}",
+            f"radius-{int(radius)}mm",
+        ]
+
+        if mask_label is not None:
+            name_parts.append(mask_label)
+
         output_file = os.path.join(
             output_dir,
-            f"{sub}_session-{session_tag}_{model_name}_{rsa_method}_{stat_label}_ns-{neural_metric_label}_radius-{int(radius)}mm.nii.gz"
+            "_".join(name_parts) + ".nii.gz"
         )
         rsa_map.to_filename(output_file)
         print(f"Saved: {output_file}")
+
+
+

@@ -7,11 +7,12 @@ def generate_swarm_file(
     sessions=("premeal", "postmeal"), 
     radius_mm=8.0,
     n_jobs=2,  # cores per swarm job (do NOT set -1 on Biowulf)
-    rsa_method="regression",
+    rsa_method="spearman",
     neural_metric="correlation",
     mask_path=None,
     output_dir=None,
     session_folder_template="{session}_trialwise_2mm",
+    use_pair_mask=True,
 ):
     """
     Generate a swarm file for probe searchlight RSA.
@@ -51,7 +52,8 @@ def generate_swarm_file(
         output_dir=os.path.join(base_dir, "rsa_maps", "probe")
 
     if output_file is None:
-        output_file = "rsa_probe_searchlight_" + rsa_method + "_" + neural_metric + ".swarm"
+        mask_tag = "_mask-odor" if use_pair_mask else ""
+        output_file = f"rsa_probe_searchlight_{rsa_method}_{neural_metric}{mask_tag}.swarm"
 
     # Use one session folder to discover subjects (assumes same sub list across sessions)
     discover_folder = session_folder_template.format(session=sessions[0])
@@ -81,6 +83,8 @@ def generate_swarm_file(
                     "--rsa_method", rsa_method,
                     "--neural_metric", neural_metric,
                 ]
+                if use_pair_mask:
+                    cmd_parts += ["--use_pair_mask"]
 
                 if output_dir is not None:
                     # you can make it session-specific if you want

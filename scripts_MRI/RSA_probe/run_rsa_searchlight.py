@@ -86,7 +86,12 @@ def main():
         default="correlation",
         help="Neural similarity metric (default: correlation)"
     )
-    
+    parser.add_argument(
+        "--use_pair_mask",
+        action="store_true",
+        help="Use odor-only pair mask (exclude clean-involving pairs)."
+    )
+
     args = parser.parse_args() # reads sys.argv, matches values to rules, convers types, returns a simple object
     
     # Set defaults
@@ -123,6 +128,7 @@ def main():
     print(f"N jobs:         {args.n_jobs}")
     print(f"RSA method:     {args.rsa_method}")
     print(f"Neural metric:  {args.neural_metric}")
+    print(f"use_pair_mask:  {args.use_pair_mask}")
     print("=" * 80)
     
     # Create model RDMs
@@ -135,7 +141,7 @@ def main():
         'value': create_value_model_rdm(),
     }
 
-    USE_MODELS = ['value']  
+    USE_MODELS = ['identity']  
     model_rdms = {k: all_model_rdms[k] for k in USE_MODELS}
 
     print("\nModels used for analysis:")
@@ -155,7 +161,8 @@ def main():
             radius=args.radius,
             n_jobs=args.n_jobs,
             rsa_method=args.rsa_method,
-            neural_metric=args.neural_metric
+            neural_metric=args.neural_metric,
+            use_pair_mask=args.use_pair_mask,
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")
@@ -172,7 +179,8 @@ def main():
         session_tag=args.session,
         radius=args.radius,
         rsa_method=args.rsa_method,
-        neural_metric=args.neural_metric
+        neural_metric=args.neural_metric,
+        use_pair_mask=args.use_pair_mask,
     )
     
     print("\n" + "=" * 80)
