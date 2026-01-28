@@ -2,7 +2,7 @@ import os
 
 def generate_swarm_file(
     base_dir="/data/liuq13",
-    script_name="run_rsa_searchlight.py",
+    module_name = "RSA_probe.run_rsa",
     output_file=None,
     sessions=("premeal", "postmeal"), 
     radius_mm=8.0,
@@ -12,6 +12,8 @@ def generate_swarm_file(
     mask_path=None,
     output_dir=None,
     session_folder_template="{session}_trialwise_2mm",
+    cue_subset="preconditioned",
+    models="identity",
     use_pair_mask=True,
 ):
     """
@@ -22,7 +24,7 @@ def generate_swarm_file(
     base_dir : str
         Base directory containing GLM/ and masks/
     script_name : str
-        RSA script to run (run_rsa_searchlight.py)
+        RSA script to run
     output_file : str
         Name of the swarm file to create
     sessions : tuple
@@ -40,20 +42,31 @@ def generate_swarm_file(
     mask_path : str or None
         Path to gray matter mask. If None, uses <base_dir>/masks/gm_0.1.nii
     output_dir : str or None
-        Output directory root. If None, uses <base_dir>/rsa_maps/probe
+        Output directory root. If None, uses <base_dir>/rsa_maps/probe_subset
         (run_rsa_searchlight.py also defaults this if not passed)
     session_folder_template : str
         Used only for locating subjects (GLM/<session_folder>/sub-*)
+    cue_subset: str
+        subset cues 
+        "all", "conditioned", or "preconditioned"
+    models: str
+        "identity", "value"
+    use_pair_mask: bool
+        Use odor-only pair mask (excluding clean-involving pairs)
+    
     """
     if mask_path is None:
         mask_path = os.path.join(base_dir, "masks", "gm_0.1.nii")
 
     if output_dir is None:
-        output_dir=os.path.join(base_dir, "rsa_maps", "probe")
+        if cue_subset == "all":
+            output_dir=os.path.join(base_dir, "rsa_maps", "probe")
+        else:
+            output_dir=os.path.join(base_dir, "rsa_maps", "probe_subset")
 
     if output_file is None:
         mask_tag = "_mask-odor" if use_pair_mask else ""
-        output_file = f"rsa_probe_searchlight_{rsa_method}_{neural_metric}{mask_tag}.swarm"
+        output_file = f"rsa_probe_searchlight_{rsa_method}_{neural_metric}_{cue_subset}_{models}{mask_tag}.swarm"
 
     # Use one session folder to discover subjects (assumes same sub list across sessions)
     discover_folder = session_folder_template.format(session=sessions[0])
@@ -67,13 +80,11 @@ def generate_swarm_file(
     if len(sub_list) == 0:
         raise RuntimeError(f"No subjects found in: {glm_path}")
 
-    # If output_dir is None, you can omit it entirely and let run_rsa_searchlight.py set defaults.
-    # But passing it makes paths explicit and session-separated if you choose.
     with open(output_file, "w") as f:
         for sub in sub_list:
             for session in sessions:
                 cmd_parts = [
-                    "python", script_name,
+                    "python", "-m", module_name,
                     "--sub", sub,
                     "--session", session,
                     "--base_dir", base_dir,
@@ -82,12 +93,14 @@ def generate_swarm_file(
                     "--n_jobs", str(n_jobs),
                     "--rsa_method", rsa_method,
                     "--neural_metric", neural_metric,
+                    "--cue_subset", cue_subset,
+                    "--models", models,
                 ]
                 if use_pair_mask:
                     cmd_parts += ["--use_pair_mask"]
 
                 if output_dir is not None:
-                    # you can make it session-specific if you want
+                    # make it session-specific
                     out_sess = os.path.join(output_dir, session)
                     cmd_parts += ["--output_dir", out_sess]
 
@@ -98,7 +111,6 @@ def generate_swarm_file(
     print(f"📌 {total_jobs} jobs written for {len(sub_list)} subjects × {len(sessions)} sessions")
     print(f"Mask: {mask_path}")
     print(f"Radius: {radius_mm} mm | n_jobs per job: {n_jobs}")
-
 
 if __name__ == "__main__":
     generate_swarm_file()

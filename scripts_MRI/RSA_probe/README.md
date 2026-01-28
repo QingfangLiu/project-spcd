@@ -108,17 +108,3 @@ Results saved to:
   ...
 ```
 
-Each map contains regression beta values at each voxel:
-- **association map**: β₁ values (unique association effect, controlling for identity)
-- **identity map**: β₂ values (unique identity effect, controlling for association)
-
-
-## Parameters
-
-- **Searchlight radius**: 8mm (default, matches decoding analysis)
-- **Distance metric**: Pearson correlation for neural RDM
-- **Normalization**: Z-score within each run (across all trials)
-- **Trial averaging**: Mean across all trials per condition
-- **Mask**: Gray matter mask (gm_0.1.nii)
-
-
