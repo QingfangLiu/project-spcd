@@ -30,7 +30,7 @@ HomeDir  = '/Users/liuq13/SPCD_data';
 niiRoot  = fullfile(HomeDir, 'nii');
 
 taskname = 'premeal';      % 'premeal' or 'postmeal'
-mode     = 'both';         % 'img1only' | 'img2only' | 'both'
+mode     = 'img2only';         % 'img1only' | 'img2only' | 'both'
 
 TR = 1.5;
 
