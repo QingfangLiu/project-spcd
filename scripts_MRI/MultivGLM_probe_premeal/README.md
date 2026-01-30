@@ -145,6 +145,31 @@ In **January 2026**, it was identified that `cue_index` values also required cor
 - All other values (e.g., `0`, `NaN`) were left unchanged.
 
 
+---
 
+## 5. Cue-wise GLM and t-map generation for RSA
+
+To support condition-level representational analyses, a new **cue-wise GLM** was implemented.
+
+For each run, a separate GLM was estimated with **12 cue regressors**, defined by `cue_index` (1–12). Each regressor pooled all cue events with the same `cue_index` within that run. Cue events were selected according to three mutually exclusive modes: `cue_img1` only, `cue_img2` only, or both `cue_img1` and `cue_img2`. These modes were estimated as separate models and stored in parallel subfolders.
+
+The design matrix for each run additionally included:
+- a decision regressor (2 s boxcar, all trials),
+- a button regressor (0 s stick, all response trials),
+- run-specific nuisance regressors (motion/physiology),
+with identical timing parameters, HRF, masking, and high-pass filtering as the previous GLM.
+
+Models were estimated separately for each run (runs 1–3 when available). The full SPM model output (`SPM.mat`, residual variance, etc.) was preserved for each run.
+
+For each cue regressor, a contrast of **cue > implicit baseline** was defined, producing one **t-map per cue condition per run**. These t-maps were used for downstream RSA, as they normalize effect estimates by their voxel-wise uncertainty and are therefore more robust to noise and design collinearity than raw beta maps.
+
+Outputs are organized as:
+
+`GLM/<task>_cuewise_2mm/<subID>/<mode>/`
+
+and include:
+- run-level SPM folders,
+- cue-wise t-maps (`tmap_task-<task>_run-XX_cue-YY.nii`),
+- an index CSV documenting run, cue_index, inclusion mode, and number of contributing events.
 
 
