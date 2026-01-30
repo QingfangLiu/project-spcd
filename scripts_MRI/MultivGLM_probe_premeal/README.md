@@ -115,6 +115,8 @@ Links each single-trial beta image from the trial-wise GLM to its source event i
 
 ## 4. Posthoc odor_index correction for sub-14
 
+### Odor index correction (initial fix)
+
 Swapped all `odor_index` values of `1` and `2` (i.e., `1 → 2` and `2 → 1`) for **sub-14** in the premeal task.
 
 **Applied to:**
@@ -122,6 +124,27 @@ Swapped all `odor_index` values of `1` and `2` (i.e., `1 → 2` and `2 → 1`) f
 - Beta index files in `GLM/premeal_trialwise_2mm/sub-14/` (`*_beta_index.csv`)
 
 Original files were preserved with an `_orig` suffix before overwriting.
+
+
+### Cue index correction (later fix)
+
+In **January 2026**, it was identified that `cue_index` values also required correction. This update was applied to both the **GLM** and **nii** folders.
+
+**Versioning policy:**
+- `_orig` versions were left untouched
+- A backup copy was created with the suffix `_beforeCueFix` (if not already present)
+- Final updates were applied to the non-backup files
+
+
+**Cue index swap rules:**
+
+- 1 <-> 3
+- 2 <-> 4
+- 7 <-> 9
+- 8 <-> 10
+- All other values (e.g., `0`, `NaN`) were left unchanged.
+
+
 
 
 
