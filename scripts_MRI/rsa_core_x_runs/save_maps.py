@@ -15,10 +15,10 @@ def save_rsa_maps(sub: str,
                   session_tag: str,
                   radius: float = 8.0,
                   rsa_method: str = "regression",
-                  neural_metric: str = "correlation",
                   cue_subset: str = "all",
-                  input_stat: str = "beta",
                   use_pair_mask: bool = False,
+                  mode: str = "both",
+                  stat_type: str = "beta",
                   ):
     
     """
@@ -38,32 +38,17 @@ def save_rsa_maps(sub: str,
         Searchlight radius for filename
     rsa_method : str
         "regression", "spearman", or "kendall"
-    neural_metric: str
-        Method to conduct neural similarity: 
-        'correlation' (default) or 'euclidean'
     cue_subset : str
         Which cues were included: 'all', 'conditioned', or 'preconditioned'
-    input_stat : str
-        Input statistic type from GLM: 'beta' or 'tmap'
     use_pair_mask : bool
         Whether odor-only pair mask was applied
+    mode: str
+        "both", "img1only", "img2only" 
+    stat_type : str
+        Input statistic type from GLM: 'beta' or 'tmap'
     """
 
     os.makedirs(output_dir, exist_ok=True)
-
-    if rsa_method == "regression":
-        stat_label = "beta"
-    elif rsa_method == "spearman":
-        stat_label = "rho"
-    elif rsa_method == "kendall":
-        stat_label = "tau"
-    else:
-        raise ValueError(f"Unknown rsa_method: {rsa_method}")
-
-    neural_metric_label = {
-        "correlation": "corr",
-        "euclidean": "euc"
-    }.get(neural_metric, neural_metric)
 
     mask_label = "mask-odor" if use_pair_mask else None
     subset_label = None if cue_subset == "all" else f"subset-{cue_subset}"
@@ -73,10 +58,9 @@ def save_rsa_maps(sub: str,
         name_parts = [
             f"{sub}_session-{session_tag}",
             f"input-{input_stat}",
+            f"mode-{mode}",
             model_name,
             rsa_method,
-            stat_label,
-            f"ns-{neural_metric_label}",
             f"radius-{int(radius)}mm",
         ]
 

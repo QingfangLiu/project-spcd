@@ -5,9 +5,6 @@ import pandas as pd
 import glob
 from nilearn.image import load_img
 
-def _csv_path_for_run(sub_dir: str, sub: str, run: int, session: str):
-    return os.path.join(sub_dir, f"{sub}_{session}_run-{run}_beta_index.csv")  # keep name if unchanged
-
 def load_cuewise_maps_per_run(
     sub: str,
     base_dir: str,
@@ -20,14 +17,14 @@ def load_cuewise_maps_per_run(
     """
     Load cuewise GLM maps per run (one map per (run, cue_index)), using the per-run index CSV.
 
-    Expected layout (per your screenshots):
+    Expected layout:
       <base_dir>/GLM/<session_folder>/<sub>/<mode>/
          sub-01_task-premeal_mode-both_run-01_index.csv
          beta_task-premeal_run-01_cue-01.nii
          tmap_task-premeal_run-01_cue-01.nii
          ...
 
-    CSV columns (per your screenshot):
+    CSV columns:
       run, cue_index, beta_file, tmap_file, ...
     """
     if stat_type not in ("beta", "tmap"):
@@ -40,7 +37,7 @@ def load_cuewise_maps_per_run(
 
     file_col = "beta_file" if stat_type == "beta" else "tmap_file"
 
-    # cue_index -> condition label
+    # cue_index -> condition label (my task naming)
     cue_to_condition = {
         1: "A11",
         2: "B11",

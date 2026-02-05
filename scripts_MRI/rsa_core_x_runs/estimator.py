@@ -10,7 +10,7 @@ This estimator computes neural RDMs using cross-run correlations only
 import numpy as np
 from sklearn.base import BaseEstimator
 
-from .neural_rdm import compute_neural_rdm, compute_crossrun_neural_rdm
+from .neural_rdm import compute_crossrun_neural_rdm
 from .rsa_stats import rsa_multiple_regression, rsa_single_model_correlation
 
 
@@ -23,7 +23,6 @@ class SingleModelRSA(BaseEstimator):
         model_rdms=None,
         target_name=None,
         rsa_method="regression",
-        neural_metric="correlation",
         pair_mask=None,
         run_ids=None,
         cond_ids=None,
@@ -32,7 +31,6 @@ class SingleModelRSA(BaseEstimator):
         self.model_rdms = model_rdms
         self.target_name = target_name
         self.rsa_method = rsa_method
-        self.neural_metric = neural_metric
         self.pair_mask = pair_mask
 
         self.run_ids = None if run_ids is None else np.asarray(run_ids)
@@ -51,15 +49,12 @@ class SingleModelRSA(BaseEstimator):
         if X.shape[0] != self.run_ids.shape[0] or X.shape[0] != self.cond_ids.shape[0]:
             raise ValueError("X rows must match run_ids/cond_ids lengths")
 
-        # Compute neural RDM using cross-run correlations only
         neural_rdm = compute_crossrun_neural_rdm(
             patterns=X,
             run_ids=self.run_ids,
             cond_ids=self.cond_ids,
             n_cond=int(self.n_conditions),
-            metric=self.neural_metric,
         )
-
 
         # RSA scoring
         if self.rsa_method == "regression":

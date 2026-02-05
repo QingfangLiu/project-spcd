@@ -5,7 +5,7 @@ Searchlight RSA orchestration (cue-subset capable).
 
 UPDATED for cuewise GLM:
 - loads per-run condition maps
-- builds neural RDM using cross-run correlations only
+- builds neural RDM using cross-run correlations
 - supports input stat_type: beta vs tmap
 """
 
@@ -61,10 +61,9 @@ def searchlight_rsa_single_subject(
     radius: float = 8.0,
     n_jobs: int = -1,
     rsa_method: str = "regression",
-    neural_metric: str = "correlation",
-    cue_subset: str = "all",
+    cue_subset: str = "all",       # "all", "conditioned", "preconditioned"
     use_pair_mask: bool = False,
-    mode: str = "both", # "both", "img1only", "img2only"
+    mode: str = "both",            # "both", "img1only", "img2only"
     stat_type: str = "beta",       # "beta" or "tmap"
     runs=(1, 2, 3),
 ):
@@ -74,6 +73,7 @@ def searchlight_rsa_single_subject(
     - Samples are (run, condition) maps.
     - Neural RDM is computed using cross-run similarities 
     """
+    
     from nilearn.decoding import SearchLight
     from nilearn.image import load_img
 
@@ -149,7 +149,6 @@ def searchlight_rsa_single_subject(
             model_rdms=sliced_model_rdms,
             target_name=model_name,
             rsa_method=rsa_method,
-            neural_metric=neural_metric,
             pair_mask=pair_mask,
             run_ids=np.asarray(run_ids),
             cond_ids=np.asarray(cond_ids),

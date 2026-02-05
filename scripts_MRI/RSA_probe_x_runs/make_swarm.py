@@ -19,7 +19,6 @@ def generate_swarm_file(
     radius_mm=8.0,
     n_jobs=4,  # cores per swarm job (match with swarm -t value; do NOT use -1 on Biowulf)
     rsa_method="spearman",
-    neural_metric="correlation",
     mask_path=None,
     cue_subset="all",
     models="identity",
@@ -49,8 +48,6 @@ def generate_swarm_file(
         Should match your swarm -t value. Do NOT use -1 on Biowulf.
     rsa_method : str
         "regression", "spearman", or "kendall"
-    neural_metric : str
-        Method for neural similarity: "correlation" (default) or "euclidean"
     mask_path : str or None
         Path to gray matter mask. If None, uses <base_dir>/masks/gm_0.1.nii
     cue_subset : str
@@ -78,7 +75,7 @@ def generate_swarm_file(
         mask_tag = "_mask-odor" if use_pair_mask else ""
         models_tag = models.replace(" ", "-")  # "identity value" -> "identity-value"
         output_file = (
-            f"rsa_cuewise_{stat_type}_{rsa_method}_{cue_subset}_{models_tag}{mask_tag}.swarm"
+            f"rsa_cuewise_{stat_type}_{rsa_method}_cue_subset_{cue_subset}_{models_tag}{mask_tag}_mode_{mode}.swarm"
         )
 
     # Discover subjects from one session folder
@@ -106,7 +103,6 @@ def generate_swarm_file(
                     "--radius", str(radius_mm),
                     "--n_jobs", str(n_jobs),
                     "--rsa_method", rsa_method,
-                    "--neural_metric", neural_metric,
                     "--cue_subset", cue_subset,
                     "--models", models,
                     "--stat_type", stat_type,
@@ -132,22 +128,13 @@ def generate_swarm_file(
     print(f"  radius:        {radius_mm} mm")
     print(f"  n_jobs:        {n_jobs}")
     print(f"  rsa_method:    {rsa_method}")
-    print(f"  neural_metric: {neural_metric}")
     print(f"  cue_subset:    {cue_subset}")
     print(f"  models:        {models}")
     print(f"  use_pair_mask: {use_pair_mask}")
     print()
     print("Submit with:")
-    print(f"  swarm -f {output_file} -g 8 -t {n_jobs} --time 2:00:00 --module python/3.9")
-
+    print(f"  swarm -f {output_file} -g 8 -t {n_jobs}")
 
 if __name__ == "__main__":
-    # Example: generate swarm for identity model, spearman correlation, all cues
-    generate_swarm_file(
-        sessions=("premeal", "postmeal"),
-        rsa_method="spearman",
-        cue_subset="all",
-        models="identity",
-        stat_type="beta",
-        use_pair_mask=False,
-    )
+    generate_swarm_file()
+    

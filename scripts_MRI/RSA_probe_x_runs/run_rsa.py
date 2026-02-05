@@ -106,13 +106,6 @@ def main():
         help="RSA scoring method (default: spearman)"
     )
     parser.add_argument(
-        "--neural_metric",
-        type=str,
-        choices=["correlation", "euclidean"],
-        default="correlation",
-        help="Neural similarity metric (default: correlation)"
-    )
-    parser.add_argument(
         "--cue_subset",
         type=str,
         choices=["all", "conditioned", "preconditioned"],
@@ -195,7 +188,6 @@ def main():
     print(f"Radius:          {args.radius} mm")
     print(f"N jobs:          {args.n_jobs}")
     print(f"RSA method:      {args.rsa_method}")
-    print(f"Neural metric:   {args.neural_metric}")
     print(f"cue_subset:      {args.cue_subset}")
     print(f"models:          {args.models}")
     print(f"use_pair_mask:   {args.use_pair_mask}")
@@ -227,7 +219,6 @@ def main():
             radius=args.radius,
             n_jobs=args.n_jobs,
             rsa_method=args.rsa_method,
-            neural_metric=args.neural_metric,
             cue_subset=args.cue_subset,
             use_pair_mask=args.use_pair_mask,
             mode=args.mode,
@@ -249,10 +240,10 @@ def main():
         session_tag=args.session,
         radius=args.radius,
         rsa_method=args.rsa_method,
-        neural_metric=args.neural_metric,
         cue_subset=args.cue_subset,
         use_pair_mask=args.use_pair_mask,
-        input_stat=args.stat_type, 
+        mode=args.mode,
+        stat_type=args.stat_type,
     )
 
     print("\n" + "=" * 80)
