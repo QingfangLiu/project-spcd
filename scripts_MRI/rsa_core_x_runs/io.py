@@ -10,7 +10,7 @@ def load_cuewise_maps_per_run(
     base_dir: str,
     session_folder: str,
     session_tag: str,
-    mode: str = "both",
+    mode: str = "both",   # "both", "img1only", "img2only"
     runs=(1, 2, 3),
     stat_type: str = "beta",   # "beta" or "tmap"
 ):

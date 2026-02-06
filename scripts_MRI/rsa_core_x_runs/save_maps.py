@@ -56,8 +56,8 @@ def save_rsa_maps(sub: str,
     for model_name, rsa_map in rsa_maps.items():
 
         name_parts = [
-            f"{sub}_session-{session_tag}",
-            f"input-{input_stat}",
+            f"{sub}_{session_tag}",
+            f"input-{stat_type}",
             f"mode-{mode}",
             model_name,
             rsa_method,

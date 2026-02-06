@@ -6,7 +6,7 @@ This module implements RSA scoring methods, including multiple
 regression RSA and single-model correlation-based RSA.
 
 All functions assume RDM inputs and return scalar similarity
-metrics. No neuroimaging I/O or searchlight logic is included.
+metrics. 
 """
 
 import numpy as np

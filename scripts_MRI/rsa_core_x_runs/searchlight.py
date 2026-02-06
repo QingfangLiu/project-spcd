@@ -78,6 +78,7 @@ def searchlight_rsa_single_subject(
     from nilearn.image import load_img
 
     print(f"Loading cuewise maps for {sub} (mode={mode}, stat_type={stat_type})...")
+    
     run_condition_imgs, full_condition_order = load_cuewise_maps_per_run(
         sub=sub,
         base_dir=base_dir,
@@ -166,6 +167,9 @@ def searchlight_rsa_single_subject(
 
         y_dummy = np.arange(n_samples)
         searchlight.fit(img_4d, y_dummy)
+        # img_4d is a 4D nifti with shape (x, y, z, n_samples)
+        # here X is created: n_samples * n_voxels_in_sphere
+        # then X is passed into estimator's fit and score functions
 
         scores_img = new_img_like(mask_img, searchlight.scores_)
         rsa_maps[model_name] = scores_img
