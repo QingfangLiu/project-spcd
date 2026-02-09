@@ -132,6 +132,13 @@ def main():
         help="Which input maps to use from cuewise GLM (default: beta)."
     )
     parser.add_argument(
+        "--glm_variant",
+        type=str,
+        choices=["cuewise", "cuewiseLSS"],
+        default="cuewise",
+        help="Which GLM variant to read maps from: cuewise (GLM/<task>_cuewise_2mm) or cuewiseLSS (GLM/<task>_cuewiseLSS_2mm)."
+    )
+    parser.add_argument(
         "--mode",
         type=str,
         default="both",
@@ -150,7 +157,7 @@ def main():
         args.mask = os.path.join(args.base_dir, "masks", "gm_0.1.nii")
 
     # Determine session folder (cuewise GLM)
-    session_folder = f"{args.session}_cuewise_2mm"
+    session_folder = f"{args.session}_{args.glm_variant}_2mm"
 
     # Determine runs
     try:
@@ -162,7 +169,8 @@ def main():
     # Default output dir
     if args.output_dir is None:
         # separate cuewise + stat_type
-        base_out = os.path.join(args.base_dir, "rsa_maps", "probe_cuewise", args.session, f"input-{args.stat_type}")
+        rsa_root = "probe_cuewise_LSS" if args.glm_variant == "cuewiseLSS" else "probe_cuewise"
+        base_out = os.path.join(args.base_dir, "rsa_maps", rsa_root, args.session, f"input-{args.stat_type}")
         if args.cue_subset == "all":
             args.output_dir = base_out
         else:
