@@ -173,3 +173,37 @@ and include:
 - an index CSV documenting run, cue_index, inclusion mode, and number of contributing events.
 
 
+---
+
+## 6. Cue-wise LSS-style GLM for RSA
+
+To further reduce collinearity among cue regressors and improve cue-specific estimates for RSA, an additional **cue-wise LSS-style GLM** was implemented.
+
+Instead of estimating all 12 cue regressors in a single model, this approach runs **one GLM per cue (per run)**. For each cue index \(c = 1\ldots12\), the design includes:
+
+- **target cue regressor**  
+  - all cue events with `cue_index == c`
+- **other cues regressor**  
+  - all remaining cue events (`cue_index ≠ c`) pooled together
+- **decision regressor** (2 s boxcar, all trials)
+- **button regressor** (0 s stick, if present)
+- run-specific nuisance regressors (motion/physiology)
+
+Cue events were selected using the same three inclusion modes as before (`cue_img1` only, `cue_img2` only, or both), with separate models estimated for each mode. Models were estimated **run-wise** (runs 1–3 when available), using the same HRF, masking threshold, and high-pass filtering as previous GLMs.
+
+For each cue-specific GLM, a single contrast of **target cue > implicit baseline** was defined, producing one beta map and one t-map per cue per run. After extraction, all SPM-generated image files were removed, while `SPM.mat` was retained for provenance.
+
+Outputs are stored in a parallel directory:
+
+`GLM/<task>_cuewiseLSS_2mm/<subID>/<mode>/`
+
+and include:
+- cue-wise beta maps (`beta_task-<task>_run-XX_cue-YY.nii`),
+- cue-wise t-maps (`tmap_task-<task>_run-XX_cue-YY.nii`),
+- a run-level index CSV documenting cue index, number of target/other events, and model metadata.
+
+These cue-wise LSS estimates serve as an alternative input for RSA, complementing the original cue-wise GLM by providing more isolated cue representations.
+
+
+
+
