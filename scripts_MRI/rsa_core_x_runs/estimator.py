@@ -41,7 +41,7 @@ class SingleModelRSA(BaseEstimator):
         return self
 
     def score(self, X, y=None):
-        if X.shape[1] < 3:
+        if X.shape[1] < 3: # X=voxel patterns in one searchlight sphere (n_samples, n_voxels)
             return 0.0
 
         if self.run_ids is None or self.cond_ids is None or self.n_conditions is None:
@@ -58,13 +58,19 @@ class SingleModelRSA(BaseEstimator):
 
         # RSA scoring
         if self.rsa_method == "regression":
-            betas = rsa_multiple_regression(neural_rdm, self.model_rdms, pair_mask=self.pair_mask)
+            betas = rsa_multiple_regression(
+                neural_rdm, 
+                self.model_rdms, 
+                pair_mask=self.pair_mask)
             return float(betas[self.target_name])
 
         if self.rsa_method in ("spearman", "kendall"):
             model_rdm = self.model_rdms[self.target_name]
             return rsa_single_model_correlation(
-                neural_rdm, model_rdm, method=self.rsa_method, pair_mask=self.pair_mask
+                neural_rdm, 
+                model_rdm, 
+                method=self.rsa_method, 
+                pair_mask=self.pair_mask
             )
 
         raise ValueError(f"Unknown rsa_method: {self.rsa_method}")

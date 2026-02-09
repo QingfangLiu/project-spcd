@@ -17,7 +17,10 @@ from sklearn.linear_model import LinearRegression
 # RSA Multiple Regression
 # ============================================================================
 
-def rsa_multiple_regression(neural_rdm, model_rdms, pair_mask=None):
+def rsa_multiple_regression(
+    neural_rdm, 
+    model_rdms, 
+    pair_mask=None):
     """
     Fit multiple regression: neural_RDM = β1*model1 + β2*model2 + ... + ε
     
@@ -63,7 +66,11 @@ def rsa_multiple_regression(neural_rdm, model_rdms, pair_mask=None):
 # RSA single model correlation
 # ============================================================================
 
-def rsa_single_model_correlation(neural_rdm, model_rdm, method: str = "spearman", pair_mask=None):
+def rsa_single_model_correlation(
+    neural_rdm, 
+    model_rdm, 
+    method: str = "spearman", 
+    pair_mask=None):
     """
     Correlate neural similarity matrix with ONE model similarity matrix
     using lower triangle (excluding diagonal).
