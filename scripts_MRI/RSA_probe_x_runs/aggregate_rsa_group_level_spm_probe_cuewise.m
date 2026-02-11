@@ -34,7 +34,7 @@
 addpath('/Users/liuq13/Applications/spm12/');
 
 base_dir  = '/Users/liuq13/SPCD_data/rsa_maps';
-analysis_subfolder = 'probe_cuewise';
+analysis_subfolder = 'probe_cuewise_LSS';
 
 sessions = {'premeal', 'postmeal'};
 inputs   = {'input-beta', 'input-tmap'};

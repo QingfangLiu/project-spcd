@@ -8,6 +8,7 @@ Usage:
          --session premeal \
          --base_dir ~/SPCD_data \
          --stat_type beta \
+         --glm_variant cuewiseLSS \
          --mode both
 
 The way it works:

@@ -144,8 +144,8 @@ if __name__ == "__main__":
     prepare_subset_rsa(
         full_data_dir=full_data_dir,
         subset_dir=subset_dir,
-        session_folders=("premeal_cuewise_2mm", "postmeal_cuewise_2mm"),
-        modes=("both","img1only", "img2only"),  # add "img1only", "img2only" if needed
+        session_folders=("premeal_cuewiseLSS_2mm", "postmeal_cuewiseLSS_2mm"),
+        modes=("both",),  # add "img1only", "img2only" if needed
         stat_types=("beta", "tmap"),  # set to None to copy everything
         dry_run=False,  # set to True to preview without copying
     )

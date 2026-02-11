@@ -33,7 +33,7 @@ spm_jobman('initcfg');
 HomeDir  = '/Users/liuq13/SPCD_data';
 niiRoot  = fullfile(HomeDir, 'nii');
 
-taskname = 'premeal';      % 'premeal' or 'postmeal'
+taskname = 'postmeal';      % 'premeal' or 'postmeal'
 mode     = 'both';     % 'img1only' | 'img2only' | 'both'
 TR = 1.5;
 
