@@ -85,7 +85,6 @@ def searchlight_rsa_single_subject(
         session_folder=session_folder,
         session_tag=session_tag,
         mode=mode,
-        runs=runs,
         stat_type=stat_type,
     )
 

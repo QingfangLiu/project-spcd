@@ -76,7 +76,6 @@ def compute_crossnobis_neural_rdm(
     patterns: np.ndarray,
     run_ids: np.ndarray,
     cond_ids: np.ndarray,
-    n_cond: int,
     noise=None,
 ):
     """
@@ -85,10 +84,11 @@ def compute_crossnobis_neural_rdm(
     patterns: (n_samples, n_voxels), each sample is one (run, condition) map
     run_ids:  (n_samples,) run label per sample (used as CV folds)
     cond_ids: (n_samples,) condition index [0..n_cond-1] per sample
-    n_cond: number of unique conditions
     noise: optional noise normalization info (start with None to get it running)
     """
     import rsatoolbox as rsa
+
+    # note: here n_samples = n_runs * n_conditions
 
     patterns = np.asarray(patterns, dtype=float)
     run_ids = np.asarray(run_ids).astype(int)
@@ -112,6 +112,7 @@ def compute_crossnobis_neural_rdm(
 
     # rsatoolbox stores RDMs in vector form; get square
     rdm = rdm_obj.get_matrices()[0]  # shape (n_cond, n_cond)
+
     return rdm
 
 

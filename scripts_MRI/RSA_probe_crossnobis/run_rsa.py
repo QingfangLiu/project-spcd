@@ -170,7 +170,6 @@ def main():
     print(f"Session folder:  {session_folder}")
     print(f"Mode:            {args.mode}")
     print(f"Stat type:       {args.stat_type}")
-    print(f"Runs (attempt):  {runs}")
     print(f"Mask:            {args.mask}")
     print(f"Output dir:      {args.output_dir}")
     print(f"Radius:          {args.radius} mm")
