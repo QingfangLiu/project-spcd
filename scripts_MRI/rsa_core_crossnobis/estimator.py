@@ -8,6 +8,8 @@ This estimator computes neural RDMs using cross-run correlations only
 """
 
 import numpy as np
+np.seterr(all='raise') # This turns warnings into errors so you can see the traceback
+
 from sklearn.base import BaseEstimator
 
 from .neural_rdm import compute_crossrun_neural_rdm, compute_crossnobis_neural_rdm
@@ -63,7 +65,6 @@ class SingleModelRSA(BaseEstimator):
                 patterns=X,
                 run_ids=self.run_ids,
                 cond_ids=self.cond_ids,
-                n_cond=int(self.n_conditions),
                 noise=None,
                 )
         else:

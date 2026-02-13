@@ -10,6 +10,8 @@ metrics.
 """
 
 import numpy as np
+np.seterr(all='raise') # This turns warnings into errors so you can see the traceback
+
 from scipy.stats import spearmanr, kendalltau
 from sklearn.linear_model import LinearRegression
 
@@ -77,16 +79,30 @@ def rsa_single_model_correlation(
     
     method: "spearman" or "kendall" (kendall = tau-b in scipy)
     """
+
+    if neural_rdm.shape != model_rdm.shape:
+        raise ValueError(f"Shape mismatch: neural_rdm {neural_rdm.shape} vs model_rdm {model_rdm.shape}")
+
     n = neural_rdm.shape[0]
+
+    if n < 2:
+        return 0.0
+
     tril_idx = np.tril_indices(n, k=-1)
 
-    y = neural_rdm[tril_idx]
-    x = model_rdm[tril_idx]
+    # Force float arrays (avoids weird dtype edge-cases)
+    y = np.asarray(neural_rdm[tril_idx], dtype=float)
+    x = np.asarray(model_rdm[tril_idx], dtype=float)
 
     # drop pairs not of interest
     if pair_mask is not None:
         y = y[pair_mask]
         x = x[pair_mask]
+
+    # Constant input -> correlation undefined (prevents ConstantInputWarning)
+    # Use exact check because x is typically 0/1 model distances; for y a tolerance helps.
+    if np.all(x == x[0]) or np.allclose(y, y[0], atol=0.0, rtol=0.0):
+        return 0.0
 
     if method == "spearman":
         r, _ = spearmanr(x, y)

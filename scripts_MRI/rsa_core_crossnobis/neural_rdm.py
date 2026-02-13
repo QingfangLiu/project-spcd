@@ -6,6 +6,7 @@ into neural RDMs using correlation- or distance-based metrics.
 """
 
 import numpy as np
+np.seterr(all='raise') # This turns warnings into errors so you can see the traceback
 
 def compute_crossrun_neural_rdm(
     patterns: np.ndarray,
@@ -89,10 +90,21 @@ def compute_crossnobis_neural_rdm(
     import rsatoolbox as rsa
 
     # note: here n_samples = n_runs * n_conditions
-
     patterns = np.asarray(patterns, dtype=float)
-    run_ids = np.asarray(run_ids).astype(int)
-    cond_ids = np.asarray(cond_ids).astype(int)
+
+    # If any non-finite values, crossnobis will blow up in rsatoolbox
+    if not np.isfinite(patterns).all():
+        bad = np.sum(~np.isfinite(patterns))
+        print(f"[crossnobis] non-finite patterns: {bad}/{patterns.size}", flush=True)
+        # safest for searchlight: return an RDM full of NaNs (or zeros) so scoring returns 0
+        n_cond = len(np.unique(cond_ids))
+        rdm = np.full((n_cond, n_cond), np.nan, dtype=float)
+        return rdm
+
+    run_ids = np.asarray(run_ids).astype(str)
+    cond_ids = np.asarray(cond_ids).astype(str)
+    # revise here: not forcing run_ids and cond_ids to int
+    # instead make them strings, so numpy will not report error
 
     ds = rsa.data.Dataset(
         measurements=patterns,

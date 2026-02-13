@@ -1,6 +1,8 @@
 # io.py
 import os
 import numpy as np
+np.seterr(all='raise') # This turns warnings into errors so you can see the traceback
+
 import pandas as pd
 import glob
 from nilearn.image import load_img

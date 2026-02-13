@@ -25,6 +25,19 @@ Key changes from the old version:
    with data must exist if crossrun_only is enabled.
 """
 
+import warnings
+warnings.filterwarnings(
+    "error",
+    category=RuntimeWarning,
+    message=r".*invalid value encountered in cast.*",
+)
+
+# what this line does:
+# if this specific thing happens, crash immediately
+# upgrade the warning to a full-blown exception
+# useful for debugging
+# put this at the front: before importing libraries that may trigger it
+
 import argparse
 import os
 import sys
