@@ -6,7 +6,6 @@ into neural RDMs using correlation- or distance-based metrics.
 """
 
 import numpy as np
-np.seterr(all='raise') # This turns warnings into errors so you can see the traceback
 
 def compute_crossrun_neural_rdm(
     patterns: np.ndarray,

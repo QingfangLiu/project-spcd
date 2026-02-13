@@ -10,7 +10,6 @@ metrics.
 """
 
 import numpy as np
-np.seterr(all='raise') # This turns warnings into errors so you can see the traceback
 
 from scipy.stats import spearmanr, kendalltau
 from sklearn.linear_model import LinearRegression

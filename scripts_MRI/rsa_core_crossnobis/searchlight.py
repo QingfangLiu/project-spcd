@@ -10,8 +10,6 @@ UPDATED for cuewise GLM:
 """
 
 import numpy as np
-np.seterr(all='raise') # This turns warnings into errors so you can see the traceback
-
 from nilearn.image import concat_imgs, new_img_like
 
 from .io import load_cuewise_maps_per_run

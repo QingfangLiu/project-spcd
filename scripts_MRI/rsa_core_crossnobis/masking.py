@@ -8,7 +8,6 @@ computations to specific condition subsets (e.g., odor–odor pairs).
 """
 
 import numpy as np
-np.seterr(all='raise') # This turns warnings into errors so you can see the traceback
 
 def build_odor_pair_mask(condition_order, odor_set):
     """

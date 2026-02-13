@@ -11,7 +11,6 @@ any I/O or interacting with neural data.
 """
 
 import numpy as np
-np.seterr(all='raise') # This turns warnings into errors so you can see the traceback
 
 CANONICAL_CONDITION_ORDER = [
     "A11", "A21", "C1", "B11", "B21", "D1",
