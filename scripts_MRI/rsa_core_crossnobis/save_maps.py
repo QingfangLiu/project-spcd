@@ -20,6 +20,7 @@ def save_rsa_maps(sub: str,
                   use_pair_mask: bool = False,
                   mode: str = "both",
                   stat_type: str = "beta",
+                  use_resms_whitening: bool = False,
                   ):
     
     """
@@ -71,6 +72,9 @@ def save_rsa_maps(sub: str,
 
         if mask_label is not None:
             name_parts.append(mask_label)
+
+        if use_resms_whitening:
+            name_parts.append("whiten-resms")
 
         output_file = os.path.join(
             output_dir,

@@ -250,6 +250,7 @@ def main():
         use_pair_mask=args.use_pair_mask,
         mode=args.mode,
         stat_type=args.stat_type,
+        use_resms_whitening=args.use_resms_whitening,
     )
 
     print("\n" + "=" * 80)
