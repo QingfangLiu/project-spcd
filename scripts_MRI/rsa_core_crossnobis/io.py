@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import glob
-from nilearn.image import load_img
+from nilearn.image import load_img, new_img_like
 
 def load_cuewise_maps_per_run(
     sub: str,
@@ -11,8 +11,10 @@ def load_cuewise_maps_per_run(
     session_folder: str,
     session_tag: str,
     mode: str = "both",   # "both", "img1only", "img2only"
-    runs=(1, 2, 3),
     stat_type: str = "beta",   # "beta" or "tmap"
+    runs=(1, 2, 3),
+    use_resms_whitening=False,
+    whitening_eps=1e-6,
 ):
     """
     Load cuewise GLM maps per run (one map per (run, cue_index)), using the per-run index CSV.
@@ -76,6 +78,31 @@ def load_cuewise_maps_per_run(
 
         df = pd.read_csv(csv_path)
 
+        # optional: run-specific ResMS whitening
+        do_whiten_this_run = False # record if whitening has been done for this run
+        scale_img = None
+
+        if use_resms_whitening:
+            spm_dir = os.path.join(
+                base_dir,
+                "GLM",
+                session_folder,
+                sub,
+                mode,
+                f"run-{run:02d}_spm",
+            )
+            resms_path = os.path.join(spm_dir, "ResMS.nii")
+
+            if os.path.exists(resms_path):
+                resms_img = load_img(resms_path)
+                resms_data = resms_img.get_fdata()
+                scale_data = 1.0 / np.sqrt(resms_data + whitening_eps)
+                scale_img = new_img_like(resms_img, scale_data)
+                do_whiten_this_run = True
+            else:
+                print(f"[Whitening fallback] ResMS not found for run {run}, proceeding without whitening.")
+
+
         required = {"run", "cue_index", file_col}
         missing_cols = required - set(df.columns)
         if missing_cols:
@@ -102,6 +129,15 @@ def load_cuewise_maps_per_run(
                 raise ValueError(f"Duplicate entry for run={run}, condition={cond} in {csv_path}")
 
             run_condition_imgs[key] = load_img(fpath)
+
+            # update, optionally do whitening after loading the image
+            if use_resms_whitening and do_whiten_this_run:
+                cond_data = cond_img.get_fdata()
+                scale_data = scale_img.get_fdata()
+                whitened_data = cond_data * scale_data
+                cond_img = new_img_like(cond_img, whitened_data)
+
+            run_condition_imgs[key] = cond_img
 
     return run_condition_imgs, condition_order
 
