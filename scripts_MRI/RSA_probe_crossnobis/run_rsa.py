@@ -137,6 +137,17 @@ def main():
         default="both",
         help="Cue GLM mode folder under subject (default: both)."
     )
+    parser.add_argument(
+        "--use_resms_whitening",
+        action="store_true",
+        help="Apply run-specific ResMS whitening before crossnobis.",
+    )
+    parser.add_argument(
+        "--whitening_eps",
+        type=float,
+        default=1e-6,
+        help="Small epsilon added to ResMS before inversion.",
+    )
     
     args = parser.parse_args()
 
@@ -178,6 +189,8 @@ def main():
     print(f"cue_subset:      {args.cue_subset}")
     print(f"models:          {args.models}")
     print(f"use_pair_mask:   {args.use_pair_mask}")
+    print(f"use_resms_whitening: {args.use_resms_whitening}")
+    print(f"whitening_eps: {args.whitening_eps}")
     print("=" * 80)
 
     # Create model RDMs
@@ -215,6 +228,8 @@ def main():
             use_pair_mask=args.use_pair_mask,
             mode=args.mode,
             stat_type=args.stat_type,
+            use_resms_whitening=args.use_resms_whitening,
+            whitening_eps=args.whitening_eps,
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")
