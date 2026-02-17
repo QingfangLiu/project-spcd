@@ -53,9 +53,7 @@ def generate_swarm_file(
     neural_metric: str = "crossnobis",
     glm_variant: str = "cuewise",  # "cuewise" or "cuewiseLSS"
     session_folder_template: str = "{session}_{glm_variant}_2mm",  # for subject discovery
-
-    # NEW (aligned to current run_rsa.py)
-    use_resms_whitening: bool = False,
+    use_resms_whitening: bool = True,
     whitening_eps: float = 1e-6,
 
     # Conda activation (Biowulf swarm-safe; minimal way)
