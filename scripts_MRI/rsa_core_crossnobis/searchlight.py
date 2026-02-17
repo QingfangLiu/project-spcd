@@ -66,6 +66,8 @@ def searchlight_rsa_single_subject(
     use_pair_mask: bool = False,
     mode: str = "both",            # "both", "img1only", "img2only"
     stat_type: str = "beta",       # "beta" or "tmap"
+    use_resms_whitening=False,
+    whitening_eps=1e-6,
 ):
     """
     Run searchlight RSA for one subject using cuewise GLM maps.
@@ -86,6 +88,8 @@ def searchlight_rsa_single_subject(
         session_tag=session_tag,
         mode=mode,
         stat_type=stat_type,
+        use_resms_whitening=use_resms_whitening,
+        whitening_eps=whitening_eps,
     )
 
     # subset conditions
