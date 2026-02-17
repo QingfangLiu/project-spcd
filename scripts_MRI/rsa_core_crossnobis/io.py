@@ -128,7 +128,7 @@ def load_cuewise_maps_per_run(
             if key in run_condition_imgs:
                 raise ValueError(f"Duplicate entry for run={run}, condition={cond} in {csv_path}")
 
-            run_condition_imgs[key] = load_img(fpath)
+            cond_img = load_img(fpath)
 
             # update, optionally do whitening after loading the image
             if use_resms_whitening and do_whiten_this_run:
