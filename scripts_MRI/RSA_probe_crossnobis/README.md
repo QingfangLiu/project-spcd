@@ -34,14 +34,14 @@ cross-run correlation approach.
     -   This ensures neural and model RDMs are in the same
         representational space (both distance-based).
 
-------------------------------------------------------------------------
 
-## Small Changes
+### Noise Estimation for Crossnobis
 
--   **Removed the `runs = (1,2,3)` parameter**
-    -   The pipeline already infers run structure from the data.
-    -   The explicit `runs` parameter was redundant and not functionally
-        necessary.
+- In the current implementation, the `noise` argument in `compute_crossnobis_neural_rdm` is set to `None`.
+
+- A pre-whitening step is performed prior to the searchlight analysis. Voxel-wise noise variance is estimated from the GLM residual image (`ResMS.nii`) and used to whiten beta estimates before computing crossnobis distances.
+
+- Accordingly, noise normalization is handled at the preprocessing stage rather than being passed explicitly to the crossnobis function.
 
 ------------------------------------------------------------------------
 
@@ -57,22 +57,4 @@ cross-run correlation approach.
     -   Model RDMs are converted to distance matrices (diagonal = 0)
     -   Distances can be negative (expected under noise)
 
-------------------------------------------------------------------------
-
-## What Remains To Be Implemented
-
--   **Noise estimation for crossnobis**
-    -   Currently, the `noise` argument in
-        `compute_crossnobis_neural_rdm` is set to `None` to ensure the
-        code runs end-to-end.
-    -   A proper implementation should:
-        -   Estimate voxel-wise noise covariance (ideally from GLM
-            residuals), or
-        -   Use a shrinkage/diagonal approximation if residuals are not
-            available.
-    -   Incorporating noise normalization will improve statistical
-        validity and interpretability of crossnobis distances.
-
-- Also think about how to organize new files and name new maps
-     - the code has multiple options, but the cross-run option has been run without specifying the option 
 
