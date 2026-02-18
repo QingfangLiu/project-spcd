@@ -10,11 +10,9 @@ def load_cuewise_maps_per_run(
     base_dir: str,
     session_folder: str,
     session_tag: str,
-    mode: str = "both",   # "both", "img1only", "img2only"
+    mode: str = "both",        # "both", "img1only", "img2only"
     stat_type: str = "beta",   # "beta" or "tmap"
-    runs=(1, 2, 3),
     use_resms_whitening=False,
-    whitening_eps=1e-6,
 ):
     """
     Load cuewise GLM maps per run (one map per (run, cue_index)), using the per-run index CSV.
@@ -61,6 +59,8 @@ def load_cuewise_maps_per_run(
 
     run_condition_imgs = {}  # (run, condition) -> Nifti1Image
 
+    runs=(1, 2, 3)
+
     for run in runs:
         # CSV lives in the same folder (sub_mode_dir)
         csv_glob = os.path.join(
@@ -79,8 +79,9 @@ def load_cuewise_maps_per_run(
         df = pd.read_csv(csv_path)
 
         # optional: run-specific ResMS whitening
-        do_whiten_this_run = False # record if whitening has been done for this run
-        scale_img = None
+        # this is diagonal whitening only, not accounting for voxel-to-voxel covariance
+        do_whiten_this_run = False     # record if whitening has been done for this run
+        scale_img = None               # initialize scale_img to None
 
         if use_resms_whitening:
             spm_dir = os.path.join(
@@ -92,16 +93,16 @@ def load_cuewise_maps_per_run(
                 f"run-{run:02d}_spm",
             )
             resms_path = os.path.join(spm_dir, "ResMS.nii")
+            whitening_eps=1e-6
 
             if os.path.exists(resms_path):
                 resms_img = load_img(resms_path)
-                resms_data = resms_img.get_fdata()
-                scale_data = 1.0 / np.sqrt(resms_data + whitening_eps)
-                scale_img = new_img_like(resms_img, scale_data)
+                resms_data = resms_img.get_fdata() # get estimated voxel-wise noise variance
+                scale_data = 1.0 / np.sqrt(resms_data + whitening_eps) # convert to scaling factor
+                scale_img = new_img_like(resms_img, scale_data) # create a NifTI image with scaling factor
                 do_whiten_this_run = True
             else:
                 print(f"[Whitening fallback] ResMS not found for run {run}, proceeding without whitening.")
-
 
         required = {"run", "cue_index", file_col}
         missing_cols = required - set(df.columns)
@@ -128,16 +129,16 @@ def load_cuewise_maps_per_run(
             if key in run_condition_imgs:
                 raise ValueError(f"Duplicate entry for run={run}, condition={cond} in {csv_path}")
 
-            cond_img = load_img(fpath)
+            cond_img = load_img(fpath)                           # load beta/t image
 
             # update, optionally do whitening after loading the image
             if use_resms_whitening and do_whiten_this_run:
-                cond_data = cond_img.get_fdata()
-                scale_data = scale_img.get_fdata()
-                whitened_data = cond_data * scale_data
-                cond_img = new_img_like(cond_img, whitened_data)
+                cond_data = cond_img.get_fdata()                 # get beta/t image
+                scale_data = scale_img.get_fdata()               # get scaling image
+                whitened_data = cond_data * scale_data           # voxel-wise variance normalization
+                cond_img = new_img_like(cond_img, whitened_data) # re-build image
 
-            run_condition_imgs[key] = cond_img
+            run_condition_imgs[key] = cond_img                   # store the whitened/unwhitened image
 
     return run_condition_imgs, condition_order
 

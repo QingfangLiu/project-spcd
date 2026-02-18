@@ -19,10 +19,9 @@ The way it works:
 - Need RSA_probe_x_runs/__init__.py exists (so it’s a package)
 
 Key changes from the old version:
-1) Supports stat_type: beta vs tmap (t maps use "tmap_" prefix and CSV column "tmap_file")
-2) Does NOT average betas across runs. Uses per-run cuewise maps.
-3) Neural similarity is computed across runs only (no within-run correlations), so at least 2 runs
-   with data must exist if crossrun_only is enabled.
+- Supports stat_type: beta vs tmap (t maps use "tmap_" prefix and CSV column "tmap_file")
+- Neural similarity is computed across runs only (no within-run correlations), so at least 2 runs
+   with data must exist 
 """
 
 import argparse
@@ -36,6 +35,8 @@ from rsa_core_crossnobis.models import (
     create_value_model_rdm,
     create_association_model_rdm,
 )
+from rsa_core_crossnobis.models import convert_model_rdms_to_distance
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -59,12 +60,6 @@ def main():
         type=str,
         required=True,
         help="Base directory containing GLM folder (expects <base_dir>/GLM/...)"
-    )
-    parser.add_argument(
-        "--mask",
-        type=str,
-        default=None,
-        help="Path to gray matter mask (default: <base_dir>/masks/gm_0.1.nii)"
     )
     parser.add_argument(
         "--output_dir",
@@ -142,17 +137,8 @@ def main():
         action="store_true",
         help="Apply run-specific ResMS whitening before crossnobis.",
     )
-    parser.add_argument(
-        "--whitening_eps",
-        type=float,
-        default=1e-6,
-        help="Small epsilon added to ResMS before inversion.",
-    )
     
     args = parser.parse_args()
-
-    if args.mask is None: # default mask
-        args.mask = os.path.join(args.base_dir, "masks", "gm_0.1.nii")
 
     # Determine session folder (cuewise GLM)
     session_folder = f"{args.session}_{args.glm_variant}_2mm"
@@ -167,13 +153,8 @@ def main():
         else:
             args.output_dir = os.path.join(base_out, f"subset-{args.cue_subset}")
 
-    # Checks
-    if not os.path.exists(args.mask):
-        print(f"ERROR: Mask file not found: {args.mask}")
-        sys.exit(1)
-
     print("=" * 80)
-    print("RSA Searchlight Analysis (cuewise GLM; cross-run RSA)")
+    print("RSA Searchlight Analysis (cuewise GLM)")
     print("=" * 80)
     print(f"Subject:         {args.sub}")
     print(f"Session:         {args.session}")
@@ -181,7 +162,6 @@ def main():
     print(f"Session folder:  {session_folder}")
     print(f"Mode:            {args.mode}")
     print(f"Stat type:       {args.stat_type}")
-    print(f"Mask:            {args.mask}")
     print(f"Output dir:      {args.output_dir}")
     print(f"Radius:          {args.radius} mm")
     print(f"N jobs:          {args.n_jobs}")
@@ -190,7 +170,6 @@ def main():
     print(f"models:          {args.models}")
     print(f"use_pair_mask:   {args.use_pair_mask}")
     print(f"use_resms_whitening: {args.use_resms_whitening}")
-    print(f"whitening_eps: {args.whitening_eps}")
     print("=" * 80)
 
     # Create model RDMs
@@ -202,7 +181,6 @@ def main():
     }
     model_rdms = {k: all_model_rdms[k] for k in args.models}
 
-    from rsa_core_crossnobis.models import convert_model_rdms_to_distance
     if args.neural_metric == "crossnobis":
         model_rdms = convert_model_rdms_to_distance(model_rdms, force_diag_zero=True)
 
@@ -218,7 +196,6 @@ def main():
             base_dir=args.base_dir,
             session_folder=session_folder,
             session_tag=args.session,
-            mask_file=args.mask,
             model_rdms=model_rdms,
             radius=args.radius,
             n_jobs=args.n_jobs,
@@ -229,7 +206,6 @@ def main():
             mode=args.mode,
             stat_type=args.stat_type,
             use_resms_whitening=args.use_resms_whitening,
-            whitening_eps=args.whitening_eps,
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")
@@ -256,7 +232,6 @@ def main():
     print("\n" + "=" * 80)
     print("RSA analysis complete!")
     print("=" * 80)
-
 
 if __name__ == "__main__":
     main()

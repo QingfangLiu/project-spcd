@@ -3,8 +3,6 @@
 """
 SearchLight-compatible RSA estimators.
 
-This estimator computes neural RDMs using cross-run correlations only
-(no within-run pairs) to avoid inflated similarity from temporal autocorrelation.
 """
 
 import numpy as np
@@ -22,8 +20,8 @@ class SingleModelRSA(BaseEstimator):
         self,
         model_rdms=None,
         target_name=None,
-        rsa_method="regression",
-        neural_metric: str = "corr",
+        rsa_method="spearman",
+        neural_metric: str = "crossnobis",
         pair_mask=None,
         run_ids=None,
         cond_ids=None,

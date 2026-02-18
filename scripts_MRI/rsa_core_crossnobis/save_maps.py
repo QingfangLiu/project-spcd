@@ -52,33 +52,31 @@ def save_rsa_maps(sub: str,
 
     os.makedirs(output_dir, exist_ok=True)
 
-    mask_label = "mask-odor" if use_pair_mask else None
-    subset_label = None if cue_subset == "all" else f"subset-{cue_subset}"
+    # filename-only labels per new agreement
+    pairmask_label = f"pairmask-{int(bool(use_pair_mask))}"          # 0/1
+    subset_label   = f"subset-{cue_subset}" if cue_subset != "all" else None
+    radius_label   = f"radius-{int(radius)}mm"                       # keep units explicit
+    whiten_label   = f"whiten-{int(bool(use_resms_whitening))}"      # 0/1 (explicit even if constant)
 
     for model_name, rsa_map in rsa_maps.items():
 
+        # stable ordering in filename:
+        # sub, model, subset (optional), pairmask, radius, whiten
         name_parts = [
-            f"{sub}_{session_tag}",
-            f"input-{stat_type}",
-            f"mode-{mode}",
-            f"neural-{neural_metric}",
-            model_name,
-            rsa_method,
-            f"radius-{int(radius)}mm",
+            f"{sub}",  # keep existing sub string (e.g., "sub-01")
+            f"model-{model_name}",
         ]
 
         if subset_label is not None:
             name_parts.append(subset_label)
 
-        if mask_label is not None:
-            name_parts.append(mask_label)
+        name_parts.extend([pairmask_label, radius_label, whiten_label])
 
-        if use_resms_whitening:
-            name_parts.append("whiten-resms")
+        output_file = os.path.join(output_dir, "_".join(name_parts) + ".nii.gz")
 
-        output_file = os.path.join(
-            output_dir,
-            "_".join(name_parts) + ".nii.gz"
-        )
+        # "_".join(list)
+        # concatenate list elements into one string, inserting "_" between elements
+
         rsa_map.to_filename(output_file)
         print(f"Saved: {output_file}")
+

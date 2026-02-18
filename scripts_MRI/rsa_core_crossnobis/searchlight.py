@@ -56,18 +56,16 @@ def searchlight_rsa_single_subject(
     base_dir: str,
     session_folder: str,
     session_tag: str,
-    mask_file: str,
+    mode: str = "both",            # "both", "img1only", "img2only"
     model_rdms: dict,
     radius: float = 8.0,
     n_jobs: int = -1,
     rsa_method: str = "regression",
     neural_metric: str = "corr",
     cue_subset: str = "all",       # "all", "conditioned", "preconditioned"
-    use_pair_mask: bool = False,
-    mode: str = "both",            # "both", "img1only", "img2only"
+    use_pair_mask: bool = False,   # only involving odors?
     stat_type: str = "beta",       # "beta" or "tmap"
-    use_resms_whitening=False,
-    whitening_eps=1e-6,
+    use_resms_whitening=False,     # whether use ResMS to do whitening
 ):
     """
     Run searchlight RSA for one subject using cuewise GLM maps.
@@ -89,7 +87,6 @@ def searchlight_rsa_single_subject(
         mode=mode,
         stat_type=stat_type,
         use_resms_whitening=use_resms_whitening,
-        whitening_eps=whitening_eps,
     )
 
     # subset conditions
@@ -140,6 +137,7 @@ def searchlight_rsa_single_subject(
     img_4d = concat_imgs(img_list)
 
     print("Loading mask file...")
+    mask_file = os.path.join(base_dir, "masks", "gm_0.1.nii")
     mask_img = load_img(mask_file)
 
     print(f"Running searchlight RSA (radius={radius}mm, n_jobs={n_jobs})...")

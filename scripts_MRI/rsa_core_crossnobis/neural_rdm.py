@@ -100,8 +100,8 @@ def compute_crossnobis_neural_rdm(
         rdm = np.full((n_cond, n_cond), np.nan, dtype=float)
         return rdm
 
-    run_ids = np.asarray(run_ids).astype(str)
-    cond_ids = np.asarray(cond_ids).astype(str)
+    run_ids = np.asarray(run_ids).astype(int)
+    cond_ids = np.asarray(cond_ids).astype(int)
     # revise here: not forcing run_ids and cond_ids to int
     # instead make them strings, so numpy will not report error
 
