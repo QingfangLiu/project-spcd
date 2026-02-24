@@ -26,6 +26,7 @@ def save_rsa_maps(
     neural_metric: str,
 	use_odor_mask: bool,
 	use_resms_whitening: bool,
+	center_within_run: bool,
 	):
 
 	os.makedirs(output_dir, exist_ok=True)
@@ -34,6 +35,7 @@ def save_rsa_maps(
 	odor_mask_label = f"odor_mask-{int(bool(use_odor_mask))}"
 	radius_label = f"radius-{radius}mm"
 	whiten_label = f"whiten-{int(bool(use_resms_whitening))}"
+	center_label = f"center-{int(bool(center_within_run))}"
 
 	for model_name, rsa_map in rsa_maps.items():
 
@@ -48,7 +50,7 @@ def save_rsa_maps(
 		if subset_label is not None:
 			name_parts.append(subset_label)
 
-		name_parts.extend([odor_mask_label, radius_label, whiten_label])
+		name_parts.extend([odor_mask_label, radius_label, whiten_label, center_label])
 
 		output_file = os.path.join(output_dir, "_".join(name_parts) + ".nii.gz")
 

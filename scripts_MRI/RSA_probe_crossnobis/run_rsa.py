@@ -1,5 +1,23 @@
-
+#!/usr/bin/env python3
 """
+Run searchlight RSA for one subject (cuewise GLM; cross-run RSA).
+
+Usage:
+    python -m RSA_probe_crossnobis.run_rsa \
+         --sub sub-01 \
+         --session premeal \
+         --base_dir ~/SPCD_data \
+         --stat_type beta \
+         --glm_variant cuewise \
+         --neural_metric crossnobis \
+         --mode both
+
+The way it works:
+- Locate a package named RSA_probe_x_runs
+- Inside that package, locate a module named run_rsa
+- Execute that module 
+- Need RSA_probe_x_runs/__init__.py exists (so it’s a package)
+
 Command-line interface for searchlight RSA.
 
 Configurable:
@@ -127,6 +145,11 @@ def main():
         action="store_true",
         help="Apply run-specific ResMS whitening before crossnobis.",
     )
+    parser.add_argument(
+        "--center_within_run",
+        action="store_true",
+        help="Center within each run before cross-run corr.",
+    )
     
     args = parser.parse_args()
 
@@ -155,6 +178,7 @@ def main():
     print(f"models:          {args.models}")
     print(f"use_odor_mask:   {args.use_odor_mask}")
     print(f"use_resms_whitening: {args.use_resms_whitening}")
+    print(f"center_within_run: {args.center_within_run}")
     print("=" * 80)
 
     # Create model RDMs
@@ -188,6 +212,7 @@ def main():
             mode=args.mode,
             stat_type=args.stat_type,
             use_resms_whitening=args.use_resms_whitening,
+            center_within_run=args.center_within_run,
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")
@@ -208,6 +233,7 @@ def main():
         neural_metric=args.neural_metric,
         use_odor_mask=args.use_odor_mask,
         use_resms_whitening=args.use_resms_whitening,
+        center_within_run=args.center_within_run,
     )
 
     print("\n" + "=" * 80)

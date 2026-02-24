@@ -16,7 +16,7 @@ class SingleModelRSA(BaseEstimator):
 		odor_mask=None,
 		run_ids=None,  # dim: (n_samples,)
 		cond_ids=None, # dim: (n_samples,)
-		n_conditions: int = None, # number of conditions
+		center_within_run=None, # whether to center within run
 	):
 
 		self.model_rdms = model_rdms
@@ -28,7 +28,7 @@ class SingleModelRSA(BaseEstimator):
 
 		self.run_ids = None if run_ids is None else np.asarray(run_ids)
 		self.cond_ids = None if cond_ids is None else np.asarray(cond_ids)
-		self.n_conditions = n_conditions
+		self.center_within_run = center_within_run
 
 	def fit(self, X, y=None): # X: (n_samples, n_voxels) created from searchlight loop
 		return self # returning self to satisfy the estimator API
@@ -37,8 +37,8 @@ class SingleModelRSA(BaseEstimator):
 		if X.shape[1] < 3: # if searchlight has fewer than 3 voxels
 			return 0.0
 
-		if self.run_ids is None or self.cond_ids is None or self.n_conditions is None:
-			raise ValueError("cross run RSA requires run_ids, cond_ids, and n_conditions")
+		if self.run_ids is None or self.cond_ids is None:
+			raise ValueError("cross run RSA requires run_ids and cond_ids")
 
 		if X.shape[0] != self.run_ids.shape[0] or X.shape[0] != self.cond_ids.shape[0]:
 			raise ValueError("X rows must match run_ids/cond_ids lengths")
@@ -48,6 +48,7 @@ class SingleModelRSA(BaseEstimator):
 				patterns=X,
 				run_ids=self.run_ids,
 				cond_ids=self.cond_ids,
+				center_within_run=self.center_within_run,
 				)
 		elif self.neural_metric == "crossnobis":
 			neural_rdm, conds = compute_crossnobis_neural_rdm(

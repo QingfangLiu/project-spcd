@@ -60,6 +60,7 @@ def main() -> None:
 
     ap.add_argument("--use_odor_mask", action="store_true")
     ap.add_argument("--use_resms_whitening", action="store_true")
+    ap.add_argument("--center_within_run", action="store_true")
 
     args = ap.parse_args()
 
@@ -90,6 +91,8 @@ def main() -> None:
                     cmd.append("--use_odor_mask")
                 if args.use_resms_whitening:
                     cmd.append("--use_resms_whitening")
+                if args.center_within_run:
+                    cmd.append("--center_within_run")
 
                 f.write(" ".join(cmd) + "\n")
 

@@ -104,17 +104,25 @@ def compute_crossnobis_neural_rdm(
 
 
 # this one computes using cross run correlations
-# keep 1-r in the end to make this a dissimilarity matrix
+# keep 1-r in the end to make this a dissimilarity metric
 
 def compute_crossrun_neural_rdm(
 	patterns: np.ndarray, # (n_samples, n_voxels)
 	run_ids: np.ndarray,  # (n_samples, )
-	cond_ids: np.ndarray  # (n_samples, )
+	cond_ids: np.ndarray,  # (n_samples, )
+	center_within_run: bool = False,
 	):
 
 	patterns = np.asarray(patterns)
 	run_ids = np.asarray(run_ids).astype(int)
 	cond_ids = np.asarray(cond_ids).astype(int)
+
+	if center_within_run:
+		patterns = np.asarray(patterns, dtype=float).copy()
+		for r in np.unique(run_ids):
+			rmask = (run_ids == r)
+			if np.any(rmask):
+				patterns[rmask] -= patterns[rmask].mean(axis=0)
 
 	# build a lookup table
 	idx = {}

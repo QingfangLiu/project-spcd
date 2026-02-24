@@ -45,6 +45,7 @@ def searchlight_rsa_single_subject(
 	mode: str,
 	stat_type: str, 			# "beta" or "tmap"
 	use_resms_whitening: bool,
+	center_within_run: bool,
 	):
 
 	from nilearn.decoding import SearchLight
@@ -126,7 +127,7 @@ def searchlight_rsa_single_subject(
 			odor_mask=odor_mask,
 			run_ids=run_ids,
 			cond_ids=cond_ids,
-			n_conditions=len(condition_order),
+			center_within_run=center_within_run,
 		)
 
 		searchlight = SearchLight(
