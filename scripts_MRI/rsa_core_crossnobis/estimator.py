@@ -48,7 +48,6 @@ class SingleModelRSA(BaseEstimator):
 				patterns=X,
 				run_ids=self.run_ids,
 				cond_ids=self.cond_ids,
-				n_cond=int(self.n_conditions),
 				)
 		elif self.neural_metric == "crossnobis":
 			neural_rdm, conds = compute_crossnobis_neural_rdm(
