@@ -23,11 +23,6 @@ cross-run correlation approach.
     -   Introduced helper functions to convert similarity-based model
         RDMs into distance form.
 
-    -   When `neural_metric == "crossnobis"`, all model RDMs are
-        converted via:
-
-            distance = 1 - similarity
-
     -   Diagonal entries are explicitly set to 0 for consistency with
         crossnobis RDMs.
 
