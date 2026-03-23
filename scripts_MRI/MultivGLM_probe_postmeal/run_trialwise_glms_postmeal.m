@@ -1,13 +1,12 @@
 
-
 %% ========================================================================
-%  Pre-meal LSS: single-event GLMs for cue images (2 mm smooth)
+%  Post-meal LSS: single-event GLMs for cue images (2 mm smooth)
 %
-%  For each image event (cue_img1/cue_img2) in a run, fit a mini-GLM with:
-%    1) target image (3 s)
-%    2) all other images (grouped; 3 s each)
-%    3) decision (2 s; all trials)
-%    4) button sticks (0 s; trials with a response)
+%  Mini-GLM design (per target image):
+%    1) target image (3.0 s)
+%    2) all other images (grouped; 3.0 s each)
+%    3) decision period (2.0 s; all trials)
+%    4) button sticks (0 s) — split by response hand: button_left / button_right
 %
 %  Inputs:
 %    - NIfTI:  SPCD_data/nii/<subID>/func_PAID/postmeal/s2w2Scan2_postmeal_run_<r>_*_PAID.nii
@@ -82,8 +81,24 @@ for s = 1:numel(subs)
         dec_on   = E.onset(is_dec);
         dec_dur  = E.duration(is_dec);   % 2s
 
-        btn_on   = E.onset(is_btn);      % may be empty
-        % duration for button = 0
+        % ---- split button onsets by response hand (left / right) ----
+        
+        btn_on_all   = E.onset(is_btn);   % all button onsets
+
+        hand_col = 'response_hand';
+        raw_hand = E.(hand_col)(is_btn);
+        hand_str = string(raw_hand);     % convert to string array; 'NaN' or '' possible
+
+        % normalize common encodings (case-insensitive)
+        is_left  = strcmpi(hand_str, 'left');
+        is_right = strcmpi(hand_str, 'right');
+
+        % Some rows may contain 'n/a' or missing; keep those out of left/right
+        is_left(hand_str=="n/a" | hand_str=="NaN" | hand_str=="") = false;
+        is_right(hand_str=="n/a" | hand_str=="NaN" | hand_str=="") = false;
+
+        btn_on_left  = btn_on_all(is_left);
+        btn_on_right = btn_on_all(is_right);
 
         n_img = numel(img_on);
         if n_img == 0
@@ -156,13 +171,27 @@ for s = 1:numel(subs)
             matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).tmod     = 0;
             matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).pmod     = struct('name',{},'param',{},'poly',{});
 
-            % Button sticks (only if present)
-            if ~isempty(btn_on)
-                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(4).name     = 'button';
-                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(4).onset    = btn_on';
-                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(4).duration = zeros(size(btn_on'))';
+            % === Append button condition(s) SAFELY using dynamic index ===
+            next_cond = numel(matlabbatch{1}.spm.stats.fmri_spec.sess.cond) + 1;
+
+            % Button sticks of left
+            if ~isempty(btn_on_left)
+                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(4).name     = 'button_left';
+                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(4).onset    = btn_on_left';
+                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(4).duration = zeros(size(btn_on_left'))';
                 matlabbatch{1}.spm.stats.fmri_spec.sess.cond(4).tmod     = 0;
                 matlabbatch{1}.spm.stats.fmri_spec.sess.cond(4).pmod     = struct('name',{},'param',{},'poly',{});
+                next_cond = next_cond + 1;
+            end
+
+            % Button sticks of right
+            if ~isempty(btn_on_right)
+                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(5).name     = 'button_right';
+                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(5).onset    = btn_on_right';
+                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(5).duration = zeros(size(btn_on_right'))';
+                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(5).tmod     = 0;
+                matlabbatch{1}.spm.stats.fmri_spec.sess.cond(5).pmod     = struct('name',{},'param',{},'poly',{});
+                next_cond = next_cond + 1;
             end
 
             % Nuisance + HPF

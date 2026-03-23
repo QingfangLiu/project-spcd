@@ -30,7 +30,7 @@ HomeDir  = '/Users/liuq13/SPCD_data';
 niiRoot  = fullfile(HomeDir, 'nii');
 
 taskname = 'premeal';      % 'premeal' or 'postmeal'
-mode     = 'img2only';         % 'img1only' | 'img2only' | 'both'
+mode     = 'both';         % 'img1only' | 'img2only' | 'both'
 
 TR = 1.5;
 
@@ -132,9 +132,23 @@ for s = 1:numel(subs)
         dec_on  = E.onset(is_dec);
         dec_dur = E.duration(is_dec);      % expected 2
 
-        % button regressor
-        btn_on = E.onset(is_btn);          % may be empty
-        has_button = ~isempty(btn_on);
+        % ---- split button onsets by response hand (left / right) ----
+        btn_on_all   = E.onset(is_btn);   % all button onsets
+
+        hand_col = 'response_hand';
+        raw_hand = E.(hand_col)(is_btn);
+        hand_str = string(raw_hand);     % convert to string array; 'NaN' or '' possible
+
+        % normalize common encodings (case-insensitive)
+        is_left  = strcmpi(hand_str, 'left');
+        is_right = strcmpi(hand_str, 'right');
+
+        % Some rows may contain 'n/a' or missing; keep those out of left/right
+        is_left(hand_str=="n/a" | hand_str=="NaN" | hand_str=="") = false;
+        is_right(hand_str=="n/a" | hand_str=="NaN" | hand_str=="") = false;
+
+        btn_on_left  = btn_on_all(is_left);
+        btn_on_right = btn_on_all(is_right);
 
         % ---- Locate s2w2 4D NIfTI ----
         scandir = fullfile(niiRoot, SubID, 'func_PAID', taskname);
@@ -203,14 +217,24 @@ for s = 1:numel(subs)
         matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_dec).tmod     = 0;
         matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_dec).pmod     = struct('name',{},'param',{},'poly',{});
 
-        % button (optional)
-        if has_button
-            idx_btn = 14;
-            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn).name     = 'button';
-            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn).onset    = btn_on';
-            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn).duration = zeros(size(btn_on'))';
-            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn).tmod     = 0;
-            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn).pmod     = struct('name',{},'param',{},'poly',{});
+        % left button press
+        if ~isempty(btn_on_left)
+            idx_btn_left = 14;
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_left).name     = 'button_left';
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_left).onset    = btn_on_left';
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_left).duration = zeros(size(btn_on_left'))';
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_left).tmod     = 0;
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_left).pmod     = struct('name',{},'param',{},'poly',{});
+        end
+
+        % right button press
+        if ~isempty(btn_on_right)
+            idx_btn_right = 15;
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_right).name     = 'button_right';
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_right).onset    = btn_on_right';
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_right).duration = zeros(size(btn_on_right'))';
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_right).tmod     = 0;
+            matlabbatch{1}.spm.stats.fmri_spec.sess.cond(idx_btn_right).pmod     = struct('name',{},'param',{},'poly',{});
         end
 
         % nuisance + HPF

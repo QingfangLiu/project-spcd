@@ -66,7 +66,7 @@ TR = 1.5;
 % ---- SUBJECTS ----
 subs = dir(fullfile(niiRoot, 'sub-*')); subs = subs([subs.isdir]);
 
-for s = 15:numel(subs)
+for s = 1:numel(subs)
     SubID = subs(s).name;
     fprintf('\n=== LSS | %s ===\n', SubID);
 
