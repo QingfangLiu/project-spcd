@@ -1,17 +1,5 @@
 
-"""
-load_cuewise_maps_per_run
 
-Loads condition-wise GLM maps for each run.
-
-Returns:
-    dict[(run, condition_label)] -> NiftiImage
-
-Supports:
-- beta or tmap input
-- optional diagonal ResMS whitening per run
-- missing runs allowed
-"""
 
 import os
 import numpy as np
@@ -27,6 +15,20 @@ def load_cuewise_maps_per_run(
 	stat_type: str = "beta", # "beta" or "tmap"
 	use_resms_whitening=False,
 	):
+
+	"""
+load_cuewise_maps_per_run
+
+Loads condition-wise GLM maps for each run.
+
+Returns:
+    dict[(run, condition_label)] -> NiftiImage
+
+Supports:
+- beta or tmap input
+- optional diagonal ResMS whitening per run
+- missing runs allowed
+"""
 
 	sub_mode_dir = os.path.join(base_dir, "GLM", session_folder, sub, mode)
 
@@ -123,20 +125,6 @@ def load_cuewise_maps_per_run(
 			run_condition_imgs[key] = cond_img  # store the image (whitened or unwhitened)
 
 	return run_condition_imgs # return a dictionary of images, indexed by run and condition
-
-		
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
