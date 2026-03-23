@@ -113,36 +113,39 @@ Links each single-trial beta image from the trial-wise GLM to its source event i
 
 ---
 
-## 4. Posthoc odor_index correction for sub-14
+## 4. Index Correction for `sub-14`
 
-### Odor index correction (initial fix)
+Index corrections were applied to both **premeal** and **postmeal** `nii` folders prior to running GLMs.
 
-Swapped all `odor_index` values of `1` and `2` (i.e., `1 → 2` and `2 → 1`) for **sub-14** in the premeal task.
+### Step 1: Odor Index Correction
+
+For **sub-14** in the *premeal* task, all `odor_index` values were swapped:
+- `1 → 2`
+- `2 → 1`
 
 **Applied to:**
 - Event files in `nii/sub-14/func_PAID/premeal/` (`*_events.tsv`)
-- Beta index files in `GLM/premeal_trialwise_2mm/sub-14/` (`*_beta_index.csv`)
+- Event files in `nii/sub-14/func_PAID/postmeal/` (`*_events.tsv`)
 
-Original files were preserved with an `_orig` suffix before overwriting.
+**Notes:**
+- Original files were preserved with an `_orig` suffix before overwriting.
 
+---
 
-### Cue index correction (later fix)
+### Step 2: Cue Index Correction
 
-In **January 2026**, it was identified that `cue_index` values also required correction. This update was applied to both the **GLM** and **nii** folders.
+The following cue index swaps were applied:
 
-**Versioning policy:**
-- `_orig` versions were left untouched
-- A backup copy was created with the suffix `_beforeCueFix` (if not already present)
-- Final updates were applied to the non-backup files
+- `1 ↔ 3`
+- `2 ↔ 4`
+- `7 ↔ 9`
+- `8 ↔ 10`
 
+All other values (e.g., `0`, `NaN`) were left unchanged.
 
-**Cue index swap rules:**
-
-- 1 <-> 3
-- 2 <-> 4
-- 7 <-> 9
-- 8 <-> 10
-- All other values (e.g., `0`, `NaN`) were left unchanged.
+**Versioning:**
+- `_orig` files were left untouched.
+- A backup copy was created with the suffix `_beforeCueFix` (if not already present).
 
 
 ---
@@ -173,36 +176,6 @@ and include:
 - an index CSV documenting run, cue_index, inclusion mode, and number of contributing events.
 
 
----
-
-## 6. Cue-wise LSS-style GLM for RSA
-
-To further reduce collinearity among cue regressors and improve cue-specific estimates for RSA, an additional **cue-wise LSS-style GLM** was implemented.
-
-Instead of estimating all 12 cue regressors in a single model, this approach runs **one GLM per cue (per run)**. For each cue index \(c = 1\ldots12\), the design includes:
-
-- **target cue regressor**  
-  - all cue events with `cue_index == c`
-- **other cues regressor**  
-  - all remaining cue events (`cue_index ≠ c`) pooled together
-- **decision regressor** (2 s boxcar, all trials)
-- **button regressor** (0 s stick, if present)
-- run-specific nuisance regressors (motion/physiology)
-
-Cue events were selected using the same three inclusion modes as before (`cue_img1` only, `cue_img2` only, or both), with separate models estimated for each mode. Models were estimated **run-wise** (runs 1–3 when available), using the same HRF, masking threshold, and high-pass filtering as previous GLMs.
-
-For each cue-specific GLM, a single contrast of **target cue > implicit baseline** was defined, producing one beta map and one t-map per cue per run. After extraction, all SPM-generated image files were removed, while `SPM.mat` was retained for provenance.
-
-Outputs are stored in a parallel directory:
-
-`GLM/<task>_cuewiseLSS_2mm/<subID>/<mode>/`
-
-and include:
-- cue-wise beta maps (`beta_task-<task>_run-XX_cue-YY.nii`),
-- cue-wise t-maps (`tmap_task-<task>_run-XX_cue-YY.nii`),
-- a run-level index CSV documenting cue index, number of target/other events, and model metadata.
-
-These cue-wise LSS estimates serve as an alternative input for RSA, complementing the original cue-wise GLM by providing more isolated cue representations.
 
 
 
