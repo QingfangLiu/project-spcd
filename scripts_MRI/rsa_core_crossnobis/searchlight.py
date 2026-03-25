@@ -5,7 +5,7 @@ import numpy as np
 
 from nilearn.image import concat_imgs, new_img_like
 
-from .io import load_cuewise_maps_per_run
+from .io_cuewise import load_cuewise_maps_per_run
 from .estimator import SingleModelRSA
 from .odor_masking import build_odor_mask
 
