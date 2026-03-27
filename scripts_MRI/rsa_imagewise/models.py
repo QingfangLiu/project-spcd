@@ -4,11 +4,6 @@ from __future__ import annotations
 
 import numpy as np
 
-canonical_condition_order = [
-    "A11", "A21", "C1", "B11", "B21", "D1",
-    "A12", "A22", "C2", "B12", "B22", "D2",
-]
-
 _ODOR_GROUPS = {
     "odor1": {"A11", "B11", "A12", "B12"},
     "odor2": {"A21", "B21", "A22", "B22"},
@@ -16,37 +11,102 @@ _ODOR_GROUPS = {
 }
 
 
+# Build once from the readable group definition above
+_CONDITION_TO_GROUP = {
+    cond: group
+    for group, conds in _ODOR_GROUPS.items()
+    for cond in conds
+}
+
+def base_condition(label: str) -> str:
+    """Convert image-wise label like 'A11_img1' -> 'A11'."""
+    return str(label).rsplit("_img", 1)[0]
+
+
 def condition_to_group(condition: str) -> str:
-    for group, conds in _ODOR_GROUPS.items():
-        if condition in conds:
-            return group
-    raise KeyError(f"Unknown condition: {condition}")
+    try:
+        return _CONDITION_TO_GROUP[condition]
+    except KeyError:
+        raise KeyError(f"Unknown condition: {condition}")
 
 
-def create_identity_model_rdm(
-    condition_order: list[str] = canonical_condition_order,
-) -> np.ndarray:
-    """Identity model: 0 within odor-group, 1 across odor-groups."""
-    n = len(condition_order)
-    rdm = np.ones((n, n), dtype=float)
+def create_identity_rdm(sample_labels) -> np.ndarray:
+    """
+    Identity model for image-wise samples:
+    0 within odor-group, 1 across odor-groups.
+    """
+    groups = np.array(
+        [condition_to_group(base_condition(lbl)) for lbl in sample_labels],
+        dtype=object,
+    )
+    rdm = (groups[:, None] != groups[None, :]).astype(float)
     np.fill_diagonal(rdm, 0.0)
-
-    group_map = {c: condition_to_group(c) for c in condition_order}
-    for i in range(n):
-        for j in range(i):
-            rdm[i, j] = 0.0 if group_map[condition_order[i]] == group_map[condition_order[j]] else 1.0
-            rdm[j, i] = rdm[i, j]
     return rdm
 
 
-def create_button_rdm(button_labels: list[str]) -> np.ndarray:
-    """Button nuisance RDM: 0 if same button label, 1 otherwise."""
+def create_button_presence_rdm(button_labels):
+    """
+    RDM for whether a button was pressed.
+
+    Groups:
+      - 'left'  -> pressed
+      - 'right' -> pressed
+      - 'none'  -> none
+
+    So:
+      left vs right = 0
+      left/right vs none = 1
+      none vs none = 0
+    """
     labels = [str(x).strip().lower() for x in button_labels]
+    pressed = np.array([lab in ("left", "right") for lab in labels], dtype=int)
+
+    rdm = (pressed[:, None] != pressed[None, :]).astype(float)
+    np.fill_diagonal(rdm, 0.0)
+    return rdm
+
+
+def create_button_side_rdm(button_labels):
+    """
+    RDM for button side with 'none' treated as maximally different.
+
+    Rules:
+      left vs right = 1
+      left vs left = 0
+      right vs right = 0
+      anything involving 'none' = 1
+      diagonal = 0
+    """
+    labels = np.array([str(x).strip().lower() for x in button_labels], dtype=object)
     n = len(labels)
     rdm = np.zeros((n, n), dtype=float)
+
     for i in range(n):
         for j in range(i):
-            rdm[i, j] = 0.0 if labels[i] == labels[j] else 1.0
-            rdm[j, i] = rdm[i, j]
+            li = labels[i]
+            lj = labels[j]
+
+            if li == "none" or lj == "none":
+                val = 1.0
+            else:
+                val = 0.0 if li == lj else 1.0
+
+            rdm[i, j] = val
+            rdm[j, i] = val
+
     np.fill_diagonal(rdm, 0.0)
     return rdm
+
+
+
+
+
+
+
+
+
+
+
+
+
+

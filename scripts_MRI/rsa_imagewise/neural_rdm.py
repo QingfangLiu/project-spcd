@@ -4,30 +4,28 @@ from __future__ import annotations
 
 import numpy as np
 
-
-def _pearson_similarity(a: np.ndarray, b: np.ndarray) -> float:
-    a = np.asarray(a, dtype=float)
-    b = np.asarray(b, dtype=float)
-    a = a - a.mean()
-    b = b - b.mean()
-    denom = np.sqrt(np.sum(a * a)) * np.sqrt(np.sum(b * b))
-    if denom == 0 or not np.isfinite(denom):
-        return 0.0
-    return float(np.dot(a, b) / denom)
-
-
 def compute_correlation_rdm(patterns: np.ndarray) -> np.ndarray:
     """Pairwise correlation distance RDM across sample patterns."""
-    patterns = np.asarray(patterns, dtype=float)
-    n_samples = patterns.shape[0]
-    rdm = np.zeros((n_samples, n_samples), dtype=float)
+    # CHANGE: vectorized implementation
+    X = np.asarray(patterns, dtype=float)
 
-    for i in range(n_samples):
-        for j in range(i + 1, n_samples):
-            r = _pearson_similarity(patterns[i], patterns[j])
-            d = 1.0 - r
-            rdm[i, j] = d
-            rdm[j, i] = d
+    if X.ndim != 2:
+        raise ValueError(f"Expected 2D array, got shape {X.shape}")
 
+    # center each sample pattern
+    X = X - X.mean(axis=1, keepdims=True)
+
+    # normalize each sample pattern
+    norms = np.linalg.norm(X, axis=1, keepdims=True)
+    norms[norms == 0] = 1.0
+    X = X / norms
+
+    # correlation similarity matrix
+    sim = X @ X.T
+    sim = np.clip(sim, -1.0, 1.0)
+
+    # convert to correlation distance
+    rdm = 1.0 - sim
     np.fill_diagonal(rdm, 0.0)
     return rdm
+

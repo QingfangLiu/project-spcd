@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 import pandas as pd
-from nilearn.image import load_img, new_img_like
+from nilearn.image import load_img
 
 # Canonical 12-condition order
 BASE_CONDITION_ORDER = [
@@ -39,7 +39,7 @@ def _load_run_betas(
     session_tag: str,
 ):
     """
-    Load one run's image-wise beta maps and z-score them within the run.
+    Load one run's image-wise beta maps.
 
     Returns
     -------
@@ -63,27 +63,9 @@ def _load_run_betas(
 
     df["beta_path"] = df["beta_file"].apply(lambda b: os.path.join(sub_dir, b))
 
-    beta_paths = df["beta_path"].tolist()
-    ref_img = None
-    stack = []
+    imgs = [load_img(p) for p in df["beta_path"].tolist()]
 
-    for p in beta_paths:
-        img = load_img(p)
-        if ref_img is None:
-            ref_img = img
-        stack.append(img.get_fdata())
-
-    all_stack = np.stack(stack, axis=0)  # (n_samples, X, Y, Z)
-    mean = all_stack.mean(axis=0)
-    std = all_stack.std(axis=0)
-    std[std == 0] = 1.0
-
-    norm_imgs = []
-    for data in all_stack:
-        z = (data - mean) / std
-        norm_imgs.append(new_img_like(ref_img, z))
-
-    return norm_imgs, df
+    return imgs, df
 
 
 def _load_trial_button_map(base_dir: str, sub: str, session_tag: str, run: int):
@@ -116,11 +98,8 @@ def _load_trial_button_map(base_dir: str, sub: str, session_tag: str, run: int):
     for _, row in button_rows.iterrows():
         trial = int(row["trial"])
         resp = row["response_hand"]
-        if pd.isna(resp) or str(resp).strip() == "" or str(resp).strip().lower() == "n/a":
-            resp = "none"
-        else:
-            resp = str(resp).strip().lower()
-        trial_to_button[trial] = resp
+        resp = str(resp).strip().lower()
+        trial_to_button[trial] = resp # some trials may not have a resp column, will later be assigned a 'none'
 
     return trial_to_button
 
@@ -144,10 +123,7 @@ def build_imagewise_patterns(
 
     Returns
     -------
-    patterns : np.ndarray, shape (n_samples, n_vox)
     run_ids : np.ndarray, shape (n_samples,)
-    cond_ids : np.ndarray, shape (n_samples,)
-        Integer indices into canonical sample label order.
     button_labels : np.ndarray, shape (n_samples,)
         Categorical labels like 'left', 'right', 'none'
     sample_labels : np.ndarray, shape (n_samples,)
@@ -158,15 +134,15 @@ def build_imagewise_patterns(
     if button_scope not in ("both_images", "second_image_only"):
         raise ValueError("button_scope must be 'both_images' or 'second_image_only'")
 
+    # all 24 possible labels (len: 24)
     sample_labels_order = [f"{c}_img1" for c in BASE_CONDITION_ORDER] + [
         f"{c}_img2" for c in BASE_CONDITION_ORDER
-    ]
+    ] 
+    # mapping from label to 0,...,23
     sample_index = {name: idx for idx, name in enumerate(sample_labels_order)}
 
-    patterns_list = []
     img_list = []
     run_ids = []
-    cond_ids = []
     button_labels = []
     sample_labels = []
 
@@ -233,22 +209,17 @@ def build_imagewise_patterns(
             else:
                 button_label = trial_button
 
-            arr3 = imgs[idx].get_fdata()
-            patterns_list.append(arr3.ravel())
             img_list.append(imgs[idx])
             run_ids.append(run)
-            cond_ids.append(sample_index[sample_label])
             button_labels.append(button_label)
             sample_labels.append(sample_label)
 
-    if len(patterns_list) == 0:
+    if len(img_list) == 0:
         raise ValueError("No image-wise samples were found.")
 
-    patterns = np.vstack(patterns_list)
     run_ids = np.asarray(run_ids, dtype=int)
-    cond_ids = np.asarray(cond_ids, dtype=int)
     button_labels = np.asarray(button_labels, dtype=object)
     sample_labels = np.asarray(sample_labels, dtype=object)
 
-    return patterns, run_ids, cond_ids, button_labels, sample_labels, img_list
+    return run_ids, button_labels, sample_labels, img_list
     

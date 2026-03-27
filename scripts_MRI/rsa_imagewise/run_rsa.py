@@ -51,7 +51,6 @@ def main():
             "rsa_maps",
             "probe_imagewise",
             args.session,
-            "input-beta",
         )
 
     print("=" * 80)
