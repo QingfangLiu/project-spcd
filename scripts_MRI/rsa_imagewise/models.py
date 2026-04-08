@@ -30,9 +30,9 @@ def condition_to_group(condition: str) -> str:
         raise KeyError(f"Unknown condition: {condition}")
 
 
-def create_identity_rdm(sample_labels) -> np.ndarray:
+def create_odor_group_rdm(sample_labels) -> np.ndarray:
     """
-    Identity model for image-wise samples:
+    Odor-group model for image-wise samples:
     0 within odor-group, 1 across odor-groups.
     """
     groups = np.array(
@@ -40,6 +40,38 @@ def create_identity_rdm(sample_labels) -> np.ndarray:
         dtype=object,
     )
     rdm = (groups[:, None] != groups[None, :]).astype(float)
+    np.fill_diagonal(rdm, 0.0)
+    return rdm
+
+
+def create_conditioning_rdm(sample_labels) -> np.ndarray:
+    """
+    Conditioning-status model:
+    0 within conditioning class, 1 across conditioning classes.
+
+    Preconditioned: A*, C*
+    Conditioned: B*, D*
+    """
+    base_conditions = np.array([base_condition(lbl) for lbl in sample_labels], dtype=object)
+    conditioning_class = np.array(
+        [
+            "preconditioned" if cond.startswith(("A", "C")) else "conditioned"
+            for cond in base_conditions
+        ],
+        dtype=object,
+    )
+    rdm = (conditioning_class[:, None] != conditioning_class[None, :]).astype(float)
+    np.fill_diagonal(rdm, 0.0)
+    return rdm
+
+
+def create_image_identity_rdm(sample_labels) -> np.ndarray:
+    """
+    Exact cue-image identity model.
+    0 for the same image label (e.g. A11_img1 vs A11_img1), 1 otherwise.
+    """
+    labels = np.array(sample_labels, dtype=object)
+    rdm = (labels[:, None] != labels[None, :]).astype(float)
     np.fill_diagonal(rdm, 0.0)
     return rdm
 
@@ -96,7 +128,6 @@ def create_button_side_rdm(button_labels):
 
     np.fill_diagonal(rdm, 0.0)
     return rdm
-
 
 
 

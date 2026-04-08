@@ -3,15 +3,15 @@
 %
 % INPUT layout:
 %   <base_dir>/probe_imagewise/<session>/<input-tag>/
-%       sub-01_model-identity_buttonscope-both_images_radius-8.0mm.nii.gz
+%       sub-01_model-odor_group_buttonscope-both_images_radius-8.0mm.nii.gz
 %       ...
 %
 % OUTPUT layout:
 %   <base_dir>/probe_imagewise/<session>/<input-tag>/group_tmaps/
-%       group_model-identity_buttonscope-both_images_radius-8.0mm.nii.gz
+%       group_model-odor_group_buttonscope-both_images_radius-8.0mm.nii.gz
 %
 %   <base_dir>/probe_imagewise/collapsed/<input-tag>/group_tmaps/
-%       group_model-identity_buttonscope-both_images_radius-8.0mm.nii.gz
+%       group_model-odor_group_buttonscope-both_images_radius-8.0mm.nii.gz
 %
 % Requires SPM12 on MATLAB path.
 
@@ -24,7 +24,7 @@ analysis_subfolder = 'probe_imagewise';
 sessions = {'premeal', 'postmeal'};
 inputs   = {'input-beta'};
 
-models = {'identity', 'button_presence', 'button_side'};
+models = {'odor_group', 'conditioning', 'image_identity', 'button_presence', 'button_side'};
 button_scopes = {'both_images', 'second_image_only'};
 
 radius_mm  = 8.0;

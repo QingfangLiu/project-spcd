@@ -4,7 +4,13 @@ import numpy as np
 from nilearn.image import concat_imgs, new_img_like, load_img
 from .io_imagewise import build_imagewise_patterns
 from .estimator import SingleModelRSA
-from .models import create_identity_rdm, create_button_presence_rdm, create_button_side_rdm
+from .models import (
+    create_odor_group_rdm,
+    create_conditioning_rdm,
+    create_image_identity_rdm,
+    create_button_presence_rdm,
+    create_button_side_rdm,
+)
 
 
 def searchlight_rsa_single_subject(
@@ -38,12 +44,16 @@ def searchlight_rsa_single_subject(
     ):
         raise ValueError("Loader output lengths do not match number of image samples.")
 
-    identity_rdm = create_identity_rdm(sample_labels)
+    odor_group_rdm = create_odor_group_rdm(sample_labels)
+    conditioning_rdm = create_conditioning_rdm(sample_labels)
+    image_identity_rdm = create_image_identity_rdm(sample_labels)
     button_presence_rdm = create_button_presence_rdm(button_labels)
     button_side_rdm = create_button_side_rdm(button_labels)
 
     model_rdms = {
-        "identity": identity_rdm,
+        "odor_group": odor_group_rdm,
+        "conditioning": conditioning_rdm,
+        "image_identity": image_identity_rdm,
         "button_presence": button_presence_rdm,
         "button_side": button_side_rdm,
     }
@@ -59,7 +69,7 @@ def searchlight_rsa_single_subject(
     rsa_maps = {}
     y_dummy = np.arange(n_samples)
 
-    for target_name in ["identity", "button_presence", "button_side"]:
+    for target_name in model_rdms.keys():
         print(f"Running searchlight for target regressor: {target_name}")
 
         estimator = SingleModelRSA(

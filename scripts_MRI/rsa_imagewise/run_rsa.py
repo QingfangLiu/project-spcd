@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Image-wise RSA with identity model + button nuisance.
+Image-wise RSA with cue/image models + button nuisance.
 
 Usage:
     python -m rsa_imagewise.run_rsa \
@@ -20,7 +20,7 @@ from .save_maps import save_rsa_maps
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run image-wise searchlight RSA (identity model + button nuisance)"
+        description="Run image-wise searchlight RSA (odor/image/conditioning models + button nuisance)"
     )
     parser.add_argument("--sub", type=str, required=True, help="Subject ID (e.g., sub-01)")
     parser.add_argument("--session", type=str, choices=["premeal", "postmeal"], required=True, help="Session to analyze")
