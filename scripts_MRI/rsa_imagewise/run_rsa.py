@@ -14,7 +14,7 @@ import argparse
 import os
 import sys
 
-from .searchlight import searchlight_rsa_single_subject
+from .searchlight import searchlight_rsa_single_subject, MODEL_NAMES
 
 
 def main():
@@ -38,6 +38,13 @@ def main():
         "--center_within_run",
         action="store_true",
         help="Center patterns within each run before correlation RSA",
+    )
+    parser.add_argument(
+        "--target",
+        type=str,
+        choices=MODEL_NAMES,
+        default=None,
+        help="Run only one target regressor map while still controlling for all model RDMs",
     )
 
     args = parser.parse_args()
@@ -64,10 +71,11 @@ def main():
     print(f"N jobs:             {args.n_jobs}")
     print(f"Button scope:       {args.button_scope}")
     print(f"Center within run:   {args.center_within_run}")
+    print(f"Target:             {args.target or 'all'}")
     print("=" * 80)
 
     try:
-        rsa_maps = searchlight_rsa_single_subject(
+        searchlight_rsa_single_subject(
             sub=args.sub,
             base_dir=args.base_dir,
             session_folder=session_folder,
@@ -77,6 +85,7 @@ def main():
             button_scope=args.button_scope,
             center_within_run=args.center_within_run,
             output_dir=args.output_dir,
+            targets=[args.target] if args.target is not None else None,
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")

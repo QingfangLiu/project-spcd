@@ -8,6 +8,14 @@ Create a Biowulf swarm file for the current image-wise RSA pipeline.
 import argparse
 from pathlib import Path
 
+MODEL_NAMES = (
+    "odor_group",
+    "conditioning",
+    "image_identity",
+    "button_presence",
+    "button_side",
+)
+
 
 def discover_subjects(base_dir, session):
     glm_dir = Path(base_dir) / "GLM" / f"{session}_trialwise_2mm"
@@ -38,6 +46,13 @@ def main():
         default="both_images",
         choices=["both_images", "second_image_only"],
     )
+    ap.add_argument(
+        "--targets",
+        nargs="+",
+        choices=MODEL_NAMES,
+        default=None,
+        help="If provided, write one swarm line per target regressor",
+    )
     ap.add_argument("--center_within_run", action="store_true")
 
     args = ap.parse_args()
@@ -54,22 +69,26 @@ def main():
     with open(args.out, "w") as f:
         for sub in subs:
             for sess in args.sessions:
-                cmd = [
-                    f"python",
-                    "-m",
-                    module_name,
-                    "--sub", sub,
-                    "--session", sess,
-                    "--base_dir", args.base_dir,
-                    "--radius", str(args.radius),
-                    "--n_jobs", str(args.n_jobs),
-                    "--button_scope", args.button_scope,
-                ]
-                if args.center_within_run:
-                    cmd.append("--center_within_run")
+                job_targets = args.targets if args.targets is not None else [None]
+                for target in job_targets:
+                    cmd = [
+                        f"python",
+                        "-m",
+                        module_name,
+                        "--sub", sub,
+                        "--session", sess,
+                        "--base_dir", args.base_dir,
+                        "--radius", str(args.radius),
+                        "--n_jobs", str(args.n_jobs),
+                        "--button_scope", args.button_scope,
+                    ]
+                    if target is not None:
+                        cmd.extend(["--target", target])
+                    if args.center_within_run:
+                        cmd.append("--center_within_run")
 
-                f.write(" ".join(cmd) + "\n")
-                n_lines += 1
+                    f.write(" ".join(cmd) + "\n")
+                    n_lines += 1
 
     print(f"Wrote {n_lines} swarm lines to: {args.out}")
 

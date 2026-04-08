@@ -21,6 +21,17 @@ python -m rsa_imagewise.run_rsa \
   --button_scope both_images
 ```
 
+To run a single output map while still fitting the full multiple-regression RSA model:
+
+```bash
+python -m rsa_imagewise.run_rsa \
+  --sub sub-01 \
+  --session premeal \
+  --base_dir /path/to/SPCD_data \
+  --button_scope both_images \
+  --target image_identity
+```
+
 ## Expected files
 The code expects these fixed paths under `base_dir`:
 - `GLM/premeal_trialwise_2mm/sub-01/sub-01_premeal_run-1_beta_index.csv`
@@ -41,3 +52,6 @@ One file per model regressor:
 - `sub-01_model-image_identity_buttonscope-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-button_presence_buttonscope-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-button_side_buttonscope-<...>_radius-<...>mm.nii.gz`
+
+For Biowulf, `make_swarm_imagewise.py --targets odor_group conditioning image_identity button_presence button_side`
+will write one swarm line per subject/session/target.

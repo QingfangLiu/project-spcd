@@ -13,6 +13,14 @@ from .models import (
 )
 from .save_maps import save_single_rsa_map
 
+MODEL_NAMES = (
+    "odor_group",
+    "conditioning",
+    "image_identity",
+    "button_presence",
+    "button_side",
+)
+
 
 def searchlight_rsa_single_subject(
     sub: str,
@@ -24,6 +32,7 @@ def searchlight_rsa_single_subject(
     button_scope: str = "both_images",
     center_within_run: bool = False,
     output_dir: str | None = None,
+    targets: list[str] | tuple[str, ...] | None = None,
 ):
     from nilearn.decoding import SearchLight
 
@@ -60,6 +69,13 @@ def searchlight_rsa_single_subject(
         "button_side": button_side_rdm,
     }
 
+    if targets is None:
+        targets = list(MODEL_NAMES)
+    else:
+        invalid_targets = sorted(set(targets) - set(MODEL_NAMES))
+        if invalid_targets:
+            raise ValueError(f"Unknown target regressor(s): {invalid_targets}")
+
     img_4d = concat_imgs(img_list)
 
     mask_file = os.path.join(base_dir, "masks", "gm_0.1.nii")
@@ -71,7 +87,7 @@ def searchlight_rsa_single_subject(
     rsa_maps = {}
     y_dummy = np.arange(n_samples)
 
-    for target_name in model_rdms.keys():
+    for target_name in targets:
         print(f"Running searchlight for target regressor: {target_name}")
 
         estimator = SingleModelRSA(
