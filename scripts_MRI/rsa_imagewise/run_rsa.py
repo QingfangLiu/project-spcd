@@ -15,7 +15,6 @@ import os
 import sys
 
 from .searchlight import searchlight_rsa_single_subject
-from .save_maps import save_rsa_maps
 
 
 def main():
@@ -77,21 +76,13 @@ def main():
             n_jobs=args.n_jobs,
             button_scope=args.button_scope,
             center_within_run=args.center_within_run,
+            output_dir=args.output_dir,
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
-
-    print("\nSaving results...")
-    save_rsa_maps(
-        sub=args.sub,
-        rsa_maps=rsa_maps,
-        output_dir=args.output_dir,
-        radius=args.radius,
-        button_scope=args.button_scope,
-    )
 
     print("\n" + "=" * 80)
     print("RSA analysis complete!")

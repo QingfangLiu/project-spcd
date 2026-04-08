@@ -11,6 +11,7 @@ from .models import (
     create_button_presence_rdm,
     create_button_side_rdm,
 )
+from .save_maps import save_single_rsa_map
 
 
 def searchlight_rsa_single_subject(
@@ -22,6 +23,7 @@ def searchlight_rsa_single_subject(
     n_jobs: int,
     button_scope: str = "both_images",
     center_within_run: bool = False,
+    output_dir: str | None = None,
 ):
     from nilearn.decoding import SearchLight
 
@@ -89,7 +91,18 @@ def searchlight_rsa_single_subject(
         )
 
         searchlight.fit(img_4d, y_dummy)
-        rsa_maps[target_name] = new_img_like(mask_img, searchlight.scores_)
+        rsa_map = new_img_like(mask_img, searchlight.scores_)
+        rsa_maps[target_name] = rsa_map
+
+        if output_dir is not None:
+            save_single_rsa_map(
+                sub=sub,
+                model_name=target_name,
+                rsa_map=rsa_map,
+                output_dir=output_dir,
+                radius=radius,
+                button_scope=button_scope,
+            )
 
     return rsa_maps
     
