@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from typing import Optional, Sequence
 
 from nilearn.image import concat_imgs, new_img_like, load_img
 from .io_imagewise import build_imagewise_patterns
@@ -31,8 +32,8 @@ def searchlight_rsa_single_subject(
     n_jobs: int,
     button_scope: str = "both_images",
     center_within_run: bool = False,
-    output_dir: str | None = None,
-    targets: list[str] | tuple[str, ...] | None = None,
+    output_dir: Optional[str] = None,
+    targets: Optional[Sequence[str]] = None,
 ):
     from nilearn.decoding import SearchLight
 
