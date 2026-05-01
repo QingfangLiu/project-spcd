@@ -35,6 +35,14 @@ def main():
         help="Apply trial button label to both image presentations or only the second image",
     )
     parser.add_argument(
+        "--cue_subset",
+        type=str,
+        choices=["all", "conditioned_only", "preconditioned_only"],
+        default="all",
+        help="Restrict RSA samples to all cues, conditioned cues (B/D), or preconditioned cues (A/C)",
+    )
+
+    parser.add_argument(
         "--center_within_run",
         action="store_true",
         help="Center patterns within each run before correlation RSA",
@@ -70,6 +78,7 @@ def main():
     print(f"Radius:             {args.radius} mm")
     print(f"N jobs:             {args.n_jobs}")
     print(f"Button scope:       {args.button_scope}")
+    print(f"Cue subset:         {args.cue_subset}")
     print(f"Center within run:   {args.center_within_run}")
     print(f"Target:             {args.target or 'all'}")
     print("=" * 80)
@@ -83,6 +92,7 @@ def main():
             radius=args.radius,
             n_jobs=args.n_jobs,
             button_scope=args.button_scope,
+            cue_subset=args.cue_subset,
             center_within_run=args.center_within_run,
             output_dir=args.output_dir,
             targets=[args.target] if args.target is not None else None,
