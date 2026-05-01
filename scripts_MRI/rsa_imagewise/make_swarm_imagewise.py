@@ -53,6 +53,12 @@ def main():
         default=None,
         help="If provided, write one swarm line per target regressor",
     )
+    ap.add_argument(
+        "--cue_subset",
+        default="all",
+        choices=["all", "conditioned_only", "preconditioned_only"],
+        help="Restrict RSA samples to all cues, conditioned cues (B/D), or preconditioned cues (A/C)",
+    )
     ap.add_argument("--center_within_run", action="store_true")
 
     args = ap.parse_args()
@@ -62,8 +68,19 @@ def main():
     else:
         subs = sorted(args.subjects)
 
-    package_parent = Path(args.base_dir)
     module_name = f"{args.package_name}.run_rsa"
+
+    available_targets = list(MODEL_NAMES)
+    if args.cue_subset in ("conditioned_only", "preconditioned_only"):
+        available_targets = [t for t in available_targets if t != "conditioning"]
+
+    if args.targets is not None:
+        invalid_targets = sorted(set(args.targets) - set(available_targets))
+        if invalid_targets:
+            raise ValueError(
+                f"Invalid target(s) for cue_subset={args.cue_subset}: {invalid_targets}. "
+                f"Available targets: {available_targets}"
+            )
 
     n_lines = 0
     with open(args.out, "w") as f:
@@ -81,6 +98,7 @@ def main():
                         "--radius", str(args.radius),
                         "--n_jobs", str(args.n_jobs),
                         "--button_scope", args.button_scope,
+                        "--cue_subset", args.cue_subset,
                     ]
                     if target is not None:
                         cmd.extend(["--target", target])
