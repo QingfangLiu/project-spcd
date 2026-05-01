@@ -12,12 +12,31 @@ This pipeline runs searchlight RSA on **image-wise betas** and includes **button
 - `both_images`: apply the trial button to both image presentations
 - `second_image_only`: apply the button only to `img_index == 2`
 
+## Cue subset options
+- `all`: include all cues
+- `conditioned_only`: include only conditioned cues (`B*`, `D*`)
+- `preconditioned_only`: include only preconditioned cues (`A*`, `C*`)
+
+When using a single-class subset (`conditioned_only` or `preconditioned_only`),
+`conditioning` is automatically removed from the multiple-regression RSA model because it has no variance.
+
 ## Run
 ```bash
 python -m rsa_imagewise.run_rsa \
   --sub sub-01 \
   --session premeal \
   --base_dir /path/to/SPCD_data \
+  --button_scope both_images
+```
+
+Conditioned-only example:
+
+```bash
+python -m rsa_imagewise.run_rsa \
+  --sub sub-01 \
+  --session premeal \
+  --base_dir /path/to/SPCD_data \
+  --cue_subset conditioned_only \
   --button_scope both_images
 ```
 
@@ -47,11 +66,11 @@ The code expects these fixed paths under `base_dir`:
 
 ## Output
 One file per model regressor:
-- `sub-01_model-odor_group_buttonscope-<...>_radius-<...>mm.nii.gz`
-- `sub-01_model-conditioning_buttonscope-<...>_radius-<...>mm.nii.gz`
-- `sub-01_model-image_identity_buttonscope-<...>_radius-<...>mm.nii.gz`
-- `sub-01_model-button_presence_buttonscope-<...>_radius-<...>mm.nii.gz`
-- `sub-01_model-button_side_buttonscope-<...>_radius-<...>mm.nii.gz`
+- `sub-01_model-odor_group_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
+- `sub-01_model-conditioning_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
+- `sub-01_model-image_identity_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
+- `sub-01_model-button_presence_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
+- `sub-01_model-button_side_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 
 For Biowulf, `make_swarm_imagewise.py --targets odor_group conditioning image_identity button_presence button_side`
 will write one swarm line per subject/session/target.

@@ -31,6 +31,7 @@ def searchlight_rsa_single_subject(
     radius: float,
     n_jobs: int,
     button_scope: str = "both_images",
+    cue_subset: str = "all",
     center_within_run: bool = False,
     output_dir: Optional[str] = None,
     targets: Optional[Sequence[str]] = None,
@@ -43,6 +44,7 @@ def searchlight_rsa_single_subject(
         session_folder=session_folder,
         session_tag=session_tag,
         button_scope=button_scope,
+        cue_subset=cue_subset,
     )
 
     n_samples = len(img_list)
@@ -70,10 +72,16 @@ def searchlight_rsa_single_subject(
         "button_side": button_side_rdm,
     }
 
+    if cue_subset in ("conditioned_only", "preconditioned_only"):
+        # In single-conditioning-class subsets, conditioning has no variance and is dropped.
+        model_rdms.pop("conditioning", None)
+
+    available_model_names = tuple(model_rdms.keys())
+
     if targets is None:
-        targets = list(MODEL_NAMES)
+        targets = list(available_model_names)
     else:
-        invalid_targets = sorted(set(targets) - set(MODEL_NAMES))
+        invalid_targets = sorted(set(targets) - set(available_model_names))
         if invalid_targets:
             raise ValueError(f"Unknown target regressor(s): {invalid_targets}")
 
@@ -118,7 +126,7 @@ def searchlight_rsa_single_subject(
                 rsa_map=rsa_map,
                 output_dir=output_dir,
                 radius=radius,
-                button_scope=button_scope,
+                button_scope=f"{button_scope}_subset-{cue_subset}",
             )
 
     return rsa_maps

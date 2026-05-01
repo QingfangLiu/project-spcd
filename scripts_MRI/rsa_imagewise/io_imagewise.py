@@ -110,6 +110,7 @@ def build_imagewise_patterns(
     session_folder: str,
     session_tag: str,
     button_scope: str = "both_images",
+    cue_subset: str = "all",
 ):
     """
     Build image-wise RSA inputs.
@@ -133,6 +134,9 @@ def build_imagewise_patterns(
     """
     if button_scope not in ("both_images", "second_image_only"):
         raise ValueError("button_scope must be 'both_images' or 'second_image_only'")
+
+    if cue_subset not in ("all", "conditioned_only", "preconditioned_only"):
+        raise ValueError("cue_subset must be one of: all, conditioned_only, preconditioned_only")
 
     # all 24 possible labels (len: 24)
     sample_labels_order = [f"{c}_img1" for c in BASE_CONDITION_ORDER] + [
@@ -187,6 +191,11 @@ def build_imagewise_patterns(
                 continue
 
             base_cond = condition_map[cue_key]
+
+            if cue_subset == "conditioned_only" and not base_cond.startswith(("B", "D")):
+                continue
+            if cue_subset == "preconditioned_only" and not base_cond.startswith(("A", "C")):
+                continue
             img_index = int(row["img_index"])
             if img_index not in (1, 2):
                 raise ValueError(
