@@ -44,6 +44,66 @@ def create_odor_group_rdm(sample_labels) -> np.ndarray:
     return rdm
 
 
+def create_pleasantness_rdm(
+    sample_labels,
+    ratings_by_group,
+    normalize: bool = False,
+) -> np.ndarray:
+    """
+    Pleasantness-distance model for image-wise samples.
+
+    Parameters
+    ----------
+    sample_labels : sequence of str
+        Image-wise labels such as 'A11_img1'.
+    ratings_by_group : dict
+        Mapping with keys {'odor1', 'odor2', 'clean'} and numeric values.
+    normalize : bool, default=False
+        If True, z-score the three group ratings before expanding to samples.
+
+    Returns
+    -------
+    np.ndarray
+        Pairwise absolute pleasantness-distance RDM aligned to sample_labels.
+    """
+    required_groups = {"odor1", "odor2", "clean"}
+    missing_groups = required_groups - set(ratings_by_group.keys())
+    if missing_groups:
+        raise ValueError(
+            "ratings_by_group is missing required keys: "
+            f"{sorted(missing_groups)}"
+        )
+
+    group_values = {
+        group: float(ratings_by_group[group])
+        for group in ("odor1", "odor2", "clean")
+    }
+
+    if normalize:
+        vals = np.array(list(group_values.values()), dtype=float)
+        std = vals.std(ddof=0)
+        if std > 0:
+            vals = (vals - vals.mean()) / std
+        else:
+            vals = vals - vals.mean()
+        group_values = {
+            group: float(val)
+            for group, val in zip(("odor1", "odor2", "clean"), vals)
+        }
+
+    sample_values = np.array(
+        [
+            group_values[condition_to_group(base_condition(lbl))]
+            for lbl in sample_labels
+        ],
+        dtype=float,
+    )
+
+    rdm = np.abs(sample_values[:, None] - sample_values[None, :]).astype(float)
+    np.fill_diagonal(rdm, 0.0)
+    return rdm
+
+
 def create_conditioning_rdm(sample_labels) -> np.ndarray:
     """
     Conditioning-status model:
@@ -128,7 +188,6 @@ def create_button_side_rdm(button_labels):
 
     np.fill_diagonal(rdm, 0.0)
     return rdm
-
 
 
 

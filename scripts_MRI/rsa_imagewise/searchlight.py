@@ -7,6 +7,7 @@ from .io_imagewise import build_imagewise_patterns
 from .estimator import SingleModelRSA
 from .models import (
     create_odor_group_rdm,
+    create_pleasantness_rdm,
     create_conditioning_rdm,
     create_image_identity_rdm,
     create_button_presence_rdm,
@@ -16,6 +17,7 @@ from .save_maps import save_single_rsa_map
 
 MODEL_NAMES = (
     "odor_group",
+    "pleasantness",
     "conditioning",
     "image_identity",
     "button_presence",
@@ -35,6 +37,7 @@ def searchlight_rsa_single_subject(
     center_within_run: bool = False,
     output_dir: Optional[str] = None,
     targets: Optional[Sequence[str]] = None,
+    ratings_by_group: Optional[dict] = None,
 ):
     from nilearn.decoding import SearchLight
 
@@ -71,6 +74,13 @@ def searchlight_rsa_single_subject(
         "button_presence": button_presence_rdm,
         "button_side": button_side_rdm,
     }
+
+    if ratings_by_group is not None:
+        pleasantness_rdm = create_pleasantness_rdm(
+            sample_labels=sample_labels,
+            ratings_by_group=ratings_by_group,
+        )
+        model_rdms["pleasantness"] = pleasantness_rdm
 
     if cue_subset in ("conditioned_only", "preconditioned_only"):
         # In single-conditioning-class subsets, conditioning has no variance and is dropped.
