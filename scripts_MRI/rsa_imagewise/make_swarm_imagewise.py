@@ -10,6 +10,7 @@ from pathlib import Path
 
 MODEL_NAMES = (
     "odor_group",
+    "pleasantness",
     "conditioning",
     "image_identity",
     "button_presence",
@@ -28,6 +29,12 @@ def discover_subjects(base_dir, session):
     if not subs:
         raise RuntimeError(f"No subjects found under: {glm_dir}")
     return subs
+
+
+def has_subject_pleasantness_summary(sub: str) -> bool:
+    project_root = Path(__file__).resolve().parents[2]
+    summary_path = project_root / "beh_processed_subs" / sub / "pleasantness_summary.csv"
+    return summary_path.is_file()
 
 
 def main():
@@ -88,6 +95,10 @@ def main():
             for sess in args.sessions:
                 job_targets = args.targets if args.targets is not None else [None]
                 for target in job_targets:
+                    if target == "pleasantness" and not has_subject_pleasantness_summary(sub):
+                        print(f"Skipping {sub} {sess} target=pleasantness (missing pleasantness_summary.csv)")
+                        continue
+
                     cmd = [
                         f"python",
                         "-m",

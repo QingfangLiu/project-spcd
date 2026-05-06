@@ -15,6 +15,7 @@ import os
 import sys
 
 from .searchlight import searchlight_rsa_single_subject, MODEL_NAMES
+from .ratings import load_subject_pleasantness_ratings
 
 
 def main():
@@ -25,6 +26,12 @@ def main():
     parser.add_argument("--session", type=str, choices=["premeal", "postmeal"], required=True, help="Session to analyze")
     parser.add_argument("--base_dir", type=str, required=True, help="Base directory containing GLM and nii folders")
     parser.add_argument("--output_dir", type=str, default=None, help="Output directory")
+    parser.add_argument(
+        "--ratings_file",
+        type=str,
+        default=None,
+        help="Optional CSV with subject pre/post pleasantness ratings",
+    )
     parser.add_argument("--radius", type=float, default=8.0, help="Searchlight radius in mm")
     parser.add_argument("--n_jobs", type=int, default=-1, help="Number of parallel jobs")
     parser.add_argument(
@@ -83,6 +90,23 @@ def main():
     print(f"Target:             {args.target or 'all'}")
     print("=" * 80)
 
+    ratings_by_group = load_subject_pleasantness_ratings(
+        sub=args.sub,
+        session_tag=args.session,
+        ratings_file=args.ratings_file,
+    )
+    print(
+        "Pleasantness model: ",
+        "enabled" if ratings_by_group is not None else "disabled",
+        sep="",
+    )
+
+    if args.target == "pleasantness" and ratings_by_group is None:
+        raise ValueError(
+            "Target 'pleasantness' requires subject pleasantness ratings. "
+            "Provide --ratings_file or add the placeholder ratings CSV."
+        )
+
     try:
         searchlight_rsa_single_subject(
             sub=args.sub,
@@ -96,6 +120,7 @@ def main():
             center_within_run=args.center_within_run,
             output_dir=args.output_dir,
             targets=[args.target] if args.target is not None else None,
+            ratings_by_group=ratings_by_group,
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")
