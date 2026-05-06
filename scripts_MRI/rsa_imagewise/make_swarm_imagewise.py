@@ -8,6 +8,8 @@ Create a Biowulf swarm file for the current image-wise RSA pipeline.
 import argparse
 from pathlib import Path
 
+import pandas as pd
+
 MODEL_NAMES = (
     "odor_group",
     "pleasantness",
@@ -31,10 +33,33 @@ def discover_subjects(base_dir, session):
     return subs
 
 
-def has_subject_pleasantness_summary(sub: str) -> bool:
+def default_ratings_file() -> Path:
     project_root = Path(__file__).resolve().parents[2]
-    summary_path = project_root / "beh_processed_subs" / sub / "pleasantness_summary.csv"
-    return summary_path.is_file()
+    return project_root / "beh_processed_subs" / "compiled_pleasantness_ratings.csv"
+
+
+def load_subjects_with_pleasantness(ratings_file: Path) -> set[str]:
+    if not ratings_file.is_file():
+        raise FileNotFoundError(f"Ratings file not found: {ratings_file}")
+
+    df = pd.read_csv(ratings_file)
+    required_cols = {
+        "sub",
+        "pre_odor1",
+        "pre_odor2",
+        "pre_clean",
+        "post_odor1",
+        "post_odor2",
+        "post_clean",
+    }
+    missing_cols = required_cols - set(df.columns)
+    if missing_cols:
+        raise ValueError(
+            f"Ratings file is missing required columns: {sorted(missing_cols)}"
+        )
+
+    complete_mask = df[list(required_cols - {"sub"})].notna().all(axis=1)
+    return set(df.loc[complete_mask, "sub"].astype(str))
 
 
 def main():
@@ -42,6 +67,12 @@ def main():
     ap.add_argument("--base_dir", default="/data/liuq13/SPCD_RSA_imagewise_subset")
     ap.add_argument("--package_name", default="rsa_imagewise")
     ap.add_argument("--out", default="imagewise_rsa.swarm")
+    ap.add_argument(
+        "--ratings_file",
+        type=Path,
+        default=default_ratings_file(),
+        help="Compiled pleasantness ratings CSV to pass to RSA jobs",
+    )
 
     ap.add_argument("--sessions", nargs="+", default=["premeal", "postmeal"])
     ap.add_argument("--subjects", nargs="+", default=None)
@@ -76,6 +107,13 @@ def main():
         subs = sorted(args.subjects)
 
     module_name = f"{args.package_name}.run_rsa"
+    pleasantness_subjects = None
+
+    needs_pleasantness = (
+        args.targets is None or "pleasantness" in args.targets
+    )
+    if needs_pleasantness:
+        pleasantness_subjects = load_subjects_with_pleasantness(args.ratings_file)
 
     available_targets = list(MODEL_NAMES)
     if args.cue_subset in ("conditioned_only", "preconditioned_only"):
@@ -95,8 +133,15 @@ def main():
             for sess in args.sessions:
                 job_targets = args.targets if args.targets is not None else [None]
                 for target in job_targets:
-                    if target == "pleasantness" and not has_subject_pleasantness_summary(sub):
-                        print(f"Skipping {sub} {sess} target=pleasantness (missing pleasantness_summary.csv)")
+                    if (
+                        target == "pleasantness"
+                        and pleasantness_subjects is not None
+                        and sub not in pleasantness_subjects
+                    ):
+                        print(
+                            f"Skipping {sub} {sess} target=pleasantness "
+                            f"(missing compiled ratings in {args.ratings_file})"
+                        )
                         continue
 
                     cmd = [
@@ -110,6 +155,7 @@ def main():
                         "--n_jobs", str(args.n_jobs),
                         "--button_scope", args.button_scope,
                         "--cue_subset", args.cue_subset,
+                        "--ratings_file", str(args.ratings_file),
                     ]
                     if target is not None:
                         cmd.extend(["--target", target])
