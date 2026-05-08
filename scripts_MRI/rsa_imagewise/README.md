@@ -94,11 +94,11 @@ odor_value RDM.
 
 ## Output
 One file per model regressor:
-- `sub-01_model-odor_value_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
-- `sub-01_model-cue_type_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
-- `sub-01_model-image_identity_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
-- `sub-01_model-button_presence_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
-- `sub-01_model-button_side_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
+- `sub-01_model-odor_value_buttonscope-<...>_subset-<...>.nii.gz`
+- `sub-01_model-cue_type_buttonscope-<...>_subset-<...>.nii.gz`
+- `sub-01_model-image_identity_buttonscope-<...>_subset-<...>.nii.gz`
+- `sub-01_model-button_presence_buttonscope-<...>_subset-<...>.nii.gz`
+- `sub-01_model-button_side_buttonscope-<...>_subset-<...>.nii.gz`
 
 ## Biowulf
 

@@ -29,9 +29,6 @@ button_scopes = {'second_image_only'};
 %   subset-preconditioned_only = preconditioned cue maps
 subset_tags = {'subset-all', 'subset-conditioned_only', 'subset-preconditioned_only'};
 
-radius_mm  = 8.0;
-radius_tag = sprintf('radius-%.1fmm', radius_mm);
-
 fwhm = 6; % smoothing kernel in mm
 
 mask_file = '/Users/liuq13/SPCD_data/masks/gm_0.1.nii';
@@ -83,8 +80,8 @@ for si = 1:numel(sessions)
             for bsi = 1:numel(button_scopes)
                 buttonscope_tag = button_scopes{bsi};
 
-                pat = sprintf('sub-*_model-%s_buttonscope-%s%s_%s.nii.gz', ...
-                    model_tag, buttonscope_tag, subset_suffix, radius_tag);
+                pat = sprintf('sub-*_model-%s_buttonscope-%s%s.nii.gz', ...
+                    model_tag, buttonscope_tag, subset_suffix);
 
                 all_gz = dir(fullfile(input_dir, pat));
 
@@ -98,8 +95,8 @@ for si = 1:numel(sessions)
                     continue;
                 end
 
-                out_name = sprintf('group_model-%s_buttonscope-%s%s_%s.nii.gz', ...
-                    model_tag, buttonscope_tag, subset_suffix, radius_tag);
+                out_name = sprintf('group_model-%s_buttonscope-%s%s.nii.gz', ...
+                    model_tag, buttonscope_tag, subset_suffix);
 
                 out_path_gz = fullfile(out_dir_session_input, out_name);
 
@@ -276,8 +273,8 @@ for subseti = 1:numel(subset_tags)
         for bsi = 1:numel(button_scopes)
             buttonscope_tag = button_scopes{bsi};
 
-            pat = sprintf('sub-*_model-%s_buttonscope-%s%s_%s.nii.gz', ...
-                model_tag, buttonscope_tag, subset_suffix, radius_tag);
+            pat = sprintf('sub-*_model-%s_buttonscope-%s%s.nii.gz', ...
+                model_tag, buttonscope_tag, subset_suffix);
 
             pre_gz  = dir(fullfile(pre_dir, pat));
             post_gz = dir(fullfile(post_dir, pat));
@@ -332,8 +329,8 @@ for subseti = 1:numel(subset_tags)
                 continue;
             end
 
-            out_name = sprintf('group_model-%s_buttonscope-%s%s_%s.nii.gz', ...
-                model_tag, buttonscope_tag, subset_suffix, radius_tag);
+            out_name = sprintf('group_model-%s_buttonscope-%s%s.nii.gz', ...
+                model_tag, buttonscope_tag, subset_suffix);
 
             out_path_gz = fullfile(out_dir_collapsed_input, out_name);
 
@@ -389,8 +386,8 @@ for subseti = 1:numel(subset_tags)
 
                 Yavg = (Ypre + Ypost) ./ 2;
 
-                base_name = sprintf('%s_collapsed_model-%s_buttonscope-%s%s_%s', ...
-                    sid, model_tag, buttonscope_tag, subset_suffix, radius_tag);
+                base_name = sprintf('%s_collapsed_model-%s_buttonscope-%s%s', ...
+                    sid, model_tag, buttonscope_tag, subset_suffix);
 
                 masked_path = fullfile(spm_input_dir, ['c_' base_name '.nii']);
                 Vc = Vpre;

@@ -131,7 +131,6 @@ def searchlight_rsa_single_subject(
                 model_name=target_name,
                 rsa_map=rsa_map,
                 output_dir=output_dir,
-                radius=radius,
                 button_scope=f"{button_scope}_subset-{cue_subset}",
             )
 
