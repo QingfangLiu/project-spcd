@@ -35,9 +35,11 @@ When using a single-class subset (`conditioned_only` or `preconditioned_only`),
 
 In `both` mode, premeal and postmeal runs get distinct run IDs before the
 cross-run RSA mask is built. The `odor_value` model uses premeal ratings for
-premeal samples and postmeal ratings for postmeal samples. A `phase` RDM
-(`premeal` vs `postmeal`) is added as a nuisance model and is also available as
-an output target.
+premeal samples and postmeal ratings for postmeal samples. For `both`, the six
+subject-specific phase-by-odor ratings are z-scored together before distances
+are computed, preserving pre/post value changes while removing subject-level
+rating scale differences. A `phase` RDM (`premeal` vs `postmeal`) is added as a
+nuisance model and is also available as an output target.
 
 ## Run
 ```bash
@@ -96,7 +98,7 @@ If `--ratings_file` is not provided, the loader falls back to:
 - `beh_processed_subs/<sub>/pleasantness_summary.csv`
 
 ## Models
-- `odor_value`: subject- and session-specific odor-value-distance model derived from pleasantness ratings, with the three group ratings z-scored by default before distances are computed
+- `odor_value`: subject-specific odor-value-distance model derived from pleasantness ratings. For single-session runs, the three group ratings are z-scored within that session; for `--session both`, the six premeal/postmeal group ratings are z-scored together within subject before distances are computed
 - `cue_type`: preconditioned (`A`, `C`) vs conditioned (`B`, `D`)
 - `image_identity`: cue/image identity ignoring first-vs-second presentation position (`A11_img1` and `A11_img2` are treated as the same identity)
 - `phase`: premeal vs postmeal; only included when running `--session both`

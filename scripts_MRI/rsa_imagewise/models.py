@@ -91,23 +91,49 @@ def create_odor_value_rdm_by_phase(
     """
     Odor-value model for combined pre/post samples.
 
-    Ratings are normalized within each phase before expanding to samples,
-    matching the single-session odor_value behavior.
+    Ratings are normalized across all phase-by-odor values within subject
+    before expanding to samples. This preserves pre/post value changes while
+    still removing subject-level rating scale differences.
     """
     if len(sample_labels) != len(phase_labels):
         raise ValueError("sample_labels and phase_labels must have the same length")
 
-    group_values_by_phase = {
-        phase: _prepare_group_values(ratings_by_group, normalize=normalize)
-        for phase, ratings_by_group in ratings_by_phase.items()
-    }
+    phase_labels = [str(phase) for phase in phase_labels]
+    phase_order = list(dict.fromkeys(phase_labels))
 
-    missing_phases = set(phase_labels) - set(group_values_by_phase.keys())
+    missing_phases = set(phase_order) - set(ratings_by_phase.keys())
     if missing_phases:
         raise ValueError(
             "ratings_by_phase is missing required phase keys: "
             f"{sorted(missing_phases)}"
         )
+
+    group_values_by_phase = {
+        phase: _prepare_group_values(ratings_by_phase[phase], normalize=False)
+        for phase in phase_order
+    }
+
+    if normalize:
+        groups = ("odor1", "odor2", "clean")
+        vals = np.array(
+            [
+                group_values_by_phase[phase][group]
+                for phase in phase_order
+                for group in groups
+            ],
+            dtype=float,
+        )
+        std = vals.std(ddof=0)
+        if std > 0:
+            vals = (vals - vals.mean()) / std
+        else:
+            vals = vals - vals.mean()
+
+        idx = 0
+        for phase in phase_order:
+            for group in groups:
+                group_values_by_phase[phase][group] = float(vals[idx])
+                idx += 1
 
     sample_values = np.array(
         [
