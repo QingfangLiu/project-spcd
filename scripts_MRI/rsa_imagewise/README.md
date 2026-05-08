@@ -82,9 +82,9 @@ If `--ratings_file` is not provided, the loader falls back to:
 
 ## Models
 - `odor_group`: odor-group structure (`odor1`, `odor2`, `clean`)
-- `pleasantness`: subject- and session-specific pleasantness-distance model derived from odor ratings
+- `pleasantness`: subject- and session-specific pleasantness-distance model derived from odor ratings, with the three group ratings z-scored by default before distances are computed
 - `conditioning`: preconditioned (`A`, `C`) vs conditioned (`B`, `D`)
-- `image_identity`: exact cue-image identity at the `A11_img1` / `A11_img2` level
+- `image_identity`: cue/image identity ignoring first-vs-second presentation position (`A11_img1` and `A11_img2` are treated as the same identity)
 - `button_presence`: pressed vs none
 - `button_side`: left vs right, with `none` treated as different
 
