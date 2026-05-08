@@ -29,7 +29,7 @@ python -m rsa_imagewise.run_rsa \
   --button_scope both_images
 ```
 
-Pleasantness-target example:
+Odor-value target example:
 
 ```bash
 python -m rsa_imagewise.run_rsa \
@@ -38,7 +38,7 @@ python -m rsa_imagewise.run_rsa \
   --base_dir /path/to/SPCD_data \
   --button_scope both_images \
   --ratings_file /path/to/compiled_pleasantness_ratings.csv \
-  --target pleasantness
+  --target odor_value
 ```
 
 Conditioned-only example:
@@ -69,8 +69,8 @@ The code expects these fixed paths under `base_dir`:
 - `nii/sub-01/func_PAID/premeal/sub-01_task-premeal_run-1_events.tsv`
 - `masks/gm_0.1.nii`
 
-For the pleasantness model, the code can also take a compiled ratings CSV via
-`--ratings_file`. Expected columns:
+For the `odor_value` model, the code can also take a compiled pleasantness
+ratings CSV via `--ratings_file`. Expected columns:
 
 - `sub`
 - `pre_odor1`, `pre_odor2`, `pre_clean`
@@ -81,7 +81,7 @@ If `--ratings_file` is not provided, the loader falls back to:
 - `beh_processed_subs/<sub>/pleasantness_summary.csv`
 
 ## Models
-- `pleasantness`: subject- and session-specific pleasantness-distance model derived from odor ratings, with the three group ratings z-scored by default before distances are computed
+- `odor_value`: subject- and session-specific odor-value-distance model derived from pleasantness ratings, with the three group ratings z-scored by default before distances are computed
 - `cue_type`: preconditioned (`A`, `C`) vs conditioned (`B`, `D`)
 - `image_identity`: cue/image identity ignoring first-vs-second presentation position (`A11_img1` and `A11_img2` are treated as the same identity)
 - `button_presence`: pressed vs none
@@ -90,11 +90,11 @@ If `--ratings_file` is not provided, the loader falls back to:
 `create_odor_group_rdm` remains available in `models.py` for diagnostics or
 future comparisons, but `odor_group` is intentionally excluded from the current
 multiple-regression RSA model because it overlaps strongly with the
-pleasantness RDM.
+odor_value RDM.
 
 ## Output
 One file per model regressor:
-- `sub-01_model-pleasantness_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
+- `sub-01_model-odor_value_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-cue_type_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-image_identity_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-button_presence_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
@@ -109,10 +109,10 @@ each RSA job. Example:
 python scripts_MRI/rsa_imagewise/make_swarm_imagewise.py \
   --base_dir /data/liuq13/SPCD_RSA_imagewise_subset \
   --ratings_file /data/liuq13/SPCD_RSA_imagewise_subset/compiled_pleasantness_ratings.csv \
-  --targets pleasantness \
+  --targets odor_value \
   --cue_subset all \
-  --out pleasantness_imagewise.swarm
+  --out odor_value_imagewise.swarm
 ```
 
-If `pleasantness` is requested as a target, subjects missing compiled ratings
+If `odor_value` is requested as a target, subjects missing compiled ratings
 are skipped automatically when writing the swarm file.

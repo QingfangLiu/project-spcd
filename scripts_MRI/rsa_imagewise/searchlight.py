@@ -6,7 +6,7 @@ from nilearn.image import concat_imgs, new_img_like, load_img
 from .io_imagewise import build_imagewise_patterns
 from .estimator import SingleModelRSA
 from .models import (
-    create_pleasantness_rdm,
+    create_odor_value_rdm,
     create_cue_type_rdm,
     create_image_identity_rdm,
     create_button_presence_rdm,
@@ -15,7 +15,7 @@ from .models import (
 from .save_maps import save_single_rsa_map
 
 MODEL_NAMES = (
-    "pleasantness",
+    "odor_value",
     "cue_type",
     "image_identity",
     "button_presence",
@@ -72,11 +72,11 @@ def searchlight_rsa_single_subject(
     }
 
     if ratings_by_group is not None:
-        pleasantness_rdm = create_pleasantness_rdm(
+        odor_value_rdm = create_odor_value_rdm(
             sample_labels=sample_labels,
             ratings_by_group=ratings_by_group,
         )
-        model_rdms["pleasantness"] = pleasantness_rdm
+        model_rdms["odor_value"] = odor_value_rdm
 
     if cue_subset in ("conditioned_only", "preconditioned_only"):
         # In single-cue-type subsets, cue_type has no variance and is dropped.

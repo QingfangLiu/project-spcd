@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 
 MODEL_NAMES = (
-    "pleasantness",
+    "odor_value",
     "cue_type",
     "image_identity",
     "button_presence",
@@ -37,7 +37,7 @@ def default_ratings_file() -> Path:
     return project_root / "beh_processed_subs" / "compiled_pleasantness_ratings.csv"
 
 
-def load_subjects_with_pleasantness(ratings_file: Path) -> set[str]:
+def load_subjects_with_odor_value_ratings(ratings_file: Path) -> set[str]:
     if not ratings_file.is_file():
         raise FileNotFoundError(f"Ratings file not found: {ratings_file}")
 
@@ -70,7 +70,7 @@ def main():
         "--ratings_file",
         type=Path,
         default=default_ratings_file(),
-        help="Compiled pleasantness ratings CSV to pass to RSA jobs",
+        help="Compiled pleasantness ratings CSV to pass to RSA jobs for the odor_value model",
     )
 
     ap.add_argument("--sessions", nargs="+", default=["premeal", "postmeal"])
@@ -106,13 +106,13 @@ def main():
         subs = sorted(args.subjects)
 
     module_name = f"{args.package_name}.run_rsa"
-    pleasantness_subjects = None
+    odor_value_subjects = None
 
-    needs_pleasantness = (
-        args.targets is None or "pleasantness" in args.targets
+    needs_odor_value = (
+        args.targets is None or "odor_value" in args.targets
     )
-    if needs_pleasantness:
-        pleasantness_subjects = load_subjects_with_pleasantness(args.ratings_file)
+    if needs_odor_value:
+        odor_value_subjects = load_subjects_with_odor_value_ratings(args.ratings_file)
 
     available_targets = list(MODEL_NAMES)
     if args.cue_subset in ("conditioned_only", "preconditioned_only"):
@@ -133,12 +133,12 @@ def main():
                 job_targets = args.targets if args.targets is not None else [None]
                 for target in job_targets:
                     if (
-                        target == "pleasantness"
-                        and pleasantness_subjects is not None
-                        and sub not in pleasantness_subjects
+                        target == "odor_value"
+                        and odor_value_subjects is not None
+                        and sub not in odor_value_subjects
                     ):
                         print(
-                            f"Skipping {sub} {sess} target=pleasantness "
+                            f"Skipping {sub} {sess} target=odor_value "
                             f"(missing compiled ratings in {args.ratings_file})"
                         )
                         continue

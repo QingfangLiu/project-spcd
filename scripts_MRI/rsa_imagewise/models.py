@@ -45,13 +45,13 @@ def create_odor_group_rdm(sample_labels) -> np.ndarray:
     return rdm
 
 
-def create_pleasantness_rdm(
+def create_odor_value_rdm(
     sample_labels,
     ratings_by_group,
     normalize: bool = True,
 ) -> np.ndarray:
     """
-    Pleasantness-distance model for image-wise samples.
+    Odor-value model for image-wise samples, derived from pleasantness ratings.
 
     Parameters
     ----------
@@ -65,7 +65,7 @@ def create_pleasantness_rdm(
     Returns
     -------
     np.ndarray
-        Pairwise absolute pleasantness-distance RDM aligned to sample_labels.
+        Pairwise absolute odor-value-distance RDM aligned to sample_labels.
     """
     required_groups = {"odor1", "odor2", "clean"}
     missing_groups = required_groups - set(ratings_by_group.keys())
@@ -193,5 +193,4 @@ def create_button_side_rdm(button_labels):
 
     np.fill_diagonal(rdm, 0.0)
     return rdm
-
 

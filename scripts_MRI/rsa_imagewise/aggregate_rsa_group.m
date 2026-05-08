@@ -2,7 +2,7 @@
 % saving ONLY the group t-stat map (spmT_0001.nii) in a shallow folder layout.
 %
 % Revised version:
-%   - Loops over the current primary RSA model: pleasantness
+%   - Loops over the current primary RSA model: odor_value
 %   - Loops over cue subset versions:
 %       1) subset-all
 %       2) subset-conditioned_only
@@ -20,7 +20,7 @@ analysis_subfolder = 'probe_imagewise';
 sessions = {'premeal', 'postmeal'};
 inputs   = {'input-beta'}; %#ok<NASGU>
 
-models = {'pleasantness'};
+models = {'odor_value'};
 button_scopes = {'second_image_only'};
 
 % cue subset versions

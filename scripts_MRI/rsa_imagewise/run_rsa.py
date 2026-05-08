@@ -96,14 +96,14 @@ def main():
         ratings_file=args.ratings_file,
     )
     print(
-        "Pleasantness model: ",
+        "Odor value model: ",
         "enabled" if ratings_by_group is not None else "disabled",
         sep="",
     )
 
-    if args.target == "pleasantness" and ratings_by_group is None:
+    if args.target == "odor_value" and ratings_by_group is None:
         raise ValueError(
-            "Target 'pleasantness' requires subject pleasantness ratings. "
+            "Target 'odor_value' requires subject pleasantness ratings. "
             "Provide --ratings_file or add the placeholder ratings CSV."
         )
 

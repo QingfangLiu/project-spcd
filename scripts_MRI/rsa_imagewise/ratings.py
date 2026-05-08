@@ -66,7 +66,7 @@ def load_subject_pleasantness_ratings(
 
     if not os.path.exists(ratings_file):
         print(
-            "[INFO] Pleasantness ratings file not found; skipping pleasantness "
+            "[INFO] Pleasantness ratings file not found; skipping odor_value "
             f"model: {ratings_file}"
         )
         return None
@@ -79,7 +79,7 @@ def load_subject_pleasantness_ratings(
         if row.empty:
             print(
                 "[INFO] No pleasantness ratings found for subject; skipping "
-                f"pleasantness model: {sub}"
+                f"odor_value model: {sub}"
             )
             return None
 
