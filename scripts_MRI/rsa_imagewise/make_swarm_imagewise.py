@@ -62,6 +62,15 @@ def load_subjects_with_odor_value_ratings(ratings_file: Path) -> set[str]:
     return set(df.loc[complete_mask, "sub"].astype(str))
 
 
+def available_targets_for_session(session: str, cue_subset: str) -> list[str]:
+    available_targets = list(MODEL_NAMES)
+    if session != "both":
+        available_targets = [t for t in available_targets if t != "phase"]
+    if cue_subset in ("conditioned_only", "preconditioned_only"):
+        available_targets = [t for t in available_targets if t != "cue_type"]
+    return available_targets
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base_dir", default="/data/liuq13/SPCD_RSA_imagewise_subset")
@@ -97,6 +106,11 @@ def main():
         help="If provided, write one swarm line per target regressor",
     )
     ap.add_argument(
+        "--split_targets",
+        action="store_true",
+        help="When --targets is omitted, write one swarm line per available target instead of one line that runs all targets",
+    )
+    ap.add_argument(
         "--cue_subset",
         default="all",
         choices=["all", "conditioned_only", "preconditioned_only"],
@@ -125,11 +139,10 @@ def main():
     with open(args.out, "w") as f:
         for sub in subs:
             for sess in args.sessions:
-                available_targets = list(MODEL_NAMES)
-                if sess != "both":
-                    available_targets = [t for t in available_targets if t != "phase"]
-                if args.cue_subset in ("conditioned_only", "preconditioned_only"):
-                    available_targets = [t for t in available_targets if t != "cue_type"]
+                available_targets = available_targets_for_session(
+                    session=sess,
+                    cue_subset=args.cue_subset,
+                )
 
                 if args.targets is not None:
                     invalid_targets = sorted(set(args.targets) - set(available_targets))
@@ -140,7 +153,12 @@ def main():
                             f"Available targets: {available_targets}"
                         )
 
-                job_targets = args.targets if args.targets is not None else [None]
+                if args.targets is not None:
+                    job_targets = args.targets
+                elif args.split_targets:
+                    job_targets = available_targets
+                else:
+                    job_targets = [None]
                 for target in job_targets:
                     if (
                         target == "odor_value"

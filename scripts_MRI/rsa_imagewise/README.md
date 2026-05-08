@@ -126,11 +126,17 @@ each RSA job. Example:
 python scripts_MRI/rsa_imagewise/make_swarm_imagewise.py \
   --base_dir /data/liuq13/SPCD_RSA_imagewise_subset \
   --ratings_file /data/liuq13/SPCD_RSA_imagewise_subset/compiled_pleasantness_ratings.csv \
-  --sessions both \
-  --targets odor_value \
+  --sessions premeal postmeal both \
+  --split_targets \
   --cue_subset all \
-  --out odor_value_imagewise.swarm
+  --out imagewise_all_sessions_split_targets.swarm
 ```
+
+With `--split_targets`, the swarm generator writes one task per valid target
+model instead of one task that runs every model for a subject/session. For
+`--sessions premeal postmeal both`, each subject gets 16 tasks for `cue_subset
+all`: five models for premeal, five for postmeal, and six for `both` because
+the combined session also includes `phase`.
 
 If `odor_value` is requested as a target, subjects missing compiled ratings
 are skipped automatically when writing the swarm file.
