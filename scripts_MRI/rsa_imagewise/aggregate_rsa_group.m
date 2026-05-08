@@ -2,7 +2,7 @@
 % saving ONLY the group t-stat map (spmT_0001.nii) in a shallow folder layout.
 %
 % Revised version:
-%   - Loops over the current primary RSA model: odor_value
+%   - Loops over all current RSA model maps.
 %   - Runs per-session group maps for premeal, postmeal, and combined both.
 %   - Loops over cue subset versions:
 %       1) subset-all
@@ -19,9 +19,9 @@ base_dir = '/Users/liuq13/SPCD_data/rsa_maps';
 analysis_subfolder = 'probe_imagewise';
 
 sessions = {'premeal', 'postmeal', 'both'};
-inputs   = {'input-beta'}; %#ok<NASGU>
 
-models = {'odor_value'};
+models = {'odor_value', 'cue_type', 'image_identity', ...
+          'button_presence', 'button_side', 'phase'};
 
 % cue subset versions
 %   subset-all = all cue maps
