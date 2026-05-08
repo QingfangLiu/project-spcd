@@ -109,7 +109,7 @@ def build_imagewise_patterns(
     base_dir: str,
     session_folder: str,
     session_tag: str,
-    button_scope: str = "both_images",
+    button_scope: str = "second_image_only",
     cue_subset: str = "all",
 ):
     """
@@ -231,4 +231,3 @@ def build_imagewise_patterns(
     sample_labels = np.asarray(sample_labels, dtype=object)
 
     return run_ids, button_labels, sample_labels, img_list
-    

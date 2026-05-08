@@ -80,7 +80,7 @@ def main():
     ap.add_argument("--n_jobs", type=int, default=4)
     ap.add_argument(
         "--button_scope",
-        default="both_images",
+        default="second_image_only",
         choices=["both_images", "second_image_only"],
     )
     ap.add_argument(

@@ -9,8 +9,16 @@ This pipeline runs searchlight RSA on **image-wise betas** and includes **button
 - button labels: `left`, `right`, or `none`
 
 ## Button scope options
-- `both_images`: apply the trial button to both image presentations
-- `second_image_only`: apply the button only to `img_index == 2`
+- `second_image_only` is the default and intended setting: keep both image
+  betas, but apply the trial button label only to `img_index == 2`; `img_index
+  == 1` is labeled `none` for the button nuisance RDMs.
+- `both_images` remains available for diagnostics: apply the trial button label
+  to both image presentations.
+
+RSA map filenames do not include `button_scope`. The standard output names
+therefore assume the default `second_image_only` setting. If you explicitly run
+`--button_scope both_images`, use a separate `--output_dir` to avoid overwriting
+the default maps.
 
 ## Cue subset options
 - `all`: include all cues
@@ -25,8 +33,7 @@ When using a single-class subset (`conditioned_only` or `preconditioned_only`),
 python -m rsa_imagewise.run_rsa \
   --sub sub-01 \
   --session premeal \
-  --base_dir /path/to/SPCD_data \
-  --button_scope both_images
+  --base_dir /path/to/SPCD_data
 ```
 
 Odor-value target example:
@@ -36,7 +43,6 @@ python -m rsa_imagewise.run_rsa \
   --sub sub-01 \
   --session premeal \
   --base_dir /path/to/SPCD_data \
-  --button_scope both_images \
   --ratings_file /path/to/compiled_pleasantness_ratings.csv \
   --target odor_value
 ```
@@ -48,8 +54,7 @@ python -m rsa_imagewise.run_rsa \
   --sub sub-01 \
   --session premeal \
   --base_dir /path/to/SPCD_data \
-  --cue_subset conditioned_only \
-  --button_scope both_images
+  --cue_subset conditioned_only
 ```
 
 To run a single output map while still fitting the full multiple-regression RSA model:
@@ -59,7 +64,6 @@ python -m rsa_imagewise.run_rsa \
   --sub sub-01 \
   --session premeal \
   --base_dir /path/to/SPCD_data \
-  --button_scope both_images \
   --target image_identity
 ```
 
@@ -94,11 +98,11 @@ odor_value RDM.
 
 ## Output
 One file per model regressor:
-- `sub-01_model-odor_value_buttonscope-<...>_subset-<...>.nii.gz`
-- `sub-01_model-cue_type_buttonscope-<...>_subset-<...>.nii.gz`
-- `sub-01_model-image_identity_buttonscope-<...>_subset-<...>.nii.gz`
-- `sub-01_model-button_presence_buttonscope-<...>_subset-<...>.nii.gz`
-- `sub-01_model-button_side_buttonscope-<...>_subset-<...>.nii.gz`
+- `sub-01_model-odor_value_subset-<...>.nii.gz`
+- `sub-01_model-cue_type_subset-<...>.nii.gz`
+- `sub-01_model-image_identity_subset-<...>.nii.gz`
+- `sub-01_model-button_presence_subset-<...>.nii.gz`
+- `sub-01_model-button_side_subset-<...>.nii.gz`
 
 ## Biowulf
 

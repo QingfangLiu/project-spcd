@@ -30,7 +30,7 @@ def searchlight_rsa_single_subject(
     session_tag: str,
     radius: float,
     n_jobs: int,
-    button_scope: str = "both_images",
+    button_scope: str = "second_image_only",
     cue_subset: str = "all",
     center_within_run: bool = False,
     output_dir: Optional[str] = None,
@@ -131,7 +131,7 @@ def searchlight_rsa_single_subject(
                 model_name=target_name,
                 rsa_map=rsa_map,
                 output_dir=output_dir,
-                button_scope=f"{button_scope}_subset-{cue_subset}",
+                cue_subset=cue_subset,
             )
 
     return rsa_maps

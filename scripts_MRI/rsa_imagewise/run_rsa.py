@@ -7,7 +7,7 @@ Usage:
         --sub sub-01 \
         --session premeal \
         --base_dir /Users/liuq13/SPCD_data \
-        --button_scope both_images
+        --button_scope second_image_only
 """
 
 import argparse
@@ -38,7 +38,7 @@ def main():
         "--button_scope",
         type=str,
         choices=["both_images", "second_image_only"],
-        default="both_images",
+        default="second_image_only",
         help="Apply trial button label to both image presentations or only the second image",
     )
     parser.add_argument(
@@ -89,6 +89,11 @@ def main():
     print(f"Center within run:   {args.center_within_run}")
     print(f"Target:             {args.target or 'all'}")
     print("=" * 80)
+    if args.button_scope != "second_image_only":
+        print(
+            "[INFO] Output filenames do not include button_scope; use a separate "
+            "--output_dir if comparing button-scope variants."
+        )
 
     ratings_by_group = load_subject_pleasantness_ratings(
         sub=args.sub,
