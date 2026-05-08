@@ -3,6 +3,7 @@
 %
 % Revised version:
 %   - Loops over the current primary RSA model: odor_value
+%   - Runs per-session group maps for premeal, postmeal, and combined both.
 %   - Loops over cue subset versions:
 %       1) subset-all
 %       2) subset-conditioned_only
@@ -17,7 +18,7 @@ addpath('/Users/liuq13/Applications/spm12/');
 base_dir = '/Users/liuq13/SPCD_data/rsa_maps';
 analysis_subfolder = 'probe_imagewise';
 
-sessions = {'premeal', 'postmeal'};
+sessions = {'premeal', 'postmeal', 'both'};
 inputs   = {'input-beta'}; %#ok<NASGU>
 
 models = {'odor_value'};

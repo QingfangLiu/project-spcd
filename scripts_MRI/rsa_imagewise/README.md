@@ -28,11 +28,22 @@ the default maps.
 When using a single-class subset (`conditioned_only` or `preconditioned_only`),
 `cue_type` is automatically removed from the multiple-regression RSA model because it has no variance.
 
+## Session options
+- `premeal`: run RSA on premeal image-wise betas only
+- `postmeal`: run RSA on postmeal image-wise betas only
+- `both`: concatenate premeal and postmeal image-wise betas into one RSA
+
+In `both` mode, premeal and postmeal runs get distinct run IDs before the
+cross-run RSA mask is built. The `odor_value` model uses premeal ratings for
+premeal samples and postmeal ratings for postmeal samples. A `phase` RDM
+(`premeal` vs `postmeal`) is added as a nuisance model and is also available as
+an output target.
+
 ## Run
 ```bash
 python -m rsa_imagewise.run_rsa \
   --sub sub-01 \
-  --session premeal \
+  --session both \
   --base_dir /path/to/SPCD_data
 ```
 
@@ -88,6 +99,7 @@ If `--ratings_file` is not provided, the loader falls back to:
 - `odor_value`: subject- and session-specific odor-value-distance model derived from pleasantness ratings, with the three group ratings z-scored by default before distances are computed
 - `cue_type`: preconditioned (`A`, `C`) vs conditioned (`B`, `D`)
 - `image_identity`: cue/image identity ignoring first-vs-second presentation position (`A11_img1` and `A11_img2` are treated as the same identity)
+- `phase`: premeal vs postmeal; only included when running `--session both`
 - `button_presence`: pressed vs none
 - `button_side`: left vs right, with `none` treated as different
 
@@ -101,6 +113,7 @@ One file per model regressor:
 - `sub-01_model-odor_value_subset-<...>.nii.gz`
 - `sub-01_model-cue_type_subset-<...>.nii.gz`
 - `sub-01_model-image_identity_subset-<...>.nii.gz`
+- `sub-01_model-phase_subset-<...>.nii.gz` for `--session both`
 - `sub-01_model-button_presence_subset-<...>.nii.gz`
 - `sub-01_model-button_side_subset-<...>.nii.gz`
 
@@ -113,6 +126,7 @@ each RSA job. Example:
 python scripts_MRI/rsa_imagewise/make_swarm_imagewise.py \
   --base_dir /data/liuq13/SPCD_RSA_imagewise_subset \
   --ratings_file /data/liuq13/SPCD_RSA_imagewise_subset/compiled_pleasantness_ratings.csv \
+  --sessions both \
   --targets odor_value \
   --cue_subset all \
   --out odor_value_imagewise.swarm

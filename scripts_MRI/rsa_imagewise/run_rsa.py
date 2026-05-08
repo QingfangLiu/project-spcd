@@ -5,7 +5,7 @@ Image-wise RSA with cue/image models + button nuisance.
 Usage:
     python -m rsa_imagewise.run_rsa \
         --sub sub-01 \
-        --session premeal \
+        --session both \
         --base_dir /Users/liuq13/SPCD_data \
         --button_scope second_image_only
 """
@@ -23,7 +23,7 @@ def main():
         description="Run image-wise searchlight RSA (cue/value/image models + button nuisance)"
     )
     parser.add_argument("--sub", type=str, required=True, help="Subject ID (e.g., sub-01)")
-    parser.add_argument("--session", type=str, choices=["premeal", "postmeal"], required=True, help="Session to analyze")
+    parser.add_argument("--session", type=str, choices=["premeal", "postmeal", "both"], required=True, help="Session or combined phase to analyze")
     parser.add_argument("--base_dir", type=str, required=True, help="Base directory containing GLM and nii folders")
     parser.add_argument("--output_dir", type=str, default=None, help="Output directory")
     parser.add_argument(
@@ -64,7 +64,8 @@ def main():
 
     args = parser.parse_args()
 
-    session_folder = f"{args.session}_trialwise_2mm"
+    session_tags = ("premeal", "postmeal") if args.session == "both" else (args.session,)
+    session_folders = [f"{session_tag}_trialwise_2mm" for session_tag in session_tags]
 
     if args.output_dir is None:
         args.output_dir = os.path.join(
@@ -80,7 +81,7 @@ def main():
     print(f"Subject:            {args.sub}")
     print(f"Session:            {args.session}")
     print(f"Base dir:           {args.base_dir}")
-    print(f"Session folder:     {session_folder}")
+    print(f"Session folder(s):  {', '.join(session_folders)}")
     print(f"Output dir:         {args.output_dir}")
     print(f"Radius:             {args.radius} mm")
     print(f"N jobs:             {args.n_jobs}")
@@ -95,29 +96,35 @@ def main():
             "--output_dir if comparing button-scope variants."
         )
 
-    ratings_by_group = load_subject_pleasantness_ratings(
-        sub=args.sub,
-        session_tag=args.session,
-        ratings_file=args.ratings_file,
-    )
+    ratings_by_phase = {}
+    for session_tag in session_tags:
+        ratings_by_phase[session_tag] = load_subject_pleasantness_ratings(
+            sub=args.sub,
+            session_tag=session_tag,
+            ratings_file=args.ratings_file,
+        )
+    if any(ratings is None for ratings in ratings_by_phase.values()):
+        ratings_by_phase = None
+
     print(
         "Odor value model: ",
-        "enabled" if ratings_by_group is not None else "disabled",
+        "enabled" if ratings_by_phase is not None else "disabled",
         sep="",
     )
 
-    if args.target == "odor_value" and ratings_by_group is None:
+    if args.target == "odor_value" and ratings_by_phase is None:
         raise ValueError(
             "Target 'odor_value' requires subject pleasantness ratings. "
             "Provide --ratings_file or add the placeholder ratings CSV."
         )
+    if args.target == "phase" and args.session != "both":
+        raise ValueError("Target 'phase' is only available with --session both.")
 
     try:
         searchlight_rsa_single_subject(
             sub=args.sub,
             base_dir=args.base_dir,
-            session_folder=session_folder,
-            session_tag=args.session,
+            session_tag=session_tags,
             radius=args.radius,
             n_jobs=args.n_jobs,
             button_scope=args.button_scope,
@@ -125,7 +132,7 @@ def main():
             center_within_run=args.center_within_run,
             output_dir=args.output_dir,
             targets=[args.target] if args.target is not None else None,
-            ratings_by_group=ratings_by_group,
+            ratings_by_phase=ratings_by_phase,
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")

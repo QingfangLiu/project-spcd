@@ -1,14 +1,18 @@
+from __future__ import annotations
+
 import os
 import numpy as np
 from typing import Optional, Sequence
 
 from nilearn.image import concat_imgs, new_img_like, load_img
-from .io_imagewise import build_imagewise_patterns
+from .io_imagewise import build_imagewise_patterns_for_sessions
 from .estimator import SingleModelRSA
 from .models import (
     create_odor_value_rdm,
+    create_odor_value_rdm_by_phase,
     create_cue_type_rdm,
     create_image_identity_rdm,
+    create_phase_rdm,
     create_button_presence_rdm,
     create_button_side_rdm,
 )
@@ -18,6 +22,7 @@ MODEL_NAMES = (
     "odor_value",
     "cue_type",
     "image_identity",
+    "phase",
     "button_presence",
     "button_side",
 )
@@ -26,8 +31,7 @@ MODEL_NAMES = (
 def searchlight_rsa_single_subject(
     sub: str,
     base_dir: str,
-    session_folder: str,
-    session_tag: str,
+    session_tag: str | Sequence[str],
     radius: float,
     n_jobs: int,
     button_scope: str = "second_image_only",
@@ -36,16 +40,19 @@ def searchlight_rsa_single_subject(
     output_dir: Optional[str] = None,
     targets: Optional[Sequence[str]] = None,
     ratings_by_group: Optional[dict] = None,
+    ratings_by_phase: Optional[dict] = None,
 ):
     from nilearn.decoding import SearchLight
 
-    run_ids, button_labels, sample_labels, img_list = build_imagewise_patterns(
-        sub=sub,
-        base_dir=base_dir,
-        session_folder=session_folder,
-        session_tag=session_tag,
-        button_scope=button_scope,
-        cue_subset=cue_subset,
+    session_tags = (session_tag,) if isinstance(session_tag, str) else tuple(session_tag)
+    run_ids, button_labels, sample_labels, phase_labels, img_list = (
+        build_imagewise_patterns_for_sessions(
+            sub=sub,
+            base_dir=base_dir,
+            session_tags=session_tags,
+            button_scope=button_scope,
+            cue_subset=cue_subset,
+        )
     )
 
     n_samples = len(img_list)
@@ -56,9 +63,11 @@ def searchlight_rsa_single_subject(
         len(run_ids) != n_samples
         or len(button_labels) != n_samples
         or len(sample_labels) != n_samples
+        or len(phase_labels) != n_samples
     ):
         raise ValueError("Loader output lengths do not match number of image samples.")
 
+    is_combined_phase = len(set(phase_labels)) > 1
     cue_type_rdm = create_cue_type_rdm(sample_labels)
     image_identity_rdm = create_image_identity_rdm(sample_labels)
     button_presence_rdm = create_button_presence_rdm(button_labels)
@@ -71,17 +80,35 @@ def searchlight_rsa_single_subject(
         "button_side": button_side_rdm,
     }
 
-    if ratings_by_group is not None:
+    if ratings_by_phase is not None:
+        if is_combined_phase:
+            odor_value_rdm = create_odor_value_rdm_by_phase(
+                sample_labels=sample_labels,
+                phase_labels=phase_labels,
+                ratings_by_phase=ratings_by_phase,
+            )
+        else:
+            phase = str(phase_labels[0])
+            odor_value_rdm = create_odor_value_rdm(
+                sample_labels=sample_labels,
+                ratings_by_group=ratings_by_phase[phase],
+            )
+        model_rdms["odor_value"] = odor_value_rdm
+    elif ratings_by_group is not None:
         odor_value_rdm = create_odor_value_rdm(
             sample_labels=sample_labels,
             ratings_by_group=ratings_by_group,
         )
         model_rdms["odor_value"] = odor_value_rdm
 
+    if is_combined_phase:
+        model_rdms["phase"] = create_phase_rdm(phase_labels)
+
     if cue_subset in ("conditioned_only", "preconditioned_only"):
         # In single-cue-type subsets, cue_type has no variance and is dropped.
         model_rdms.pop("cue_type", None)
 
+    model_rdms = {name: model_rdms[name] for name in MODEL_NAMES if name in model_rdms}
     available_model_names = tuple(model_rdms.keys())
 
     if targets is None:

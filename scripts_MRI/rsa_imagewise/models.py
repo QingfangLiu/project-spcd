@@ -67,6 +67,62 @@ def create_odor_value_rdm(
     np.ndarray
         Pairwise absolute odor-value-distance RDM aligned to sample_labels.
     """
+    group_values = _prepare_group_values(ratings_by_group, normalize=normalize)
+
+    sample_values = np.array(
+        [
+            group_values[condition_to_group(base_condition(lbl))]
+            for lbl in sample_labels
+        ],
+        dtype=float,
+    )
+
+    rdm = np.abs(sample_values[:, None] - sample_values[None, :]).astype(float)
+    np.fill_diagonal(rdm, 0.0)
+    return rdm
+
+
+def create_odor_value_rdm_by_phase(
+    sample_labels,
+    phase_labels,
+    ratings_by_phase,
+    normalize: bool = True,
+) -> np.ndarray:
+    """
+    Odor-value model for combined pre/post samples.
+
+    Ratings are normalized within each phase before expanding to samples,
+    matching the single-session odor_value behavior.
+    """
+    if len(sample_labels) != len(phase_labels):
+        raise ValueError("sample_labels and phase_labels must have the same length")
+
+    group_values_by_phase = {
+        phase: _prepare_group_values(ratings_by_group, normalize=normalize)
+        for phase, ratings_by_group in ratings_by_phase.items()
+    }
+
+    missing_phases = set(phase_labels) - set(group_values_by_phase.keys())
+    if missing_phases:
+        raise ValueError(
+            "ratings_by_phase is missing required phase keys: "
+            f"{sorted(missing_phases)}"
+        )
+
+    sample_values = np.array(
+        [
+            group_values_by_phase[phase][condition_to_group(base_condition(lbl))]
+            for lbl, phase in zip(sample_labels, phase_labels)
+        ],
+        dtype=float,
+    )
+
+    rdm = np.abs(sample_values[:, None] - sample_values[None, :]).astype(float)
+    np.fill_diagonal(rdm, 0.0)
+    return rdm
+
+
+def _prepare_group_values(ratings_by_group, normalize: bool = True) -> dict[str, float]:
     required_groups = {"odor1", "odor2", "clean"}
     missing_groups = required_groups - set(ratings_by_group.keys())
     if missing_groups:
@@ -92,17 +148,7 @@ def create_odor_value_rdm(
             for group, val in zip(("odor1", "odor2", "clean"), vals)
         }
 
-    sample_values = np.array(
-        [
-            group_values[condition_to_group(base_condition(lbl))]
-            for lbl in sample_labels
-        ],
-        dtype=float,
-    )
-
-    rdm = np.abs(sample_values[:, None] - sample_values[None, :]).astype(float)
-    np.fill_diagonal(rdm, 0.0)
-    return rdm
+    return group_values
 
 
 def create_cue_type_rdm(sample_labels) -> np.ndarray:
@@ -137,6 +183,17 @@ def create_image_identity_rdm(sample_labels) -> np.ndarray:
     """
     labels = np.array([base_condition(lbl) for lbl in sample_labels], dtype=object)
     rdm = (labels[:, None] != labels[None, :]).astype(float)
+    np.fill_diagonal(rdm, 0.0)
+    return rdm
+
+
+def create_phase_rdm(phase_labels) -> np.ndarray:
+    """
+    Phase model:
+    0 within phase, 1 across premeal/postmeal phases.
+    """
+    phases = np.array([str(x).strip().lower() for x in phase_labels], dtype=object)
+    rdm = (phases[:, None] != phases[None, :]).astype(float)
     np.fill_diagonal(rdm, 0.0)
     return rdm
 
@@ -193,4 +250,3 @@ def create_button_side_rdm(button_labels):
 
     np.fill_diagonal(rdm, 0.0)
     return rdm
-

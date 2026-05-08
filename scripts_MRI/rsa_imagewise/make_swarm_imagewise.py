@@ -14,6 +14,7 @@ MODEL_NAMES = (
     "odor_value",
     "cue_type",
     "image_identity",
+    "phase",
     "button_presence",
     "button_side",
 )
@@ -73,7 +74,12 @@ def main():
         help="Compiled pleasantness ratings CSV to pass to RSA jobs for the odor_value model",
     )
 
-    ap.add_argument("--sessions", nargs="+", default=["premeal", "postmeal"])
+    ap.add_argument(
+        "--sessions",
+        nargs="+",
+        choices=["premeal", "postmeal", "both"],
+        default=["premeal", "postmeal"],
+    )
     ap.add_argument("--subjects", nargs="+", default=None)
 
     ap.add_argument("--radius", type=float, default=8.0)
@@ -100,8 +106,9 @@ def main():
 
     args = ap.parse_args()
 
+    discovery_session = "premeal" if args.sessions[0] == "both" else args.sessions[0]
     if args.subjects is None:
-        subs = discover_subjects(args.base_dir, args.sessions[0])
+        subs = discover_subjects(args.base_dir, discovery_session)
     else:
         subs = sorted(args.subjects)
 
@@ -114,22 +121,25 @@ def main():
     if needs_odor_value:
         odor_value_subjects = load_subjects_with_odor_value_ratings(args.ratings_file)
 
-    available_targets = list(MODEL_NAMES)
-    if args.cue_subset in ("conditioned_only", "preconditioned_only"):
-        available_targets = [t for t in available_targets if t != "cue_type"]
-
-    if args.targets is not None:
-        invalid_targets = sorted(set(args.targets) - set(available_targets))
-        if invalid_targets:
-            raise ValueError(
-                f"Invalid target(s) for cue_subset={args.cue_subset}: {invalid_targets}. "
-                f"Available targets: {available_targets}"
-            )
-
     n_lines = 0
     with open(args.out, "w") as f:
         for sub in subs:
             for sess in args.sessions:
+                available_targets = list(MODEL_NAMES)
+                if sess != "both":
+                    available_targets = [t for t in available_targets if t != "phase"]
+                if args.cue_subset in ("conditioned_only", "preconditioned_only"):
+                    available_targets = [t for t in available_targets if t != "cue_type"]
+
+                if args.targets is not None:
+                    invalid_targets = sorted(set(args.targets) - set(available_targets))
+                    if invalid_targets:
+                        raise ValueError(
+                            f"Invalid target(s) for session={sess}, "
+                            f"cue_subset={args.cue_subset}: {invalid_targets}. "
+                            f"Available targets: {available_targets}"
+                        )
+
                 job_targets = args.targets if args.targets is not None else [None]
                 for target in job_targets:
                     if (

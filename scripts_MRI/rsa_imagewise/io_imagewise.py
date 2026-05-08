@@ -1,6 +1,7 @@
 # io_imagewise.py
 
 import os
+from typing import Sequence
 
 import numpy as np
 import pandas as pd
@@ -231,3 +232,62 @@ def build_imagewise_patterns(
     sample_labels = np.asarray(sample_labels, dtype=object)
 
     return run_ids, button_labels, sample_labels, img_list
+
+
+def build_imagewise_patterns_for_sessions(
+    sub: str,
+    base_dir: str,
+    session_tags: Sequence[str],
+    button_scope: str = "second_image_only",
+    cue_subset: str = "all",
+):
+    """
+    Build image-wise RSA inputs for one or more probe sessions.
+
+    When multiple sessions are requested, run IDs are offset by session so
+    premeal run 1 and postmeal run 1 are treated as different runs.
+    """
+    if isinstance(session_tags, str):
+        session_tags = (session_tags,)
+
+    valid_sessions = {"premeal", "postmeal"}
+    invalid_sessions = sorted(set(session_tags) - valid_sessions)
+    if invalid_sessions:
+        raise ValueError(f"Unknown session tag(s): {invalid_sessions}")
+
+    all_run_ids = []
+    all_button_labels = []
+    all_sample_labels = []
+    all_phase_labels = []
+    all_img_list = []
+
+    for phase_idx, session_tag in enumerate(session_tags):
+        session_folder = f"{session_tag}_trialwise_2mm"
+        run_ids, button_labels, sample_labels, img_list = build_imagewise_patterns(
+            sub=sub,
+            base_dir=base_dir,
+            session_folder=session_folder,
+            session_tag=session_tag,
+            button_scope=button_scope,
+            cue_subset=cue_subset,
+        )
+
+        run_offset = phase_idx * 100
+        all_run_ids.append(run_ids + run_offset)
+        all_button_labels.append(button_labels)
+        all_sample_labels.append(sample_labels)
+        all_phase_labels.append(
+            np.full(sample_labels.shape, session_tag, dtype=object)
+        )
+        all_img_list.extend(img_list)
+
+    if not all_img_list:
+        raise ValueError("No image-wise samples were found.")
+
+    return (
+        np.concatenate(all_run_ids),
+        np.concatenate(all_button_labels),
+        np.concatenate(all_sample_labels),
+        np.concatenate(all_phase_labels),
+        all_img_list,
+    )
