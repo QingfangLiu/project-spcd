@@ -81,16 +81,19 @@ If `--ratings_file` is not provided, the loader falls back to:
 - `beh_processed_subs/<sub>/pleasantness_summary.csv`
 
 ## Models
-- `odor_group`: odor-group structure (`odor1`, `odor2`, `clean`)
 - `pleasantness`: subject- and session-specific pleasantness-distance model derived from odor ratings, with the three group ratings z-scored by default before distances are computed
 - `conditioning`: preconditioned (`A`, `C`) vs conditioned (`B`, `D`)
 - `image_identity`: cue/image identity ignoring first-vs-second presentation position (`A11_img1` and `A11_img2` are treated as the same identity)
 - `button_presence`: pressed vs none
 - `button_side`: left vs right, with `none` treated as different
 
+`create_odor_group_rdm` remains available in `models.py` for diagnostics or
+future comparisons, but `odor_group` is intentionally excluded from the current
+multiple-regression RSA model because it overlaps strongly with the
+pleasantness RDM.
+
 ## Output
 One file per model regressor:
-- `sub-01_model-odor_group_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-pleasantness_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-conditioning_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-image_identity_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`

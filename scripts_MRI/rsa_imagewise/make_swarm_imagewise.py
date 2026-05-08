@@ -11,7 +11,6 @@ from pathlib import Path
 import pandas as pd
 
 MODEL_NAMES = (
-    "odor_group",
     "pleasantness",
     "conditioning",
     "image_identity",

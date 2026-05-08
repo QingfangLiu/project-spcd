@@ -6,7 +6,6 @@ from nilearn.image import concat_imgs, new_img_like, load_img
 from .io_imagewise import build_imagewise_patterns
 from .estimator import SingleModelRSA
 from .models import (
-    create_odor_group_rdm,
     create_pleasantness_rdm,
     create_conditioning_rdm,
     create_image_identity_rdm,
@@ -16,7 +15,6 @@ from .models import (
 from .save_maps import save_single_rsa_map
 
 MODEL_NAMES = (
-    "odor_group",
     "pleasantness",
     "conditioning",
     "image_identity",
@@ -61,14 +59,12 @@ def searchlight_rsa_single_subject(
     ):
         raise ValueError("Loader output lengths do not match number of image samples.")
 
-    odor_group_rdm = create_odor_group_rdm(sample_labels)
     conditioning_rdm = create_conditioning_rdm(sample_labels)
     image_identity_rdm = create_image_identity_rdm(sample_labels)
     button_presence_rdm = create_button_presence_rdm(button_labels)
     button_side_rdm = create_button_side_rdm(button_labels)
 
     model_rdms = {
-        "odor_group": odor_group_rdm,
         "conditioning": conditioning_rdm,
         "image_identity": image_identity_rdm,
         "button_presence": button_presence_rdm,

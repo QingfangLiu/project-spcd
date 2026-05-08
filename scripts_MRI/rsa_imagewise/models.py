@@ -12,7 +12,6 @@ _ODOR_GROUPS = {
 
 
 # Build once from the readable group definition above
-# nested loop structure using dict comprehension
 _CONDITION_TO_GROUP = {
     cond: group
     for group, conds in _ODOR_GROUPS.items()
@@ -23,10 +22,8 @@ _CONDITION_TO_GROUP = {
 def base_condition(label: str) -> str:
     """Convert image-wise label like 'A11_img1' -> 'A11'."""
     return str(label).rsplit("_img", 1)[0]
-# split from right into a list, only once
 
 
-# find a group name from condition (e.g. A11 - odor1)
 def condition_to_group(condition: str) -> str:
     try:
         return _CONDITION_TO_GROUP[condition]
@@ -34,8 +31,6 @@ def condition_to_group(condition: str) -> str:
         raise KeyError(f"Unknown condition: {condition}")
 
 
-# create odor group rdm
-# from sample_labels like A11_img1 to 3 odor groups
 def create_odor_group_rdm(sample_labels) -> np.ndarray:
     """
     Odor-group model for image-wise samples:
@@ -48,11 +43,6 @@ def create_odor_group_rdm(sample_labels) -> np.ndarray:
     rdm = (groups[:, None] != groups[None, :]).astype(float)
     np.fill_diagonal(rdm, 0.0)
     return rdm
-
-# groups[:, None] is a column
-# groups[None, :] is a row
-# groups[:, None] != groups[None, :]: NumPy broadcasting
-
 
 
 def create_pleasantness_rdm(
@@ -85,7 +75,6 @@ def create_pleasantness_rdm(
             f"{sorted(missing_groups)}"
         )
 
-    # a simple cleaning step to get value for each odor group in order
     group_values = {
         group: float(ratings_by_group[group])
         for group in ("odor1", "odor2", "clean")
@@ -111,7 +100,6 @@ def create_pleasantness_rdm(
         dtype=float,
     )
 
-    # rdm is built upon absolute distance between values
     rdm = np.abs(sample_values[:, None] - sample_values[None, :]).astype(float)
     np.fill_diagonal(rdm, 0.0)
     return rdm
@@ -205,13 +193,6 @@ def create_button_side_rdm(button_labels):
 
     np.fill_diagonal(rdm, 0.0)
     return rdm
-
-
-
-
-
-
-
 
 
 
