@@ -20,7 +20,7 @@ from .ratings import load_subject_pleasantness_ratings
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run image-wise searchlight RSA (odor/image/conditioning models + button nuisance)"
+        description="Run image-wise searchlight RSA (cue/value/image models + button nuisance)"
     )
     parser.add_argument("--sub", type=str, required=True, help="Subject ID (e.g., sub-01)")
     parser.add_argument("--session", type=str, choices=["premeal", "postmeal"], required=True, help="Session to analyze")

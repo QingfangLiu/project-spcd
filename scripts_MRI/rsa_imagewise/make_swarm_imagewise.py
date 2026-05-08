@@ -12,7 +12,7 @@ import pandas as pd
 
 MODEL_NAMES = (
     "pleasantness",
-    "conditioning",
+    "cue_type",
     "image_identity",
     "button_presence",
     "button_side",
@@ -116,7 +116,7 @@ def main():
 
     available_targets = list(MODEL_NAMES)
     if args.cue_subset in ("conditioned_only", "preconditioned_only"):
-        available_targets = [t for t in available_targets if t != "conditioning"]
+        available_targets = [t for t in available_targets if t != "cue_type"]
 
     if args.targets is not None:
         invalid_targets = sorted(set(args.targets) - set(available_targets))

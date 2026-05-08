@@ -7,7 +7,7 @@ from .io_imagewise import build_imagewise_patterns
 from .estimator import SingleModelRSA
 from .models import (
     create_pleasantness_rdm,
-    create_conditioning_rdm,
+    create_cue_type_rdm,
     create_image_identity_rdm,
     create_button_presence_rdm,
     create_button_side_rdm,
@@ -16,7 +16,7 @@ from .save_maps import save_single_rsa_map
 
 MODEL_NAMES = (
     "pleasantness",
-    "conditioning",
+    "cue_type",
     "image_identity",
     "button_presence",
     "button_side",
@@ -59,13 +59,13 @@ def searchlight_rsa_single_subject(
     ):
         raise ValueError("Loader output lengths do not match number of image samples.")
 
-    conditioning_rdm = create_conditioning_rdm(sample_labels)
+    cue_type_rdm = create_cue_type_rdm(sample_labels)
     image_identity_rdm = create_image_identity_rdm(sample_labels)
     button_presence_rdm = create_button_presence_rdm(button_labels)
     button_side_rdm = create_button_side_rdm(button_labels)
 
     model_rdms = {
-        "conditioning": conditioning_rdm,
+        "cue_type": cue_type_rdm,
         "image_identity": image_identity_rdm,
         "button_presence": button_presence_rdm,
         "button_side": button_side_rdm,
@@ -79,8 +79,8 @@ def searchlight_rsa_single_subject(
         model_rdms["pleasantness"] = pleasantness_rdm
 
     if cue_subset in ("conditioned_only", "preconditioned_only"):
-        # In single-conditioning-class subsets, conditioning has no variance and is dropped.
-        model_rdms.pop("conditioning", None)
+        # In single-cue-type subsets, cue_type has no variance and is dropped.
+        model_rdms.pop("cue_type", None)
 
     available_model_names = tuple(model_rdms.keys())
 

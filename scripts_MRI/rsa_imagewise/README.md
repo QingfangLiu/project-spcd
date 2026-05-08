@@ -18,7 +18,7 @@ This pipeline runs searchlight RSA on **image-wise betas** and includes **button
 - `preconditioned_only`: include only preconditioned cues (`A*`, `C*`)
 
 When using a single-class subset (`conditioned_only` or `preconditioned_only`),
-`conditioning` is automatically removed from the multiple-regression RSA model because it has no variance.
+`cue_type` is automatically removed from the multiple-regression RSA model because it has no variance.
 
 ## Run
 ```bash
@@ -82,7 +82,7 @@ If `--ratings_file` is not provided, the loader falls back to:
 
 ## Models
 - `pleasantness`: subject- and session-specific pleasantness-distance model derived from odor ratings, with the three group ratings z-scored by default before distances are computed
-- `conditioning`: preconditioned (`A`, `C`) vs conditioned (`B`, `D`)
+- `cue_type`: preconditioned (`A`, `C`) vs conditioned (`B`, `D`)
 - `image_identity`: cue/image identity ignoring first-vs-second presentation position (`A11_img1` and `A11_img2` are treated as the same identity)
 - `button_presence`: pressed vs none
 - `button_side`: left vs right, with `none` treated as different
@@ -95,7 +95,7 @@ pleasantness RDM.
 ## Output
 One file per model regressor:
 - `sub-01_model-pleasantness_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
-- `sub-01_model-conditioning_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
+- `sub-01_model-cue_type_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-image_identity_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-button_presence_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`
 - `sub-01_model-button_side_buttonscope-<...>_subset-<...>_radius-<...>mm.nii.gz`

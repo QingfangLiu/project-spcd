@@ -105,23 +105,23 @@ def create_pleasantness_rdm(
     return rdm
 
 
-def create_conditioning_rdm(sample_labels) -> np.ndarray:
+def create_cue_type_rdm(sample_labels) -> np.ndarray:
     """
-    Conditioning-status model:
-    0 within conditioning class, 1 across conditioning classes.
+    Cue-type model:
+    0 within cue type, 1 across cue types.
 
     Preconditioned: A*, C*
     Conditioned: B*, D*
     """
     base_conditions = np.array([base_condition(lbl) for lbl in sample_labels], dtype=object)
-    conditioning_class = np.array(
+    cue_type = np.array(
         [
             "preconditioned" if cond.startswith(("A", "C")) else "conditioned"
             for cond in base_conditions
         ],
         dtype=object,
     )
-    rdm = (conditioning_class[:, None] != conditioning_class[None, :]).astype(float)
+    rdm = (cue_type[:, None] != cue_type[None, :]).astype(float)
     np.fill_diagonal(rdm, 0.0)
     return rdm
 
@@ -193,6 +193,5 @@ def create_button_side_rdm(button_labels):
 
     np.fill_diagonal(rdm, 0.0)
     return rdm
-
 
 
