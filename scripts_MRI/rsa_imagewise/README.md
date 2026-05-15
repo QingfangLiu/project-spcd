@@ -119,6 +119,48 @@ One file per model regressor:
 - `sub-01_model-button_presence_subset-<...>.nii.gz`
 - `sub-01_model-button_side_subset-<...>.nii.gz`
 
+Each subject-level map contains the searchlight multiple-regression RSA beta
+for that model regressor. Positive values mean local neural pattern
+dissimilarity increases as the target model RDM predicts greater sample
+dissimilarity, controlling for the other model RDMs included in the same RSA.
+
+## Group aggregation outputs
+
+`aggregate_rsa_group.m` runs SPM group-level aggregation on the subject-level
+RSA maps. It loops over:
+
+- sessions: `premeal`, `postmeal`, `both`
+- cue subsets: `subset-all`, `subset-conditioned_only`, `subset-preconditioned_only`
+- models: `odor_value`, `cue_type`, `image_identity`, `button_presence`, `button_side`, `phase`
+
+For each available combination, the script masks voxels outside the gray-matter
+mask to `NaN`, smooths the maps with a 6 mm FWHM kernel, and runs a one-sample
+SPM t-test against zero. It saves only the group t-statistic image:
+
+```text
+rsa_maps/probe_imagewise/<session>/group_tmaps/group_model-<model>_<subset>.nii.gz
+```
+
+These `group_model-*.nii.gz` files are SPM `spmT_0001.nii` maps saved in a
+shallow output layout. They are not thresholded statistical reports; they are
+voxelwise t-statistic maps showing where the subject-level RSA beta is reliably
+greater than zero at the group level.
+
+The script also creates a `collapsed` group analysis. For this output, it finds
+subjects with both premeal and postmeal maps for the same model/subset, averages
+each subject's premeal and postmeal RSA maps, smooths those averaged maps, and
+runs the same one-sample group t-test:
+
+```text
+rsa_maps/probe_imagewise/collapsed/group_tmaps/group_model-<model>_<subset>.nii.gz
+```
+
+Some requested combinations may be skipped because the corresponding
+subject-level maps do not exist. For example, `phase` is only generated for
+`--session both`, and `cue_type` is dropped for single cue-type subsets because
+it has no variance. The MATLAB script currently excludes `sub-19` and `sub-33`
+from group aggregation.
+
 ## Biowulf
 
 `make_swarm_imagewise.py` accepts `--ratings_file` and passes it through to
