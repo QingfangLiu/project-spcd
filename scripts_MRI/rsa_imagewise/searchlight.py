@@ -22,7 +22,6 @@ MODEL_NAMES = (
     "odor_value",
     "cue_type",
     "image_identity",
-    "phase",
     "button_presence",
     "button_side",
 )
@@ -102,7 +101,11 @@ def searchlight_rsa_single_subject(
         model_rdms["odor_value"] = odor_value_rdm
 
     if is_combined_phase:
-        model_rdms["phase"] = create_phase_rdm(phase_labels)
+        phase_rdm = create_phase_rdm(phase_labels)
+        print(
+            "Phase RDM computed for combined sessions "
+            f"(shape={phase_rdm.shape}); excluded from RSA regression."
+        )
 
     if cue_subset in ("conditioned_only", "preconditioned_only"):
         # In single-cue-type subsets, cue_type has no variance and is dropped.

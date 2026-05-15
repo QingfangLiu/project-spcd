@@ -14,7 +14,6 @@ MODEL_NAMES = (
     "odor_value",
     "cue_type",
     "image_identity",
-    "phase",
     "button_presence",
     "button_side",
 )
@@ -64,8 +63,6 @@ def load_subjects_with_odor_value_ratings(ratings_file: Path) -> set[str]:
 
 def available_targets_for_session(session: str, cue_subset: str) -> list[str]:
     available_targets = list(MODEL_NAMES)
-    if session != "both":
-        available_targets = [t for t in available_targets if t != "phase"]
     if cue_subset in ("conditioned_only", "preconditioned_only"):
         available_targets = [t for t in available_targets if t != "cue_type"]
     return available_targets

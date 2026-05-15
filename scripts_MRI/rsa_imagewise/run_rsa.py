@@ -117,8 +117,6 @@ def main():
             "Target 'odor_value' requires subject pleasantness ratings. "
             "Provide --ratings_file or add the placeholder ratings CSV."
         )
-    if args.target == "phase" and args.session != "both":
-        raise ValueError("Target 'phase' is only available with --session both.")
 
     try:
         searchlight_rsa_single_subject(

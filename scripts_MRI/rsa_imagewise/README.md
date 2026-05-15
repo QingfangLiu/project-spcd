@@ -38,8 +38,11 @@ cross-run RSA mask is built. The `odor_value` model uses premeal ratings for
 premeal samples and postmeal ratings for postmeal samples. For `both`, the six
 subject-specific phase-by-odor ratings are z-scored together before distances
 are computed, preserving pre/post value changes while removing subject-level
-rating scale differences. A `phase` RDM (`premeal` vs `postmeal`) is added as a
-nuisance model and is also available as an output target.
+rating scale differences. A binary `phase` RDM (`premeal` vs `postmeal`) is
+still computed in the combined-session code path, but it is intentionally
+excluded from the RSA regression so pre/post value change remains part of the
+`odor_value` effect instead of being partialled out by a generic phase nuisance
+regressor.
 
 ## Run
 ```bash
@@ -101,9 +104,12 @@ If `--ratings_file` is not provided, the loader falls back to:
 - `odor_value`: subject-specific odor-value-distance model derived from pleasantness ratings. For single-session runs, the three group ratings are z-scored within that session; for `--session both`, the six premeal/postmeal group ratings are z-scored together within subject before distances are computed
 - `cue_type`: preconditioned (`A`, `C`) vs conditioned (`B`, `D`)
 - `image_identity`: cue/image identity ignoring first-vs-second presentation position (`A11_img1` and `A11_img2` are treated as the same identity)
-- `phase`: premeal vs postmeal; only included when running `--session both`
 - `button_presence`: pressed vs none
 - `button_side`: left vs right, with `none` treated as different
+
+The `phase` RDM can still be computed in `--session both` for diagnostics, but
+it is not included in the multiple-regression RSA model and is not written as
+an output target.
 
 `create_odor_group_rdm` remains available in `models.py` for diagnostics or
 future comparisons, but `odor_group` is intentionally excluded from the current
@@ -115,7 +121,6 @@ One file per model regressor:
 - `sub-01_model-odor_value_subset-<...>.nii.gz`
 - `sub-01_model-cue_type_subset-<...>.nii.gz`
 - `sub-01_model-image_identity_subset-<...>.nii.gz`
-- `sub-01_model-phase_subset-<...>.nii.gz` for `--session both`
 - `sub-01_model-button_presence_subset-<...>.nii.gz`
 - `sub-01_model-button_side_subset-<...>.nii.gz`
 
@@ -131,7 +136,7 @@ RSA maps. It loops over:
 
 - sessions: `premeal`, `postmeal`, `both`
 - cue subsets: `subset-all`, `subset-conditioned_only`, `subset-preconditioned_only`
-- models: `odor_value`, `cue_type`, `image_identity`, `button_presence`, `button_side`, `phase`
+- models: `odor_value`, `cue_type`, `image_identity`, `button_presence`, `button_side`
 
 For each available combination, the script masks voxels outside the gray-matter
 mask to `NaN`, smooths the maps with a 6 mm FWHM kernel, and runs a one-sample
@@ -156,10 +161,9 @@ rsa_maps/probe_imagewise/collapsed/group_tmaps/group_model-<model>_<subset>.nii.
 ```
 
 Some requested combinations may be skipped because the corresponding
-subject-level maps do not exist. For example, `phase` is only generated for
-`--session both`, and `cue_type` is dropped for single cue-type subsets because
-it has no variance. The MATLAB script currently excludes `sub-19` and `sub-33`
-from group aggregation.
+subject-level maps do not exist. For example, `cue_type` is dropped for single
+cue-type subsets because it has no variance. The MATLAB script currently
+excludes `sub-19` and `sub-33` from group aggregation.
 
 ## Biowulf
 
@@ -178,9 +182,8 @@ python scripts_MRI/rsa_imagewise/make_swarm_imagewise.py \
 
 With `--split_targets`, the swarm generator writes one task per valid target
 model instead of one task that runs every model for a subject/session. For
-`--sessions premeal postmeal both`, each subject gets 16 tasks for `cue_subset
-all`: five models for premeal, five for postmeal, and six for `both` because
-the combined session also includes `phase`.
+`--sessions premeal postmeal both`, each subject gets 15 tasks for `cue_subset
+all`: five models each for premeal, postmeal, and both.
 
 If `odor_value` is requested as a target, subjects missing compiled ratings
 are skipped automatically when writing the swarm file.

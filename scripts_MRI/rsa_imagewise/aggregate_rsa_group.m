@@ -21,7 +21,7 @@ analysis_subfolder = 'probe_imagewise';
 sessions = {'premeal', 'postmeal', 'both'};
 
 models = {'odor_value', 'cue_type', 'image_identity', ...
-          'button_presence', 'button_side', 'phase'};
+          'button_presence', 'button_side'};
 
 % cue subset versions
 %   subset-all = all cue maps
