@@ -171,23 +171,35 @@ excludes `sub-19` and `sub-33` from group aggregation.
 effect differs between conditioned and preconditioned cue subsets. It is a
 paired subject-level contrast, not a separate test of each subset against zero.
 
-For each subject and session, it subtracts:
+For each subject and session, the calculation starts from the subject-level RSA
+beta maps produced by `run_rsa.py`. The `odor_value` RSA beta is the local
+searchlight coefficient for the odor-value RDM, controlling for the other RDMs
+included in that RSA model. The script subtracts those RSA beta maps within the
+same subject:
 
 ```text
 odor_value subset-conditioned_only - odor_value subset-preconditioned_only
+odor_value subset-preconditioned_only - odor_value subset-conditioned_only
 ```
+
+This asks whether the strength of value representation changes by cue type. It
+does not test whether raw BOLD magnitude differs between conditioned and
+preconditioned cues.
 
 The script writes subject-level difference maps:
 
 ```text
 rsa_maps/probe_imagewise/<session>/subject_diffs/sub-XX_model-odor_value_contrast-conditioned_minus_preconditioned.nii.gz
+rsa_maps/probe_imagewise/<session>/subject_diffs/sub-XX_model-odor_value_contrast-preconditioned_minus_conditioned.nii.gz
 ```
 
 It then masks, smooths, and runs the same one-sample SPM group test against zero
-used by `aggregate_rsa_group.m`, saving:
+used by `aggregate_rsa_group.m`. The group test asks whether the subject-level
+RSA beta difference is reliably greater than zero across subjects. It saves:
 
 ```text
 rsa_maps/probe_imagewise/<session>/group_tmaps/group_model-odor_value_contrast-conditioned_minus_preconditioned.nii.gz
+rsa_maps/probe_imagewise/<session>/group_tmaps/group_model-odor_value_contrast-preconditioned_minus_conditioned.nii.gz
 ```
 
 It runs this for `premeal`, `postmeal`, and `both`. It also creates a collapsed
@@ -196,10 +208,16 @@ maps before the group test:
 
 ```text
 rsa_maps/probe_imagewise/collapsed/group_tmaps/group_model-odor_value_contrast-conditioned_minus_preconditioned.nii.gz
+rsa_maps/probe_imagewise/collapsed/group_tmaps/group_model-odor_value_contrast-preconditioned_minus_conditioned.nii.gz
 ```
 
-Positive t-values indicate stronger odor-value representation for conditioned
-than preconditioned cues. Negative t-values indicate the reverse.
+For `conditioned_minus_preconditioned`, positive t-values indicate stronger
+odor-value representation for conditioned than preconditioned cues. For
+`preconditioned_minus_conditioned`, positive t-values indicate the reverse.
+These are the same paired contrast with opposite signs, so they do not represent
+independent statistical tests. A significant positive cluster in either output
+means the local pattern-value relationship is stronger for the cue type named
+first in the contrast filename.
 
 ## Biowulf
 

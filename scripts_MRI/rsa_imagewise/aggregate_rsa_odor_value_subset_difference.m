@@ -1,9 +1,10 @@
 % Group-level SPM analysis for cue-type modulation of odor-value RSA.
 %
 % This script tests whether odor-value representation differs between
-% conditioned and preconditioned cue subsets:
+% conditioned and preconditioned cue subsets. It writes both directions:
 %
 %   odor_value subset-conditioned_only - odor_value subset-preconditioned_only
+%   odor_value subset-preconditioned_only - odor_value subset-conditioned_only
 %
 % It first creates paired within-subject difference maps, then runs one-sample
 % SPM t-tests against zero for premeal, postmeal, both, and collapsed pre/post.
@@ -19,7 +20,9 @@ sessions = {'premeal', 'postmeal', 'both'};
 model_tag = 'odor_value';
 cond_subset = 'subset-conditioned_only';
 pre_subset = 'subset-preconditioned_only';
-contrast_tag = 'conditioned_minus_preconditioned';
+contrast_tags = {'conditioned_minus_preconditioned', ...
+                 'preconditioned_minus_conditioned'};
+contrast_signs = [1, -1];
 
 fwhm = 6; % smoothing kernel in mm
 
@@ -87,18 +90,31 @@ for si = 1:numel(sessions)
         mkdir(subject_out_dir);
     end
 
-    subject_diff_gz = cell(0, 1);
+    subject_diff_gz = cell(numel(contrast_tags), 1);
+    for ci = 1:numel(contrast_tags)
+        subject_diff_gz{ci} = cell(0, 1);
+    end
 
     for k = 1:numel(subj_keys)
         sid = subj_keys{k};
 
-        out_name = sprintf('%s_model-%s_contrast-%s.nii.gz', ...
-            sid, model_tag, contrast_tag);
-        out_path_gz = fullfile(subject_out_dir, out_name);
-        subject_diff_gz{end+1, 1} = out_path_gz; %#ok<SAGROW>
+        out_paths_gz = cell(numel(contrast_tags), 1);
+        needs_write = false;
 
-        if exist(out_path_gz, 'file')
-            fprintf('Subject difference exists, keeping: %s\n', out_path_gz);
+        for ci = 1:numel(contrast_tags)
+            contrast_tag = contrast_tags{ci};
+            out_name = sprintf('%s_model-%s_contrast-%s.nii.gz', ...
+                sid, model_tag, contrast_tag);
+            out_paths_gz{ci} = fullfile(subject_out_dir, out_name);
+            subject_diff_gz{ci}{end+1, 1} = out_paths_gz{ci}; %#ok<SAGROW>
+
+            if ~exist(out_paths_gz{ci}, 'file')
+                needs_write = true;
+            end
+        end
+
+        if ~needs_write
+            fprintf('Subject differences exist, keeping: %s\n', sid);
             continue;
         end
 
@@ -113,29 +129,45 @@ for si = 1:numel(sessions)
         Ycond = spm_read_vols(Vcond);
         Ypre = spm_read_vols(Vpre);
 
-        Ydiff = Ycond - Ypre;
-        Ydiff(~M) = NaN;
+        Ybase = Ycond - Ypre;
+        Ybase(~M) = NaN;
 
-        out_path_nii = erase(out_path_gz, '.gz');
-        Vout = Vcond;
-        Vout.fname = out_path_nii;
-        Vout.descrip = sprintf('%s %s %s', sid, model_tag, contrast_tag);
-        spm_write_vol(Vout, Ydiff);
+        for ci = 1:numel(contrast_tags)
+            contrast_tag = contrast_tags{ci};
+            out_path_gz = out_paths_gz{ci};
 
-        gzip(out_path_nii);
-        delete(out_path_nii);
+            if exist(out_path_gz, 'file')
+                fprintf('Subject difference exists, keeping: %s\n', out_path_gz);
+                continue;
+            end
 
-        fprintf('Saved subject difference: %s\n', out_path_gz);
+            Ydiff = contrast_signs(ci) .* Ybase;
+
+            out_path_nii = erase(out_path_gz, '.gz');
+            Vout = Vcond;
+            Vout.fname = out_path_nii;
+            Vout.descrip = sprintf('%s %s %s', sid, model_tag, contrast_tag);
+            spm_write_vol(Vout, Ydiff);
+
+            gzip(out_path_nii);
+            delete(out_path_nii);
+
+            fprintf('Saved subject difference: %s\n', out_path_gz);
+        end
     end
 
-    out_group_gz = fullfile(analysis_root, session_tag, group_out_foldername, ...
-        sprintf('group_model-%s_contrast-%s.nii.gz', model_tag, contrast_tag));
+    for ci = 1:numel(contrast_tags)
+        contrast_tag = contrast_tags{ci};
 
-    con_name = sprintf('RSA %s | model-%s | %s > 0', ...
-        session_tag, model_tag, contrast_tag);
+        out_group_gz = fullfile(analysis_root, session_tag, group_out_foldername, ...
+            sprintf('group_model-%s_contrast-%s.nii.gz', model_tag, contrast_tag));
 
-    run_one_sample_spm(subject_diff_gz, out_group_gz, tmp_root, mask_file, ...
-        M, fwhm, con_name);
+        con_name = sprintf('RSA %s | model-%s | %s > 0', ...
+            session_tag, model_tag, contrast_tag);
+
+        run_one_sample_spm(subject_diff_gz{ci}, out_group_gz, tmp_root, mask_file, ...
+            M, fwhm, con_name);
+    end
 end
 
 %% ---------- Part 2: Collapsed across premeal and postmeal ----------
@@ -146,28 +178,35 @@ fprintf('============================================================\n');
 pre_diff_dir = fullfile(analysis_root, 'premeal', subject_diff_foldername);
 post_diff_dir = fullfile(analysis_root, 'postmeal', subject_diff_foldername);
 
-diff_pat = sprintf('sub-*_model-%s_contrast-%s.nii.gz', model_tag, contrast_tag);
+for ci = 1:numel(contrast_tags)
+    contrast_tag = contrast_tags{ci};
 
-pre_gz = dir(fullfile(pre_diff_dir, diff_pat));
-post_gz = dir(fullfile(post_diff_dir, diff_pat));
+    fprintf('\n--- Contrast: %s ---\n', contrast_tag);
 
-pre_gz = drop_skipped_subjects(pre_gz, skip_subs);
-post_gz = drop_skipped_subjects(post_gz, skip_subs);
+    diff_pat = sprintf('sub-*_model-%s_contrast-%s.nii.gz', model_tag, contrast_tag);
 
-fprintf('Premeal difference files: %d | Postmeal difference files: %d\n', ...
-    numel(pre_gz), numel(post_gz));
+    pre_gz = dir(fullfile(pre_diff_dir, diff_pat));
+    post_gz = dir(fullfile(post_diff_dir, diff_pat));
 
-pre_map = files_by_subject(pre_gz);
-post_map = files_by_subject(post_gz);
+    pre_gz = drop_skipped_subjects(pre_gz, skip_subs);
+    post_gz = drop_skipped_subjects(post_gz, skip_subs);
 
-subj_keys = intersect(keys(pre_map), keys(post_map));
-subj_keys = sort(subj_keys);
+    fprintf('Premeal difference files: %d | Postmeal difference files: %d\n', ...
+        numel(pre_gz), numel(post_gz));
 
-fprintf('Subjects with both premeal and postmeal differences: %d\n', numel(subj_keys));
+    pre_map = files_by_subject(pre_gz);
+    post_map = files_by_subject(post_gz);
 
-if isempty(subj_keys)
-    fprintf('No paired pre/post subject differences found; skipping collapsed analysis.\n');
-else
+    subj_keys = intersect(keys(pre_map), keys(post_map));
+    subj_keys = sort(subj_keys);
+
+    fprintf('Subjects with both premeal and postmeal differences: %d\n', numel(subj_keys));
+
+    if isempty(subj_keys)
+        fprintf('No paired pre/post subject differences found; skipping collapsed analysis.\n');
+        continue;
+    end
+
     collapsed_subject_out_dir = fullfile(analysis_root, collapsed_tag, subject_diff_foldername);
     if ~exist(collapsed_subject_out_dir, 'dir')
         mkdir(collapsed_subject_out_dir);
