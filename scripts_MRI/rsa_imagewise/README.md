@@ -165,6 +165,42 @@ subject-level maps do not exist. For example, `cue_type` is dropped for single
 cue-type subsets because it has no variance. The MATLAB script currently
 excludes `sub-19` and `sub-33` from group aggregation.
 
+## Odor-value cue-subset difference
+
+`aggregate_rsa_odor_value_subset_difference.m` tests whether the odor-value RSA
+effect differs between conditioned and preconditioned cue subsets. It is a
+paired subject-level contrast, not a separate test of each subset against zero.
+
+For each subject and session, it subtracts:
+
+```text
+odor_value subset-conditioned_only - odor_value subset-preconditioned_only
+```
+
+The script writes subject-level difference maps:
+
+```text
+rsa_maps/probe_imagewise/<session>/subject_diffs/sub-XX_model-odor_value_contrast-conditioned_minus_preconditioned.nii.gz
+```
+
+It then masks, smooths, and runs the same one-sample SPM group test against zero
+used by `aggregate_rsa_group.m`, saving:
+
+```text
+rsa_maps/probe_imagewise/<session>/group_tmaps/group_model-odor_value_contrast-conditioned_minus_preconditioned.nii.gz
+```
+
+It runs this for `premeal`, `postmeal`, and `both`. It also creates a collapsed
+pre/post analysis by averaging each subject's premeal and postmeal difference
+maps before the group test:
+
+```text
+rsa_maps/probe_imagewise/collapsed/group_tmaps/group_model-odor_value_contrast-conditioned_minus_preconditioned.nii.gz
+```
+
+Positive t-values indicate stronger odor-value representation for conditioned
+than preconditioned cues. Negative t-values indicate the reverse.
+
 ## Biowulf
 
 `make_swarm_imagewise.py` accepts `--ratings_file` and passes it through to
