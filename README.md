@@ -8,6 +8,23 @@ Participants are asked to **fast for 2–4 hours before arrival** to ensure cons
 
 ---
 
+## Subject Info File
+
+`subject_info.csv` is a truncated subject-info file copied from the full
+subject-info file in the data folder. It keeps only the columns needed by this
+repo-level analysis context.
+
+The `pairing` column records cue-category counterbalancing:
+
+- `c`: conditioned cues are characters
+- `p`: conditioned cues are places
+
+With the current cue coding, conditioned cues are even `cue_index` values
+`2, 4, 6, 8, 10, 12`, and preconditioned cues are odd `cue_index` values
+`1, 3, 5, 7, 9, 11`.
+
+---
+
 ## Day-by-Day Procedure
 
 ### Day 0 – Baseline Rating & Odor Selection
