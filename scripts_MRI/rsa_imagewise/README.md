@@ -165,6 +165,56 @@ subject-level maps do not exist. For example, `cue_type` is dropped for single
 cue-type subsets because it has no variance. The MATLAB script currently
 excludes `sub-19` and `sub-33` from group aggregation.
 
+## Cue-type pre/post difference
+
+`aggregate_rsa_cue_type_phase_difference.m` tests whether cue-type RSA
+representation changes from premeal to postmeal. This does not require a new RSA
+run if the subject-level `subset-all` cue-type maps already exist for both
+sessions:
+
+```text
+rsa_maps/probe_imagewise/premeal/sub-XX_model-cue_type_subset-all.nii.gz
+rsa_maps/probe_imagewise/postmeal/sub-XX_model-cue_type_subset-all.nii.gz
+```
+
+The calculation starts from the subject-level `cue_type` RSA beta maps produced
+by `run_rsa.py`. The `cue_type` RSA beta is the local searchlight coefficient
+for the conditioned-vs-preconditioned cue-type RDM, controlling for the other
+RDMs included in that RSA model. The script subtracts those RSA beta maps within
+the same subject:
+
+```text
+cue_type subset-all postmeal - cue_type subset-all premeal
+cue_type subset-all premeal - cue_type subset-all postmeal
+```
+
+This asks whether the strength of cue-type representation is modulated by meal
+phase. It does not test whether raw BOLD magnitude differs between premeal and
+postmeal cues. It should use `subset-all`; `cue_type` is not available in
+`conditioned_only` or `preconditioned_only` maps because cue type has no
+variance within a single cue-type subset.
+
+The script writes subject-level difference maps:
+
+```text
+rsa_maps/probe_imagewise/phase_diffs/subject_diffs/sub-XX_model-cue_type_subset-all_contrast-postmeal_minus_premeal.nii.gz
+rsa_maps/probe_imagewise/phase_diffs/subject_diffs/sub-XX_model-cue_type_subset-all_contrast-premeal_minus_postmeal.nii.gz
+```
+
+It then masks, smooths, and runs the same one-sample SPM group test against zero
+used by `aggregate_rsa_group.m`. The group test asks whether the subject-level
+RSA beta difference is reliably greater than zero across subjects. It saves:
+
+```text
+rsa_maps/probe_imagewise/phase_diffs/group_tmaps/group_model-cue_type_subset-all_contrast-postmeal_minus_premeal.nii.gz
+rsa_maps/probe_imagewise/phase_diffs/group_tmaps/group_model-cue_type_subset-all_contrast-premeal_minus_postmeal.nii.gz
+```
+
+For `postmeal_minus_premeal`, positive t-values indicate stronger cue-type
+representation postmeal than premeal. For `premeal_minus_postmeal`, positive
+t-values indicate the reverse. These are the same paired contrast with opposite
+signs, so they do not represent independent statistical tests.
+
 ## Odor-value cue-subset difference
 
 `aggregate_rsa_odor_value_subset_difference.m` tests whether the odor-value RSA
