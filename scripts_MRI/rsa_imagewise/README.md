@@ -203,14 +203,18 @@ rsa_maps/probe_imagewise/phase_diffs/subject_diffs/sub-XX_model-cue_type_subset-
 rsa_maps/probe_imagewise/phase_diffs/subject_diffs/sub-XX_model-cue_type_subset-all_contrast-premeal_minus_postmeal.nii.gz
 ```
 
-It then masks, smooths, and runs the same one-sample SPM group test against zero
-used by `aggregate_rsa_group.m`. The group test asks whether the subject-level
-RSA beta difference is reliably greater than zero across subjects. It saves:
+It then masks, smooths, and runs persistent one-sample SPM models against zero.
+The group test asks whether the subject-level RSA beta difference is reliably
+greater than zero across subjects. It saves:
 
 ```text
-rsa_maps/probe_imagewise/phase_diffs/group_tmaps/group_model-cue_type_subset-all_contrast-postmeal_minus_premeal.nii.gz
-rsa_maps/probe_imagewise/phase_diffs/group_tmaps/group_model-cue_type_subset-all_contrast-premeal_minus_postmeal.nii.gz
+rsa_maps/probe_imagewise/phase_diffs/group_spm/model-cue_type/subset-all/postmeal_minus_premeal/SPM.mat
+rsa_maps/probe_imagewise/phase_diffs/group_spm/model-cue_type/subset-all/premeal_minus_postmeal/SPM.mat
 ```
+
+Each model folder retains standard SPM outputs and persistent smoothed inputs
+under `spm_inputs/`. For the claim that cue-type representation decreases after
+the meal, inspect `premeal_minus_postmeal`.
 
 For `postmeal_minus_premeal`, positive t-values indicate stronger cue-type
 representation postmeal than premeal. For `premeal_minus_postmeal`, positive

@@ -6,8 +6,8 @@
 %   cue_type subset-all postmeal - cue_type subset-all premeal
 %   cue_type subset-all premeal - cue_type subset-all postmeal
 %
-% It first creates paired within-subject difference maps, then runs one-sample
-% SPM t-tests against zero.
+% It first creates paired within-subject difference maps, then runs persistent
+% second-level SPM one-sample models against zero.
 
 %% ---------- Settings ----------
 addpath('/Users/liuq13/Applications/spm12/');
@@ -28,21 +28,16 @@ mask_file = '/Users/liuq13/SPCD_data/masks/gm_0.1.nii';
 skip_subs = {'sub-19', 'sub-33'};
 
 phase_diff_foldername = 'phase_diffs';
-group_out_foldername = 'group_tmaps';
+group_spm_foldername = 'group_spm';
 subject_diff_foldername = 'subject_diffs';
 
 analysis_root = fullfile(base_dir, analysis_subfolder);
-tmp_root = fullfile(analysis_root, '_tmp_spm_work');
-if ~exist(tmp_root, 'dir')
-    mkdir(tmp_root);
-end
 
 pre_dir = fullfile(analysis_root, 'premeal');
 post_dir = fullfile(analysis_root, 'postmeal');
 
 phase_diff_root = fullfile(analysis_root, phase_diff_foldername);
 subject_out_dir = fullfile(phase_diff_root, subject_diff_foldername);
-group_out_dir = fullfile(phase_diff_root, group_out_foldername);
 
 if ~exist(phase_diff_root, 'dir')
     mkdir(phase_diff_root);
@@ -164,13 +159,11 @@ end
 for ci = 1:numel(contrast_tags)
     contrast_tag = contrast_tags{ci};
 
-    out_group_gz = fullfile(group_out_dir, sprintf( ...
-        'group_model-%s_%s_contrast-%s.nii.gz', ...
-        model_tag, subset_tag, contrast_tag));
-
     con_name = sprintf('RSA cue_type | subset-all | %s > 0', contrast_tag);
+    spm_model_dir = fullfile(phase_diff_root, group_spm_foldername, ...
+        sprintf('model-%s', model_tag), subset_tag, contrast_tag);
 
-    run_one_sample_spm(subject_diff_gz{ci}, out_group_gz, tmp_root, mask_file, ...
+    run_one_sample_spm(subject_diff_gz{ci}, spm_model_dir, mask_file, ...
         M, fwhm, con_name);
 end
 
@@ -221,9 +214,14 @@ function assert_same_space(V1, V2, path1, path2)
     end
 end
 
-function run_one_sample_spm(input_gz_files, out_path_gz, tmp_root, mask_file, M, fwhm, con_name)
-    if exist(out_path_gz, 'file')
-        fprintf('Output exists, skipping: %s\n', out_path_gz);
+function run_one_sample_spm(input_gz_files, spm_model_dir, mask_file, M, fwhm, con_name)
+    spm_input_dir = fullfile(spm_model_dir, 'spm_inputs');
+    spm_mat_path = fullfile(spm_model_dir, 'SPM.mat');
+    spmT_path = fullfile(spm_model_dir, 'spmT_0001.nii');
+
+    if exist(spm_mat_path, 'file') || exist(spmT_path, 'file')
+        fprintf('SPM model output already exists, skipping: %s\n', spm_model_dir);
+        fprintf('Delete that model folder before rerunning this contrast.\n');
         return;
     end
 
@@ -234,17 +232,9 @@ function run_one_sample_spm(input_gz_files, out_path_gz, tmp_root, mask_file, M,
         return;
     end
 
-    out_dir = fileparts(out_path_gz);
-    if ~exist(out_dir, 'dir')
-        mkdir(out_dir);
+    if ~exist(spm_model_dir, 'dir')
+        mkdir(spm_model_dir);
     end
-
-    tmp_dir = tempname(tmp_root);
-    if ~exist(tmp_dir, 'dir')
-        mkdir(tmp_dir);
-    end
-
-    spm_input_dir = fullfile(tmp_dir, 'spm_inputs');
     if ~exist(spm_input_dir, 'dir')
         mkdir(spm_input_dir);
     end
@@ -276,17 +266,14 @@ function run_one_sample_spm(input_gz_files, out_path_gz, tmp_root, mask_file, M,
 
     if isempty(smoothed_files)
         fprintf('No usable smoothed files produced; skipping.\n');
-        cleanup_tmp_dir(tmp_dir);
         return;
     end
-
-    spm_mat_path = fullfile(tmp_dir, 'SPM.mat');
 
     ok = false;
     try
         matlabbatch = {};
 
-        matlabbatch{1}.spm.stats.factorial_design.dir = {tmp_dir};
+        matlabbatch{1}.spm.stats.factorial_design.dir = {spm_model_dir};
         matlabbatch{1}.spm.stats.factorial_design.des.t1.scans = smoothed_files;
 
         matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
@@ -309,7 +296,7 @@ function run_one_sample_spm(input_gz_files, out_path_gz, tmp_root, mask_file, M,
         matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = 1;
         matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
 
-        fprintf('Running SPM batch in tmp work dir: %s\n', tmp_dir);
+        fprintf('Running persistent SPM batch: %s\n', spm_model_dir);
         spm_jobman('run', matlabbatch);
 
         ok = true;
@@ -319,34 +306,15 @@ function run_one_sample_spm(input_gz_files, out_path_gz, tmp_root, mask_file, M,
     end
 
     if ~ok
-        fprintf('SPM run failed; skipping save.\n');
-        cleanup_tmp_dir(tmp_dir);
+        fprintf('SPM run failed; skipping.\n');
         return;
     end
 
-    spmT_path = fullfile(tmp_dir, 'spmT_0001.nii');
     if ~exist(spmT_path, 'file')
-        fprintf('Expected spmT_0001.nii not found; skipping save.\n');
-        cleanup_tmp_dir(tmp_dir);
+        fprintf('Expected spmT_0001.nii not found; skipping.\n');
         return;
     end
 
-    out_path_nii = erase(out_path_gz, '.gz');
-    copyfile(spmT_path, out_path_nii);
-
-    gzip(out_path_nii);
-    delete(out_path_nii);
-
-    fprintf('Saved group t-map: %s\n', out_path_gz);
-
-    cleanup_tmp_dir(tmp_dir);
-end
-
-function cleanup_tmp_dir(tmp_dir)
-    if exist(tmp_dir, 'dir')
-        try
-            rmdir(tmp_dir, 's');
-        catch
-        end
-    end
+    fprintf('Saved SPM group model: %s\n', spm_model_dir);
+    fprintf('Open this SPM.mat in SPM Results: %s\n', spm_mat_path);
 end
