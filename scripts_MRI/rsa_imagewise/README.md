@@ -139,25 +139,27 @@ RSA maps. It loops over:
 - models: `odor_value`, `cue_type`, `image_identity`, `button_presence`, `button_side`
 
 For each available combination, the script masks voxels outside the gray-matter
-mask to `NaN`, smooths the maps with a 6 mm FWHM kernel, and runs a one-sample
-SPM t-test against zero. It saves only the group t-statistic image:
+mask to `NaN`, smooths the maps with a 6 mm FWHM kernel, and runs a persistent
+SPM one-sample t-test against zero. It saves the full second-level SPM model
+folder:
 
 ```text
-rsa_maps/probe_imagewise/<session>/group_tmaps/group_model-<model>_<subset>.nii.gz
+rsa_maps/probe_imagewise/<session>/group_spm/model-<model>/<subset>/SPM.mat
 ```
 
-These `group_model-*.nii.gz` files are SPM `spmT_0001.nii` maps saved in a
-shallow output layout. They are not thresholded statistical reports; they are
-voxelwise t-statistic maps showing where the subject-level RSA beta is reliably
-greater than zero at the group level.
+Each model folder retains the standard SPM outputs, including `SPM.mat`,
+`spmT_0001.nii`, `con_0001.nii`, `beta_0001.nii`, and `ResMS.nii`, plus the
+persistent smoothed input maps under `spm_inputs/`. Open the `SPM.mat` in SPM
+Results to inspect the second-level model. For the vmPFC value analysis, use
+`model-odor_value/subset-all`.
 
 The script also creates a `collapsed` group analysis. For this output, it finds
 subjects with both premeal and postmeal maps for the same model/subset, averages
 each subject's premeal and postmeal RSA maps, smooths those averaged maps, and
-runs the same one-sample group t-test:
+runs the same persistent one-sample SPM model:
 
 ```text
-rsa_maps/probe_imagewise/collapsed/group_tmaps/group_model-<model>_<subset>.nii.gz
+rsa_maps/probe_imagewise/collapsed/group_spm/model-<model>/<subset>/SPM.mat
 ```
 
 Some requested combinations may be skipped because the corresponding

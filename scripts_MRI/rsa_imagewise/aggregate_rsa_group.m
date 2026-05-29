@@ -1,5 +1,5 @@
 % Group-level SPM analysis for RSA searchlight maps (probe_imagewise layout),
-% saving ONLY the group t-stat map (spmT_0001.nii) in a shallow folder layout.
+% saving persistent second-level SPM model folders.
 %
 % Revised version:
 %   - Loops over all current RSA model maps.
@@ -35,12 +35,6 @@ mask_file = '/Users/liuq13/SPCD_data/masks/gm_0.1.nii';
 skip_subs = {'sub-19', 'sub-33'};
 
 collapsed_tag = 'collapsed';
-group_out_foldername = 'group_tmaps';
-
-tmp_root = fullfile(base_dir, analysis_subfolder, '_tmp_spm_work');
-if ~exist(tmp_root, 'dir')
-    mkdir(tmp_root);
-end
 
 %% ---------- Init SPM ----------
 spm('Defaults','fMRI');
@@ -63,8 +57,6 @@ for si = 1:numel(sessions)
         fprintf('Input folder not found, skipping: %s\n', input_dir);
         continue;
     end
-
-    out_dir_session_input = fullfile(analysis_root, session_tag, group_out_foldername);
 
     for subseti = 1:numel(subset_tags)
         subset_tag = subset_tags{subseti};
@@ -92,22 +84,21 @@ for si = 1:numel(sessions)
                 continue;
             end
 
-            out_name = sprintf('group_model-%s%s.nii.gz', ...
-                model_tag, subset_suffix);
+            spm_model_dir = fullfile(input_dir, 'group_spm', ...
+                sprintf('model-%s', model_tag), subset_tag);
+            spm_input_dir = fullfile(spm_model_dir, 'spm_inputs');
+            spm_mat_path = fullfile(spm_model_dir, 'SPM.mat');
+            spmT_path = fullfile(spm_model_dir, 'spmT_0001.nii');
 
-            out_path_gz = fullfile(out_dir_session_input, out_name);
-
-            if exist(out_path_gz, 'file')
-                fprintf('Output exists, skipping: %s\n', out_path_gz);
+            if exist(spm_mat_path, 'file') || exist(spmT_path, 'file')
+                fprintf('SPM model output already exists, skipping: %s\n', spm_model_dir);
+                fprintf('Delete that model folder before rerunning this contrast.\n');
                 continue;
             end
 
-            tmp_dir = tempname(tmp_root);
-            if ~exist(tmp_dir, 'dir')
-                mkdir(tmp_dir);
+            if ~exist(spm_model_dir, 'dir')
+                mkdir(spm_model_dir);
             end
-
-            spm_input_dir = fullfile(tmp_dir, 'spm_inputs');
             if ~exist(spm_input_dir, 'dir')
                 mkdir(spm_input_dir);
             end
@@ -148,16 +139,8 @@ for si = 1:numel(sessions)
 
             if isempty(smoothed_files)
                 fprintf('No usable smoothed files produced; skipping.\n');
-                if exist(tmp_dir, 'dir')
-                    try
-                        rmdir(tmp_dir, 's');
-                    catch
-                    end
-                end
                 continue;
             end
-
-            spm_mat_path = fullfile(tmp_dir, 'SPM.mat');
 
             con_name = sprintf('RSA %s | subset-%s | model-%s > 0', ...
                 session_tag, subset_label, model_tag);
@@ -166,7 +149,7 @@ for si = 1:numel(sessions)
             try
                 matlabbatch = {};
 
-                matlabbatch{1}.spm.stats.factorial_design.dir = {tmp_dir};
+                matlabbatch{1}.spm.stats.factorial_design.dir = {spm_model_dir};
                 matlabbatch{1}.spm.stats.factorial_design.des.t1.scans = smoothed_files;
 
                 matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
@@ -189,7 +172,7 @@ for si = 1:numel(sessions)
                 matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = 1;
                 matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
 
-                fprintf('Running SPM batch in tmp work dir: %s\n', tmp_dir);
+                fprintf('Running persistent SPM batch: %s\n', spm_model_dir);
                 spm_jobman('run', matlabbatch);
 
                 ok = true;
@@ -201,45 +184,16 @@ for si = 1:numel(sessions)
 
             if ~ok
                 fprintf('SPM run failed; skipping.\n');
-                if exist(tmp_dir, 'dir')
-                    try
-                        rmdir(tmp_dir, 's');
-                    catch
-                    end
-                end
                 continue;
             end
 
-            spmT_path = fullfile(tmp_dir, 'spmT_0001.nii');
             if ~exist(spmT_path, 'file')
                 fprintf('Expected spmT_0001.nii not found; skipping.\n');
-                if exist(tmp_dir, 'dir')
-                    try
-                        rmdir(tmp_dir, 's');
-                    catch
-                    end
-                end
                 continue;
             end
 
-            if ~exist(out_dir_session_input, 'dir')
-                mkdir(out_dir_session_input);
-            end
-
-            out_path_nii = fullfile(out_dir_session_input, erase(out_name, '.gz'));
-            copyfile(spmT_path, out_path_nii);
-
-            gzip(out_path_nii);
-            delete(out_path_nii);
-
-            fprintf('Saved group t-map: %s\n', out_path_gz);
-
-            if exist(tmp_dir, 'dir')
-                try
-                    rmdir(tmp_dir, 's');
-                catch
-                end
-            end
+            fprintf('Saved SPM group model: %s\n', spm_model_dir);
+            fprintf('Open this SPM.mat in SPM Results: %s\n', spm_mat_path);
         end
     end
 end
@@ -248,8 +202,6 @@ end
 fprintf('\n============================================================\n');
 fprintf('>>> COLLAPSED (WITHIN-SUBJECT AVERAGE) GROUP ANALYSIS\n');
 fprintf('============================================================\n');
-
-out_dir_collapsed_input = fullfile(analysis_root, collapsed_tag, group_out_foldername);
 
 pre_dir  = fullfile(analysis_root, 'premeal');
 post_dir = fullfile(analysis_root, 'postmeal');
@@ -321,22 +273,21 @@ for subseti = 1:numel(subset_tags)
             continue;
         end
 
-        out_name = sprintf('group_model-%s%s.nii.gz', ...
-            model_tag, subset_suffix);
+        spm_model_dir = fullfile(analysis_root, collapsed_tag, 'group_spm', ...
+            sprintf('model-%s', model_tag), subset_tag);
+        spm_input_dir = fullfile(spm_model_dir, 'spm_inputs');
+        spm_mat_path = fullfile(spm_model_dir, 'SPM.mat');
+        spmT_path = fullfile(spm_model_dir, 'spmT_0001.nii');
 
-        out_path_gz = fullfile(out_dir_collapsed_input, out_name);
-
-        if exist(out_path_gz, 'file')
-            fprintf('Output exists, skipping: %s\n', out_path_gz);
+        if exist(spm_mat_path, 'file') || exist(spmT_path, 'file')
+            fprintf('SPM model output already exists, skipping: %s\n', spm_model_dir);
+            fprintf('Delete that model folder before rerunning this contrast.\n');
             continue;
         end
 
-        tmp_dir = tempname(tmp_root);
-        if ~exist(tmp_dir, 'dir')
-            mkdir(tmp_dir);
+        if ~exist(spm_model_dir, 'dir')
+            mkdir(spm_model_dir);
         end
-
-        spm_input_dir = fullfile(tmp_dir, 'spm_inputs');
         if ~exist(spm_input_dir, 'dir')
             mkdir(spm_input_dir);
         end
@@ -395,16 +346,8 @@ for subseti = 1:numel(subset_tags)
 
         if isempty(smoothed_files)
             fprintf('No usable collapsed smoothed files; skipping.\n');
-            if exist(tmp_dir, 'dir')
-                try
-                    rmdir(tmp_dir, 's');
-                catch
-                end
-            end
             continue;
         end
-
-        spm_mat_path = fullfile(tmp_dir, 'SPM.mat');
 
         con_name = sprintf('RSA collapsed | subset-%s | model-%s > 0', ...
             subset_label, model_tag);
@@ -413,7 +356,7 @@ for subseti = 1:numel(subset_tags)
         try
             matlabbatch = {};
 
-            matlabbatch{1}.spm.stats.factorial_design.dir = {tmp_dir};
+            matlabbatch{1}.spm.stats.factorial_design.dir = {spm_model_dir};
             matlabbatch{1}.spm.stats.factorial_design.des.t1.scans = smoothed_files;
 
             matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
@@ -436,7 +379,7 @@ for subseti = 1:numel(subset_tags)
             matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = 1;
             matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
 
-            fprintf('Running SPM batch in tmp work dir: %s\n', tmp_dir);
+            fprintf('Running persistent SPM batch: %s\n', spm_model_dir);
             spm_jobman('run', matlabbatch);
 
             ok = true;
@@ -448,45 +391,16 @@ for subseti = 1:numel(subset_tags)
 
         if ~ok
             fprintf('SPM run failed; skipping.\n');
-            if exist(tmp_dir, 'dir')
-                try
-                    rmdir(tmp_dir, 's');
-                catch
-                end
-            end
             continue;
         end
 
-        spmT_path = fullfile(tmp_dir, 'spmT_0001.nii');
         if ~exist(spmT_path, 'file')
             fprintf('Expected spmT_0001.nii not found; skipping.\n');
-            if exist(tmp_dir, 'dir')
-                try
-                    rmdir(tmp_dir, 's');
-                catch
-                end
-            end
             continue;
         end
 
-        if ~exist(out_dir_collapsed_input, 'dir')
-            mkdir(out_dir_collapsed_input);
-        end
-
-        out_path_nii = fullfile(out_dir_collapsed_input, erase(out_name, '.gz'));
-        copyfile(spmT_path, out_path_nii);
-
-        gzip(out_path_nii);
-        delete(out_path_nii);
-
-        fprintf('Saved collapsed group t-map: %s\n', out_path_gz);
-
-        if exist(tmp_dir, 'dir')
-            try
-                rmdir(tmp_dir, 's');
-            catch
-            end
-        end
+        fprintf('Saved collapsed SPM group model: %s\n', spm_model_dir);
+        fprintf('Open this SPM.mat in SPM Results: %s\n', spm_mat_path);
     end
 end
 
