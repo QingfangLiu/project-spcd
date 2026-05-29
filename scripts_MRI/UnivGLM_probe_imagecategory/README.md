@@ -72,16 +72,20 @@ subject_contrasts/collapsed/sub-XX_session-collapsed_contrast-character_gt_place
 subject_contrasts/collapsed/sub-XX_session-collapsed_contrast-place_gt_character_mode-both.nii
 ```
 
-Group t-maps:
+Group SPM second-level models:
 
 ```text
-group_tmaps/premeal/group_session-premeal_contrast-character_gt_place.nii.gz
-group_tmaps/premeal/group_session-premeal_contrast-place_gt_character.nii.gz
-group_tmaps/postmeal/group_session-postmeal_contrast-character_gt_place.nii.gz
-group_tmaps/postmeal/group_session-postmeal_contrast-place_gt_character.nii.gz
-group_tmaps/collapsed/group_session-collapsed_contrast-character_gt_place.nii.gz
-group_tmaps/collapsed/group_session-collapsed_contrast-place_gt_character.nii.gz
+group_spm/premeal/character_gt_place/SPM.mat
+group_spm/premeal/place_gt_character/SPM.mat
+group_spm/postmeal/character_gt_place/SPM.mat
+group_spm/postmeal/place_gt_character/SPM.mat
+group_spm/collapsed/character_gt_place/SPM.mat
+group_spm/collapsed/place_gt_character/SPM.mat
 ```
+
+Each SPM model folder also contains the standard SPM outputs such as
+`spmT_0001.nii`, `con_0001.nii`, `beta_0001.nii`, `ResMS.nii`, and the
+persistent smoothed input maps under `spm_inputs/`.
 
 ## Analysis Details
 
@@ -109,12 +113,14 @@ The group analysis is whole-brain within the explicit gray-matter mask:
 ```
 
 Before group testing, subject maps are masked outside gray matter, smoothed with
-a 6 mm FWHM kernel, and entered into SPM one-sample t-tests against zero.
+a 6 mm FWHM kernel, and entered into persistent SPM one-sample t-tests against
+zero.
 
 The script skips `sub-19` and `sub-33`, matching the other group aggregation
 scripts.
 
-Existing subject maps and group outputs are skipped rather than overwritten.
+Existing subject maps and SPM group model folders are skipped rather than
+overwritten.
 
 ## Run
 
