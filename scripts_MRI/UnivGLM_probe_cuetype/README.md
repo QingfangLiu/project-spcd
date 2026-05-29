@@ -47,16 +47,20 @@ subject_contrasts/collapsed/sub-XX_session-collapsed_contrast-conditioned_gt_pre
 subject_contrasts/collapsed/sub-XX_session-collapsed_contrast-preconditioned_gt_conditioned_mode-both.nii
 ```
 
-Group t-maps:
+Group SPM second-level models:
 
 ```text
-group_tmaps/premeal/group_session-premeal_contrast-conditioned_gt_preconditioned.nii.gz
-group_tmaps/premeal/group_session-premeal_contrast-preconditioned_gt_conditioned.nii.gz
-group_tmaps/postmeal/group_session-postmeal_contrast-conditioned_gt_preconditioned.nii.gz
-group_tmaps/postmeal/group_session-postmeal_contrast-preconditioned_gt_conditioned.nii.gz
-group_tmaps/collapsed/group_session-collapsed_contrast-conditioned_gt_preconditioned.nii.gz
-group_tmaps/collapsed/group_session-collapsed_contrast-preconditioned_gt_conditioned.nii.gz
+group_spm/premeal/conditioned_gt_preconditioned/SPM.mat
+group_spm/premeal/preconditioned_gt_conditioned/SPM.mat
+group_spm/postmeal/conditioned_gt_preconditioned/SPM.mat
+group_spm/postmeal/preconditioned_gt_conditioned/SPM.mat
+group_spm/collapsed/conditioned_gt_preconditioned/SPM.mat
+group_spm/collapsed/preconditioned_gt_conditioned/SPM.mat
 ```
+
+Each SPM model folder also contains the standard SPM outputs such as
+`spmT_0001.nii`, `con_0001.nii`, `beta_0001.nii`, `ResMS.nii`, and the
+persistent smoothed input maps under `spm_inputs/`.
 
 ## Analysis Details
 
@@ -82,11 +86,11 @@ The group analysis is whole-brain within the explicit gray-matter mask:
 /Users/liuq13/SPCD_data/masks/gm_0.1.nii
 ```
 
-Before group testing, subject maps are masked outside gray matter, smoothed with a 6 mm FWHM kernel, and entered into SPM one-sample t-tests against zero.
+Before group testing, subject maps are masked outside gray matter, smoothed with a 6 mm FWHM kernel, and entered into persistent SPM one-sample t-tests against zero.
 
 The script skips `sub-19` and `sub-33`, matching the RSA group aggregation script.
 
-Existing subject maps and group outputs are skipped rather than overwritten.
+Existing subject maps and SPM group model folders are skipped rather than overwritten.
 
 ## Run
 

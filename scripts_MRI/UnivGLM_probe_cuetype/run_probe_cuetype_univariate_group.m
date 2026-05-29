@@ -11,7 +11,7 @@
 % This script:
 %   1) Builds subject-level beta contrast maps for each session.
 %   2) Builds collapsed subject maps by averaging premeal and postmeal maps.
-%   3) Runs SPM one-sample group tests for both contrast directions.
+%   3) Runs persistent SPM one-sample group models for both contrast directions.
 %   4) Uses the explicit gray-matter mask gm_0.1.nii.
 %   5) Skips outputs that already exist.
 
@@ -25,8 +25,7 @@ glm_root = fullfile(base_dir, 'GLM');
 
 out_root = fullfile(glm_root, 'probe_cuewise_univariate_cuetype');
 subject_out_root = fullfile(out_root, 'subject_contrasts');
-group_out_root = fullfile(out_root, 'group_tmaps');
-tmp_root = fullfile(out_root, '_tmp_spm_work');
+group_spm_root = fullfile(out_root, 'group_spm');
 
 mask_file = fullfile(base_dir, 'masks', 'gm_0.1.nii');
 
@@ -46,8 +45,7 @@ fwhm = 6; % smoothing kernel in mm for group tests
 
 ensure_dir(out_root);
 ensure_dir(subject_out_root);
-ensure_dir(group_out_root);
-ensure_dir(tmp_root);
+ensure_dir(group_spm_root);
 
 %% ---------- Init SPM ----------
 spm('Defaults', 'fMRI');
@@ -184,8 +182,8 @@ for si = 1:numel(group_sessions)
         contrast_tag = contrast_tags{di};
 
         run_group_one_sample( ...
-            subject_session_dir, group_out_root, session_tag, contrast_tag, ...
-            mode, skip_subs, M, mask_file, fwhm, tmp_root);
+            subject_session_dir, group_spm_root, session_tag, contrast_tag, ...
+            mode, skip_subs, M, mask_file, fwhm);
     end
 end
 
@@ -397,7 +395,7 @@ function sub = parse_subject_id(fname)
     end
 end
 
-function run_group_one_sample(subject_session_dir, group_out_root, session_tag, contrast_tag, mode, skip_subs, M, mask_file, fwhm, tmp_root)
+function run_group_one_sample(subject_session_dir, group_spm_root, session_tag, contrast_tag, mode, skip_subs, M, mask_file, fwhm)
     pat = sprintf('sub-*_session-%s_contrast-%s_mode-%s.nii', ...
         session_tag, contrast_tag, mode);
     files = dir(fullfile(subject_session_dir, pat));
@@ -418,23 +416,19 @@ function run_group_one_sample(subject_session_dir, group_out_root, session_tag, 
         return;
     end
 
-    out_dir = fullfile(group_out_root, session_tag);
-    ensure_dir(out_dir);
+    spm_model_dir = fullfile(group_spm_root, session_tag, contrast_tag);
+    spm_input_dir = fullfile(spm_model_dir, 'spm_inputs');
+    ensure_dir(spm_model_dir);
+    ensure_dir(spm_input_dir);
 
-    out_name = sprintf('group_session-%s_contrast-%s.nii.gz', ...
-        session_tag, contrast_tag);
-    out_path_gz = fullfile(out_dir, out_name);
-    out_path_nii = fullfile(out_dir, erase(out_name, '.gz'));
+    spm_mat_path = fullfile(spm_model_dir, 'SPM.mat');
+    spmT_path = fullfile(spm_model_dir, 'spmT_0001.nii');
 
-    if exist(out_path_gz, 'file') || exist(out_path_nii, 'file')
-        fprintf('[SKIP] Group output exists: %s\n', out_path_gz);
+    if exist(spm_mat_path, 'file') || exist(spmT_path, 'file')
+        fprintf('[SKIP] SPM model output already exists: %s\n', spm_model_dir);
+        fprintf('       Delete that model folder before rerunning this contrast.\n');
         return;
     end
-
-    tmp_dir = tempname(tmp_root);
-    ensure_dir(tmp_dir);
-    spm_input_dir = fullfile(tmp_dir, 'spm_inputs');
-    ensure_dir(spm_input_dir);
 
     smoothed_files = cell(0, 1);
 
@@ -463,7 +457,6 @@ function run_group_one_sample(subject_session_dir, group_out_root, session_tag, 
         smoothed_files{end+1, 1} = [smooth_path ',1']; %#ok<AGROW>
     end
 
-    spm_mat_path = fullfile(tmp_dir, 'SPM.mat');
     con_name = sprintf('Probe cue type | %s | %s > 0', ...
         session_tag, strrep(contrast_tag, '_', ' '));
 
@@ -471,7 +464,7 @@ function run_group_one_sample(subject_session_dir, group_out_root, session_tag, 
     try
         matlabbatch = {};
 
-        matlabbatch{1}.spm.stats.factorial_design.dir = {tmp_dir};
+        matlabbatch{1}.spm.stats.factorial_design.dir = {spm_model_dir};
         matlabbatch{1}.spm.stats.factorial_design.des.t1.scans = smoothed_files;
         matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
         matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
@@ -491,7 +484,7 @@ function run_group_one_sample(subject_session_dir, group_out_root, session_tag, 
         matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = 1;
         matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
 
-        fprintf('Running SPM group batch in tmp dir: %s\n', tmp_dir);
+        fprintf('Running persistent SPM group batch: %s\n', spm_model_dir);
         spm_jobman('run', matlabbatch);
         ok = true;
     catch ME
@@ -504,22 +497,11 @@ function run_group_one_sample(subject_session_dir, group_out_root, session_tag, 
         return;
     end
 
-    spmT_path = fullfile(tmp_dir, 'spmT_0001.nii');
     if ~exist(spmT_path, 'file')
         fprintf('[SKIP] Expected spmT_0001.nii not found: %s\n', spmT_path);
         return;
     end
 
-    copyfile(spmT_path, out_path_nii);
-    gzip(out_path_nii);
-    delete(out_path_nii);
-
-    fprintf('Saved group t-map: %s\n', out_path_gz);
-
-    if exist(tmp_dir, 'dir')
-        try
-            rmdir(tmp_dir, 's');
-        catch
-        end
-    end
+    fprintf('Saved SPM group model: %s\n', spm_model_dir);
+    fprintf('Open this SPM.mat in SPM Results: %s\n', spm_mat_path);
 end
