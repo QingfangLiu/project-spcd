@@ -68,6 +68,8 @@ MODEL_NAMES = (
     "button_side",
 )
 
+DIAGNOSTIC_MODEL_NAMES = MODEL_NAMES
+
 BETA_INDEX_TEMPLATE = "{sub}_{session_tag}_run-{run}_beta_index.csv"
 EVENTS_TEMPLATE = "{sub}_task-{session_tag}_run-{run}_events.tsv"
 
@@ -273,6 +275,120 @@ def _cross_run_pair_mask(run_ids: np.ndarray) -> np.ndarray:
     return mat[np.tril_indices(n, k=-1)]
 
 
+def _cross_run_pair_table(samples: list[dict], run_ids: np.ndarray, pair_mask: np.ndarray) -> pd.DataFrame:
+    rows = []
+    n = len(samples)
+    full_pair_idx = 0
+    kept_pair_idx = 0
+    for i in range(n):
+        for j in range(i):
+            if pair_mask[full_pair_idx]:
+                rows.append(
+                    {
+                        "pair_index": kept_pair_idx,
+                        "sample_i": i,
+                        "sample_j": j,
+                        "run_i": int(run_ids[i]),
+                        "run_j": int(run_ids[j]),
+                        "trial_i": samples[i]["trial"],
+                        "trial_j": samples[j]["trial"],
+                        "condition_i": samples[i]["condition"],
+                        "condition_j": samples[j]["condition"],
+                        "sample_label_i": samples[i]["sample_label"],
+                        "sample_label_j": samples[j]["sample_label"],
+                        "button_label_i": samples[i]["button_label"],
+                        "button_label_j": samples[j]["button_label"],
+                    }
+                )
+                kept_pair_idx += 1
+            full_pair_idx += 1
+    return pd.DataFrame(rows)
+
+
+def _sample_nan_report(
+    samples: list[dict],
+    raw_patterns: np.ndarray,
+    analysis_patterns: np.ndarray,
+) -> pd.DataFrame:
+    sample_df = pd.DataFrame(samples).copy()
+    sample_df.insert(0, "sample_index", np.arange(len(sample_df), dtype=int))
+
+    raw_finite = np.isfinite(raw_patterns)
+    analysis_finite = np.isfinite(analysis_patterns)
+    report = sample_df[
+        [
+            "sample_index",
+            "sub",
+            "session",
+            "run",
+            "trial",
+            "img_index",
+            "condition",
+            "sample_label",
+            "button_label",
+            "beta_path",
+        ]
+    ].copy()
+    report["n_voxels"] = raw_patterns.shape[1]
+    report["raw_finite_voxels"] = raw_finite.sum(axis=1).astype(int)
+    report["raw_nan_voxels"] = np.isnan(raw_patterns).sum(axis=1).astype(int)
+    report["raw_nonfinite_voxels"] = (~raw_finite).sum(axis=1).astype(int)
+    report["analysis_finite_voxels"] = analysis_finite.sum(axis=1).astype(int)
+    report["analysis_nan_voxels"] = np.isnan(analysis_patterns).sum(axis=1).astype(int)
+    report["analysis_nonfinite_voxels"] = (~analysis_finite).sum(axis=1).astype(int)
+    return report
+
+
+def _write_roi_diagnostics(
+    diagnostics_root: Path,
+    sub: str,
+    cue_subset: str,
+    samples: list[dict],
+    raw_patterns: np.ndarray,
+    analysis_patterns: np.ndarray,
+    run_ids: np.ndarray,
+    roi_mask: np.ndarray,
+    neural_rdm: np.ndarray | None = None,
+    pair_mask: np.ndarray | None = None,
+    model_rdms: dict | None = None,
+) -> None:
+    sub_dir = diagnostics_root / sub
+    sub_dir.mkdir(parents=True, exist_ok=True)
+
+    prefix = _sanitize_label(cue_subset)
+    sample_df = pd.DataFrame(samples).copy()
+    sample_df.insert(0, "sample_index", np.arange(len(sample_df), dtype=int))
+    sample_df.to_csv(sub_dir / f"{prefix}_samples.csv", index=False, na_rep="NaN")
+
+    nan_report = _sample_nan_report(samples, raw_patterns, analysis_patterns)
+    nan_report.to_csv(sub_dir / f"{prefix}_nan_report.csv", index=False, na_rep="NaN")
+
+    roi_voxel_indices = np.column_stack(np.where(roi_mask))
+    np.savez_compressed(
+        sub_dir / f"{prefix}_roi_patterns.npz",
+        raw_patterns=raw_patterns,
+        analysis_patterns=analysis_patterns,
+        run_ids=run_ids,
+        sample_labels=np.asarray([sample["sample_label"] for sample in samples], dtype=str),
+        button_labels=np.asarray([sample["button_label"] for sample in samples], dtype=str),
+        conditions=np.asarray([sample["condition"] for sample in samples], dtype=str),
+        beta_paths=np.asarray([sample["beta_path"] for sample in samples], dtype=str),
+        roi_voxel_indices=roi_voxel_indices,
+        raw_nan_by_voxel=np.isnan(raw_patterns).sum(axis=0).astype(int),
+        analysis_nan_by_voxel=np.isnan(analysis_patterns).sum(axis=0).astype(int),
+    )
+
+    if neural_rdm is None or pair_mask is None:
+        return
+
+    pair_df = _cross_run_pair_table(samples, run_ids, pair_mask)
+    pair_df["neural_y"] = vectorize_lower_triangle(neural_rdm, pair_mask=pair_mask)
+    if model_rdms is not None:
+        for name in DIAGNOSTIC_MODEL_NAMES:
+            pair_df[name] = vectorize_lower_triangle(model_rdms[name], pair_mask=pair_mask)
+    pair_df.to_csv(sub_dir / f"{prefix}_neural_y.csv", index=False, na_rep="NaN")
+
+
 def _run_roi_rsa_for_subset(
     base_dir: Path,
     sub: str,
@@ -283,6 +399,7 @@ def _run_roi_rsa_for_subset(
     roi_mask_path: Path,
     button_scope: str,
     center_within_run: bool,
+    diagnostics_root: Path | None = None,
 ) -> dict:
     samples = _build_samples(
         base_dir=base_dir,
@@ -297,9 +414,10 @@ def _run_roi_rsa_for_subset(
     if np.unique(run_ids).size < 2:
         raise RuntimeError(f"Need at least 2 runs for cross-run RSA: {sub} {cue_subset}")
 
-    patterns = _load_roi_patterns(samples, roi_img, roi_mask)
+    raw_patterns = _load_roi_patterns(samples, roi_img, roi_mask)
+    patterns = raw_patterns
     if center_within_run:
-        patterns = _center_within_run(patterns, run_ids)
+        patterns = _center_within_run(raw_patterns, run_ids)
 
     sample_labels = np.asarray([sample["sample_label"] for sample in samples], dtype=object)
     button_labels = np.asarray([sample["button_label"] for sample in samples], dtype=object)
@@ -313,6 +431,20 @@ def _run_roi_rsa_for_subset(
 
     neural_rdm = compute_correlation_rdm(patterns)
     pair_mask = _cross_run_pair_mask(run_ids)
+    if diagnostics_root is not None:
+        _write_roi_diagnostics(
+            diagnostics_root=diagnostics_root,
+            sub=sub,
+            cue_subset=cue_subset,
+            samples=samples,
+            raw_patterns=raw_patterns,
+            analysis_patterns=patterns,
+            run_ids=run_ids,
+            roi_mask=roi_mask,
+            neural_rdm=neural_rdm,
+            pair_mask=pair_mask,
+            model_rdms=model_rdms,
+        )
     betas = rsa_multiple_regression(neural_rdm, model_rdms, pair_mask=pair_mask)
 
     odor_vec = vectorize_lower_triangle(model_rdms["odor_identity"], pair_mask=pair_mask)
@@ -367,6 +499,11 @@ def main():
         default=None,
         help="Default: <base_dir>/rsa_roi/probe_imagewise_odor_identity/premeal",
     )
+    parser.add_argument(
+        "--save_diagnostics",
+        action="store_true",
+        help="Save per-subject ROI patterns, sample metadata, NaN reports, and neural y vectors",
+    )
     parser.add_argument("--strict", action="store_true", help="Fail immediately instead of skipping failed subject/subset runs")
     args = parser.parse_args()
 
@@ -380,6 +517,7 @@ def main():
     )
     output_dir.mkdir(parents=True, exist_ok=True)
     output_csv = output_dir / f"roi-{roi_name}_subject_betas.csv"
+    diagnostics_root = output_dir / "diagnostics" if args.save_diagnostics else None
 
     gm_mask_path = base_dir / "masks" / "gm_0.1.nii"
     roi_img, roi_mask, n_roi_raw, n_roi_final, n_gm = _load_mask(
@@ -403,6 +541,8 @@ def main():
     print(f"Button scope:          {args.button_scope}")
     print(f"Center within run:     {args.center_within_run}")
     print(f"Output CSV:            {output_csv}")
+    if diagnostics_root is not None:
+        print(f"Diagnostics dir:       {diagnostics_root}")
     print("=" * 80)
 
     rows = []
@@ -420,6 +560,7 @@ def main():
                     roi_mask_path=roi_mask_path,
                     button_scope=args.button_scope,
                     center_within_run=args.center_within_run,
+                    diagnostics_root=diagnostics_root,
                 )
                 rows.append(row)
                 print(

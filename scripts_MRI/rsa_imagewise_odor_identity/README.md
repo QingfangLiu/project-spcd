@@ -115,7 +115,8 @@ python scripts_MRI/rsa_imagewise_odor_identity/run_roi_rsa.py \
   --base_dir /Users/liuq13/SPCD_data \
   --roi_mask masks/MiddleFrontalGyrus_from_spmT_0001_rsa_cue_type.hdr \
   --roi_name lateral_ofc \
-  --center_within_run
+  --center_within_run \
+  --save_diagnostics
 ```
 
 `--roi_mask` may be an absolute path or a path relative to `base_dir`. The ROI
@@ -130,6 +131,28 @@ available. The script writes:
 The CSV includes one row per subject and cue subset, with `odor_identity_beta`,
 nuisance/control betas, ROI voxel counts, sample counts, and cross-run pair
 counts.
+
+With `--save_diagnostics`, the script also writes per-subject diagnostics:
+
+```text
+<base_dir>/rsa_roi/probe_imagewise_odor_identity/premeal/
+  diagnostics/
+    sub-15/
+      conditioned_odor_only_samples.csv
+      conditioned_odor_only_nan_report.csv
+      conditioned_odor_only_roi_patterns.npz
+      conditioned_odor_only_neural_y.csv
+      preconditioned_odor_only_samples.csv
+      preconditioned_odor_only_nan_report.csv
+      preconditioned_odor_only_roi_patterns.npz
+      preconditioned_odor_only_neural_y.csv
+```
+
+The `.npz` file contains both `raw_patterns` and `analysis_patterns`; when
+`--center_within_run` is used, `analysis_patterns` is the centered matrix used
+for the neural RDM. The `neural_y.csv` file contains the cross-run neural
+dissimilarity vector and the corresponding model-RDM columns used in the
+regression.
 
 To summarize subject-level ROI betas:
 
