@@ -266,6 +266,42 @@ def _center_within_run(patterns: np.ndarray, run_ids: np.ndarray) -> np.ndarray:
     return centered
 
 
+def _prepare_analysis_patterns(
+    raw_patterns: np.ndarray,
+    run_ids: np.ndarray,
+    center_within_run: bool,
+    drop_nonfinite_voxels: bool,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict]:
+    finite_voxel_mask = np.isfinite(raw_patterns).all(axis=0)
+    n_voxels_raw = int(raw_patterns.shape[1])
+    n_voxels_nonfinite = int((~finite_voxel_mask).sum())
+
+    if drop_nonfinite_voxels:
+        used_voxel_mask = finite_voxel_mask
+    else:
+        used_voxel_mask = np.ones(n_voxels_raw, dtype=bool)
+
+    n_voxels_used = int(used_voxel_mask.sum())
+    if n_voxels_used == 0:
+        raise ValueError(
+            "No ROI voxels remain after dropping nonfinite voxels "
+            f"from {n_voxels_raw} raw ROI voxels."
+        )
+
+    raw_used_patterns = raw_patterns[:, used_voxel_mask]
+    analysis_patterns = raw_used_patterns
+    if center_within_run:
+        analysis_patterns = _center_within_run(raw_used_patterns, run_ids)
+
+    voxel_qc = {
+        "n_voxels_raw": n_voxels_raw,
+        "n_voxels_used": n_voxels_used,
+        "n_voxels_nonfinite": n_voxels_nonfinite,
+        "n_voxels_dropped_nonfinite": n_voxels_raw - n_voxels_used,
+    }
+    return raw_used_patterns, analysis_patterns, used_voxel_mask, voxel_qc
+
+
 def _cross_run_pair_mask(run_ids: np.ndarray) -> np.ndarray:
     n = len(run_ids)
     mat = np.zeros((n, n), dtype=bool)
@@ -329,7 +365,9 @@ def _sample_nan_report(
             "beta_path",
         ]
     ].copy()
-    report["n_voxels"] = raw_patterns.shape[1]
+    report["n_voxels_raw"] = raw_patterns.shape[1]
+    report["n_voxels_analysis"] = analysis_patterns.shape[1]
+    report["n_voxels_dropped_nonfinite"] = raw_patterns.shape[1] - analysis_patterns.shape[1]
     report["raw_finite_voxels"] = raw_finite.sum(axis=1).astype(int)
     report["raw_nan_voxels"] = np.isnan(raw_patterns).sum(axis=1).astype(int)
     report["raw_nonfinite_voxels"] = (~raw_finite).sum(axis=1).astype(int)
@@ -345,9 +383,12 @@ def _write_roi_diagnostics(
     cue_subset: str,
     samples: list[dict],
     raw_patterns: np.ndarray,
+    raw_used_patterns: np.ndarray,
     analysis_patterns: np.ndarray,
     run_ids: np.ndarray,
     roi_mask: np.ndarray,
+    used_voxel_mask: np.ndarray,
+    voxel_qc: dict,
     neural_rdm: np.ndarray | None = None,
     pair_mask: np.ndarray | None = None,
     model_rdms: dict | None = None,
@@ -364,9 +405,11 @@ def _write_roi_diagnostics(
     nan_report.to_csv(sub_dir / f"{prefix}_nan_report.csv", index=False, na_rep="NaN")
 
     roi_voxel_indices = np.column_stack(np.where(roi_mask))
+    used_roi_voxel_indices = roi_voxel_indices[used_voxel_mask]
     np.savez_compressed(
         sub_dir / f"{prefix}_roi_patterns.npz",
         raw_patterns=raw_patterns,
+        raw_used_patterns=raw_used_patterns,
         analysis_patterns=analysis_patterns,
         run_ids=run_ids,
         sample_labels=np.asarray([sample["sample_label"] for sample in samples], dtype=str),
@@ -374,8 +417,17 @@ def _write_roi_diagnostics(
         conditions=np.asarray([sample["condition"] for sample in samples], dtype=str),
         beta_paths=np.asarray([sample["beta_path"] for sample in samples], dtype=str),
         roi_voxel_indices=roi_voxel_indices,
+        raw_roi_voxel_indices=roi_voxel_indices,
+        analysis_roi_voxel_indices=used_roi_voxel_indices,
+        used_voxel_mask=used_voxel_mask,
+        n_voxels_raw=voxel_qc["n_voxels_raw"],
+        n_voxels_used=voxel_qc["n_voxels_used"],
+        n_voxels_nonfinite=voxel_qc["n_voxels_nonfinite"],
+        n_voxels_dropped_nonfinite=voxel_qc["n_voxels_dropped_nonfinite"],
         raw_nan_by_voxel=np.isnan(raw_patterns).sum(axis=0).astype(int),
+        raw_nonfinite_by_voxel=(~np.isfinite(raw_patterns)).sum(axis=0).astype(int),
         analysis_nan_by_voxel=np.isnan(analysis_patterns).sum(axis=0).astype(int),
+        analysis_nonfinite_by_voxel=(~np.isfinite(analysis_patterns)).sum(axis=0).astype(int),
     )
 
     if neural_rdm is None or pair_mask is None:
@@ -399,6 +451,7 @@ def _run_roi_rsa_for_subset(
     roi_mask_path: Path,
     button_scope: str,
     center_within_run: bool,
+    drop_nonfinite_voxels: bool,
     diagnostics_root: Path | None = None,
 ) -> dict:
     samples = _build_samples(
@@ -415,9 +468,26 @@ def _run_roi_rsa_for_subset(
         raise RuntimeError(f"Need at least 2 runs for cross-run RSA: {sub} {cue_subset}")
 
     raw_patterns = _load_roi_patterns(samples, roi_img, roi_mask)
-    patterns = raw_patterns
-    if center_within_run:
-        patterns = _center_within_run(raw_patterns, run_ids)
+    raw_used_patterns, patterns, used_voxel_mask, voxel_qc = _prepare_analysis_patterns(
+        raw_patterns=raw_patterns,
+        run_ids=run_ids,
+        center_within_run=center_within_run,
+        drop_nonfinite_voxels=drop_nonfinite_voxels,
+    )
+
+    if voxel_qc["n_voxels_nonfinite"] > 0:
+        if drop_nonfinite_voxels:
+            print(
+                f"[QC] {sub} {cue_subset}: dropped "
+                f"{voxel_qc['n_voxels_dropped_nonfinite']} nonfinite ROI voxels; "
+                f"using {voxel_qc['n_voxels_used']}/{voxel_qc['n_voxels_raw']} voxels"
+            )
+        else:
+            print(
+                f"[QC] {sub} {cue_subset}: found "
+                f"{voxel_qc['n_voxels_nonfinite']} nonfinite ROI voxels; "
+                "rerun with --drop_nonfinite_voxels to omit them"
+            )
 
     sample_labels = np.asarray([sample["sample_label"] for sample in samples], dtype=object)
     button_labels = np.asarray([sample["button_label"] for sample in samples], dtype=object)
@@ -438,13 +508,27 @@ def _run_roi_rsa_for_subset(
             cue_subset=cue_subset,
             samples=samples,
             raw_patterns=raw_patterns,
+            raw_used_patterns=raw_used_patterns,
             analysis_patterns=patterns,
             run_ids=run_ids,
             roi_mask=roi_mask,
+            used_voxel_mask=used_voxel_mask,
+            voxel_qc=voxel_qc,
             neural_rdm=neural_rdm,
             pair_mask=pair_mask,
             model_rdms=model_rdms,
         )
+
+    if not np.isfinite(neural_rdm).all():
+        neural_vec = vectorize_lower_triangle(neural_rdm, pair_mask=pair_mask)
+        raise ValueError(
+            "Neural RDM contains nonfinite values "
+            f"({int((~np.isfinite(neural_vec)).sum())}/{len(neural_vec)} cross-run pairs). "
+            f"Raw ROI voxels={voxel_qc['n_voxels_raw']}; "
+            f"nonfinite ROI voxels={voxel_qc['n_voxels_nonfinite']}. "
+            "Use --drop_nonfinite_voxels to drop bad ROI voxels before centering/RDM."
+        )
+
     betas = rsa_multiple_regression(neural_rdm, model_rdms, pair_mask=pair_mask)
 
     odor_vec = vectorize_lower_triangle(model_rdms["odor_identity"], pair_mask=pair_mask)
@@ -456,7 +540,11 @@ def _run_roi_rsa_for_subset(
         "cue_subset": cue_subset,
         "roi": roi_name,
         "roi_mask": str(roi_mask_path),
-        "n_voxels": int(roi_mask.sum()),
+        "n_voxels": voxel_qc["n_voxels_used"],
+        "n_voxels_raw": voxel_qc["n_voxels_raw"],
+        "n_voxels_used": voxel_qc["n_voxels_used"],
+        "n_voxels_nonfinite": voxel_qc["n_voxels_nonfinite"],
+        "n_voxels_dropped_nonfinite": voxel_qc["n_voxels_dropped_nonfinite"],
         "n_samples": len(samples),
         "n_runs": int(np.unique(run_ids).size),
         "runs": ",".join(str(run) for run in sorted(np.unique(run_ids))),
@@ -467,6 +555,7 @@ def _run_roi_rsa_for_subset(
         "diff_image_pairs": int((image_vec == 1).sum()),
         "button_scope": button_scope,
         "center_within_run": bool(center_within_run),
+        "drop_nonfinite_voxels": bool(drop_nonfinite_voxels),
     }
     for name in MODEL_NAMES:
         row[f"{name}_beta"] = betas[name]
@@ -504,6 +593,11 @@ def main():
         action="store_true",
         help="Save per-subject ROI patterns, sample metadata, NaN reports, and neural y vectors",
     )
+    parser.add_argument(
+        "--drop_nonfinite_voxels",
+        action="store_true",
+        help="Drop ROI voxels with any nonfinite subject/subset sample before centering and RDM computation",
+    )
     parser.add_argument("--strict", action="store_true", help="Fail immediately instead of skipping failed subject/subset runs")
     args = parser.parse_args()
 
@@ -540,6 +634,7 @@ def main():
     print(f"Cue subsets:           {', '.join(args.cue_subsets)}")
     print(f"Button scope:          {args.button_scope}")
     print(f"Center within run:     {args.center_within_run}")
+    print(f"Drop nonfinite voxels: {args.drop_nonfinite_voxels}")
     print(f"Output CSV:            {output_csv}")
     if diagnostics_root is not None:
         print(f"Diagnostics dir:       {diagnostics_root}")
@@ -560,13 +655,16 @@ def main():
                     roi_mask_path=roi_mask_path,
                     button_scope=args.button_scope,
                     center_within_run=args.center_within_run,
+                    drop_nonfinite_voxels=args.drop_nonfinite_voxels,
                     diagnostics_root=diagnostics_root,
                 )
                 rows.append(row)
                 print(
                     f"[OK] {sub} {cue_subset}: "
                     f"beta={row['odor_identity_beta']:.6f}, "
-                    f"samples={row['n_samples']}, pairs={row['n_pairs']}"
+                    f"samples={row['n_samples']}, pairs={row['n_pairs']}, "
+                    f"voxels={row['n_voxels_used']}/{row['n_voxels_raw']}, "
+                    f"dropped_nonfinite={row['n_voxels_dropped_nonfinite']}"
                 )
             except Exception as exc:
                 message = f"{sub} {cue_subset}: {exc}"
@@ -582,6 +680,17 @@ def main():
     out = out.sort_values(["sub", "cue_subset"]).reset_index(drop=True)
     out.to_csv(output_csv, index=False)
     print(f"\nSaved subject ROI RSA betas: {output_csv}")
+
+    dropped_rows = out.loc[out["n_voxels_dropped_nonfinite"] > 0]
+    if len(dropped_rows):
+        max_dropped = int(dropped_rows["n_voxels_dropped_nonfinite"].max())
+        print(
+            "\nNonfinite voxel handling:"
+            f"\n  Rows with dropped voxels: {len(dropped_rows)} / {len(out)}"
+            f"\n  Max dropped in one row:   {max_dropped}"
+        )
+    else:
+        print("\nNonfinite voxel handling: no ROI voxels were dropped in saved rows.")
 
     if failures:
         print("\nFailures:")
