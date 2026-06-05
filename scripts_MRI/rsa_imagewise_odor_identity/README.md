@@ -97,3 +97,55 @@ and writes persistent SPM folders under:
 ```text
 /Users/liuq13/SPCD_data/rsa_maps/probe_imagewise_odor_identity/premeal/group_spm/
 ```
+
+## Local ROI RSA
+
+For ROI-based RSA, use `run_roi_rsa.py`. This runs the same regression model as
+the searchlight analysis, but extracts one pattern matrix from a predefined ROI
+mask instead of looping over searchlight spheres:
+
+```text
+neural RDM ~ odor_identity + image_identity + button_presence + button_side
+```
+
+Example using the lateral OFC ROI label:
+
+```bash
+python scripts_MRI/rsa_imagewise_odor_identity/run_roi_rsa.py \
+  --base_dir /Users/liuq13/SPCD_data \
+  --roi_mask masks/MiddleFrontalGyrus_from_spmT_0001_rsa_cue_type.hdr \
+  --roi_name lateral_ofc \
+  --center_within_run
+```
+
+`--roi_mask` may be an absolute path or a path relative to `base_dir`. The ROI
+is intersected with `<base_dir>/masks/gm_0.1.nii` when that gray-matter mask is
+available. The script writes:
+
+```text
+<base_dir>/rsa_roi/probe_imagewise_odor_identity/premeal/
+  roi-lateral_ofc_subject_betas.csv
+```
+
+The CSV includes one row per subject and cue subset, with `odor_identity_beta`,
+nuisance/control betas, ROI voxel counts, sample counts, and cross-run pair
+counts.
+
+To summarize subject-level ROI betas:
+
+```bash
+python scripts_MRI/rsa_imagewise_odor_identity/aggregate_roi_rsa.py \
+  --base_dir /Users/liuq13/SPCD_data \
+  --roi_name lateral_ofc
+```
+
+This writes:
+
+```text
+<base_dir>/rsa_roi/probe_imagewise_odor_identity/premeal/
+  roi-lateral_ofc_group_summary.csv
+```
+
+The summary includes one-sample tests for each cue subset and paired
+`conditioned_odor_only - preconditioned_odor_only` tests. By default it excludes
+`sub-19` and `sub-33`, matching the whole-brain aggregation scripts.
