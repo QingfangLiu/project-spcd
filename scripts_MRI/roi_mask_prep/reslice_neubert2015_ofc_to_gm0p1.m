@@ -1,19 +1,24 @@
-function reslice_neubert2015_ofc_to_gm0p1(project_root)
 % Reslice selected Neubert 2015 OFC ROIs to the repo gm_0.1 mask grid.
 %
+% Click Run in the MATLAB editor after SPM is on the MATLAB path.
 % Uses SPM Coregister: Reslice only. No transform is estimated.
 % The output masks retain their original nonzero values; downstream ROI RSA
 % scripts use mask > 0 when selecting voxels.
 
-if nargin < 1 || isempty(project_root)
-    this_file = mfilename('fullpath');
+this_file = mfilename('fullpath');
+if isempty(this_file)
+    project_root = '/Users/liuq13/project-spcd';
+else
     script_dir = fileparts(this_file);
     project_root = fileparts(fileparts(script_dir));
 end
 
+% If needed, uncomment and edit this line:
+% project_root = '/Users/liuq13/project-spcd';
+
 if isempty(which('spm'))
     error(['SPM is not on the MATLAB path. Add SPM first, then rerun this ', ...
-        'function.']);
+        'script.']);
 end
 
 roi_names = {
@@ -62,12 +67,17 @@ for i = 1:numel(roi_names)
     copied_files{i} = dst;
 end
 
+source_with_vol = cell(size(copied_files));
+for i = 1:numel(copied_files)
+    source_with_vol{i} = [copied_files{i} ',1'];
+end
+
 spm('Defaults', 'fMRI');
 spm_jobman('initcfg');
 
 matlabbatch = {};
 matlabbatch{1}.spm.spatial.coreg.write.ref = {[ref_file ',1']};
-matlabbatch{1}.spm.spatial.coreg.write.source = add_volume_index(copied_files);
+matlabbatch{1}.spm.spatial.coreg.write.source = source_with_vol;
 matlabbatch{1}.spm.spatial.coreg.write.roptions.interp = 0;
 matlabbatch{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];
 matlabbatch{1}.spm.spatial.coreg.write.roptions.mask = 0;
@@ -107,8 +117,8 @@ for i = 1:numel(roi_names)
     roi_col{i} = regexprep(roi_names{i}, '\.nii$', '');
     source_file_col{i} = fullfile(source_dir, roi_names{i});
     resliced_file_col{i} = final_output;
-    source_dim_col{i} = dim_string(src_vol.dim);
-    resliced_dim_col{i} = dim_string(resliced_vol.dim);
+    source_dim_col{i} = sprintf('%dx%dx%d', src_vol.dim(1), src_vol.dim(2), src_vol.dim(3));
+    resliced_dim_col{i} = sprintf('%dx%dx%d', resliced_vol.dim(1), resliced_vol.dim(2), resliced_vol.dim(3));
     source_nonzero_col(i) = nnz(src_data > 0);
     resliced_nonzero_col(i) = nnz(resliced_data > 0);
     affine_max_abs_diff_col(i) = affine_diff;
@@ -133,15 +143,3 @@ writetable(qc, qc_file);
 fprintf('\nSaved resliced masks: %s\n', output_dir);
 fprintf('Saved QC table: %s\n', qc_file);
 fprintf('Use these masks with ROI RSA via --roi_mask masks/neubert2015_ofc_resliced_gm0p1/<mask>.nii\n');
-end
-
-function files_with_vol = add_volume_index(files)
-files_with_vol = cell(size(files));
-for i = 1:numel(files)
-    files_with_vol{i} = [files{i} ',1'];
-end
-end
-
-function out = dim_string(dim)
-out = sprintf('%dx%dx%d', dim(1), dim(2), dim(3));
-end
