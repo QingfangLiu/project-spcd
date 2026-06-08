@@ -5,6 +5,8 @@
 % The output masks retain their original nonzero values; downstream ROI RSA
 % scripts use mask > 0 when selecting voxels.
 
+addpath('/Users/liuq13/Applications/spm12/');
+
 this_file = mfilename('fullpath');
 if isempty(this_file)
     project_root = '/Users/liuq13/project-spcd';
