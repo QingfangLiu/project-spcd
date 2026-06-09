@@ -89,10 +89,13 @@ def _same_space(img, ref_img, atol: float = 1e-5) -> bool:
     )
 
 
-def _load_mask(mask_path: Path, gm_mask_path: Path | None = None):
+def _load_mask(mask_path: Path, gm_mask_path: Path | None = None, roi_threshold: float = 0.0):
     roi_img = nib.load(str(mask_path))
     roi_data = np.asanyarray(roi_img.dataobj)
-    roi_mask_raw = np.isfinite(roi_data) & (roi_data > 0)
+    if roi_threshold <= 0:
+        roi_mask_raw = np.isfinite(roi_data) & (roi_data > 0)
+    else:
+        roi_mask_raw = np.isfinite(roi_data) & (roi_data >= roi_threshold)
     roi_mask = roi_mask_raw.copy()
 
     gm_voxels = None
@@ -450,6 +453,7 @@ def _run_roi_rsa_for_subset(
     button_scope: str,
     center_within_run: bool,
     drop_nonfinite_voxels: bool,
+    roi_threshold: float,
     diagnostics_root: Path | None = None,
 ) -> dict:
     samples = _build_samples(
@@ -550,6 +554,7 @@ def _run_roi_rsa_for_subset(
         "button_scope": button_scope,
         "center_within_run": bool(center_within_run),
         "drop_nonfinite_voxels": bool(drop_nonfinite_voxels),
+        "roi_threshold": roi_threshold,
     }
     for name in MODEL_NAMES:
         row[f"{name}_beta"] = betas[name]
@@ -563,6 +568,12 @@ def main():
     parser.add_argument("--base_dir", required=True, help="Base directory containing GLM, nii, and masks folders")
     parser.add_argument("--roi_mask", required=True, help="ROI mask path, absolute or relative to base_dir")
     parser.add_argument("--roi_name", default="lateral_ofc", help="Label used in output CSVs")
+    parser.add_argument(
+        "--roi_threshold",
+        type=float,
+        default=0.0,
+        help="ROI voxel cutoff. Default 0 preserves the old mask > 0 behavior; positive values use mask >= threshold.",
+    )
     parser.add_argument("--subjects", nargs="+", default=None, help="Subject IDs; defaults to discovered premeal GLM subjects")
     parser.add_argument(
         "--cue_subsets",
@@ -594,6 +605,8 @@ def main():
     )
     parser.add_argument("--strict", action="store_true", help="Fail immediately instead of skipping failed subject/subset runs")
     args = parser.parse_args()
+    if args.roi_threshold < 0:
+        raise ValueError("--roi_threshold must be nonnegative")
 
     base_dir = Path(args.base_dir).expanduser().resolve()
     roi_mask_path = _resolve_under_base(args.roi_mask, base_dir).resolve()
@@ -611,6 +624,7 @@ def main():
     roi_img, roi_mask, n_roi_raw, n_roi_final, n_gm = _load_mask(
         roi_mask_path,
         gm_mask_path=gm_mask_path,
+        roi_threshold=args.roi_threshold,
     )
 
     subjects = sorted(args.subjects) if args.subjects else _discover_subjects(base_dir)
@@ -621,6 +635,7 @@ def main():
     print(f"Base dir:              {base_dir}")
     print(f"ROI mask:              {roi_mask_path}")
     print(f"ROI label:             {roi_name}")
+    print(f"ROI threshold:         {args.roi_threshold:g}")
     print(f"ROI voxels raw/final:  {n_roi_raw} / {n_roi_final}")
     if n_gm is not None:
         print(f"GM mask voxels:        {n_gm}")
@@ -651,6 +666,7 @@ def main():
                     button_scope=args.button_scope,
                     center_within_run=args.center_within_run,
                     drop_nonfinite_voxels=args.drop_nonfinite_voxels,
+                    roi_threshold=args.roi_threshold,
                     diagnostics_root=diagnostics_root,
                 )
                 rows.append(row)
