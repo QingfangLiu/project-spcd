@@ -1,14 +1,14 @@
 # Premeal image-wise odor-identity RSA with visual-image control
 
-This folder is for a third premeal image-wise odor-identity RSA variant. It is
-intended to sit alongside:
+This folder implements a third premeal image-wise odor-identity RSA variant. It
+is intended to sit alongside:
 
 - `scripts_MRI/rsa_imagewise_odor_identity/`
 - `scripts_MRI/rsa_imagewise_odor_identity_no_image/`
 
-The current goal is to replace the categorical `image_identity` regressor with
-a graded visual-image dissimilarity RDM computed from independent image-scan
-responses in visual cortex.
+This variant replaces the categorical `image_identity` regressor with a graded
+`visual_image` dissimilarity RDM computed from independent image-scan responses
+in visual cortex.
 
 ## Current motivation
 
@@ -21,7 +21,7 @@ ways:
 - `rsa_imagewise_odor_identity_no_image`: omits image identity from the RSA
   regression.
 
-This variant will use a third option:
+This variant uses a third option:
 
 ```text
 probe neural RDM ~ odor_identity + visual_image + button_presence + button_side
@@ -75,9 +75,9 @@ processed subject-level searchlight accuracy maps by:
 The two files in `masks/independent_image_decoding_masks/` are the resulting
 SPM `spmT_0001` maps for character and place image decoding.
 
-## Planned mask construction
+## Visual mask construction
 
-The preferred visual mask for this RSA variant is a common union mask:
+The visual mask for this RSA variant is a common union mask:
 
 ```text
 visual_decoding_union = threshold(char_spmT_0001) OR threshold(place_spmT_0001)
@@ -143,27 +143,131 @@ The saved union mask has shape `(79, 95, 79)`, `uint8` datatype, binary values
 `[0, 1]`, and 16,527 in-mask voxels. The GM intersection did not remove
 additional voxels from the xjView-selected visual clusters.
 
-## Planned visual-image RDM use
+## Visual-image RDM construction
 
-For the current subset-specific analyses, the visual RDM only needs to be
-computed within each cue subset:
+The implemented RSA model is:
+
+```text
+probe neural RDM ~ odor_identity + visual_image + button_presence + button_side
+```
+
+For the current subset-specific analyses, `visual_image` is computed within
+each cue subset:
 
 ```text
 conditioned_odor_only:    B11, B21, B12, B22
 preconditioned_odor_only: A11, A21, A12, A22
 ```
 
-For each subject and subset, the future code should:
+For each subject and subset, `visual_rdm.py`:
 
-- select the correct independent localizer category from `subject_info.csv`
-- load independent-scan beta maps for the relevant cue indices
-- extract patterns from the binary visual union mask
-- average repeated presentations of the same base cue across runs
-- compute `1 - correlation` between base-cue visual patterns
-- expand the base-cue RDM to the probe image-wise sample order
+- reads `task_info/subject_info.csv`
+- selects the independent localizer category from `pairing`
+- loads independent image-scan beta maps from `GLM/character_trialwise_2mm/`
+  or `GLM/place_trialwise_2mm/`
+- reads localizer events from `nii/<sub>/func_PAID/character/` or
+  `nii/<sub>/func_PAID/place/`
+- extracts localizer beta patterns from
+  `masks/independent_image_decoding_masks/visual_union_p001_visual_only_gm0p1.nii`
+- z-scores each localizer run voxelwise across all localizer trials by default,
+  matching the decoding analyses' `across_trials` normalization logic
+- selects the subset-relevant cue images, averages repeated localizer
+  presentations by base cue, and computes `1 - correlation`
+- expands the four-cue base RDM to the probe image-wise sample labels, so
+  `B11_img1` and `B11_img2` share a visual distance of 0
 
-The resulting `visual_image` RDM is then used as a control regressor in the
-probe RSA regression.
+Localizer category selection follows the cue-category counterbalancing:
+
+```text
+conditioned_odor_only:
+  pairing = c -> character localizer
+  pairing = p -> place localizer
+
+preconditioned_odor_only:
+  pairing = c -> place localizer
+  pairing = p -> character localizer
+```
+
+Base cue to independent localizer image mapping:
+
+```text
+A11 -> img_1    B11 -> img_2
+A21 -> img_3    B21 -> img_4
+A12 -> img_7    B12 -> img_8
+A22 -> img_9    B22 -> img_10
+```
+
+If `--save_visual_diagnostics` is used for searchlight runs, or
+`--save_diagnostics` is used for ROI runs, the code writes per-subject/subset
+CSV diagnostics:
+
+```text
+<output_dir>/diagnostics/<sub>/<subset>_visual_localizer_samples.csv
+<output_dir>/diagnostics/<sub>/<subset>_visual_base_rdm.csv
+<output_dir>/diagnostics/<sub>/<subset>_visual_image_rdm.csv
+<output_dir>/diagnostics/<sub>/<subset>_visual_rdm_summary.csv
+```
+
+## Running the analysis
+
+Prepare a Biowulf-ready subset from the full data folder:
+
+```bash
+python scripts_MRI/rsa_imagewise_odor_identity_visual_image/prepare_rsa_subset.py
+```
+
+The subset prep copies:
+
+- this package
+- `masks/gm_0.1.nii`
+- `masks/independent_image_decoding_masks/`
+- `task_info/subject_info.csv`
+- premeal probe trialwise GLM beta files and events
+- character and place independent image-scan beta files and events
+
+Run one local or Biowulf subject/subset from the subset root:
+
+```bash
+python -m rsa_imagewise_odor_identity_visual_image.run_rsa \
+  --sub sub-01 \
+  --base_dir /data/liuq13/SPCD_RSA_imagewise_odor_identity_visual_image_subset \
+  --cue_subset conditioned_odor_only \
+  --target odor_identity \
+  --save_visual_diagnostics
+```
+
+Default searchlight output:
+
+```text
+<base_dir>/rsa_maps/probe_imagewise_odor_identity_visual_image/premeal/
+```
+
+Create a swarm file:
+
+```bash
+python rsa_imagewise_odor_identity_visual_image/make_swarm_imagewise.py \
+  --base_dir /data/liuq13/SPCD_RSA_imagewise_odor_identity_visual_image_subset \
+  --save_visual_diagnostics
+```
+
+Run ROI RSA with the same model RDMs:
+
+```bash
+python -m rsa_imagewise_odor_identity_visual_image.run_roi_rsa \
+  --base_dir /Users/liuq13/SPCD_data \
+  --roi_mask masks/<roi_mask>.nii \
+  --roi_name <roi_name> \
+  --save_diagnostics
+```
+
+Default ROI output:
+
+```text
+<base_dir>/rsa_roi/probe_imagewise_odor_identity_visual_image/premeal/
+```
+
+Group-level searchlight aggregation is handled by `aggregate_rsa_group.m`, which
+looks for odor-identity maps in the visual-image output folder.
 
 ## Future combined-cue model
 
