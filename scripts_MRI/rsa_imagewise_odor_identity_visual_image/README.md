@@ -88,23 +88,60 @@ conditioned and preconditioned cue subsets. This is preferable to using separate
 character and place masks because each subject's conditioned and preconditioned
 cues are counterbalanced across character/place category.
 
-The exact threshold should be fixed before running the new RSA maps. Candidate
-threshold choices include:
+The thresholding rule for this analysis is:
 
-- an SPM-style voxel threshold such as `p < 0.001` uncorrected, with a minimum
-  cluster extent
-- an already accepted threshold from the independent-scan decoding result
-  visualization
-- a fixed top-voxel or top-cluster rule applied equally to the character and
-  place decoding maps
+- threshold each group t-map in xjView at `p < 0.001` uncorrected
+- use `display intensity = Only +`, corresponding to `Decoding > chance`
+- use `T = 3.374`, `df = 31`, and `cluster size >= 5`
+- manually retain only plausible visual cortex clusters
+- save category-specific visual-only masks
+- create a union mask and intersect it with `masks/gm_0.1.nii`
 
-Once fixed, the thresholding script should write a binary mask such as:
+Save the xjView-cleaned category-specific masks as:
 
 ```text
-masks/independent_image_decoding_masks/visual_decoding_union_<threshold-label>.nii
+masks/independent_image_decoding_masks/char_p001_visual_only.hdr
+masks/independent_image_decoding_masks/char_p001_visual_only.img
+masks/independent_image_decoding_masks/place_p001_visual_only.hdr
+masks/independent_image_decoding_masks/place_p001_visual_only.img
 ```
 
-and record the threshold, cluster rule, source maps, and voxel count.
+Then create the binary union mask with:
+
+```bash
+python scripts_MRI/rsa_imagewise_odor_identity_visual_image/make_visual_union_mask.py \
+  --char_mask masks/independent_image_decoding_masks/char_p001_visual_only.hdr \
+  --place_mask masks/independent_image_decoding_masks/place_p001_visual_only.hdr \
+  --gm_mask masks/gm_0.1.nii \
+  --out masks/independent_image_decoding_masks/visual_union_p001_visual_only_gm0p1.nii
+```
+
+The script treats any finite value greater than zero as inside-mask, performs a
+voxelwise OR across the character and place masks, intersects the union with
+`gm_0.1`, writes a binary `uint8` NIfTI image, and prints voxel counts for the
+input masks, overlap, union before GM intersection, and final GM-intersected
+mask.
+
+The generated union mask is:
+
+```text
+masks/independent_image_decoding_masks/visual_union_p001_visual_only_gm0p1.nii
+```
+
+Generated-mask voxel counts:
+
+```text
+character visual-only mask:          10511
+place visual-only mask:              14416
+character/place overlap:              8400
+union before GM intersection:        16527
+GM mask voxels:                     198081
+union after GM intersection:         16527
+```
+
+The saved union mask has shape `(79, 95, 79)`, `uint8` datatype, binary values
+`[0, 1]`, and 16,527 in-mask voxels. The GM intersection did not remove
+additional voxels from the xjView-selected visual clusters.
 
 ## Planned visual-image RDM use
 
