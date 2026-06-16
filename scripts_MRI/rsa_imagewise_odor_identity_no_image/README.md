@@ -136,6 +136,19 @@ counts, and cross-run pair counts. With `--drop_nonfinite_voxels`, ROI voxels
 with any nonfinite value within that subject/subset are dropped before
 within-run centering and neural RDM computation.
 
+For the Neubert 2015 OFC `premeal_thr50`/`premeal_thr60` reruns, use the saved
+binary masks in `rsa_roi/neubert2015_ofc_thresholded_masks/` via:
+
+```bash
+python3 scripts_MRI/roi_mask_prep/run_neubert_thresholded_roi_rsa.py \
+  --base_dir /Users/liuq13/SPCD_data \
+  --variants no_image
+```
+
+That batch runner passes the thresholded masks as `--roi_mask` and uses
+`--roi_threshold 0`, so the 50/60 threshold is encoded in the mask filename
+rather than applied again inside `run_roi_rsa.py`.
+
 With `--save_diagnostics`, the script also writes per-subject diagnostics:
 
 ```text
