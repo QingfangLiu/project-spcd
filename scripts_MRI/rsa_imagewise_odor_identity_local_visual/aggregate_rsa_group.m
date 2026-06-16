@@ -12,7 +12,7 @@ base_dir = '/Users/liuq13/SPCD_data/rsa_maps';
 analysis_subfolder = 'probe_imagewise_odor_identity_local_visual';
 session_tag = 'premeal';
 
-model_tag = 'odor_identity';
+model_tag = 'visual_image';
 subset_tags = {'subset-conditioned_odor_only', ...
                'subset-preconditioned_odor_only'};
 
