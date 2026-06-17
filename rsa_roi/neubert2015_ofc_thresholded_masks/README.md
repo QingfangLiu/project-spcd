@@ -39,6 +39,7 @@ The runner processes both RSA variants by default:
 ```text
 rsa_imagewise_odor_identity
 rsa_imagewise_odor_identity_no_image
+rsa_imagewise_odor_identity_visual_image
 ```
 
 and writes outputs back to:
@@ -48,6 +49,8 @@ and writes outputs back to:
 <base_dir>/rsa_roi/probe_imagewise_odor_identity/premeal_thr60/
 <base_dir>/rsa_roi/probe_imagewise_odor_identity_no_image/premeal_thr50/
 <base_dir>/rsa_roi/probe_imagewise_odor_identity_no_image/premeal_thr60/
+<base_dir>/rsa_roi/probe_imagewise_odor_identity_visual_image/premeal_thr50/
+<base_dir>/rsa_roi/probe_imagewise_odor_identity_visual_image/premeal_thr60/
 ```
 
 The runner passes the saved `mask-*_thr*_gm0p1.nii.gz` files as `--roi_mask`

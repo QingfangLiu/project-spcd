@@ -19,7 +19,7 @@ from pathlib import Path
 
 
 DEFAULT_THRESHOLDS = (50, 60)
-DEFAULT_VARIANTS = ("image", "no_image")
+DEFAULT_VARIANTS = ("image", "no_image", "visual_image")
 
 
 @dataclass(frozen=True)
@@ -46,6 +46,11 @@ VARIANTS = {
         key="no_image",
         script_folder="rsa_imagewise_odor_identity_no_image",
         output_folder="probe_imagewise_odor_identity_no_image",
+    ),
+    "visual_image": Variant(
+        key="visual_image",
+        script_folder="rsa_imagewise_odor_identity_visual_image",
+        output_folder="probe_imagewise_odor_identity_visual_image",
     ),
 }
 
@@ -230,7 +235,7 @@ def main() -> None:
         nargs="+",
         choices=sorted(VARIANTS),
         default=list(DEFAULT_VARIANTS),
-        help="ROI RSA variants to run. Default: image no_image.",
+        help="ROI RSA variants to run. Default: image no_image visual_image.",
     )
     parser.add_argument(
         "--rois",
