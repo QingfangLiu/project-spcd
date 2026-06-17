@@ -34,12 +34,14 @@ python3 scripts_MRI/roi_mask_prep/run_neubert_thresholded_roi_rsa.py \
   --base_dir /Users/liuq13/SPCD_data
 ```
 
-The runner processes both RSA variants by default:
+The runner processes these RSA variants by default:
 
 ```text
 rsa_imagewise_odor_identity
 rsa_imagewise_odor_identity_no_image
 rsa_imagewise_odor_identity_visual_image
+rsa_imagewise_odor_identity_first_image
+rsa_imagewise_odor_identity_no_image_first_image
 ```
 
 and writes outputs back to:
@@ -51,6 +53,18 @@ and writes outputs back to:
 <base_dir>/rsa_roi/probe_imagewise_odor_identity_no_image/premeal_thr60/
 <base_dir>/rsa_roi/probe_imagewise_odor_identity_visual_image/premeal_thr50/
 <base_dir>/rsa_roi/probe_imagewise_odor_identity_visual_image/premeal_thr60/
+<base_dir>/rsa_roi/probe_imagewise_odor_identity_first_image/premeal_thr50/
+<base_dir>/rsa_roi/probe_imagewise_odor_identity_first_image/premeal_thr60/
+<base_dir>/rsa_roi/probe_imagewise_odor_identity_no_image_first_image/premeal_thr50/
+<base_dir>/rsa_roi/probe_imagewise_odor_identity_no_image_first_image/premeal_thr60/
+```
+
+To run only the two first-image-only ROI variants, use:
+
+```bash
+python3 scripts_MRI/roi_mask_prep/run_neubert_thresholded_roi_rsa.py \
+  --base_dir /Users/liuq13/SPCD_data \
+  --variants first_image no_image_first_image
 ```
 
 The runner passes the saved `mask-*_thr*_gm0p1.nii.gz` files as `--roi_mask`
