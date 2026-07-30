@@ -99,6 +99,106 @@ Saved to:
 - **Expanded decoding:** Add an option for decoding **odors (odor_1 or odor_2) vs non-odors**.
 - **Temporal dynamics:** Examine time-course of decoding accuracy, restricted to **pre-selected ROIs**.  
 
+---
+
+## ROI passive odor to first-image cue decoding
+
+`run_roi_crosstask_odor2preconditioned.py` is the ROI-only validation of
+the first-image odor-identity RSA. It trains a linear SVM on passive
+odor-smelling trials and tests the exact premeal cue samples saved in one
+ROI's RSA diagnostics.
+
+The default test set is `preconditioned_odor_only`. The conditioned subset
+can be added as a secondary comparison.
+
+### Inputs
+
+- Passive events:
+  `<base_dir>/nii/<sub>/func_PAID/odor_scan/<sub>_task-odor_run-<run>_events.tsv`
+- Passive trial betas:
+  `<base_dir>/GLM/odor_scan_trialwise_2mm/<sub>/beta_run<run>_trial<NN>.nii`
+- One ROI's saved RSA diagnostics:
+  `<diagnostics_dir>/<sub>/preconditioned_odor_only_{samples.csv,roi_patterns.npz}`
+- For `sub-14`, original premeal events:
+  `<base_dir>/nii/sub-14/func_PAID/premeal/sub-14_task-premeal_run-<run>_events_orig.tsv`
+
+The saved RSA voxel coordinates define the ROI, so the decoder does not
+need a separate mask argument. It uses `raw_patterns` from the diagnostic
+NPZ and applies decoding-specific normalization.
+
+### Subject analysis
+
+Example for the primary central/anterior-lateral OFC K=2 ROI:
+
+```bash
+python scripts_MRI/Decoding_probe_cross_task/run_roi_crosstask_odor2preconditioned.py \
+  --base_dir /path/to/SPCD_data \
+  --diagnostics_dir /path/to/project-spcd/rsa_roi/probe_imagewise_odor_identity_no_image_first_image/premeal_ofc_k2_spearman/cluster2_central_anterior_lateral/diagnostics \
+  --roi_name OFC_K2_cluster2_central_anterior_lateral \
+  --save_predictions \
+  --strict
+```
+
+Run the comparison ROI by changing the diagnostics directory and ROI name
+to `cluster1_medial_posterior_lateral` and
+`OFC_K2_cluster1_medial_posterior_lateral`.
+
+To include conditioned cues as a secondary comparison:
+
+```bash
+  --cue_subsets preconditioned_odor_only conditioned_odor_only
+```
+
+If the original `sub-14` TSVs are stored elsewhere, provide:
+
+```bash
+  --sub14_original_events_dir /path/to/sub-14/func_PAID/premeal
+```
+
+### Label and beta alignment
+
+- Passive `odor_1` and `odor_2` labels are read as recorded, with no
+  subject-specific relabeling.
+- `sub-14` cue labels are matched by `run`, `trial`, and `img_index` to the
+  `*_events_orig.tsv` files. This keeps the passive and premeal tasks in
+  the original physical-odor convention.
+- Passive beta numbers preserve row positions in the full event table.
+  Filtering out clean-air trials does not renumber the corresponding beta
+  files.
+
+### Preprocessing and metrics
+
+- Voxelwise z-scoring is performed separately within every passive run
+  and every cue run.
+- Voxels nonfinite in any passive or selected cue sample are dropped
+  before normalization.
+- Classifier: linear SVM with fixed `C=1`.
+- Primary cross-task measure: cue balanced accuracy against `0.5`.
+- Secondary measures: cue accuracy, AUC, and mean signed geometric
+  distance from the SVM boundary.
+- Passive leave-one-run-out metrics are saved as a training-data
+  manipulation check.
+
+Subject results default to:
+
+```text
+<base_dir>/roi_decoding/probe_crosstask_odor2preconditioned/
+  roi-<roi_name>_subject_results.csv
+  roi-<roi_name>_predictions/
+```
+
+### Group analysis
+
+```bash
+python scripts_MRI/Decoding_probe_cross_task/aggregate_roi_crosstask_odor2preconditioned.py \
+  --input_csv /path/to/SPCD_data/roi_decoding/probe_crosstask_odor2preconditioned/roi-OFC_K2_cluster2_central_anterior_lateral_subject_results.csv
+```
+
+The group script tests accuracy and AUC against `0.5`, and signed distance
+against `0`, using one-sample t tests, Wilcoxon tests, and sign tests. The
+primary aggregation excludes `sub-19` and `sub-33`, matching the RSA
+group analysis, while reporting voxel-loss and passive-decoding QC flags
+without additional automatic exclusions.
 
 
 
