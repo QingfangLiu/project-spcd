@@ -149,6 +149,79 @@ To include conditioned cues as a secondary comparison:
   --cue_subsets preconditioned_odor_only conditioned_odor_only
 ```
 
+### Left- and right-hemisphere decoding
+
+The bilateral RSA diagnostics can also be decoded separately by hemisphere.
+No new RSA extraction is required: the decoder uses the saved raw pattern
+matrix and voxel indices, transforms those indices with each subject's
+passive-beta affine, and reruns all decoding preprocessing after selecting:
+
+- left hemisphere: MNI `x < 0`;
+- right hemisphere: MNI `x > 0`;
+- bilateral: all ROI voxels, which remains the default.
+
+Voxels at MNI `x = 0` are excluded from both unilateral analyses. Left/right
+runs automatically append `_left` or `_right` to the ROI label and output
+filename, preventing them from overwriting the bilateral results.
+
+From the project clone on the data computer, define:
+
+```bash
+PROJECT_ROOT="$PWD"
+SPCD_DATA="/path/to/SPCD_data"
+```
+
+Run both hemispheres for medial/posterior-lateral OFC:
+
+```bash
+for HEMISPHERE in left right; do
+  python scripts_MRI/Decoding_probe_cross_task/run_roi_crosstask_odor2preconditioned.py \
+    --base_dir "$SPCD_DATA" \
+    --diagnostics_dir "$PROJECT_ROOT/rsa_roi/probe_imagewise_odor_identity_no_image_first_image/premeal_ofc_k2_spearman/cluster1_medial_posterior_lateral/diagnostics" \
+    --roi_name OFC_K2_cluster1_medial_posterior_lateral \
+    --hemisphere "$HEMISPHERE" \
+    --cue_subsets preconditioned_odor_only conditioned_odor_only \
+    --save_predictions \
+    --strict
+done
+```
+
+Run both hemispheres for central/anterior-lateral OFC:
+
+```bash
+for HEMISPHERE in left right; do
+  python scripts_MRI/Decoding_probe_cross_task/run_roi_crosstask_odor2preconditioned.py \
+    --base_dir "$SPCD_DATA" \
+    --diagnostics_dir "$PROJECT_ROOT/rsa_roi/probe_imagewise_odor_identity_no_image_first_image/premeal_ofc_k2_spearman/cluster2_central_anterior_lateral/diagnostics" \
+    --roi_name OFC_K2_cluster2_central_anterior_lateral \
+    --hemisphere "$HEMISPHERE" \
+    --cue_subsets preconditioned_odor_only conditioned_odor_only \
+    --save_predictions \
+    --strict
+done
+```
+
+Aggregate all four unilateral result files:
+
+```bash
+for ROI in \
+  OFC_K2_cluster1_medial_posterior_lateral \
+  OFC_K2_cluster2_central_anterior_lateral; do
+  for HEMISPHERE in left right; do
+    python scripts_MRI/Decoding_probe_cross_task/aggregate_roi_crosstask_odor2preconditioned.py \
+      --input_csv "$SPCD_DATA/roi_decoding/probe_crosstask_odor2preconditioned/roi-${ROI}_${HEMISPHERE}_subject_results.csv"
+  done
+done
+```
+
+The subject CSVs report the hemisphere rule, bilateral voxel count, midline
+voxel count, number excluded by the hemisphere split, and post-QC voxel
+count. A significant result in one hemisphere but not the other is not
+evidence for lateralization; that conclusion requires a direct paired
+left-minus-right test. Because the atlas halves differ in voxel count, any
+paired hemisphere difference should also receive a voxel-count-matched
+sensitivity analysis.
+
 If the original `sub-14` TSVs are stored elsewhere, provide:
 
 ```bash
@@ -199,7 +272,6 @@ against `0`, using one-sample t tests, Wilcoxon tests, and sign tests. The
 primary aggregation excludes `sub-19` and `sub-33`, matching the RSA
 group analysis, while reporting voxel-loss and passive-decoding QC flags
 without additional automatic exclusions.
-
 
 
 

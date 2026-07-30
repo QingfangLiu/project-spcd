@@ -251,9 +251,12 @@ def main() -> None:
         )
 
     df = pd.read_csv(input_csv)
+    if "hemisphere" not in df.columns:
+        df["hemisphere"] = "bilateral"
     required = {
         "sub",
         "roi",
+        "hemisphere",
         "cue_subset",
         "n_voxels_raw",
         "n_voxels_dropped_nonfinite",
@@ -275,6 +278,15 @@ def main() -> None:
             + ", ".join(rois)
         )
     roi = rois[0]
+    hemispheres = sorted(
+        df["hemisphere"].dropna().astype(str).unique()
+    )
+    if len(hemispheres) != 1:
+        raise ValueError(
+            "Aggregate one hemisphere at a time; input contains: "
+            + ", ".join(hemispheres)
+        )
+    hemisphere = hemispheres[0]
 
     subjects_before = int(df["sub"].nunique())
     if args.skip_subs:
@@ -301,22 +313,23 @@ def main() -> None:
 
     summary = _summarize(df)
     summary.insert(0, "roi", roi)
-    summary.insert(1, "input_csv", str(input_csv))
-    summary.insert(2, "subjects_before_exclusion", subjects_before)
-    summary.insert(3, "subjects_after_exclusion", subjects_after)
-    summary.insert(4, "excluded_subjects", ",".join(args.skip_subs or []))
+    summary.insert(1, "hemisphere", hemisphere)
+    summary.insert(2, "input_csv", str(input_csv))
+    summary.insert(3, "subjects_before_exclusion", subjects_before)
+    summary.insert(4, "subjects_after_exclusion", subjects_after)
+    summary.insert(5, "excluded_subjects", ",".join(args.skip_subs or []))
     summary.insert(
-        5,
+        6,
         "qc_voxel_loss_flag_threshold",
         args.voxel_loss_flag_threshold,
     )
     summary.insert(
-        6,
+        7,
         "qc_high_voxel_loss_subjects",
         ",".join(high_voxel_loss),
     )
     summary.insert(
-        7,
+        8,
         "qc_passive_cv_below_chance_subjects",
         ",".join(passive_below_chance),
     )
@@ -325,6 +338,7 @@ def main() -> None:
     summary.to_csv(output_csv, index=False)
 
     print(f"Read subject results: {input_csv}")
+    print(f"Hemisphere: {hemisphere}")
     print(
         "Subjects before/after exclusion: "
         f"{subjects_before} / {subjects_after}"

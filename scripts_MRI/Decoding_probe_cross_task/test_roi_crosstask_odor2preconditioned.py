@@ -21,10 +21,16 @@ import aggregate_roi_crosstask_odor2preconditioned as aggregate
 import run_roi_crosstask_odor2preconditioned as decoder
 
 
-def _write_beta(path: Path, first: float, second: float) -> None:
+def _write_beta(
+    path: Path,
+    first: float,
+    second: float,
+    affine: np.ndarray | None = None,
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = np.asarray([first, second], dtype=np.float32).reshape(2, 1, 1)
-    nib.Nifti1Image(data, np.eye(4)).to_filename(path)
+    image_affine = np.eye(4) if affine is None else affine
+    nib.Nifti1Image(data, image_affine).to_filename(path)
 
 
 class PassiveLoaderTests(unittest.TestCase):
@@ -67,7 +73,7 @@ class PassiveLoaderTests(unittest.TestCase):
                     )
                 expected_first_voxel.extend([run * 10 + 2, run * 10 + 4])
 
-            patterns, labels, run_ids, metadata = (
+            patterns, labels, run_ids, metadata, affine = (
                 decoder._load_passive_odor_patterns(
                     base_dir,
                     sub,
@@ -86,6 +92,43 @@ class PassiveLoaderTests(unittest.TestCase):
                 metadata["beta_trial_number"].tolist(),
                 [2, 4, 2, 4],
             )
+            np.testing.assert_array_equal(affine, np.eye(4))
+
+
+class HemisphereVoxelTests(unittest.TestCase):
+    def test_world_x_split_excludes_midline_from_unilateral_masks(self) -> None:
+        voxel_indices = np.asarray(
+            [
+                [0, 0, 0],
+                [1, 0, 0],
+                [2, 0, 0],
+            ],
+            dtype=int,
+        )
+        affine = np.eye(4)
+        affine[0, 0] = 2.0
+        affine[0, 3] = -2.0
+
+        bilateral, midline = decoder._hemisphere_voxel_mask(
+            voxel_indices,
+            affine,
+            "bilateral",
+        )
+        left, _ = decoder._hemisphere_voxel_mask(
+            voxel_indices,
+            affine,
+            "left",
+        )
+        right, _ = decoder._hemisphere_voxel_mask(
+            voxel_indices,
+            affine,
+            "right",
+        )
+
+        np.testing.assert_array_equal(bilateral, [True, True, True])
+        np.testing.assert_array_equal(midline, [False, True, False])
+        np.testing.assert_array_equal(left, [True, False, False])
+        np.testing.assert_array_equal(right, [False, False, True])
 
 
 class Sub14LabelTests(unittest.TestCase):
@@ -231,6 +274,9 @@ class EndToEndSubjectTests(unittest.TestCase):
                 index=False,
             )
 
+            hemisphere_affine = np.eye(4)
+            hemisphere_affine[0, 0] = 2.0
+            hemisphere_affine[0, 3] = -1.0
             for run in (1, 2):
                 events_dir = (
                     base_dir
@@ -272,6 +318,7 @@ class EndToEndSubjectTests(unittest.TestCase):
                         / f"beta_run{run}_trial{trial:02d}.nii",
                         first,
                         second,
+                        affine=hemisphere_affine,
                     )
 
             prediction_dir = root / "predictions"
@@ -280,6 +327,7 @@ class EndToEndSubjectTests(unittest.TestCase):
                 diagnostics_dir=diagnostics_dir,
                 sub="sub-01",
                 roi_name="synthetic_roi",
+                hemisphere="bilateral",
                 cue_subset="preconditioned_odor_only",
                 odor_runs=(1, 2),
                 svm_c=1.0,
@@ -293,6 +341,9 @@ class EndToEndSubjectTests(unittest.TestCase):
                 1.0,
             )
             self.assertEqual(row["n_voxels_used"], 2)
+            self.assertEqual(row["hemisphere"], "bilateral")
+            self.assertEqual(row["n_voxels_bilateral_raw"], 2)
+            self.assertEqual(row["n_voxels_raw"], 2)
             self.assertTrue(
                 (
                     prediction_dir
@@ -300,6 +351,34 @@ class EndToEndSubjectTests(unittest.TestCase):
                     / "preconditioned_odor_only_cue_predictions.csv"
                 ).is_file()
             )
+
+            for hemisphere in ("left", "right"):
+                unilateral_row = decoder._analyze_subject(
+                    base_dir=base_dir,
+                    diagnostics_dir=diagnostics_dir,
+                    sub="sub-01",
+                    roi_name=f"synthetic_roi_{hemisphere}",
+                    hemisphere=hemisphere,
+                    cue_subset="preconditioned_odor_only",
+                    odor_runs=(1, 2),
+                    svm_c=1.0,
+                    sub14_original_events_dir=root / "unused",
+                    prediction_dir=None,
+                )
+                self.assertEqual(
+                    unilateral_row["cue_balanced_accuracy"],
+                    1.0,
+                )
+                self.assertEqual(
+                    unilateral_row["passive_cv_balanced_accuracy"],
+                    1.0,
+                )
+                self.assertEqual(unilateral_row["n_voxels_raw"], 1)
+                self.assertEqual(unilateral_row["n_voxels_used"], 1)
+                self.assertEqual(
+                    unilateral_row["n_voxels_excluded_by_hemisphere"],
+                    1,
+                )
 
 
 if __name__ == "__main__":

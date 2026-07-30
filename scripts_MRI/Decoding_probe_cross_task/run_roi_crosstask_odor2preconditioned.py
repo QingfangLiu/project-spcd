@@ -26,6 +26,7 @@ CUE_SUBSET_FILES = {
 }
 DEFAULT_ODOR_RUNS = (1, 2)
 SUB14 = "sub-14"
+HEMISPHERES = ("bilateral", "left", "right")
 
 
 def _sanitize_label(label: str) -> str:
@@ -309,12 +310,45 @@ def _extract_voxels(
     return values, shape, np.asarray(image.affine, dtype=float)
 
 
+def _hemisphere_voxel_mask(
+    voxel_indices: np.ndarray,
+    affine: np.ndarray,
+    hemisphere: str,
+) -> tuple[np.ndarray, np.ndarray]:
+    if hemisphere not in HEMISPHERES:
+        raise ValueError(
+            f"Unknown hemisphere {hemisphere!r}; choose from {HEMISPHERES}."
+        )
+    if voxel_indices.ndim != 2 or voxel_indices.shape[1] != 3:
+        raise ValueError(
+            "Voxel coordinates must have shape (n_voxels, 3), got "
+            f"{voxel_indices.shape}."
+        )
+    if np.asarray(affine).shape != (4, 4):
+        raise ValueError(f"Image affine must have shape (4, 4), got {affine.shape}.")
+
+    world_x = nib.affines.apply_affine(affine, voxel_indices)[:, 0]
+    midline = np.isclose(world_x, 0.0, atol=1e-5)
+    if hemisphere == "bilateral":
+        selected = np.ones(len(voxel_indices), dtype=bool)
+    elif hemisphere == "left":
+        selected = (world_x < 0.0) & ~midline
+    else:
+        selected = (world_x > 0.0) & ~midline
+
+    if not selected.any():
+        raise ValueError(
+            f"No {hemisphere} hemisphere voxels remain after the MNI x split."
+        )
+    return selected, midline
+
+
 def _load_passive_odor_patterns(
     base_dir: Path,
     sub: str,
     runs: tuple[int, ...],
     voxel_indices: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, pd.DataFrame]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, pd.DataFrame, np.ndarray]:
     rows = []
     labels = []
     run_ids = []
@@ -392,7 +426,15 @@ def _load_passive_odor_patterns(
         raise ValueError(
             f"Passive training data require at least two runs: {sub}"
         )
-    return patterns, y, groups, pd.DataFrame(metadata)
+    if reference_affine is None:
+        raise RuntimeError(f"No passive beta images were loaded: {sub}")
+    return (
+        patterns,
+        y,
+        groups,
+        pd.DataFrame(metadata),
+        reference_affine,
+    )
 
 
 def _runwise_zscore(
@@ -489,6 +531,7 @@ def _analyze_subject(
     diagnostics_dir: Path,
     sub: str,
     roi_name: str,
+    hemisphere: str,
     cue_subset: str,
     odor_runs: tuple[int, ...],
     svm_c: float,
@@ -510,7 +553,13 @@ def _analyze_subject(
         cue_samples,
         sub14_original_events_dir,
     )
-    passive_raw, passive_y, passive_runs, passive_meta = (
+    (
+        passive_raw,
+        passive_y,
+        passive_runs,
+        passive_meta,
+        passive_affine,
+    ) = (
         _load_passive_odor_patterns(
             base_dir,
             sub,
@@ -519,6 +568,15 @@ def _analyze_subject(
         )
     )
     cue_runs = cue_samples["run"].astype(int).to_numpy()
+
+    n_voxels_bilateral_raw = int(cue_raw.shape[1])
+    hemisphere_mask, midline_mask = _hemisphere_voxel_mask(
+        voxel_indices,
+        passive_affine,
+        hemisphere,
+    )
+    passive_raw = passive_raw[:, hemisphere_mask]
+    cue_raw = cue_raw[:, hemisphere_mask]
 
     passive_used, cue_used, finite_voxel_mask = _drop_nonfinite_voxels(
         passive_raw,
@@ -577,12 +635,23 @@ def _analyze_subject(
     row = {
         "sub": sub,
         "roi": roi_name,
+        "hemisphere": hemisphere,
+        "hemisphere_rule": (
+            "all_voxels"
+            if hemisphere == "bilateral"
+            else f"MNI_x_{'lt' if hemisphere == 'left' else 'gt'}_0"
+        ),
         "cue_subset": cue_subset,
         "cue_label_source": cue_label_source,
         "cue_diagnostic_npz": str(pattern_path),
         "svm_kernel": "linear",
         "svm_c": svm_c,
         "normalization": "within_task_run_voxelwise_zscore",
+        "n_voxels_bilateral_raw": n_voxels_bilateral_raw,
+        "n_voxels_midline": int(midline_mask.sum()),
+        "n_voxels_excluded_by_hemisphere": (
+            n_voxels_bilateral_raw - n_voxels_raw
+        ),
         "n_voxels_raw": n_voxels_raw,
         "n_voxels_used": n_voxels_used,
         "n_voxels_dropped_nonfinite": n_voxels_raw - n_voxels_used,
@@ -642,7 +711,20 @@ def main() -> None:
     parser.add_argument(
         "--roi_name",
         required=True,
-        help="ROI label written to output filenames and rows.",
+        help=(
+            "Base ROI label written to output filenames and rows. Left/right "
+            "runs automatically receive a hemisphere suffix."
+        ),
+    )
+    parser.add_argument(
+        "--hemisphere",
+        choices=HEMISPHERES,
+        default="bilateral",
+        help=(
+            "Voxel selection in passive-beta world coordinates: bilateral, "
+            "MNI x < 0 (left), or MNI x > 0 (right). Midline voxels are "
+            "excluded from unilateral runs. Default: bilateral."
+        ),
     )
     parser.add_argument(
         "--subjects",
@@ -711,7 +793,13 @@ def main() -> None:
 
     base_dir = args.base_dir.expanduser().resolve()
     diagnostics_dir = args.diagnostics_dir.expanduser().resolve()
-    roi_name = _sanitize_label(args.roi_name)
+    base_roi_name = _sanitize_label(args.roi_name)
+    hemisphere = args.hemisphere
+    roi_name = (
+        base_roi_name
+        if hemisphere == "bilateral"
+        else f"{base_roi_name}_{hemisphere}"
+    )
     sub14_original_events_dir = (
         args.sub14_original_events_dir.expanduser().resolve()
         if args.sub14_original_events_dir is not None
@@ -746,6 +834,7 @@ def main() -> None:
     print(f"SPCD data root:        {base_dir}")
     print(f"RSA diagnostics:       {diagnostics_dir}")
     print(f"ROI:                   {roi_name}")
+    print(f"Hemisphere:            {hemisphere}")
     print(f"Subjects:              {len(subjects)}")
     print(f"Cue subsets:           {', '.join(args.cue_subsets)}")
     print(f"Passive runs:          {', '.join(map(str, odor_runs))}")
@@ -765,6 +854,7 @@ def main() -> None:
                     diagnostics_dir=diagnostics_dir,
                     sub=sub,
                     roi_name=roi_name,
+                    hemisphere=hemisphere,
                     cue_subset=cue_subset,
                     odor_runs=odor_runs,
                     svm_c=args.svm_c,
@@ -788,6 +878,7 @@ def main() -> None:
                     {
                         "sub": sub,
                         "roi": roi_name,
+                        "hemisphere": hemisphere,
                         "cue_subset": cue_subset,
                         "error_type": type(exc).__name__,
                         "error": str(exc),
@@ -812,6 +903,7 @@ def main() -> None:
     failure_columns = [
         "sub",
         "roi",
+        "hemisphere",
         "cue_subset",
         "error_type",
         "error",
