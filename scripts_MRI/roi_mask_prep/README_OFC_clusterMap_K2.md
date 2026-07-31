@@ -53,6 +53,33 @@ masks/OFC_clusterMap_K2_gm0p1/
   manifest.csv
 ```
 
+### Hemisphere masks
+
+The prepared bilateral masks can also be split using each voxel's MNI x
+coordinate. Left masks retain voxels with `x < 0`, right masks retain voxels
+with `x > 0`, and voxels centered at `x = 0` are excluded from both. Run:
+
+```bash
+python3 scripts_MRI/roi_mask_prep/prepare_ofc_cluster_map_k2_hemisphere_masks.py
+```
+
+This adds four masks and a separate provenance manifest without changing the
+bilateral files:
+
+```text
+masks/OFC_clusterMap_K2_gm0p1/
+  mask-OFC_K2_cluster1_medial_posterior_lateral_left_gm0p1.nii.gz
+  mask-OFC_K2_cluster1_medial_posterior_lateral_right_gm0p1.nii.gz
+  mask-OFC_K2_cluster2_central_anterior_lateral_left_gm0p1.nii.gz
+  mask-OFC_K2_cluster2_central_anterior_lateral_right_gm0p1.nii.gz
+  hemisphere_manifest.csv
+```
+
+The repository copies contain 2,140 left, 3,142 right, and 218 excluded
+midline voxels for cluster 1. Cluster 2 contains 2,539 left and 1,906 right
+voxels, with no midline voxels. Existing hemisphere outputs are protected
+unless `--force` is supplied.
+
 Use `--dry_run` to inspect the operation without writing files. Existing
 outputs are protected unless `--force` is supplied.
 

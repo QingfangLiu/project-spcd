@@ -56,6 +56,24 @@ python scripts_MRI/rsa_imagewise_odor_identity_no_image_first_image/run_ofc_clus
 The default runs both clusters and both cue subsets. `--save_diagnostics` is
 recommended so the selected neural and model RDM pair vectors are retained.
 
+To run only the new left- and right-hemisphere analyses without rerunning the
+existing bilateral analyses:
+
+```bash
+python scripts_MRI/rsa_imagewise_odor_identity_no_image_first_image/run_ofc_cluster_map_k2_spearman.py \
+  --base_dir /Users/liuq13/SPCD_data \
+  --hemispheres left right \
+  --save_diagnostics \
+  --strict
+```
+
+The prepared hemisphere masks are tracked in the repository. If they need to
+be regenerated, run
+`scripts_MRI/roi_mask_prep/prepare_ofc_cluster_map_k2_hemisphere_masks.py`
+before the analysis. Use `--hemispheres bilateral left right` to run all three
+ROI scopes together. The default remains `bilateral` for backward
+compatibility.
+
 To inspect commands without reading the external data:
 
 ```bash
@@ -72,7 +90,11 @@ Subject and group CSVs are kept separate from the OLS results:
 rsa_roi/probe_imagewise_odor_identity_no_image_first_image/
   premeal_ofc_k2_spearman/
     cluster1_medial_posterior_lateral/
+    cluster1_medial_posterior_lateral_left/
+    cluster1_medial_posterior_lateral_right/
     cluster2_central_anterior_lateral/
+    cluster2_central_anterior_lateral_left/
+    cluster2_central_anterior_lateral_right/
 ```
 
 Plots are written as:
@@ -82,8 +104,18 @@ plots/OFC_K2_cluster1_medial_posterior_lateral_no_image_first_image_spearman_roi
 plots/OFC_K2_cluster2_central_anterior_lateral_no_image_first_image_spearman_roi_rsa_paired.{pdf,png}
 ```
 
+Unilateral plot names add `_left` or `_right` immediately after the cluster
+name. Each unilateral output uses its own ROI name, subject CSV, group summary,
+diagnostics directory, and plot prefix, so no bilateral output is overwritten.
+
 Group summaries include one-sample and paired t-tests, Wilcoxon signed-rank
 tests, and sign tests for Spearman rho and rank-biserial correlation.
+
+Separate significance tests in the left and right ROIs do not establish a
+hemisphere difference. A laterality claim requires a paired within-subject
+left-minus-right test. Because these atlas subdivisions contain different
+numbers of voxels in the two hemispheres, interpret that comparison alongside
+a voxel-count-matched sensitivity analysis.
 
 ## QC flags
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run rank-based odor-identity ROI RSA for both Kahnt OFC K=2 clusters."""
+"""Run rank-based odor-identity ROI RSA for Kahnt OFC K=2 ROIs."""
 
 from __future__ import annotations
 
@@ -21,6 +21,9 @@ else:
         DEFAULT_CUE_SUBSETS,
         DEFAULT_SKIP_SUBS,
     )
+
+
+HEMISPHERES = ("bilateral", "left", "right")
 
 
 def _default_project_root() -> Path:
@@ -50,6 +53,47 @@ def _preflight_base_dir(base_dir: Path) -> None:
             "The SPCD data directory is missing required inputs:\n"
             f"{formatted}"
         )
+
+
+def _hemisphere_mask_filename(filename: str, hemisphere: str) -> str:
+    if hemisphere == "bilateral":
+        return filename
+    suffix = "_gm0p1.nii.gz"
+    if not filename.endswith(suffix):
+        raise ValueError(
+            f"Expected mask filename ending in {suffix!r}; got {filename!r}"
+        )
+    return f"{filename[:-len(suffix)]}_{hemisphere}{suffix}"
+
+
+def _analysis_scope(spec, hemisphere: str) -> dict[str, str]:
+    if hemisphere not in HEMISPHERES:
+        raise ValueError(f"Unknown hemisphere: {hemisphere}")
+    if hemisphere == "bilateral":
+        return {
+            "mask_filename": spec.mask_filename,
+            "roi_name": spec.roi_name,
+            "output_key": spec.key,
+            "plot_stem": (
+                f"OFC_K2_{spec.key}_no_image_first_image_"
+                "spearman_roi_rsa_paired"
+            ),
+            "plot_title": f"{spec.plot_title} — Spearman RSA",
+        }
+    return {
+        "mask_filename": _hemisphere_mask_filename(
+            spec.mask_filename, hemisphere
+        ),
+        "roi_name": f"{spec.roi_name}_{hemisphere}",
+        "output_key": f"{spec.key}_{hemisphere}",
+        "plot_stem": (
+            f"OFC_K2_{spec.key}_{hemisphere}_no_image_first_image_"
+            "spearman_roi_rsa_paired"
+        ),
+        "plot_title": (
+            f"{spec.plot_title}, {hemisphere} hemisphere — Spearman RSA"
+        ),
+    }
 
 
 def main() -> None:
@@ -103,6 +147,16 @@ def main() -> None:
         choices=sorted(CLUSTERS),
         default=sorted(CLUSTERS),
         help="Clusters to run. Default: cluster1 cluster2.",
+    )
+    parser.add_argument(
+        "--hemispheres",
+        nargs="+",
+        choices=HEMISPHERES,
+        default=["bilateral"],
+        help=(
+            "ROI scopes to run. Default: bilateral. Use 'left right' for "
+            "the unilateral analyses."
+        ),
     )
     parser.add_argument(
         "--subjects",
@@ -202,94 +256,105 @@ def main() -> None:
     print(f"Repository CSVs:  {repo_output_dir}")
     print(f"Plots:            {plot_dir}")
     print(f"Clusters:         {', '.join(args.clusters)}")
+    print(f"Hemispheres:      {', '.join(args.hemispheres)}")
     print("Existing OLS RSA: untouched")
     print(f"Dry run:          {args.dry_run}")
     print("=" * 80)
 
     for cluster_label in args.clusters:
         spec = CLUSTERS[cluster_label]
-        mask_path = mask_dir / spec.mask_filename
-        _require_file(mask_path, f"Prepared mask for {cluster_label}")
+        for hemisphere in args.hemispheres:
+            scope = _analysis_scope(spec, hemisphere)
+            mask_path = mask_dir / scope["mask_filename"]
+            try:
+                _require_file(
+                    mask_path,
+                    f"Prepared {hemisphere} mask for {cluster_label}",
+                )
+            except FileNotFoundError as error:
+                if hemisphere != "bilateral":
+                    raise FileNotFoundError(
+                        f"{error}\nGenerate hemisphere masks with: python "
+                        "scripts_MRI/roi_mask_prep/"
+                        "prepare_ofc_cluster_map_k2_hemisphere_masks.py"
+                    ) from error
+                raise
 
-        cluster_output_dir = repo_output_dir / spec.key
-        subject_csv = (
-            cluster_output_dir
-            / f"roi-{spec.roi_name}_subject_spearman.csv"
-        )
-        group_csv = (
-            cluster_output_dir
-            / f"roi-{spec.roi_name}_spearman_group_summary.csv"
-        )
-        plot_prefix = (
-            plot_dir
-            / (
-                f"OFC_K2_{spec.key}_no_image_first_image_"
-                "spearman_roi_rsa_paired"
+            cluster_output_dir = repo_output_dir / scope["output_key"]
+            subject_csv = (
+                cluster_output_dir
+                / f"roi-{scope['roi_name']}_subject_spearman.csv"
             )
-        )
+            group_csv = (
+                cluster_output_dir
+                / f"roi-{scope['roi_name']}_spearman_group_summary.csv"
+            )
+            plot_prefix = plot_dir / scope["plot_stem"]
 
-        print("\n" + "-" * 80)
-        print(f"{cluster_label}: {spec.roi_name}")
-        print("-" * 80)
+            print("\n" + "-" * 80)
+            print(
+                f"{cluster_label}, {hemisphere}: {scope['roi_name']}"
+            )
+            print("-" * 80)
 
-        run_command = [
-            sys.executable,
-            str(run_script),
-            "--base_dir",
-            str(base_dir),
-            "--roi_mask",
-            str(mask_path),
-            "--roi_name",
-            spec.roi_name,
-            "--roi_threshold",
-            "0",
-            "--center_within_run",
-            "--drop_nonfinite_voxels",
-            "--output_dir",
-            str(cluster_output_dir),
-            "--cue_subsets",
-            *args.cue_subsets,
-        ]
-        if args.subjects:
-            run_command.extend(["--subjects", *args.subjects])
-        if args.save_diagnostics:
-            run_command.append("--save_diagnostics")
-        if args.strict:
-            run_command.append("--strict")
-        _run_command(run_command, dry_run=args.dry_run)
-
-        aggregate_command = [
-            sys.executable,
-            str(aggregate_script),
-            "--input_csv",
-            str(subject_csv),
-            "--output_csv",
-            str(group_csv),
-            "--roi_name",
-            spec.roi_name,
-            "--skip_subs",
-            *args.skip_subs,
-        ]
-        _run_command(aggregate_command, dry_run=args.dry_run)
-
-        if not args.skip_plots:
-            plot_command = [
+            run_command = [
                 sys.executable,
-                str(plot_script),
+                str(run_script),
+                "--base_dir",
+                str(base_dir),
+                "--roi_mask",
+                str(mask_path),
+                "--roi_name",
+                scope["roi_name"],
+                "--roi_threshold",
+                "0",
+                "--center_within_run",
+                "--drop_nonfinite_voxels",
+                "--output_dir",
+                str(cluster_output_dir),
+                "--cue_subsets",
+                *args.cue_subsets,
+            ]
+            if args.subjects:
+                run_command.extend(["--subjects", *args.subjects])
+            if args.save_diagnostics:
+                run_command.append("--save_diagnostics")
+            if args.strict:
+                run_command.append("--strict")
+            _run_command(run_command, dry_run=args.dry_run)
+
+            aggregate_command = [
+                sys.executable,
+                str(aggregate_script),
                 "--input_csv",
                 str(subject_csv),
-                "--summary_csv",
+                "--output_csv",
                 str(group_csv),
-                "--output_prefix",
-                str(plot_prefix),
-                "--title",
-                f"{spec.plot_title} — Spearman RSA",
+                "--roi_name",
+                scope["roi_name"],
                 "--skip_subs",
                 *args.skip_subs,
-                "--formats",
-                *args.plot_formats,
             ]
-            _run_command(plot_command, dry_run=args.dry_run)
+            _run_command(aggregate_command, dry_run=args.dry_run)
+
+            if not args.skip_plots:
+                plot_command = [
+                    sys.executable,
+                    str(plot_script),
+                    "--input_csv",
+                    str(subject_csv),
+                    "--summary_csv",
+                    str(group_csv),
+                    "--output_prefix",
+                    str(plot_prefix),
+                    "--title",
+                    scope["plot_title"],
+                    "--skip_subs",
+                    *args.skip_subs,
+                    "--formats",
+                    *args.plot_formats,
+                ]
+                _run_command(plot_command, dry_run=args.dry_run)
 
     if args.dry_run:
         print("\nDry run complete; no analyses, CSVs, or plots were created.")
