@@ -63,25 +63,42 @@ Runs whole-brain searchlight decoding for one subject.
 - **Classes:** 2-class (odor_1 vs odor_2) or 3-class (clean_air vs odor_1 vs odor_2)  
 - **Searchlight:** 8 mm radius, linear SVM (C=1), user-supplied mask (e.g. GM mask)  
 
-### First-image-only searchlight variant
+### Binary first-image-only searchlight variant
 
 `run_searchlight_crosstask_odor2probe_first_image.py` is the version to use
-when rerunning this analysis. It keeps only `img_index == 1` from every probe
-trial. The filter is applied before run/set normalization, so second-image
-betas affect neither the test samples nor the probe normalization statistics.
+for the revised analysis. It performs odor 1 versus odor 2 decoding and tests
+the two cue subsets separately:
+
+- `conditioned_odor_only`: B11, B21, B12, B22 (`cue_index` 2, 4, 8, 10)
+- `preconditioned_odor_only`: A11, A21, A12, A22 (`cue_index` 1, 3, 7, 9)
+
+Clean-air C/D cues are not loaded. Probe filtering occurs before run/set
+normalization, so second images, clean-air cues, and the other cue subset
+affect neither the test samples nor their normalization statistics. Set 1 and
+Set 2 are normalized separately and then pooled within each cue subset.
+
+The dedicated binary odor loader assigns beta numbers in the complete passive
+event order before removing clean-air trials. For `sub-14`, probe labels are
+matched to the original premeal event files, following the ROI analysis's
+physical-odor convention. Their default location is:
+
+```text
+<base_dir>/nii/sub-14/func_PAID/premeal/
+  sub-14_task-premeal_run-<run>_events_orig.tsv
+```
+
+When the analysis base directory is a mini subset, point the swarm generator
+to the full-data location with `--sub14_original_events_dir`.
 
 The original runner and loader remain unchanged as the prior two-image
-analysis. The first-image runner uses the dedicated
-`probe_decoding_utils_first_image.py` loader and therefore has no switch back
-to the two-image behavior.
-
-Generate the first-image AB, three-class Biowulf jobs with:
+analysis. Generate two binary Biowulf jobs per subject with:
 
 ```bash
 python scripts_MRI/Decoding_probe_cross_task/make_searchlight_swarm_crosstask_first_image.py \
   --base_dir /data/liuq13/SPCD_mini \
   --script_name scripts_MRI/Decoding_probe_cross_task/run_searchlight_crosstask_odor2probe_first_image.py \
-  --n_jobs 4
+  --n_jobs 4 \
+  --sub14_original_events_dir /data/liuq13/SPCD_data/nii/sub-14/func_PAID/premeal
 ```
 
 On Biowulf, submit with `-t 4` so the allocated CPUs match `--n_jobs 4` in
@@ -89,8 +106,7 @@ each generated command.
 
 For group analysis, use
 `aggregate_searchlight_group_level_spm_crosstask_first_image.m`. It searches
-only for first-image map names and writes group results beneath an
-`images-first` analysis directory.
+for each binary cue subset separately at chance `0.5`.
 
 ---
 
@@ -100,7 +116,7 @@ Saved to:
 ```
 <base_dir>/searchlight_maps/probe_crosstask/
   sub-XX_session-<premeal|postmeal>_mode-crosstask_cue-<A|B|AB>_classes-<2|3>_radius-8mm.nii.gz
-  sub-XX_session-<premeal|postmeal>_mode-crosstask_cue-<A|B|AB>_classes-<2|3>_images-first_radius-8mm.nii.gz
+  sub-XX_session-premeal_mode-crosstask_subset-<conditioned_odor_only|preconditioned_odor_only>_classes-2_images-first_radius-8mm.nii.gz
 ```
 
 The first pattern is the original two-image output. The `_images-first_`
@@ -306,5 +322,3 @@ against `0`, using one-sample t tests, Wilcoxon tests, and sign tests. The
 primary aggregation excludes `sub-19` and `sub-33`, matching the RSA
 group analysis, while reporting voxel-loss and passive-decoding QC flags
 without additional automatic exclusions.
-
-

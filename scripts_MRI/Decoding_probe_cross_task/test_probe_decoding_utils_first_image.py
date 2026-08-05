@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for first-image-only probe loading invariants."""
+"""Tests for binary first-image cross-task loading invariants."""
 
 import os
 import sys
@@ -29,18 +29,29 @@ except ModuleNotFoundError:
     sys.modules["nilearn"] = nilearn
     sys.modules["nilearn.image"] = nilearn_image
 
-import probe_decoding_utils_first_image as first_image_utils
+import odor_training_utils_binary as odor_utils
+import probe_decoding_utils_first_image as probe_utils
 
 
-class FirstImageProbeLoaderTests(unittest.TestCase):
+class BinaryFirstImageLoaderTests(unittest.TestCase):
+    def test_cue_subset_indices_match_established_definitions(self):
+        self.assertEqual(
+            probe_utils.CUE_SUBSET_INDICES["conditioned_odor_only"],
+            {2, 4, 8, 10},
+        )
+        self.assertEqual(
+            probe_utils.CUE_SUBSET_INDICES["preconditioned_odor_only"],
+            {1, 3, 7, 9},
+        )
+
     def test_select_first_image_rows_rejects_missing_column(self):
         with self.assertRaisesRegex(ValueError, "missing img_index"):
-            first_image_utils._select_first_image_rows(
+            probe_utils._select_first_image_rows(
                 pd.DataFrame({"beta_file": ["beta.nii"]}),
                 "index.csv",
             )
 
-    def test_normalization_pool_contains_only_first_images(self):
+    def test_normalization_pool_is_first_image_and_subset_only(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             sub = "sub-01"
             sub_dir = os.path.join(temp_dir, "GLM", "premeal_trialwise_2mm", sub)
@@ -48,14 +59,21 @@ class FirstImageProbeLoaderTests(unittest.TestCase):
             csv_path = os.path.join(sub_dir, f"{sub}_premeal_run-1_beta_index.csv")
             pd.DataFrame(
                 {
-                    "beta_file": ["first_a.nii", "second_a.nii", "first_b.nii", "second_b.nii"],
-                    "run": [1, 1, 1, 1],
-                    "set": [1, 1, 2, 2],
-                    "trial": [1, 1, 2, 2],
-                    "img_index": [1, 2, 1, 2],
-                    "trial_type": ["cue_img1", "cue_img2", "cue_img1", "cue_img2"],
-                    "cue_index": [1, 2, 2, 1],
-                    "odor_index": [1, 2, 2, 1],
+                    "beta_file": [
+                        "pre_odor1.nii",
+                        "pre_odor2.nii",
+                        "cond_odor1.nii",
+                        "cond_odor2.nii",
+                        "clean_air.nii",
+                        "second_image.nii",
+                    ],
+                    "run": [1] * 6,
+                    "set": [1, 1, 1, 1, 1, 1],
+                    "trial": [1, 2, 3, 4, 5, 1],
+                    "img_index": [1, 1, 1, 1, 1, 2],
+                    "trial_type": ["cue_img1"] * 5 + ["cue_img2"],
+                    "cue_index": [1, 3, 2, 4, 5, 1],
+                    "odor_index": [1, 2, 1, 2, 0, 1],
                 }
             ).to_csv(csv_path, index=False)
 
@@ -67,24 +85,77 @@ class FirstImageProbeLoaderTests(unittest.TestCase):
                 return [object()] * len(df_selected)
 
             with patch.object(
-                first_image_utils,
+                probe_utils,
                 "_runwise_setwise_zscore",
                 side_effect=fake_zscore,
             ):
-                imgs, labels, meta = first_image_utils.load_betas_cue_first_image(
+                imgs, labels, meta = probe_utils.load_betas_cue_first_image(
                     sub=sub,
                     run=1,
                     base_dir=temp_dir,
-                    cue_type="AB",
-                    n_classes=2,
+                    cue_subset="preconditioned_odor_only",
                     normalize=True,
                 )
 
             self.assertEqual(len(imgs), 2)
             self.assertEqual(labels.tolist(), [0, 1])
+            self.assertEqual(meta["cue_index"].tolist(), [1, 3])
             self.assertEqual(meta["img_index"].tolist(), [1, 1])
-            self.assertEqual(captured["stats"]["img_index"].tolist(), [1, 1])
-            self.assertEqual(captured["selected"]["img_index"].tolist(), [1, 1])
+            self.assertEqual(captured["stats"]["cue_index"].tolist(), [1, 3])
+            self.assertEqual(captured["selected"]["cue_index"].tolist(), [1, 3])
+
+    def test_sub14_uses_original_premeal_odor_labels(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            events_dir = os.path.join(temp_dir, "original_events")
+            os.makedirs(events_dir)
+            pd.DataFrame(
+                {
+                    "trial_type": ["cue_img1", "cue_img2", "cue_img1"],
+                    "run": [1, 1, 1],
+                    "trial": [1, 1, 2],
+                    "img_index": [1, 2, 1],
+                    "odor_index": [1, 2, 2],
+                }
+            ).to_csv(
+                os.path.join(
+                    events_dir,
+                    "sub-14_task-premeal_run-1_events_orig.tsv",
+                ),
+                sep="\t",
+                index=False,
+            )
+            selected = pd.DataFrame(
+                {
+                    "run": [1, 1],
+                    "trial": [1, 2],
+                    "img_index": [1, 1],
+                    "odor_index": [2, 1],
+                }
+            )
+
+            labeled = probe_utils._apply_sub14_original_labels(
+                selected,
+                sub="sub-14",
+                base_dir=temp_dir,
+                session_tag="premeal",
+                original_events_dir=events_dir,
+            )
+
+            self.assertEqual(labeled["odor_index"].tolist(), [1, 2])
+            self.assertEqual(
+                labeled["label_source"].tolist(),
+                ["original_premeal_events", "original_premeal_events"],
+            )
+
+    def test_binary_odor_rows_preserve_full_event_beta_numbers(self):
+        events = pd.DataFrame(
+            {
+                "trial_type": ["odor_1", "clean_air", "odor_2", "clean_air"]
+            }
+        )
+        selected = odor_utils._binary_odor_event_rows(events, "events.tsv")
+        self.assertEqual(selected["beta_trial_number"].tolist(), [1, 3])
+        self.assertEqual(selected["y"].tolist(), [0, 1])
 
 
 if __name__ == "__main__":
