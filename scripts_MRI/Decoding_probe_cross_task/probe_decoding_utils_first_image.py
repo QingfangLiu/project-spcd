@@ -1,6 +1,7 @@
 """Probe-beta loading for binary first-image cross-task decoding."""
 
 import os
+from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -80,7 +81,7 @@ def _apply_sub14_original_labels(
     sub: str,
     base_dir: str,
     session_tag: str,
-    original_events_dir: str | None,
+    original_events_dir: Optional[str],
 ) -> pd.DataFrame:
     """Use the ROI analysis convention for sub-14 physical-odor labels."""
     labeled = df.copy()
@@ -162,7 +163,7 @@ def _binary_odor_labels(
     sub: str,
     run: int,
     cue_subset: str,
-) -> tuple[pd.DataFrame, np.ndarray]:
+) -> Tuple[pd.DataFrame, np.ndarray]:
     """Map odor_index 1/2 to binary labels 0/1 and reject clean air."""
     odor_index = pd.to_numeric(df["odor_index"], errors="coerce")
     if odor_index.isna().any() or not odor_index.isin([1, 2]).all():
@@ -186,7 +187,7 @@ def load_betas_cue_first_image(
     session_folder: str = "premeal_trialwise_2mm",
     session_tag: str = "premeal",
     normalize: bool = True,
-    sub14_original_events_dir: str | None = None,
+    sub14_original_events_dir: Optional[str] = None,
 ):
     """Load one binary probe run for one first-image odor cue subset."""
     sub_dir = _subject_run_dir(base_dir, sub, session_folder=session_folder)
@@ -257,7 +258,7 @@ def load_decoding_data_cue_first_image(
     normalize: bool = True,
     session_folder: str = "premeal_trialwise_2mm",
     session_tag: str = "premeal",
-    sub14_original_events_dir: str | None = None,
+    sub14_original_events_dir: Optional[str] = None,
 ):
     """Load and concatenate one binary first-image cue subset across runs."""
     imgs_all, y_all, run_ids, set_ids = [], [], [], []
