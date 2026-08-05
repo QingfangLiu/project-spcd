@@ -15,7 +15,7 @@ GLM/odor_scan_trialwise_2mm/sub-XX/
   sub-XX_task-odor_run-1_events.tsv
   sub-XX_task-odor_run-2_events.tsv
 
-premeal_trialwise_2mm/sub-XX/
+GLM/premeal_trialwise_2mm/sub-XX/
   sub-XX_premeal_run-1_beta_index.csv
   sub-XX_premeal_run-2_beta_index.csv
   sub-XX_premeal_run-3_beta_index.csv
@@ -25,7 +25,7 @@ premeal_trialwise_2mm/sub-XX/
 ```
 
 - **Odor events TSV:** provides `trial_type` (`odor_1`, `odor_2`, `clean_air`)  
-- **Probe CSVs:** must include `beta_file`, `run`, `cue_index`, `odor_index`, `set`  
+- **Probe CSVs:** must include `beta_file`, `run`, `cue_index`, `odor_index`, `set`, `img_index`
 - **Cue rules:**  
   - Cue type: A = odd `cue_index`, B = even `cue_index`  
   - Labels: from `odor_index`  
@@ -63,6 +63,35 @@ Runs whole-brain searchlight decoding for one subject.
 - **Classes:** 2-class (odor_1 vs odor_2) or 3-class (clean_air vs odor_1 vs odor_2)  
 - **Searchlight:** 8 mm radius, linear SVM (C=1), user-supplied mask (e.g. GM mask)  
 
+### First-image-only searchlight variant
+
+`run_searchlight_crosstask_odor2probe_first_image.py` is the version to use
+when rerunning this analysis. It keeps only `img_index == 1` from every probe
+trial. The filter is applied before run/set normalization, so second-image
+betas affect neither the test samples nor the probe normalization statistics.
+
+The original runner and loader remain unchanged as the prior two-image
+analysis. The first-image runner uses the dedicated
+`probe_decoding_utils_first_image.py` loader and therefore has no switch back
+to the two-image behavior.
+
+Generate the first-image AB, three-class Biowulf jobs with:
+
+```bash
+python scripts_MRI/Decoding_probe_cross_task/make_searchlight_swarm_crosstask_first_image.py \
+  --base_dir /data/liuq13/SPCD_mini \
+  --script_name scripts_MRI/Decoding_probe_cross_task/run_searchlight_crosstask_odor2probe_first_image.py \
+  --n_jobs 4
+```
+
+On Biowulf, submit with `-t 4` so the allocated CPUs match `--n_jobs 4` in
+each generated command.
+
+For group analysis, use
+`aggregate_searchlight_group_level_spm_crosstask_first_image.m`. It searches
+only for first-image map names and writes group results beneath an
+`images-first` analysis directory.
+
 ---
 
 ## Outputs
@@ -70,8 +99,13 @@ Runs whole-brain searchlight decoding for one subject.
 Saved to:
 ```
 <base_dir>/searchlight_maps/probe_crosstask/
-  sub-XX_session-<premeal|postmeal>_mode-crosstask_cue-<A|B>_classes-<2|3>_radius-8mm.nii.gz
+  sub-XX_session-<premeal|postmeal>_mode-crosstask_cue-<A|B|AB>_classes-<2|3>_radius-8mm.nii.gz
+  sub-XX_session-<premeal|postmeal>_mode-crosstask_cue-<A|B|AB>_classes-<2|3>_images-first_radius-8mm.nii.gz
 ```
+
+The first pattern is the original two-image output. The `_images-first_`
+pattern is produced only by the new first-image runner, so existing maps are
+never overwritten.
 
 - Map values = accuracy per searchlight sphere (single train/test split: odor→probe).  
 - Chance levels: 2-class = 0.5, 3-class ≈ 0.33.
@@ -272,9 +306,5 @@ against `0`, using one-sample t tests, Wilcoxon tests, and sign tests. The
 primary aggregation excludes `sub-19` and `sub-33`, matching the RSA
 group analysis, while reporting voxel-loss and passive-decoding QC flags
 without additional automatic exclusions.
-
-
-
-
 
 
