@@ -9,11 +9,12 @@ CUE_SUBSETS = (
     "conditioned_odor_only",
     "preconditioned_odor_only",
 )
+ANALYSIS_FOLDER = "Decoding_probe_cross_task"
+RUNNER_FILENAME = "run_searchlight_crosstask_odor2probe_first_image.py"
 
 
 def generate_swarm_file(
     base_dir,
-    script_name="run_searchlight_crosstask_odor2probe_first_image.py",
     output_file="decode_crosstask_odor2probe_first_image.swarm",
     cue_subsets=CUE_SUBSETS,
     radius_mm=8.0,
@@ -29,6 +30,11 @@ def generate_swarm_file(
     invalid = sorted(set(cue_subsets) - set(CUE_SUBSETS))
     if invalid:
         raise ValueError(f"Unknown cue subsets: {invalid}")
+
+    base_dir = os.path.abspath(base_dir)
+    script_path = os.path.join(base_dir, ANALYSIS_FOLDER, RUNNER_FILENAME)
+    if not os.path.isfile(script_path):
+        raise FileNotFoundError(f"Searchlight runner not found: {script_path}")
 
     glm_probe = os.path.join(base_dir, "GLM", session_folder)
     glm_odor = os.path.join(base_dir, "GLM", odor_glm_folder)
@@ -48,7 +54,7 @@ def generate_swarm_file(
         for sub in subjects:
             for cue_subset in cue_subsets:
                 command = (
-                    f"python {script_name} "
+                    f"python {script_path} "
                     f"--sub {sub} "
                     f"--base_dir {base_dir} "
                     f"--mask_img {os.path.join(base_dir, 'masks', 'gm_0.1.nii')} "
@@ -79,10 +85,6 @@ def main():
     )
     parser.add_argument("--base_dir", default="/data/liuq13/SPCD_mini")
     parser.add_argument(
-        "--script_name",
-        default="run_searchlight_crosstask_odor2probe_first_image.py",
-    )
-    parser.add_argument(
         "--output_file",
         default="decode_crosstask_odor2probe_first_image.swarm",
     )
@@ -102,7 +104,6 @@ def main():
     args = parser.parse_args()
     generate_swarm_file(
         base_dir=args.base_dir,
-        script_name=args.script_name,
         output_file=args.output_file,
         n_jobs=args.n_jobs,
         sub14_original_events_dir=args.sub14_original_events_dir,

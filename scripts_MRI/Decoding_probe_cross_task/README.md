@@ -94,12 +94,17 @@ The original runner and loader remain unchanged as the prior two-image
 analysis. Generate two binary Biowulf jobs per subject with:
 
 ```bash
-python scripts_MRI/Decoding_probe_cross_task/make_searchlight_swarm_crosstask_first_image.py \
-  --base_dir /data/liuq13/SPCD_mini \
-  --script_name scripts_MRI/Decoding_probe_cross_task/run_searchlight_crosstask_odor2probe_first_image.py \
+DATA_DIR=/vf/users/liuq13/SPCD_mini
+
+python "$DATA_DIR/Decoding_probe_cross_task/make_searchlight_swarm_crosstask_first_image.py" \
+  --base_dir "$DATA_DIR" \
   --n_jobs 4 \
-  --sub14_original_events_dir /data/liuq13/SPCD_data/nii/sub-14/func_PAID/premeal
+  --sub14_original_events_dir /vf/users/liuq13/SPCD_data/nii/sub-14/func_PAID/premeal
 ```
+
+The generator resolves the runner from
+`<base_dir>/Decoding_probe_cross_task/` and writes that absolute path into
+every swarm command. It stops immediately if the runner is missing.
 
 On Biowulf, submit with `-t 4` so the allocated CPUs match `--n_jobs 4` in
 each generated command.

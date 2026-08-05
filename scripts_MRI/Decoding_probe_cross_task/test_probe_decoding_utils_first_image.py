@@ -30,10 +30,40 @@ except ModuleNotFoundError:
     sys.modules["nilearn.image"] = nilearn_image
 
 import odor_training_utils_binary as odor_utils
+import make_searchlight_swarm_crosstask_first_image as swarm_utils
 import probe_decoding_utils_first_image as probe_utils
 
 
 class BinaryFirstImageLoaderTests(unittest.TestCase):
+    def test_swarm_runner_is_anchored_to_analysis_base_dir(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            for folder in ("premeal_trialwise_2mm", "odor_scan_trialwise_2mm"):
+                os.makedirs(os.path.join(temp_dir, "GLM", folder, "sub-01"))
+            analysis_dir = os.path.join(temp_dir, "Decoding_probe_cross_task")
+            os.makedirs(analysis_dir)
+            runner_path = os.path.join(
+                analysis_dir,
+                "run_searchlight_crosstask_odor2probe_first_image.py",
+            )
+            with open(runner_path, "w") as runner_file:
+                runner_file.write("# test runner\n")
+            swarm_path = os.path.join(temp_dir, "jobs.swarm")
+
+            swarm_utils.generate_swarm_file(
+                base_dir=temp_dir,
+                output_file=swarm_path,
+            )
+
+            with open(swarm_path) as swarm_file:
+                commands = swarm_file.read().splitlines()
+            self.assertEqual(len(commands), 2)
+            self.assertTrue(commands[0].startswith(f"python {runner_path} "))
+
+    def test_swarm_rejects_missing_base_dir_runner(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with self.assertRaisesRegex(FileNotFoundError, "runner not found"):
+                swarm_utils.generate_swarm_file(base_dir=temp_dir)
+
     def test_cue_subset_indices_match_established_definitions(self):
         self.assertEqual(
             probe_utils.CUE_SUBSET_INDICES["conditioned_odor_only"],
