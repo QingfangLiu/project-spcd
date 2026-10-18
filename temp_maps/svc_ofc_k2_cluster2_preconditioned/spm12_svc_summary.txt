@@ -1,0 +1,22 @@
+SPM12 small-volume correction
+Contrast: RSA premeal | subset-preconditioned_odor_only | model-odor_identity_no_image > 0
+Source: /Users/liuq13/project-spcd/temp_maps/probe_imagewise_odor_identity_no_image_first_image_preconditioned
+Mask: /Users/liuq13/project-spcd/masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii.gz
+Display threshold: voxelwise p < 0.05 uncorrected, k = 0
+Statistic: T(31)
+Threshold T: 1.695518817
+Voxels in SVC search volume: 4445
+SVC resels: 4.305793739
+SVC volume (mm^3): 35560
+Conventional cluster-defining threshold: voxelwise p < 0.001 uncorrected (T > 3.374899285)
+Mask voxels surviving conventional cluster-defining threshold: 0
+
+Rows from SPM results table:
+row	cluster_p_FWE	cluster_extent_vox	cluster_p_unc	peak_p_FWE	T	Z	peak_p_unc	x	y	z
+1	0.5684642634	721	0.2508811524	0.2673891787	3.166885138	2.924894768	0.001722863616	-36	26	-2
+2	NaN	NaN	NaN	0.3736196471	2.959396124	2.755972337	0.002925897294	-32	48	-8
+3	NaN	NaN	NaN	0.4714610666	2.794572592	2.61911201	0.004407949754	-36	44	0
+4	NaN	NaN	NaN	0.5485587254	2.672287226	2.516095505	0.005933151147	-38	38	-2
+5	NaN	NaN	NaN	0.7392829002	2.361122131	2.248651672	0.01226733308	-54	36	-4
+6	0.8262188926	232	0.5224049107	0.6140944373	2.56922245	2.428330343	0.007584260042	50	46	-10
+7	0.9628465122	1	0.9829496761	0.9645619535	1.698118806	1.65923513	0.04853421061	22	14	-12
