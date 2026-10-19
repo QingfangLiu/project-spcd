@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import sys
 import tempfile
 from pathlib import Path
 
@@ -37,12 +38,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from figure_style import (
+    DIRECT_COLOR, INFERRED_COLOR, INSET_LABEL_SIZE, REFERENCE_COLOR,
+    SPINE_COLOR, SUMMARY_COLOR, add_panel_header, configure_matplotlib, style_axis,
+)
+
 
 DEFAULT_SKIP_SUBS = ("sub-19", "sub-31", "sub-33")
 PAIR_GROUPS = {1: "A1-B1", 4: "A1-B1", 2: "A2-B2", 5: "A2-B2", 3: "C-D", 6: "C-D"}
 CONDITIONED_CHOICES = ("B2>B1", "B2>D", "B1>D")
 PRECONDITIONED_CHOICES = ("A2>A1", "A2>C", "A1>C")
-POINT_COLOR = "#1f77b4"
 
 
 def _load_subjects(
@@ -163,87 +169,81 @@ def _summary(data: pd.DataFrame, order: tuple) -> pd.DataFrame:
 def _bar_inset(ax: plt.Axes, data: pd.DataFrame, order: tuple, title: str) -> None:
     summary = _summary(data, order)
     x = np.arange(len(order))
-    ax.bar(x, summary["mean"], yerr=summary["sem"], width=0.6, color="gray",
+    ax.bar(x, summary["mean"], yerr=summary["sem"], width=0.6, color=SPINE_COLOR,
            capsize=2.5, error_kw={"elinewidth": 1})
     ax.set(xticks=x, xticklabels=order, ylim=(0, 1.07), yticks=[0, 0.5, 1], ylabel="Accuracy")
-    ax.set_title(title, fontsize=11, pad=5)
-    ax.tick_params(labelsize=9)
-    ax.yaxis.label.set_size(10)
+    ax.set_title(title, loc="left", fontsize=INSET_LABEL_SIZE, pad=8)
+    style_axis(ax, inset=True)
 
 
 def _plot_changes(
     ax: plt.Axes, data: pd.DataFrame, order: tuple, labels: tuple,
     title: str, ylabel: str, ylim: tuple[float, float], *, legend_loc: str = "upper left",
+    color: str = INFERRED_COLOR,
 ) -> None:
     summary = _summary(data, order)
     positions = data["category"].map({label: i for i, label in enumerate(order)}).to_numpy(dtype=float)
     jitter = np.random.default_rng(0).normal(0, 0.08, size=len(data))
-    ax.scatter(positions + jitter, data["value"], color=POINT_COLOR, alpha=0.3,
-               s=27, linewidths=0, label="individual", zorder=2)
+    ax.scatter(positions + jitter, data["value"], color=color, alpha=0.4,
+               s=34, linewidths=0, label="individual", zorder=2)
     ax.errorbar(np.arange(len(order)), summary["mean"], yerr=summary["sem"],
-                fmt="o", color="black", markersize=4.5, capsize=3.5,
-                linewidth=1.5, label="mean ± SEM", zorder=3)
-    ax.axhline(0, color=POINT_COLOR, linestyle=":", linewidth=1, alpha=0.8, zorder=1)
+                fmt="o", color=SUMMARY_COLOR, markersize=6, capsize=4,
+                linewidth=2, label="mean ± SEM", zorder=3)
+    ax.axhline(0, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.2, zorder=1)
     ax.set(xticks=np.arange(len(order)), xticklabels=labels, ylabel=ylabel,
            ylim=ylim, xlim=(-0.45, len(order) - 0.55))
-    ax.set_title(title, pad=9)
+    ax.set_title(title, loc="left", pad=16)
     ax.legend(loc=legend_loc)
 
 
 def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
-    plt.rcParams.update({
-        "font.family": "Arial", "font.size": 11, "axes.titlesize": 12,
-        "axes.labelsize": 11, "axes.linewidth": 0.9, "legend.fontsize": 9,
-        "xtick.labelsize": 10, "ytick.labelsize": 10, "pdf.fonttype": 42,
-        "ps.fonttype": 42, "axes.grid": False, "legend.framealpha": 0.95,
-    })
-    fig = plt.figure(figsize=(13.4, 10.6), facecolor="white")
-    outer = fig.add_gridspec(2, 1, left=0.075, right=0.985, bottom=0.075,
-                            top=0.95, hspace=0.31, height_ratios=(1, 1.02))
+    configure_matplotlib()
+    fig = plt.figure(figsize=(13.4, 11.2), facecolor="white")
+    outer = fig.add_gridspec(2, 1, left=0.095, right=0.985, bottom=0.10,
+                            top=0.92, hspace=0.48, height_ratios=(1, 1.08))
     top = outer[0].subgridspec(1, 2, wspace=0.27)
-    bottom = outer[1].subgridspec(1, 3, width_ratios=(1.18, 1, 1), wspace=0.43)
+    bottom = outer[1].subgridspec(1, 3, width_ratios=(1.18, 1, 1), wspace=0.53)
     axes = [fig.add_subplot(top[0, 0]), fig.add_subplot(top[0, 1])]
     axes.extend(fig.add_subplot(bottom[0, i]) for i in range(3))
     a, b, c, d, e = axes
 
     for _, subject_data in data["A"].groupby("subject"):
-        a.plot(subject_data["category"], subject_data["value"], color="gray", alpha=0.3, linewidth=0.8)
+        a.plot(subject_data["category"], subject_data["value"], color=SPINE_COLOR, alpha=0.4, linewidth=0.9)
     summary = _summary(data["A"], (1, 2, 3, 4))
     a.errorbar([1, 2, 3, 4], summary["mean"], yerr=summary["std"], fmt="o",
-               color="black", markersize=4.5, capsize=3.5, linewidth=1.5, label="mean ± SD")
-    a.axvline(3.5, color="gray", linestyle="--", alpha=0.6)
+               color=SUMMARY_COLOR, markersize=6, capsize=4, linewidth=2, label="mean ± SD")
+    a.axvline(3.5, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.2)
     a.set(xticks=[1, 2, 3, 4], xticklabels=["Day 1\nrun 1", "Day 1\nrun 2", "Day 1\nrun 3", "Day 2\nlast run"],
           ylim=(0, 1.05), xlim=(0.85, 4.15), ylabel="Accuracy")
-    a.set_title("Preconditioning across runs", pad=9)
+    a.set_title("Preconditioning across runs", loc="left", pad=16)
     a.legend(loc="lower left")
-    _bar_inset(a.inset_axes([0.48, 0.16, 0.34, 0.36]), data["A inset"],
+    _bar_inset(a.inset_axes([0.47, 0.17, 0.45, 0.40]), data["A inset"],
                ("A1-B1", "A2-B2", "C-D"), "Day 2 last run")
 
     summary = _summary(data["B"], (1, 2, 3))
     jitter = np.random.default_rng(0).normal(0, 0.04, size=len(data["B"]))
-    b.scatter(data["B"]["category"] + jitter, data["B"]["value"], color=POINT_COLOR,
-               alpha=0.4, s=22, linewidths=0)
+    b.scatter(data["B"]["category"] + jitter, data["B"]["value"], color=DIRECT_COLOR,
+               alpha=0.4, s=32, linewidths=0)
     b.errorbar([1, 2, 3], summary["mean"], yerr=summary["sem"], fmt="o-",
-               color="black", markersize=4.5, capsize=3.5, linewidth=2)
+               color=SUMMARY_COLOR, markersize=6, capsize=4, linewidth=2)
     b.set(xticks=[1, 2, 3], xticklabels=["Run 1", "Run 2", "Run 3"],
           ylim=(0, 1.05), xlim=(0.78, 3.22), ylabel="Accuracy")
-    b.set_title("Conditioning across runs", pad=9)
-    _bar_inset(b.inset_axes([0.60, 0.13, 0.36, 0.38]), data["B inset"], ("B1", "B2", "D"), "Run 3")
+    b.set_title("Conditioning across runs", loc="left", pad=16)
+    _bar_inset(b.inset_axes([0.60, 0.17, 0.37, 0.40]), data["B inset"], ("B1", "B2", "D"), "Run 3")
 
-    _plot_changes(c, data["C"], (2, 1, 0), ("Sated odor", "Non-sated odor", "Clean air"),
-                  "Selective decrease in pleasantness", "Change in pleasantness rating (post − pre)",
+    _plot_changes(c, data["C"], (2, 1, 0), ("Sated\nodor", "Non-sated\nodor", "Clean\nair"),
+                  "Selective decrease\nin pleasantness", "Change in pleasantness rating\n(post − pre)",
                   (-4.05, 2.15), legend_loc="lower right")
     for ax, letter, order, title in (
-        (d, "D", CONDITIONED_CHOICES, "Conditioned cue choices"),
-        (e, "E", PRECONDITIONED_CHOICES, "Preconditioned cue choices"),
+        (d, "D", CONDITIONED_CHOICES, "Conditioned\ncue choices"),
+        (e, "E", PRECONDITIONED_CHOICES, "Preconditioned\ncue choices"),
     ):
         _plot_changes(ax, data[letter], order, order, title,
-                      "Change in choice proportion (post − pre)", (-1.1, 1.1))
+                      "Change in choice proportion\n(post − pre)", (-1.1, 1.1),
+                      color=DIRECT_COLOR if letter == "D" else INFERRED_COLOR)
     for ax, letter in zip(axes, "ABCDE"):
-        box = ax.get_position()
-        fig.text(box.x0 - 0.045, box.y1 + 0.018, letter, fontsize=16, fontweight="bold",
-                 ha="left", va="bottom")
-        ax.tick_params(direction="out", length=3.5, width=0.8)
+        style_axis(ax)
+        add_panel_header(ax, letter, ax.get_title(loc="left"))
     return fig
 
 

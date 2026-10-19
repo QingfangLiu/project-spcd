@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import sys
 import tempfile
 from pathlib import Path
 
@@ -36,6 +37,13 @@ import nibabel as nib
 import numpy as np
 import pandas as pd
 from scipy import stats
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from figure_style import (
+    DIRECT_COLOR, INFERRED_COLOR, MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR,
+    SPINE_COLOR, SUMMARY_COLOR, TICK_SIZE, add_panel_header,
+    configure_matplotlib, style_axis,
+)
 
 
 CONDITIONED = "conditioned_odor_only"
@@ -61,8 +69,8 @@ ROI_COLORS = {
     ROI_ORDER[1]: "#238B8E",
 }
 CUE_COLORS = {
-    CONDITIONED: "#3B6EA8",
-    PRECONDITIONED: "#D9544D",
+    CONDITIONED: DIRECT_COLOR,
+    PRECONDITIONED: INFERRED_COLOR,
 }
 
 RSA_METRIC = "odor_identity_no_image_spearman_rho"
@@ -179,20 +187,6 @@ def _swarm_offsets(values: np.ndarray, width: float = 0.16) -> np.ndarray:
     return offsets
 
 
-def _panel_letter(ax, letter: str) -> None:
-    ax.text(
-        -0.105,
-        1.06,
-        letter,
-        transform=ax.transAxes,
-        fontsize=20,
-        fontweight="bold",
-        ha="left",
-        va="top",
-        clip_on=False,
-    )
-
-
 def _canonical_projection(path: Path) -> tuple[np.ndarray, list[float]]:
     image = nib.as_closest_canonical(nib.load(str(path)))
     data = np.asanyarray(image.dataobj, dtype=float)
@@ -218,17 +212,19 @@ def _draw_method_box(
     height: float,
     text: str,
     *,
-    facecolor: str = "#F6F6F6",
+    facecolor: str = "white",
+    fontsize: float = NOTE_SIZE,
 ) -> None:
     box = patches.FancyBboxPatch(
         xy,
         width,
         height,
-        boxstyle="round,pad=0.012,rounding_size=0.02",
+        boxstyle="round,pad=0.009,rounding_size=0.012",
         linewidth=0.8,
-        edgecolor="#555555",
+        edgecolor=SPINE_COLOR,
         facecolor=facecolor,
         transform=ax.transAxes,
+        clip_on=False,
     )
     ax.add_patch(box)
     ax.text(
@@ -238,7 +234,7 @@ def _draw_method_box(
         transform=ax.transAxes,
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=fontsize,
     )
 
 
@@ -253,13 +249,13 @@ def _draw_arrow(
         xytext=start,
         xycoords=ax.transAxes,
         textcoords=ax.transAxes,
-        arrowprops={"arrowstyle": "-|>", "lw": 1.1, "color": "#444444"},
+        arrowprops={"arrowstyle": "-|>", "lw": 1.3, "color": MUTED_TEXT_COLOR},
     )
 
 
 def _plot_analysis_logic(ax, project_root: Path) -> None:
     ax.set_axis_off()
-    _panel_letter(ax, "A")
+    add_panel_header(ax, "A", "OFC regions and\nanalysis logic")
 
     gm_path = project_root / "masks" / "gm_0.1.nii"
     mask_dir = project_root / "masks" / "OFC_clusterMap_K2_gm0p1"
@@ -275,7 +271,7 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
             raise ValueError("GM and OFC masks do not share one image space.")
         roi_projections.append((roi, projection))
 
-    brain_ax = ax.inset_axes([0.02, 0.56, 0.43, 0.39])
+    brain_ax = ax.inset_axes([0.00, 0.66, 0.40, 0.34])
     brain_ax.imshow(
         np.ma.masked_where(gm_projection <= 0, gm_projection > 0),
         cmap=matplotlib.colors.ListedColormap(["#D6D6D6"]),
@@ -304,121 +300,139 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
             interpolation="nearest",
             aspect="equal",
         )
-    brain_ax.set_xlim(-76, 76)
-    brain_ax.set_ylim(-65, 25)
+    brain_ax.set_xlim(*extent[:2])
+    brain_ax.set_ylim(*extent[2:])
     brain_ax.axis("off")
-    brain_ax.text(
-        0.5,
-        0.02,
+    ax.text(
+        0.20,
+        0.635,
         "Coronal maximum projection",
-        transform=brain_ax.transAxes,
+        transform=ax.transAxes,
         ha="center",
-        va="bottom",
-        fontsize=9,
-        color="#555555",
+        va="top",
+        fontsize=12,
+        color=MUTED_TEXT_COLOR,
     )
 
     ax.text(
-        0.48,
-        0.92,
-        "Independent OFC K=2 ROIs",
+        0.47,
+        0.96,
+        "Independent OFC\nK=2 ROIs",
         transform=ax.transAxes,
-        fontsize=11,
+        fontsize=14,
         fontweight="bold",
         va="top",
     )
     for row, roi in enumerate(ROI_ORDER):
-        y = 0.82 - row * 0.13
+        y = 0.77 - row * 0.13
         ax.add_patch(
             patches.Rectangle(
-                (0.49, y - 0.025),
+                (0.47, y - 0.018),
                 0.035,
-                0.035,
+                0.036,
                 transform=ax.transAxes,
                 color=ROI_COLORS[roi],
             )
         )
         ax.text(
-            0.54,
+            0.53,
             y,
-            ROI_SHORT[roi].replace("\n", " "),
+            ROI_SHORT[roi],
             transform=ax.transAxes,
-            fontsize=10,
+            fontsize=NOTE_SIZE,
             va="center",
         )
 
     ax.text(
-        0.02,
-        0.49,
+        0.00,
+        0.52,
         "Within-probe RSA",
         transform=ax.transAxes,
-        fontsize=11,
+        fontsize=14,
         fontweight="bold",
     )
-    _draw_method_box(ax, (0.02, 0.32), 0.22, 0.11, "Premeal cue\npatterns")
-    _draw_method_box(ax, (0.34, 0.32), 0.20, 0.11, "Neural RDM")
+    _draw_method_box(ax, (0.00, 0.35), 0.26, 0.12, "Premeal cue\npatterns")
+    _draw_method_box(ax, (0.38, 0.35), 0.24, 0.12, "Neural RDM")
     _draw_method_box(
         ax,
-        (0.65, 0.32),
-        0.29,
-        0.11,
-        "Odor-identity RDM\nsame = 0; different = 1",
+        (0.74, 0.35),
+        0.26,
+        0.12,
+        "Odor-identity\nRDM",
     )
-    _draw_arrow(ax, (0.245, 0.375), (0.335, 0.375))
+    _draw_arrow(ax, (0.27, 0.41), (0.37, 0.41))
     ax.text(
-        0.595,
-        0.375,
+        0.68,
+        0.41,
         "ρ",
         transform=ax.transAxes,
-        fontsize=16,
+        fontsize=20,
         ha="center",
         va="center",
     )
+    ax.text(
+        1.00,
+        0.325,
+        "same = 0; different = 1",
+        transform=ax.transAxes,
+        fontsize=12,
+        ha="right",
+        va="top",
+        color=MUTED_TEXT_COLOR,
+    )
 
     ax.text(
-        0.02,
-        0.24,
+        0.00,
+        0.21,
         "Cross-task decoding",
         transform=ax.transAxes,
-        fontsize=11,
+        fontsize=14,
         fontweight="bold",
     )
     _draw_method_box(
         ax,
-        (0.02, 0.04),
+        (0.00, 0.015),
         0.26,
-        0.13,
-        "Passive odor patterns\nodor 1 vs odor 2",
-        facecolor="#F2F6FA",
+        0.12,
+        "Passive odor\npatterns",
     )
-    _draw_method_box(ax, (0.39, 0.04), 0.18, 0.13, "Linear SVM")
+    _draw_method_box(ax, (0.38, 0.015), 0.24, 0.12, "Linear SVM")
     _draw_method_box(
         ax,
-        (0.68, 0.04),
+        (0.74, 0.015),
         0.26,
-        0.13,
+        0.12,
         "Premeal cue\nodor identity",
-        facecolor="#FAF3F2",
     )
-    _draw_arrow(ax, (0.285, 0.105), (0.385, 0.105))
-    _draw_arrow(ax, (0.575, 0.105), (0.675, 0.105))
+    _draw_arrow(ax, (0.27, 0.075), (0.37, 0.075))
+    _draw_arrow(ax, (0.63, 0.075), (0.73, 0.075))
     ax.text(
-        0.335,
-        0.177,
+        0.32,
+        0.145,
         "train",
         transform=ax.transAxes,
-        fontsize=9,
+        fontsize=12,
         ha="center",
-        color="#555555",
+        color=MUTED_TEXT_COLOR,
     )
     ax.text(
-        0.625,
-        0.177,
+        0.68,
+        0.145,
         "test",
         transform=ax.transAxes,
-        fontsize=9,
+        fontsize=12,
         ha="center",
-        color="#555555",
+        color=MUTED_TEXT_COLOR,
+    )
+    ax.text(
+        0.13,
+        -0.025,
+        "odor 1 vs odor 2",
+        transform=ax.transAxes,
+        fontsize=12,
+        ha="center",
+        va="top",
+        color=MUTED_TEXT_COLOR,
     )
 
 
@@ -435,8 +449,7 @@ def _plot_paired_results(
     round_for_ranks: bool,
     baseline_label: str,
 ) -> None:
-    _panel_letter(ax, panel_letter)
-    ax.set_title(title, loc="left", fontsize=14, fontweight="bold")
+    add_panel_header(ax, panel_letter, title)
     positions = {
         (ROI_ORDER[0], CONDITIONED): 0.0,
         (ROI_ORDER[0], PRECONDITIONED): 0.9,
@@ -454,8 +467,8 @@ def _plot_paired_results(
             ax.plot(
                 [x_conditioned, x_preconditioned],
                 [row[CONDITIONED], row[PRECONDITIONED]],
-                color="#D0D0D0",
-                linewidth=0.45,
+                color=SPINE_COLOR,
+                linewidth=0.6,
                 alpha=0.40,
                 zorder=1,
             )
@@ -466,7 +479,7 @@ def _plot_paired_results(
             ax.scatter(
                 x + _swarm_offsets(values),
                 values,
-                s=14,
+                s=28,
                 color=CUE_COLORS[cue_subset],
                 alpha=0.40,
                 edgecolor="white",
@@ -481,9 +494,9 @@ def _plot_paired_results(
                 fmt="D",
                 markersize=6.5,
                 markerfacecolor="white",
-                markeredgecolor="black",
+                markeredgecolor=SUMMARY_COLOR,
                 markeredgewidth=1.6,
-                color="black",
+                color=SUMMARY_COLOR,
                 linewidth=2.2,
                 capsize=5,
                 capthick=2.2,
@@ -502,19 +515,21 @@ def _plot_paired_results(
                 annotation,
                 ha="center",
                 va="top",
-                fontsize=16 if annotation == "*" else 10,
-                color="black",
+                fontsize=20 if annotation == "*" else NOTE_SIZE,
+                color=SUMMARY_COLOR,
             )
 
-    ax.axhline(baseline, color="#333333", linewidth=0.9, linestyle="--")
+    ax.axhline(baseline, color=REFERENCE_COLOR, linewidth=1.2, linestyle=(0, (3, 3)))
     ax.text(
-        3.98,
+        1.015,
         baseline,
         baseline_label,
-        fontsize=8.5,
-        ha="right",
-        va="bottom",
-        color="#444444",
+        transform=ax.get_yaxis_transform(),
+        fontsize=12,
+        ha="left",
+        va="center",
+        color=MUTED_TEXT_COLOR,
+        clip_on=False,
     )
     ax.set_xlim(-0.48, 4.08)
     ax.set_ylim(*ylim)
@@ -524,31 +539,29 @@ def _plot_paired_results(
         CUE_LABELS * 2,
         rotation=24,
         ha="right",
-        fontsize=9.5,
+        fontsize=TICK_SIZE,
     )
     x_transform = ax.get_xaxis_transform()
     for roi in ROI_ORDER:
         center = np.mean([positions[(roi, cue)] for cue in CUE_ORDER])
         ax.text(
             center,
-            -0.20,
+            -0.32,
             ROI_SHORT[roi],
             transform=x_transform,
             ha="center",
             va="top",
-            fontsize=9.5,
+            fontsize=NOTE_SIZE,
             fontweight="bold",
             color=ROI_COLORS[roi],
             clip_on=False,
         )
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.tick_params(direction="out", width=0.8)
+    style_axis(ax)
 
 
 def _plot_blank_panel(ax) -> None:
     ax.set_axis_off()
-    _panel_letter(ax, "D")
+    add_panel_header(ax, "D", "", title_lines=2)
 
 
 def _subject_paths(project_root: Path, analysis: str) -> list[Path]:
@@ -628,41 +641,39 @@ def main() -> None:
         tuple(args.skip_subs),
     )
 
-    plt.rcParams.update(
-        {
-            "font.family": "Arial",
-            "font.size": 11,
-            "axes.linewidth": 0.8,
-            "pdf.fonttype": 42,
-            "ps.fonttype": 42,
-        }
-    )
-    figure = plt.figure(figsize=(13.4, 9.4), facecolor="white")
+    configure_matplotlib()
+    figure = plt.figure(figsize=(13.4, 11.6), facecolor="white")
     grid = figure.add_gridspec(
         2,
         2,
-        left=0.065,
+        left=0.095,
         right=0.985,
-        top=0.965,
-        bottom=0.075,
-        wspace=0.32,
-        hspace=0.43,
+        top=0.90,
+        bottom=0.155,
+        wspace=0.43,
+        hspace=0.72,
     )
     ax_a = figure.add_subplot(grid[0, 0])
     ax_b = figure.add_subplot(grid[0, 1])
     ax_c = figure.add_subplot(grid[1, 0])
     ax_d = figure.add_subplot(grid[1, 1])
 
+    # Use the open inter-row space for a readable diagram, keeping its header
+    # aligned with panel B and all result panels in their existing positions.
+    position = ax_a.get_position()
+    ax_a.set_position([
+        position.x0, position.y0 - 0.08, position.width, position.height + 0.08,
+    ])
     _plot_analysis_logic(ax_a, project_root)
     _plot_paired_results(
         ax_b,
         rsa_data,
         metric=RSA_METRIC,
         baseline=0.0,
-        title="Odor identity within cue representations",
-        ylabel="Spearman ρ: neural vs odor-identity RDM",
+        title="Odor identity within\ncue representations",
+        ylabel="Spearman ρ: neural vs\nodor-identity RDM",
         panel_letter="B",
-        ylim=(-0.215, 0.315),
+        ylim=(-0.215, 0.35),
         round_for_ranks=False,
         baseline_label="zero",
     )
@@ -671,10 +682,10 @@ def main() -> None:
         decoding_data,
         metric=DECODING_METRIC,
         baseline=0.5,
-        title="Transfer from odor perception to cues",
+        title="Transfer from odor\nperception to cues",
         ylabel="Cross-task balanced accuracy",
         panel_letter="C",
-        ylim=(0.18, 0.835),
+        ylim=(0.18, 0.88),
         round_for_ranks=True,
         baseline_label="chance",
     )
