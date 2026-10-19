@@ -17,6 +17,12 @@ and probe analyses retain the notebooks' missing-response/RT filtering rules.
 Probe changes are paired post-minus-pre proportions, with A2/B2 choices
 oriented against A1/B1 and A3/B3 relabeled C/D. The generator does not read
 the Illustrator file, existing panel PDFs, or cached group-level summaries.
+
+Outcome colors are local to this figure: blue = non-sated (A1/B1), orange =
+sated (A2/B2), gray = clean air (C/D). They do not encode learning route.
+Panels D/E use neutral points and descriptive comparison labels, retaining
+the analysis cue codes underneath. Negative changes indicate reduced choice
+of the cue named before ">", independently of stimulus presentation order.
 """
 
 from __future__ import annotations
@@ -35,12 +41,13 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from figure_style import (
-    DIRECT_COLOR, INFERRED_COLOR, INSET_LABEL_SIZE, REFERENCE_COLOR,
+    INSET_LABEL_SIZE, INSET_TICK_SIZE, MUTED_TEXT_COLOR, REFERENCE_COLOR,
     SPINE_COLOR, SUMMARY_COLOR, add_panel_header, configure_matplotlib, style_axis,
 )
 
@@ -49,6 +56,9 @@ DEFAULT_SKIP_SUBS = ("sub-19", "sub-31", "sub-33")
 PAIR_GROUPS = {1: "A1-B1", 4: "A1-B1", 2: "A2-B2", 5: "A2-B2", 3: "C-D", 6: "C-D"}
 CONDITIONED_CHOICES = ("B2>B1", "B2>D", "B1>D")
 PRECONDITIONED_CHOICES = ("A2>A1", "A2>C", "A1>C")
+# Odor-number codes match pleasantness_summary.csv and the cue-odor mappings.
+OUTCOME_COLORS = {0: "#9AA3AA", 1: "#2878B5", 2: "#D97721"}
+COMPARISON_LABELS = ("Sated\n> non-sated", "Sated\n> air", "Non-sated\n> air")
 
 
 def _load_subjects(
@@ -166,10 +176,14 @@ def _summary(data: pd.DataFrame, order: tuple) -> pd.DataFrame:
     return data.groupby("category")["value"].agg(["count", "mean", "std", "sem"]).loc[list(order)]
 
 
-def _bar_inset(ax: plt.Axes, data: pd.DataFrame, order: tuple, title: str) -> None:
+def _bar_inset(
+    ax: plt.Axes, data: pd.DataFrame, order: tuple, title: str,
+    *, outcome_order: tuple[int, ...],
+) -> None:
     summary = _summary(data, order)
     x = np.arange(len(order))
-    ax.bar(x, summary["mean"], yerr=summary["sem"], width=0.6, color=SPINE_COLOR,
+    ax.bar(x, summary["mean"], yerr=summary["sem"], width=0.6,
+           color=[OUTCOME_COLORS[odor] for odor in outcome_order],
            capsize=2.5, error_kw={"elinewidth": 1})
     ax.set(xticks=x, xticklabels=order, ylim=(0, 1.07), yticks=[0, 0.5, 1], ylabel="Accuracy")
     ax.set_title(title, loc="left", fontsize=INSET_LABEL_SIZE, pad=8)
@@ -179,12 +193,13 @@ def _bar_inset(ax: plt.Axes, data: pd.DataFrame, order: tuple, title: str) -> No
 def _plot_changes(
     ax: plt.Axes, data: pd.DataFrame, order: tuple, labels: tuple,
     title: str, ylabel: str, ylim: tuple[float, float], *, legend_loc: str = "upper left",
-    color: str = INFERRED_COLOR,
+    colors: dict | None = None,
 ) -> None:
     summary = _summary(data, order)
     positions = data["category"].map({label: i for i, label in enumerate(order)}).to_numpy(dtype=float)
     jitter = np.random.default_rng(0).normal(0, 0.08, size=len(data))
-    ax.scatter(positions + jitter, data["value"], color=color, alpha=0.4,
+    point_colors = data["category"].map(colors) if colors is not None else MUTED_TEXT_COLOR
+    ax.scatter(positions + jitter, data["value"], color=point_colors, alpha=0.4,
                s=34, linewidths=0, label="individual", zorder=2)
     ax.errorbar(np.arange(len(order)), summary["mean"], yerr=summary["sem"],
                 fmt="o", color=SUMMARY_COLOR, markersize=6, capsize=4,
@@ -198,9 +213,9 @@ def _plot_changes(
 
 def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     configure_matplotlib()
-    fig = plt.figure(figsize=(13.4, 11.2), facecolor="white")
-    outer = fig.add_gridspec(2, 1, left=0.095, right=0.985, bottom=0.10,
-                            top=0.92, hspace=0.48, height_ratios=(1, 1.08))
+    fig = plt.figure(figsize=(13.4, 11.8), facecolor="white")
+    outer = fig.add_gridspec(2, 1, left=0.095, right=0.985, bottom=0.14,
+                            top=0.91, hspace=0.48, height_ratios=(1, 1.08))
     top = outer[0].subgridspec(1, 2, wspace=0.27)
     bottom = outer[1].subgridspec(1, 3, width_ratios=(1.18, 1, 1), wspace=0.53)
     axes = [fig.add_subplot(top[0, 0]), fig.add_subplot(top[0, 1])]
@@ -218,32 +233,51 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     a.set_title("Preconditioning across runs", loc="left", pad=16)
     a.legend(loc="lower left")
     _bar_inset(a.inset_axes([0.47, 0.17, 0.45, 0.40]), data["A inset"],
-               ("A1-B1", "A2-B2", "C-D"), "Day 2 last run")
+               ("A1-B1", "A2-B2", "C-D"), "Day 2 last run", outcome_order=(1, 2, 0))
 
     summary = _summary(data["B"], (1, 2, 3))
     jitter = np.random.default_rng(0).normal(0, 0.04, size=len(data["B"]))
-    b.scatter(data["B"]["category"] + jitter, data["B"]["value"], color=DIRECT_COLOR,
+    b.scatter(data["B"]["category"] + jitter, data["B"]["value"], color=MUTED_TEXT_COLOR,
                alpha=0.4, s=32, linewidths=0)
     b.errorbar([1, 2, 3], summary["mean"], yerr=summary["sem"], fmt="o-",
                color=SUMMARY_COLOR, markersize=6, capsize=4, linewidth=2)
     b.set(xticks=[1, 2, 3], xticklabels=["Run 1", "Run 2", "Run 3"],
           ylim=(0, 1.05), xlim=(0.78, 3.22), ylabel="Accuracy")
     b.set_title("Conditioning across runs", loc="left", pad=16)
-    _bar_inset(b.inset_axes([0.60, 0.17, 0.37, 0.40]), data["B inset"], ("B1", "B2", "D"), "Run 3")
+    _bar_inset(b.inset_axes([0.60, 0.17, 0.37, 0.40]), data["B inset"],
+               ("B1", "B2", "D"), "Run 3", outcome_order=(1, 2, 0))
 
     _plot_changes(c, data["C"], (2, 1, 0), ("Sated\nodor", "Non-sated\nodor", "Clean\nair"),
                   "Selective decrease\nin pleasantness", "Change in pleasantness rating\n(post − pre)",
-                  (-4.05, 2.15), legend_loc="lower right")
+                  (-4.05, 2.15), legend_loc="lower right", colors=OUTCOME_COLORS)
     for ax, letter, order, title in (
         (d, "D", CONDITIONED_CHOICES, "Conditioned\ncue choices"),
         (e, "E", PRECONDITIONED_CHOICES, "Preconditioned\ncue choices"),
     ):
-        _plot_changes(ax, data[letter], order, order, title,
-                      "Change in choice proportion\n(post − pre)", (-1.1, 1.1),
-                      color=DIRECT_COLOR if letter == "D" else INFERRED_COLOR)
+        _plot_changes(ax, data[letter], order, COMPARISON_LABELS, title,
+                      "Change in choice proportion\n(post − pre)", (-1.1, 1.1))
+        # Keep the original codes as a secondary label below the two-line
+        # meaning, with identical contrast order across learning routes.
+        for x, choice in enumerate(order):
+            ax.annotate(
+                f"({choice.replace('>', ' > ')})",
+                xy=(x, 0), xycoords=ax.get_xaxis_transform(),
+                xytext=(0, -49), textcoords="offset points",
+                ha="center", va="top", fontsize=INSET_TICK_SIZE,
+                color=MUTED_TEXT_COLOR, annotation_clip=False,
+            )
     for ax, letter in zip(axes, "ABCDE"):
         style_axis(ax)
         add_panel_header(ax, letter, ax.get_title(loc="left"))
+    fig.legend(
+        handles=[
+            Patch(facecolor=OUTCOME_COLORS[1], label="Non-sated odor: A1/B1"),
+            Patch(facecolor=OUTCOME_COLORS[2], label="Sated odor: A2/B2"),
+            Patch(facecolor=OUTCOME_COLORS[0], label="Clean air: C/D"),
+        ],
+        loc="upper center", bbox_to_anchor=(0.54, 0.998), ncol=3,
+        frameon=False, fontsize=12, columnspacing=2,
+    )
     return fig
 
 
@@ -268,7 +302,8 @@ def main() -> None:
     output_prefix.parent.mkdir(parents=True, exist_ok=True)
     for extension in dict.fromkeys(args.formats):
         output_path = output_prefix.with_suffix(f".{extension}")
-        fig.savefig(output_path, dpi=args.dpi, facecolor="white")
+        fig.savefig(output_path, dpi=args.dpi, facecolor="white",
+                    bbox_inches="tight", pad_inches=0.06)
         print(f"Saved: {output_path}")
     plt.close(fig)
 
