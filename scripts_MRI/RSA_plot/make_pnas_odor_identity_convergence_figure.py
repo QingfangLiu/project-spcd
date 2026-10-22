@@ -6,7 +6,7 @@ Panels
 A. OFC K=2 ROIs and analysis logic.
 B. Probe-only odor-identity Spearman RSA.
 C. Passive-odor to premeal-cue cross-task decoding.
-D. Intentionally blank for a future neural-behavior relationship.
+D. Conditioned/preconditioned RSA correlations within each OFC ROI.
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from figure_style import (
-    DIRECT_COLOR, INFERRED_COLOR, MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR,
+    DIRECT_COLOR, INFERRED_COLOR, LABEL_SIZE, MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR,
     SPINE_COLOR, SUMMARY_COLOR, TICK_SIZE, add_panel_header,
     configure_matplotlib, style_axis,
 )
@@ -171,20 +171,17 @@ def _mean_ci(values: np.ndarray) -> tuple[float, float, float]:
     return mean, float(low), float(high)
 
 
-def _swarm_offsets(values: np.ndarray, width: float = 0.16) -> np.ndarray:
-    """Deterministically spread tied or nearby observations."""
-    values = np.asarray(values, dtype=float)
-    rounded = np.round(values, decimals=5)
-    offsets = np.zeros(len(values), dtype=float)
-    for value in np.unique(rounded):
-        indices = np.flatnonzero(rounded == value)
-        if len(indices) > 1:
-            offsets[indices] = np.linspace(-width, width, len(indices))
-    singles = np.flatnonzero(offsets == 0.0)
-    if len(singles):
-        sequence = np.linspace(-0.035, 0.035, len(singles))
-        offsets[singles] = sequence
-    return offsets
+def _participant_offsets(
+    subjects: list[str], width: float = 0.16,
+) -> dict[str, float]:
+    """Assign reproducible, value-independent jitter shared across B and C."""
+    subjects = sorted(set(subjects))
+    offsets = (
+        np.linspace(-width, width, len(subjects))
+        if len(subjects) > 1 else np.zeros(len(subjects))
+    )
+    offsets = np.random.default_rng(20261022).permutation(offsets)
+    return dict(zip(subjects, offsets))
 
 
 def _canonical_projection(path: Path) -> tuple[np.ndarray, list[float]]:
@@ -255,7 +252,17 @@ def _draw_arrow(
 
 def _plot_analysis_logic(ax, project_root: Path) -> None:
     ax.set_axis_off()
-    add_panel_header(ax, "A", "OFC regions and\nanalysis logic")
+    add_panel_header(ax, "A", "", title_lines=2)
+    roi_vertical_shift = 0.035
+    ax.add_patch(
+        patches.FancyBboxPatch(
+            (-0.065, 0.590 + roi_vertical_shift), 1.095, 0.520,
+            boxstyle="round,pad=0.008,rounding_size=0.02",
+            transform=ax.transAxes, facecolor="#F8F7F4",
+            edgecolor="#E4E1DA", linewidth=0.8, zorder=-1,
+            clip_on=False,
+        )
+    )
 
     gm_path = project_root / "masks" / "gm_0.1.nii"
     mask_dir = project_root / "masks" / "OFC_clusterMap_K2_gm0p1"
@@ -271,7 +278,8 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
             raise ValueError("GM and OFC masks do not share one image space.")
         roi_projections.append((roi, projection))
 
-    brain_ax = ax.inset_axes([0.00, 0.66, 0.40, 0.34])
+    brain_ax = ax.inset_axes([0.00, 0.66 + roi_vertical_shift, 0.40, 0.34])
+    brain_ax.set_facecolor("none")
     brain_ax.imshow(
         np.ma.masked_where(gm_projection <= 0, gm_projection > 0),
         cmap=matplotlib.colors.ListedColormap(["#D6D6D6"]),
@@ -305,7 +313,7 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
     brain_ax.axis("off")
     ax.text(
         0.20,
-        0.635,
+        0.635 + roi_vertical_shift,
         "Coronal maximum projection",
         transform=ax.transAxes,
         ha="center",
@@ -315,16 +323,18 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
     )
 
     ax.text(
-        0.47,
-        0.96,
-        "Independent OFC\nK=2 ROIs",
+        0.20,
+        1.035 + roi_vertical_shift,
+        "Independent OFC ROIs",
         transform=ax.transAxes,
         fontsize=14,
         fontweight="bold",
-        va="top",
+        ha="center",
+        va="bottom",
+        clip_on=False,
     )
     for row, roi in enumerate(ROI_ORDER):
-        y = 0.77 - row * 0.13
+        y = 0.86 + roi_vertical_shift - row * 0.14
         ax.add_patch(
             patches.Rectangle(
                 (0.47, y - 0.018),
@@ -350,6 +360,10 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
         transform=ax.transAxes,
         fontsize=14,
         fontweight="bold",
+    )
+    ax.text(
+        0.42, 0.52, "(B,D)", transform=ax.transAxes,
+        fontsize=12,
     )
     _draw_method_box(ax, (0.00, 0.35), 0.26, 0.12, "Premeal cue\npatterns")
     _draw_method_box(ax, (0.38, 0.35), 0.24, 0.12, "Neural RDM")
@@ -384,10 +398,14 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
     ax.text(
         0.00,
         0.21,
-        "Cross-task decoding",
+        "Perception-to-cue decoding",
         transform=ax.transAxes,
         fontsize=14,
         fontweight="bold",
+    )
+    ax.text(
+        0.66, 0.21, "(C)", transform=ax.transAxes,
+        fontsize=12,
     )
     _draw_method_box(
         ax,
@@ -440,6 +458,7 @@ def _plot_paired_results(
     ax,
     data: pd.DataFrame,
     *,
+    subject_offsets: dict[str, float],
     metric: str,
     baseline: float,
     title: str,
@@ -463,9 +482,11 @@ def _plot_paired_results(
         wide = wide.loc[:, list(CUE_ORDER)].dropna().sort_index()
         x_conditioned = positions[(roi, CONDITIONED)]
         x_preconditioned = positions[(roi, PRECONDITIONED)]
-        for _, row in wide.iterrows():
+        jitter = np.array([subject_offsets[sub] for sub in wide.index])
+        for sub, row in wide.iterrows():
+            offset = subject_offsets[sub]
             ax.plot(
-                [x_conditioned, x_preconditioned],
+                [x_conditioned + offset, x_preconditioned + offset],
                 [row[CONDITIONED], row[PRECONDITIONED]],
                 color=SPINE_COLOR,
                 linewidth=0.6,
@@ -477,7 +498,7 @@ def _plot_paired_results(
             values = wide[cue_subset].to_numpy(dtype=float)
             x = positions[(roi, cue_subset)]
             ax.scatter(
-                x + _swarm_offsets(values),
+                x + jitter,
                 values,
                 s=28,
                 color=CUE_COLORS[cue_subset],
@@ -533,7 +554,7 @@ def _plot_paired_results(
     )
     ax.set_xlim(-0.48, 4.08)
     ax.set_ylim(*ylim)
-    ax.set_ylabel(ylabel)
+    ax.set_ylabel(ylabel, fontsize=LABEL_SIZE)
     ax.set_xticks(
         [positions[(roi, cue)] for roi in ROI_ORDER for cue in CUE_ORDER],
         CUE_LABELS * 2,
@@ -559,9 +580,96 @@ def _plot_paired_results(
     style_axis(ax)
 
 
-def _plot_blank_panel(ax) -> None:
+def _plot_rsa_correlations(ax, data: pd.DataFrame) -> list[dict]:
+    """Show negative-direction Spearman tests and descriptive linear fits.
+
+    P-values are one-sided and uncorrected; * denotes p < 0.05, otherwise n.s.
+    Shading is the pointwise 95% confidence interval for the OLS mean response,
+    not for Spearman rho.
+    """
     ax.set_axis_off()
-    add_panel_header(ax, "D", "", title_lines=2)
+    add_panel_header(
+        ax, "D", "Competition between direct and\ninferred odor-identity representations",
+    )
+    paired = []
+    for roi in ROI_ORDER:
+        wide = data.loc[data["roi"] == roi].pivot(
+            index="sub", columns="cue_subset", values=RSA_METRIC,
+        )
+        wide = wide.loc[:, list(CUE_ORDER)].sort_index()
+        if wide.isna().any().any():
+            raise ValueError(f"Incomplete conditioned/preconditioned pairs: {roi}")
+        if len(wide) < 3:
+            raise ValueError(f"At least three paired subjects are required: {roi}")
+        paired.append(wide)
+    if not paired[0].index.equals(paired[1].index):
+        raise ValueError("Panel D requires matching subjects across the two ROIs.")
+
+    all_values = np.concatenate([wide.to_numpy().ravel() for wide in paired])
+    padding = 0.12 * np.ptp(all_values)
+    limits = (float(all_values.min() - padding), float(all_values.max() + padding))
+    summaries = []
+    for index, (roi, wide) in enumerate(zip(ROI_ORDER, paired)):
+        # Fill the parent plot height so D aligns with C in the lower row.
+        child = ax.inset_axes([0.56 * index, 0.0, 0.44, 1.0])
+        x = wide[CONDITIONED].to_numpy(dtype=float)
+        y = wide[PRECONDITIONED].to_numpy(dtype=float)
+        result = stats.spearmanr(x, y, alternative="less")
+        fit = stats.linregress(x, y)
+        fit_x = np.linspace(x.min(), x.max(), 250)
+        fit_y = fit.intercept + fit.slope * fit_x
+        residuals = y - (fit.intercept + fit.slope * x)
+        residual_sd = np.sqrt(np.sum(residuals**2) / (len(x) - 2))
+        mean_se = residual_sd * np.sqrt(
+            1 / len(x)
+            + (fit_x - x.mean())**2 / np.sum((x - x.mean())**2)
+        )
+        half_width = stats.t.ppf(0.975, len(x) - 2) * mean_se
+        color = ROI_COLORS[roi]
+        child.fill_between(
+            fit_x, fit_y - half_width, fit_y + half_width,
+            color=color, alpha=0.18, linewidth=0, zorder=1,
+        )
+        child.plot(fit_x, fit_y, color=color, linewidth=1.6, zorder=2)
+        child.scatter(
+            x, y, s=28, color=color, alpha=0.85, edgecolor="white",
+            linewidth=0.4, zorder=3,
+        )
+        child.axhline(0, color=REFERENCE_COLOR, linewidth=0.8, linestyle="--")
+        child.axvline(0, color=REFERENCE_COLOR, linewidth=0.8, linestyle="--")
+        child.set_xlim(*limits)
+        child.set_ylim(*limits)
+        child.set_xlabel(
+            "Direct odor-identity\ncoding (RSA ρ)", fontsize=LABEL_SIZE,
+        )
+        if index == 0:
+            child.set_ylabel(
+                "Inferred odor-identity\ncoding (RSA ρ)", fontsize=LABEL_SIZE,
+            )
+        child.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(nbins=4))
+        child.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(nbins=4))
+        style_axis(child)
+        child.text(
+            0.5, -0.32, ROI_SHORT[roi], transform=child.transAxes,
+            ha="center", va="top", fontsize=NOTE_SIZE,
+            fontweight="bold", color=color, clip_on=False,
+        )
+        significance = _significance_label(float(result.pvalue))
+        child.text(
+            0.72, 0.97, f"ρ = {result.statistic:.3f}",
+            transform=child.transAxes, ha="center", va="top", fontsize=NOTE_SIZE,
+        )
+        child.text(
+            0.72, 0.89, significance,
+            transform=child.transAxes, ha="center", va="top",
+            fontsize=20 if significance == "*" else NOTE_SIZE,
+            color=SUMMARY_COLOR,
+        )
+        summaries.append({
+            "roi": roi, "n": len(x), "rho": float(result.statistic),
+            "p_spearman": float(result.pvalue),
+        })
+    return summaries
 
 
 def _subject_paths(project_root: Path, analysis: str) -> list[Path]:
@@ -640,6 +748,9 @@ def main() -> None:
         DECODING_METRIC,
         tuple(args.skip_subs),
     )
+    subject_offsets = _participant_offsets(
+        [*rsa_data["sub"], *decoding_data["sub"]],
+    )
 
     configure_matplotlib()
     figure = plt.figure(figsize=(13.4, 11.6), facecolor="white")
@@ -668,9 +779,10 @@ def main() -> None:
     _plot_paired_results(
         ax_b,
         rsa_data,
+        subject_offsets=subject_offsets,
         metric=RSA_METRIC,
         baseline=0.0,
-        title="Odor identity within\ncue representations",
+        title="Representation of\npredicted odor identity",
         ylabel="Spearman ρ: neural vs\nodor-identity RDM",
         panel_letter="B",
         ylim=(-0.215, 0.35),
@@ -680,10 +792,11 @@ def main() -> None:
     _plot_paired_results(
         ax_c,
         decoding_data,
+        subject_offsets=subject_offsets,
         metric=DECODING_METRIC,
         baseline=0.5,
-        title="Transfer from odor\nperception to cues",
-        ylabel="Cross-task balanced accuracy",
+        title="Sensory reinstatement of\npredicted odor identity",
+        ylabel="Perception-to-cue\ndecoding accuracy",
         panel_letter="C",
         ylim=(0.18, 0.88),
         round_for_ranks=True,
@@ -692,7 +805,7 @@ def main() -> None:
     ax_c.yaxis.set_major_formatter(
         matplotlib.ticker.PercentFormatter(xmax=1.0, decimals=0)
     )
-    _plot_blank_panel(ax_d)
+    correlation_summaries = _plot_rsa_correlations(ax_d, rsa_data)
 
     output_prefix.parent.mkdir(parents=True, exist_ok=True)
     for extension in dict.fromkeys(args.formats):
@@ -704,6 +817,13 @@ def main() -> None:
         figure.savefig(output_path, **save_options)
         print(f"Saved: {output_path}")
     plt.close(figure)
+
+    print("\nPanel D Spearman correlations (one-sided negative, uncorrected):")
+    for summary in correlation_summaries:
+        print(
+            f"  {summary['roi']}: n={summary['n']}, "
+            f"rho={summary['rho']:.6f}, p={summary['p_spearman']:.6f}"
+        )
 
     print("\nPrimary displayed statistics (one-sided):")
     for roi in ROI_ORDER:
