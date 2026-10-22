@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train an odor classifier on passive smelling and test premeal cue patterns."""
+"""Train an odor classifier on passive smelling and test probe cue patterns."""
 
 from __future__ import annotations
 
@@ -27,6 +27,11 @@ CUE_SUBSET_FILES = {
 DEFAULT_ODOR_RUNS = (1, 2)
 SUB14 = "sub-14"
 HEMISPHERES = ("bilateral", "left", "right")
+PROBE_PHASES = ("premeal", "postmeal")
+PROBE_CUE_CONDITIONS = {
+    "preconditioned_odor_only": {1: "A11", 3: "A21", 7: "A12", 9: "A22"},
+    "conditioned_odor_only": {2: "B11", 4: "B21", 8: "B12", 10: "B22"},
+}
 
 
 def _sanitize_label(label: str) -> str:
@@ -168,17 +173,20 @@ def _labels_from_conditions(conditions: pd.Series) -> np.ndarray:
 def _load_sub14_original_cue_labels(
     samples: pd.DataFrame,
     original_events_dir: Path,
+    phase: str = "premeal",
 ) -> np.ndarray:
-    """Match sub-14 cue samples to the pre-correction premeal event files."""
+    """Match sub-14 samples to the phase's original physical-odor labels."""
+    if phase not in PROBE_PHASES:
+        raise ValueError(f"Unknown probe phase: {phase}")
     event_rows = []
     for run in sorted(samples["run"].astype(int).unique()):
         event_path = (
             original_events_dir
-            / f"{SUB14}_task-premeal_run-{run}_events_orig.tsv"
+            / f"{SUB14}_task-{phase}_run-{run}_events_orig.tsv"
         )
         if not event_path.is_file():
             raise FileNotFoundError(
-                f"Original sub-14 premeal events not found: {event_path}"
+                f"Original sub-14 {phase} events not found: {event_path}"
             )
         events = pd.read_csv(event_path, sep="\t")
         required = {
@@ -205,7 +213,7 @@ def _load_sub14_original_cue_labels(
     key = ["run", "trial", "img_index"]
     if originals.duplicated(key).any():
         raise ValueError(
-            "Original sub-14 premeal TSVs contain duplicate cue keys "
+            f"Original sub-14 {phase} TSVs contain duplicate cue keys "
             "(run, trial, img_index)."
         )
 
@@ -239,16 +247,96 @@ def _cue_labels(
     sub: str,
     samples: pd.DataFrame,
     sub14_original_events_dir: Path,
+    phase: str = "premeal",
 ) -> tuple[np.ndarray, str]:
     if sub == SUB14:
         return (
             _load_sub14_original_cue_labels(
                 samples,
                 sub14_original_events_dir,
+                phase=phase,
             ),
-            "original_premeal_events",
+            f"original_{phase}_events",
         )
     return _labels_from_conditions(samples["condition"]), "rsa_condition"
+
+
+def _load_probe_cue_patterns(
+    *,
+    base_dir: Path,
+    sub: str,
+    phase: str,
+    cue_subset: str,
+    runs: tuple[int, ...],
+    voxel_indices: np.ndarray,
+    reference_shape: tuple[int, int, int],
+    reference_affine: np.ndarray,
+) -> tuple[np.ndarray, pd.DataFrame, list[Path]]:
+    """Read raw first-image betas in the established RSA ROI voxel order."""
+    if phase not in PROBE_PHASES:
+        raise ValueError(f"Unknown probe phase: {phase}")
+    condition_map = PROBE_CUE_CONDITIONS[cue_subset]
+    subject_dir = base_dir / "GLM" / f"{phase}_trialwise_2mm" / sub
+    rows, tables, index_paths = [], [], []
+    for run in runs:
+        index_path = subject_dir / f"{sub}_{phase}_run-{run}_beta_index.csv"
+        if not index_path.is_file():
+            continue
+        table = pd.read_csv(index_path)
+        required = {"beta_file", "run", "trial", "img_index", "cue_index"}
+        missing = required - set(table.columns)
+        if missing:
+            raise ValueError(
+                f"Probe beta index missing columns {sorted(missing)}: {index_path}"
+            )
+        for column in ("run", "trial", "img_index", "cue_index"):
+            numeric = pd.to_numeric(table[column], errors="coerce")
+            if numeric.isna().any() or (numeric % 1 != 0).any():
+                raise ValueError(f"Invalid {column} values: {index_path}")
+            table[column] = numeric.astype(int)
+        if set(table["run"]) != {run}:
+            raise ValueError(f"Probe run column does not equal {run}: {index_path}")
+        if not table["img_index"].isin([1, 2]).all():
+            raise ValueError(f"Invalid img_index values: {index_path}")
+        selected = table.loc[
+            (table["img_index"] == 1) & table["cue_index"].isin(condition_map)
+        ].copy()
+        if selected.empty:
+            raise ValueError(f"No first-image {cue_subset} samples: {index_path}")
+        if selected.duplicated(["run", "trial", "img_index"]).any():
+            raise ValueError(f"Duplicate first-image cue samples: {index_path}")
+        if (
+            "trial_type" in selected
+            and not selected["trial_type"].eq("cue_img1").all()
+        ):
+            raise ValueError(f"Unexpected first-image trial_type: {index_path}")
+        selected["condition"] = selected["cue_index"].map(condition_map)
+        selected["sub"] = sub
+        selected["phase"] = phase
+        selected["beta_path"] = selected["beta_file"].map(
+            lambda name: str(subject_dir / str(name))
+        )
+        if set(_labels_from_conditions(selected["condition"])) != {0, 1}:
+            raise ValueError(f"Probe run lacks both odor classes: {index_path}")
+        for beta_path in selected["beta_path"]:
+            values, shape, affine = _extract_voxels(Path(beta_path), voxel_indices)
+            if shape != reference_shape or not np.allclose(
+                affine, reference_affine, atol=1e-5,
+            ):
+                raise ValueError(
+                    f"Probe and passive betas do not share one image space: {beta_path}"
+                )
+            rows.append(values)
+        tables.append(selected)
+        index_paths.append(index_path)
+
+    if not rows:
+        raise RuntimeError(f"No {phase} first-image cue data found for {sub}.")
+    samples = pd.concat(tables, ignore_index=True)
+    samples.insert(0, "sample_index", np.arange(len(samples)))
+    if samples["run"].nunique() < 2:
+        raise ValueError(f"Probe data require at least two runs: {sub} {phase}")
+    return np.vstack(rows), samples, index_paths
 
 
 def _passive_event_path(base_dir: Path, sub: str, run: int) -> Path:
@@ -537,7 +625,11 @@ def _analyze_subject(
     svm_c: float,
     sub14_original_events_dir: Path,
     prediction_dir: Path | None,
+    phase: str = "premeal",
+    probe_runs: tuple[int, ...] = (1, 2, 3),
 ) -> dict:
+    if phase not in PROBE_PHASES:
+        raise ValueError(f"Unknown probe phase: {phase}")
     (
         cue_raw,
         voxel_indices,
@@ -547,11 +639,6 @@ def _analyze_subject(
         diagnostics_dir,
         sub,
         cue_subset,
-    )
-    cue_y, cue_label_source = _cue_labels(
-        sub,
-        cue_samples,
-        sub14_original_events_dir,
     )
     (
         passive_raw,
@@ -567,6 +654,26 @@ def _analyze_subject(
             voxel_indices,
         )
     )
+    cue_index_paths = []
+    if phase == "postmeal":
+        reference_image = nib.load(str(passive_meta.iloc[0]["beta_path"]))
+        cue_raw, cue_samples, cue_index_paths = _load_probe_cue_patterns(
+            base_dir=base_dir,
+            sub=sub,
+            phase=phase,
+            cue_subset=cue_subset,
+            runs=probe_runs,
+            voxel_indices=voxel_indices,
+            reference_shape=tuple(reference_image.shape),
+            reference_affine=passive_affine,
+        )
+    cue_y, cue_label_source = _cue_labels(
+        sub, cue_samples, sub14_original_events_dir, phase=phase,
+    )
+    if phase == "postmeal" and sub != SUB14:
+        cue_label_source = "cue_index_condition"
+    if phase == "postmeal" and set(cue_y) != {0, 1}:
+        raise ValueError(f"Postmeal physical-odor labels lack both classes: {sub}")
     cue_runs = cue_samples["run"].astype(int).to_numpy()
 
     n_voxels_bilateral_raw = int(cue_raw.shape[1])
@@ -605,6 +712,7 @@ def _analyze_subject(
         subject_dir.mkdir(parents=True, exist_ok=True)
 
         cue_predictions = cue_samples.copy()
+        cue_predictions["phase"] = phase
         cue_predictions["true_label"] = cue_y
         cue_predictions["predicted_label"] = cue_pred
         cue_predictions["decision_distance_odor2"] = cue_distance
@@ -634,6 +742,7 @@ def _analyze_subject(
     n_voxels_used = int(finite_voxel_mask.sum())
     row = {
         "sub": sub,
+        "phase": phase,
         "roi": roi_name,
         "hemisphere": hemisphere,
         "hemisphere_rule": (
@@ -643,7 +752,9 @@ def _analyze_subject(
         ),
         "cue_subset": cue_subset,
         "cue_label_source": cue_label_source,
-        "cue_diagnostic_npz": str(pattern_path),
+        "cue_diagnostic_npz": str(pattern_path) if phase == "premeal" else "",
+        "roi_coordinate_source": str(pattern_path),
+        "cue_beta_index_csvs": "|".join(map(str, cue_index_paths)),
         "svm_kernel": "linear",
         "svm_c": svm_c,
         "normalization": "within_task_run_voxelwise_zscore",
@@ -669,6 +780,9 @@ def _analyze_subject(
         "cue_runs": ",".join(
             str(run) for run in sorted(np.unique(cue_runs))
         ),
+        "missing_cue_runs": ",".join(
+            str(run) for run in probe_runs if run not in set(cue_runs)
+        ),
         "passive_cv_accuracy": passive_metrics["accuracy"],
         "passive_cv_balanced_accuracy": passive_metrics[
             "balanced_accuracy"
@@ -691,8 +805,22 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
             "Train a linear SVM on passive odor-scan ROI patterns and test "
-            "the exact first-image cue patterns saved by the ROI RSA."
+            "first-image cues: cached ROI RSA patterns for premeal or "
+            "directly loaded probe betas for postmeal."
         )
+    )
+    parser.add_argument(
+        "--phase",
+        choices=PROBE_PHASES,
+        default="premeal",
+        help="Probe phase to decode. Default: premeal (existing cached patterns).",
+    )
+    parser.add_argument(
+        "--probe_runs",
+        nargs="+",
+        type=int,
+        default=[1, 2, 3],
+        help="Postmeal probe runs to load; absent run indices are reported. Default: 1 2 3.",
     )
     parser.add_argument(
         "--base_dir",
@@ -705,7 +833,8 @@ def main() -> None:
         type=Path,
         required=True,
         help=(
-            "One ROI's RSA diagnostics directory containing sub-XX folders."
+            "One ROI's premeal RSA diagnostics directory containing sub-XX folders. "
+            "Postmeal decoding reuses only its raw ROI coordinates."
         ),
     )
     parser.add_argument(
@@ -761,7 +890,7 @@ def main() -> None:
         default=None,
         help=(
             "Directory containing sub-14 *_events_orig.tsv files. Default: "
-            "<base_dir>/nii/sub-14/func_PAID/premeal."
+            "<base_dir>/nii/sub-14/func_PAID/<phase>."
         ),
     )
     parser.add_argument(
@@ -770,7 +899,7 @@ def main() -> None:
         default=None,
         help=(
             "Subject-results CSV. Default: <base_dir>/roi_decoding/"
-            "probe_crosstask_odor2preconditioned/roi-<name>_subject_results.csv."
+            "probe_crosstask_odor2preconditioned[_postmeal]/roi-<name>_subject_results.csv."
         ),
     )
     parser.add_argument(
@@ -790,6 +919,13 @@ def main() -> None:
     odor_runs = tuple(dict.fromkeys(args.odor_runs))
     if len(odor_runs) < 2:
         raise ValueError("--odor_runs must contain at least two runs.")
+    probe_runs = tuple(dict.fromkeys(args.probe_runs))
+    if any(run < 1 for run in probe_runs):
+        raise ValueError("--probe_runs must contain positive run numbers.")
+    if args.phase == "postmeal" and len(probe_runs) < 2:
+        raise ValueError("--probe_runs must contain at least two runs.")
+    if args.phase == "premeal" and probe_runs != (1, 2, 3):
+        raise ValueError("Premeal uses cached runs; --probe_runs only selects postmeal runs.")
 
     base_dir = args.base_dir.expanduser().resolve()
     diagnostics_dir = args.diagnostics_dir.expanduser().resolve()
@@ -803,7 +939,7 @@ def main() -> None:
     sub14_original_events_dir = (
         args.sub14_original_events_dir.expanduser().resolve()
         if args.sub14_original_events_dir is not None
-        else base_dir / "nii" / SUB14 / "func_PAID" / "premeal"
+        else base_dir / "nii" / SUB14 / "func_PAID" / args.phase
     )
     output_csv = (
         args.output_csv.expanduser().resolve()
@@ -811,7 +947,9 @@ def main() -> None:
         else (
             base_dir
             / "roi_decoding"
-            / "probe_crosstask_odor2preconditioned"
+            / ("probe_crosstask_odor2preconditioned" + (
+                "_postmeal" if args.phase == "postmeal" else ""
+            ))
             / f"roi-{roi_name}_subject_results.csv"
         )
     )
@@ -829,7 +967,7 @@ def main() -> None:
     subjects = list(dict.fromkeys(subjects))
 
     print("=" * 80)
-    print("ROI passive-odor -> premeal-cue cross-task decoding")
+    print(f"ROI passive-odor -> {args.phase}-cue cross-task decoding")
     print("=" * 80)
     print(f"SPCD data root:        {base_dir}")
     print(f"RSA diagnostics:       {diagnostics_dir}")
@@ -860,8 +998,12 @@ def main() -> None:
                     svm_c=args.svm_c,
                     sub14_original_events_dir=sub14_original_events_dir,
                     prediction_dir=prediction_dir,
+                    phase=args.phase,
+                    probe_runs=probe_runs,
                 )
                 rows.append(row)
+                if row["missing_cue_runs"]:
+                    print(f"[QC] {sub} missing cue runs: {row['missing_cue_runs']}")
                 print(
                     f"[OK] {sub} {cue_subset}: "
                     f"cue balanced accuracy="
@@ -877,6 +1019,7 @@ def main() -> None:
                 failures.append(
                     {
                         "sub": sub,
+                        "phase": args.phase,
                         "roi": roi_name,
                         "hemisphere": hemisphere,
                         "cue_subset": cue_subset,
@@ -902,6 +1045,7 @@ def main() -> None:
     )
     failure_columns = [
         "sub",
+        "phase",
         "roi",
         "hemisphere",
         "cue_subset",

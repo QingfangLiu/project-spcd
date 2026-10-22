@@ -78,9 +78,18 @@ def _load_data(
                 f"Input CSV missing required columns {sorted(missing)}: "
                 f"{input_csv}"
             )
+        if "phase" not in frame.columns:
+            frame["phase"] = "premeal"
         frames.append(frame)
 
     data = pd.concat(frames, ignore_index=True)
+    phases = data["phase"].dropna().unique()
+    if (
+        data["phase"].isna().any()
+        or len(phases) != 1
+        or phases[0] not in {"premeal", "postmeal"}
+    ):
+        raise ValueError("Plot exactly one valid probe phase at a time.")
     data = data.loc[
         data["roi"].isin(ROI_ORDER)
         & data["cue_subset"].isin(CUE_ORDER)
@@ -327,7 +336,7 @@ def _plot(
     fig.suptitle(title, fontsize=15, fontweight="semibold")
     fig.supylabel("Cross-task decoding accuracy", fontsize=11)
     fig.supxlabel(
-        "Train: passive odor perception  |  Test: premeal cues",
+        f"Train: passive odor perception  |  Test: {data['phase'].iloc[0]} cues",
         fontsize=9.5,
         color="0.35",
     )

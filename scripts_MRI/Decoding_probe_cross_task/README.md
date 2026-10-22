@@ -158,6 +158,10 @@ never overwritten.
 
 ## ROI passive odor to first-image cue decoding
 
+For postmeal ROI decoding, including the single-command two-ROI workflow, see
+[Postmeal ROI decoding](README_ROI_POSTMEAL.md). The default premeal workflow
+below remains available.
+
 `run_roi_crosstask_odor2preconditioned.py` is the ROI-only validation of
 the first-image odor-identity RSA. It trains a linear SVM on passive
 odor-smelling trials and tests the exact premeal cue samples saved in one

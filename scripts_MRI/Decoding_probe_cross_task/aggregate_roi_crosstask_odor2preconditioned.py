@@ -251,6 +251,16 @@ def main() -> None:
         )
 
     df = pd.read_csv(input_csv)
+    if "phase" not in df.columns:
+        df["phase"] = "premeal"
+    phases = df["phase"].dropna().unique()
+    if (
+        df["phase"].isna().any()
+        or len(phases) != 1
+        or phases[0] not in {"premeal", "postmeal"}
+    ):
+        raise ValueError("Aggregate exactly one valid probe phase at a time.")
+    phase = str(phases[0])
     if "hemisphere" not in df.columns:
         df["hemisphere"] = "bilateral"
     required = {
@@ -312,6 +322,7 @@ def main() -> None:
     )
 
     summary = _summarize(df)
+    summary["phase"] = phase
     summary.insert(0, "roi", roi)
     summary.insert(1, "hemisphere", hemisphere)
     summary.insert(2, "input_csv", str(input_csv))
@@ -338,6 +349,7 @@ def main() -> None:
     summary.to_csv(output_csv, index=False)
 
     print(f"Read subject results: {input_csv}")
+    print(f"Probe phase: {phase}")
     print(f"Hemisphere: {hemisphere}")
     print(
         "Subjects before/after exclusion: "
