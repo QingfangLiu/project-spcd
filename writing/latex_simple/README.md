@@ -1,108 +1,93 @@
-# Simple LaTeX manuscript for Overleaf and PDF-to-Word conversion
+# Simple manuscript PDF for opening in Word
 
-This folder contains a plain template, a Python converter, and a converted copy
-of the supplied PNAS manuscript. The original manuscript is untouched. No Pandoc
-or Python packages are required.
+Edit **`writing/main/main.tex`** as the authoritative manuscript. This folder
+generates a plain, single-column version from that source for PDF-to-Word
+conversion. Do not edit the generated `writing/latex_simple/main.tex` directly:
+the next refresh replaces it. The PNAS source is never modified by conversion.
 
-## Use the converted manuscript
+## Refresh and build locally
 
-1. Upload `simple_latex_bundle.zip` to a new Overleaf project, or upload this
-   folder's `main.tex` and `fig/` folder.
-2. Add `sn-bibliography.bib` in the project root. All four figure PDFs are included.
-3. Set `main.tex` as the main document and choose **pdfLaTeX**. XeLaTeX and
-   LuaLaTeX are also supported by the template's font setup.
-4. Recompile. Allow Overleaf to run BibTeX and resolve references; recompile
-   again if citations or figure references still show question marks.
-5. Download the PDF and use your usual PDF-to-Word conversion workflow.
-
-The four included figure PDFs were copied from this repository's `figures/`
-folder by matching filenames. If those figures differ from your current
-Overleaf originals, replace them with your original figure PDFs.
-
-The model figure is named `fig/fig_model.pdf`. The original bibliography is
-still needed before the manuscript can compile fully with resolved citations.
-`main.conversion.json` records the asset rename, missing bibliography, and
-preservation checks.
-The separate `simple_template.tex` is a compilable blank/example manuscript.
-
-## Convert future revisions
-
-Run this from the folder containing `convert_pnas.py` and `simple_template.tex`:
+From the repository root, run:
 
 ```sh
-python3 convert_pnas.py /path/to/pnas-project/main.tex -o /path/to/simple-project/main.tex
+python3 writing/latex_simple/build_simple.py
 ```
 
-The script copies referenced figure and bibliography files from beside the
-input manuscript, preserving relative paths such as `fig/fig_design.pdf`.
-An additional asset directory can be supplied:
+Or run from any folder using the script's full path:
 
 ```sh
-python3 convert_pnas.py /path/to/main.tex -o /path/to/simple-project/main.tex --asset-dir /path/to/figures
+python3 /Users/liuq13/project-spcd/writing/latex_simple/build_simple.py
 ```
 
-For this manuscript in this repository, run from the repository root:
+This regenerates `main.tex` and `main.conversion.json` here, then builds
+**`writing/latex_simple/main.pdf`**, running BibTeX and the necessary LaTeX passes
+through `latexmk`. It requires Python 3 and a TeX installation with `latexmk` and
+`pdflatex`; no Python packages are needed. MacTeX at `/Library/TeX/texbin` is
+detected even when it is not on your shell's PATH.
+
+Open the resulting PDF in Word using your usual PDF-to-Word workflow. After any
+manuscript revision, rerun the command. This is an on-demand refresh, not an
+automatic background sync. Typesetting the generated `main.tex` in TeXShop alone
+does not refresh it from the PNAS source; run the script first.
+
+Figures are read directly from the repository's shared `fig/` folder, and the
+bibliography from `writing/main/sn-bibliography.bib`. No figure or bibliography
+copies are created. Keep the repository folder structure intact. The supplement
+is not part of this conversion.
+
+LaTeX creates temporary files alongside the PDF during a build (`.aux`, `.bbl`,
+`.blg`, `.fdb_latexmk`, `.fls`, `.log`, `.out`, and `.synctex.gz`). These can be
+removed after a successful build and will be regenerated when needed. Keep
+`main.pdf`, `main.tex`, and `main.conversion.json` as the current output.
+
+## Layout and content
+
+- Standard `article`, 12-point Latin Modern text, one column, one-inch margins,
+  a ragged right edge, and page numbers. No PNAS class is needed.
+- Authors, affiliations, abstract, significance statement, keywords,
+  correspondence, contributions, and competing interests appear as ordinary
+  text blocks, retaining the source wording.
+- An Introduction heading precedes the unheaded introduction. PNAS methods,
+  data availability, and acknowledgment wrappers become ordinary sections.
+  PNAS-specific display controls and running-footer metadata are removed.
+- Body text, equations, citation keys, labels, cross-references, table cells,
+  and captions are preserved. Asset paths are rebased to the shared files.
+- Figures and tables appear in source order as ordinary blocks with numbered
+  captions. Long captions can continue across pages. Figure artwork remains
+  artwork, rather than editable Word shapes.
+- References use `unsrt`: numbered in first-citation order. Their typography
+  differs from the PNAS submission style.
+
+The conversion report records the source hash, preservation checks, shared asset
+paths, and build status. Source checks verify content preservation; the build
+also checks for unresolved citations and references. Equations, tables, and page
+breaks may still need cleanup after Word imports the PDF.
+
+## Converter options and checks
+
+To regenerate the plain source without building its PDF:
 
 ```sh
-python3 latex_simple/convert_pnas.py /Users/liuq13/Downloads/main.tex -o latex_simple/main.tex --asset-dir figures --overwrite
+python3 writing/latex_simple/convert_pnas.py writing/main/main.tex \
+  -o writing/latex_simple/main.tex --asset-mode link --overwrite
 ```
 
-The converter preserves graphics paths from its input. For future conversions,
-use `fig/fig_model.pdf` in the PNAS source; the earlier manuscript used
-`fig/adaptive_identity_allocation.pdf`, which is no longer the generated PDF name.
+`link` mode requires all assets to exist and permits parent-relative paths.
+The default `copy` mode remains available for a separate, self-contained project
+whose source uses project-relative asset paths without `..` components. Extra
+asset search folders can be passed with `--asset-dir`. Conflicting asset copies
+stop conversion. Existing output is protected unless `--overwrite` is supplied.
 
-Existing output is protected unless `--overwrite` is supplied. Existing asset
-files with different contents are never overwritten automatically. Each run
-creates a `.conversion.json` report next to the output. A successful conversion
-can still report missing assets; check `compilation_ready` in the report.
-That flag checks file availability, not compilation or bibliography completeness.
+The converter targets the `pnas-new` structure used by this manuscript, rather
+than arbitrary LaTeX. External `\input`/`\include` files, custom preambles,
+unfamiliar conditional blocks, and verbatim content stop conversion for review.
+Other retained body commands may need additional packages if introduced later.
+`simple_template.tex` controls the plain layout and also serves as a standalone
+example.
 
-## What the converter does
-
-- Uses standard `article`, 12-point Latin Modern text, one column, one-inch
-  margins, a ragged right edge, and page numbers. No PNAS class is needed.
-- Prints authors, affiliation markers, affiliations, abstract, significance
-  statement, keywords, correspondence, contributions, and competing interests
-  as ordinary text blocks. It preserves all supplied wording.
-- Adds an Introduction heading before the unheaded introductory text.
-- Turns PNAS methods, data availability, and acknowledgment wrappers into
-  ordinary sections. Removes PNAS display commands, column split controls,
-  article classification, running-footer metadata, compilation date, and DOI
-  layout metadata; removed values are recorded where applicable in the report.
-- Keeps equations, mathematical notation, citation keys, labels, cross-reference
-  commands, table cells, graphics paths, captions, and body text.
-- Places figures and tables in source order as ordinary blocks, with numbered
-  captions. Long captions can break across pages. Labels and `\autoref` continue
-  to use LaTeX's figure/table counters. Table text uses a slightly smaller size
-  and reduced cell padding; its contents are unchanged.
-- Uses the standard `unsrt` bibliography style: numbered references in order of
-  first citation. Reference typography will differ from PNAS's style.
-
-The script parses nested braces instead of using a single replacement pattern.
-It checks semantic objects and ordinary text spans before writing the output.
-These source checks do not establish PDF appearance, validate the science, or
-guarantee a particular Word converter's behavior. Equations and table structure
-may still need cleanup after PDF-to-Word conversion. Figure artwork remains
-figure artwork, rather than editable Word shapes.
-
-## Scope and checks
-
-The converter targets the `pnas-new` structure used in the supplied manuscript.
-It is not a general TeX interpreter. External `\input`/`\include` files, custom
-preambles, unfamiliar conditional blocks, and verbatim content stop conversion
-for manual review. Other body commands are retained and may need their own
-packages if introduced in future revisions. Keep the original PNAS project as
-your submission source; rerun conversion whenever it changes.
-
-Run the regression checks from this folder:
+Run the regression checks:
 
 ```sh
+cd writing/latex_simple
 python3 -m unittest -v test_convert_pnas.py
 ```
-
-Validation completed: nine regression checks passed. The blank template compiled
-successfully using the desktop compiler (XeLaTeX). A separate temporary copy of
-the full manuscript also compiled, with explicit notices in place of the
-unavailable fourth figure and bibliography. Those notices are not in the
-delivered manuscript. Final reference resolution and appearance should be
-checked in Overleaf after you add the missing originals.

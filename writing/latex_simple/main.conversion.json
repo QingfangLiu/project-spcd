@@ -1,5 +1,5 @@
 {
-  "source_sha256": "e8d4abf8232814fc17242536ee7109a297ddac804eb84b1b4573897a94c0dfc8",
+  "source_sha256": "899d34b21575881b765df8e47c0a4f6aaed42f464ba704867ec8c3330c555f74",
   "checks": {
     "citations": {
       "count": 23,
@@ -111,45 +111,77 @@
   ],
   "layout": "12pt article, one column, 1-inch margins; nonfloating figures and tables; unsrt bibliography",
   "note": "Checks verify source content, not PDF appearance or reference resolution.",
-  "source": "/Users/liuq13/Downloads/main.tex",
-  "output": "/Users/liuq13/project-spcd/latex_simple/main.tex",
-  "assets": [
+  "source": "/Users/liuq13/project-spcd/writing/main/main.tex",
+  "output": "/Users/liuq13/project-spcd/writing/latex_simple/main.tex",
+  "asset_mode": "link",
+  "asset_path_rewrites": [
     {
-      "path": "fig/fig_design.pdf",
-      "kind": "figure",
-      "status": "present",
-      "origin": "/Users/liuq13/project-spcd/figures/fig_design.pdf"
+      "from": "../../fig/fig_design.pdf",
+      "to": "../../fig/fig_design.pdf",
+      "kind": "figure"
     },
     {
-      "path": "fig/fig_behavior.pdf",
-      "kind": "figure",
-      "status": "present",
-      "origin": "/Users/liuq13/project-spcd/figures/fig_behavior.pdf"
+      "from": "../../fig/fig_behavior.pdf",
+      "to": "../../fig/fig_behavior.pdf",
+      "kind": "figure"
     },
     {
-      "path": "fig/odor_identity_fmri.pdf",
-      "kind": "figure",
-      "status": "present",
-      "origin": "/Users/liuq13/project-spcd/figures/odor_identity_fmri.pdf"
+      "from": "../../fig/odor_identity_fmri.pdf",
+      "to": "../../fig/odor_identity_fmri.pdf",
+      "kind": "figure"
     },
     {
-      "path": "fig/fig_model.pdf",
-      "kind": "figure",
-      "status": "present",
-      "origin": "/Users/liuq13/project-spcd/figures/fig_model.pdf"
+      "from": "../../fig/fig_model.pdf",
+      "to": "../../fig/fig_model.pdf",
+      "kind": "figure"
     },
     {
-      "path": "sn-bibliography.bib",
-      "kind": "bibliography",
-      "status": "missing",
-      "origin": null
+      "from": "sn-bibliography.bib",
+      "to": "../main/sn-bibliography.bib",
+      "kind": "bibliography"
     }
   ],
-  "compilation_ready": false,
-  "asset_renames": [
+  "assets": [
     {
-      "from": "fig/adaptive_identity_allocation.pdf",
-      "to": "fig/fig_model.pdf"
+      "path": "../../fig/fig_design.pdf",
+      "source_path": "../../fig/fig_design.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/fig/fig_design.pdf"
+    },
+    {
+      "path": "../../fig/fig_behavior.pdf",
+      "source_path": "../../fig/fig_behavior.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/fig/fig_behavior.pdf"
+    },
+    {
+      "path": "../../fig/odor_identity_fmri.pdf",
+      "source_path": "../../fig/odor_identity_fmri.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/fig/odor_identity_fmri.pdf"
+    },
+    {
+      "path": "../../fig/fig_model.pdf",
+      "source_path": "../../fig/fig_model.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/fig/fig_model.pdf"
+    },
+    {
+      "path": "../main/sn-bibliography.bib",
+      "source_path": "sn-bibliography.bib",
+      "kind": "bibliography",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/writing/main/sn-bibliography.bib"
     }
-  ]
+  ],
+  "compilation_ready": true,
+  "pdf_build": {
+    "status": "success",
+    "engine": "pdflatex via latexmk",
+    "unresolved_references": false
+  }
 }

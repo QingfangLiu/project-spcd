@@ -11,6 +11,7 @@ from collections import Counter
 from dataclasses import dataclass
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -314,6 +315,7 @@ def convert(source, template):
         if len(re.findall(pattern, output, re.S)) != 1:
             raise ConversionError(f"Template needs one simple-{name} marker pair.")
         output = re.sub(pattern, lambda _: content, output, flags=re.S)
+    output = re.sub(r"[ \t]+$", "", output, flags=re.M)
     # Verify relocated metadata, abstract, wrapper contents, and captions verbatim
     # (apart from whitespace). Figures and tables now use ordinary paragraphs.
     normalized = plain_space(output)
@@ -345,6 +347,29 @@ def assets_for(output):
     return [(x, "figure") for x in graphics] + [(x, "bibliography") for x in bibs]
 
 
+def link_asset_paths(output, paths):
+    """Rebase only graphics/bibliography arguments to existing shared files."""
+    edits = []
+    for cmd in commands(output):
+        if cmd.name not in {"includegraphics", "bibliography"}:
+            continue
+        end = cmd.end
+        if cmd.name == "includegraphics":
+            while output[skip_space(output, end):].startswith("["):
+                _, end = group(output, end, "[")
+        start = skip_space(output, end)
+        value, end = group(output, start)
+        if cmd.name == "includegraphics":
+            linked = paths[value, "figure"]
+        else:
+            linked = ",".join(
+                str(Path(paths[name.strip() + ".bib", "bibliography"]).with_suffix(""))
+                for name in value.split(",")
+            )
+        edits.append((start + 1, end - 1, linked))
+    return replace_spans(output, edits)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
@@ -352,6 +377,8 @@ def main(argv=None):
     parser.add_argument("--template", type=Path, default=Path(__file__).with_name("simple_template.tex"))
     parser.add_argument("--asset-dir", type=Path, action="append", default=[],
                         help="Additional folder to search for assets, including by filename; repeatable.")
+    parser.add_argument("--asset-mode", choices=("copy", "link"), default="copy",
+                        help="Copy assets into the output project (default), or link existing files without copying. Link mode supports parent-relative paths and requires every asset to exist.")
     parser.add_argument("--overwrite", action="store_true", help="Replace existing output and report.")
     args = parser.parse_args(argv)
     try:
@@ -366,11 +393,13 @@ def main(argv=None):
                                  args.template.read_text(encoding="utf-8"))
         report["source"] = str(source_path)
         report["output"] = str(output_path)
+        report["asset_mode"] = args.asset_mode
         asset_results = []
         copy_plan = []
+        linked_paths = {}
         for relative, kind in assets_for(output):
             rel = Path(relative)
-            if rel.is_absolute() or ".." in rel.parts:
+            if args.asset_mode == "copy" and (rel.is_absolute() or ".." in rel.parts):
                 raise ConversionError(f"Asset must use a project-relative path: {relative}")
             destination = output_path.parent / rel
             candidates = [source_path.parent / rel]
@@ -382,6 +411,14 @@ def main(argv=None):
                 if len(digests) > 1:
                     raise ConversionError(f"Conflicting asset copies: {relative}")
             origin = next(iter(sorted(matches)), None)
+            if args.asset_mode == "link":
+                if origin is None:
+                    raise ConversionError(f"Shared asset not found: {relative}")
+                linked = Path(os.path.relpath(origin, output_path.parent)).as_posix()
+                linked_paths[relative, kind] = linked
+                asset_results.append({"path": linked, "source_path": relative,
+                                      "kind": kind, "status": "linked", "origin": str(origin)})
+                continue
             if destination.exists():
                 if origin and destination.resolve() != origin and destination.read_bytes() != origin.read_bytes():
                     raise ConversionError(f"Existing asset differs; resolve manually: {destination}")
@@ -393,6 +430,12 @@ def main(argv=None):
                 state = "missing"
             asset_results.append({"path": relative, "kind": kind, "status": state,
                                   "origin": str(origin) if origin else None})
+        if args.asset_mode == "link":
+            output = link_asset_paths(output, linked_paths)
+            report["asset_path_rewrites"] = [
+                {"from": item["source_path"], "to": item["path"], "kind": item["kind"]}
+                for item in asset_results
+            ]
         report["assets"] = asset_results
         report["compilation_ready"] = all(x["status"] != "missing" for x in asset_results)
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -405,7 +448,7 @@ def main(argv=None):
         for item in asset_results:
             print(f"{item['status'].upper()}: {item['path']}")
         if not report["compilation_ready"]:
-            print("Add the missing assets before compiling in Overleaf.")
+            print("Add the missing assets before compiling.")
         return 0
     except (ConversionError, OSError) as exc:
         print(f"Conversion stopped: {exc}", file=sys.stderr)

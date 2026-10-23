@@ -2,6 +2,7 @@
 
 import contextlib
 import io
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -137,6 +138,60 @@ class ConversionTests(unittest.TestCase):
                 self.assertEqual(main([str(source), "-o", str(output),
                                        "--asset-dir", str(root / "first"),
                                        "--asset-dir", str(root / "second")]), 1)
+            self.assertFalse(output.exists())
+
+    def test_shared_assets_and_source_refresh_without_copies(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source_dir = root / "writing" / "main"
+            source_dir.mkdir(parents=True)
+            (root / "fig").mkdir()
+            figure = root / "fig" / "one.pdf"
+            figure.write_bytes(b"shared figure bytes")
+            bibliography = source_dir / "references.bib"
+            bibliography.write_text("@article{key1, title={Shared reference}}")
+            source = source_dir / "main.tex"
+            source_text = SOURCE.replace("fig/one.pdf", "../../fig/one.pdf")
+            source.write_text(source_text)
+            output = root / "writing" / "simple" / "main.tex"
+            arguments = [str(source), "-o", str(output), "--asset-mode", "link", "--overwrite"]
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(main(arguments), 0)
+            self.assertIn(r"{../../fig/one.pdf}", output.read_text())
+            self.assertIn(r"\bibliography{../main/references}", output.read_text())
+            self.assertFalse((output.parent / "fig").exists())
+            self.assertFalse((output.parent / "references.bib").exists())
+            report = json.loads(output.with_suffix(".conversion.json").read_text())
+            self.assertTrue(report["compilation_ready"])
+            self.assertTrue(all(item["status"] == "linked" for item in report["assets"]))
+            source.write_text(source_text.replace("Original conclusion.", "Revised authoritative conclusion."))
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(main(arguments), 0)
+            self.assertIn("Revised authoritative conclusion.", output.read_text())
+            self.assertNotIn("Original conclusion.", output.read_text())
+            self.assertEqual(figure.read_bytes(), b"shared figure bytes")
+            self.assertEqual(bibliography.read_text(), "@article{key1, title={Shared reference}}")
+
+    def test_missing_shared_asset_does_not_overwrite_existing_output(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "source.tex"
+            source.write_text(SOURCE)
+            output = root / "main.tex"
+            output.write_text("Preserve previous output")
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main([str(source), "-o", str(output), "--asset-mode", "link", "--overwrite"]), 1)
+            self.assertEqual(output.read_text(), "Preserve previous output")
+            self.assertFalse(output.with_suffix(".conversion.json").exists())
+
+    def test_copy_mode_still_rejects_parent_relative_assets(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "source.tex"
+            source.write_text(SOURCE.replace("fig/one.pdf", "../fig/one.pdf"))
+            output = root / "converted" / "main.tex"
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main([str(source), "-o", str(output)]), 1)
             self.assertFalse(output.exists())
 
 
