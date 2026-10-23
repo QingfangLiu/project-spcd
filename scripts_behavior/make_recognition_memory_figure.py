@@ -35,14 +35,13 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 import numpy as np
 import pandas as pd
 from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from figure_style import (
-    MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR,
+    MUTED_TEXT_COLOR, REFERENCE_COLOR,
     SUMMARY_COLOR, configure_matplotlib, style_axis,
 )
 from scripts_behavior.make_behavior_figure import DEFAULT_SKIP_SUBS, PAIR_GROUPS
@@ -136,18 +135,6 @@ def make_figure(participants: pd.DataFrame, summary: pd.DataFrame) -> plt.Figure
            ylabel="Accuracy", xlim=(-0.45, 2.45), ylim=(0, max(1.08, summary["ci95_upper"].max() + 0.04)),
            yticks=[0, 0.25, 0.5, 0.75, 1])
     ax.set_title("Recognition memory", loc="left", pad=16)
-    fig.text(0.975, 0.965, f"n = {len(subjects)} participants", ha="right", va="top",
-             fontsize=NOTE_SIZE, color=MUTED_TEXT_COLOR)
-    fig.legend(handles=[
-        Line2D([], [], linestyle="none", marker="o", color=MUTED_TEXT_COLOR,
-               alpha=0.5, label="Participants"),
-        Line2D([], [], linestyle="none", marker="D", color=SUMMARY_COLOR,
-               markerfacecolor="white", markeredgewidth=1.6, label="Mean (95% CI)"),
-    ], loc="lower center", bbox_to_anchor=(0.56, 0.105), ncol=2, frameon=False,
-       columnspacing=1, handletextpad=0.5)
-    row = summary.iloc[0]
-    fig.text(0.56, 0.045, f"Friedman $\\chi^2$(2) = {row['friedman_chi2']:.2f}, $p$ = {row['friedman_p']:.3f}",
-             ha="center", fontsize=12, color=MUTED_TEXT_COLOR)
     return fig
 
 

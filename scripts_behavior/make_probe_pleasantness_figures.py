@@ -52,7 +52,7 @@ from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from figure_style import (
-    MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR, SUMMARY_COLOR,
+    MUTED_TEXT_COLOR, REFERENCE_COLOR, SUMMARY_COLOR,
     add_panel_header, configure_matplotlib, style_axis,
 )
 from scripts_behavior.make_behavior_figure import DEFAULT_SKIP_SUBS
@@ -217,9 +217,7 @@ def make_figure(source: pd.DataFrame, statistics: pd.DataFrame, *, change: bool)
     )
     fig, axes = plt.subplots(2, 3, figsize=(13.4, 10.2), sharex=True, sharey=True)
     fig.subplots_adjust(left=0.11, right=0.985, top=0.84, bottom=0.13, wspace=0.29, hspace=0.61)
-    n = source["subject"].nunique()
     fig.text(0.11, 0.975, "Preconditioned cues", fontsize=18, fontweight="bold", va="top")
-    fig.text(0.985, 0.975, f"n = {n} participants", fontsize=NOTE_SIZE, color=MUTED_TEXT_COLOR, ha="right", va="top")
     lower_top = axes[1, 0].get_position().y1
     fig.text(0.11, lower_top + 0.12, "Conditioned cues", fontsize=18, fontweight="bold", va="top")
 
@@ -260,8 +258,6 @@ def make_figure(source: pd.DataFrame, statistics: pd.DataFrame, *, change: bool)
                   else "Odor pleasantness difference (first cue - second cue)", y=0.065, fontsize=16)
     fig.supylabel("Change in choice proportion (post - pre)" if change
                   else "Choice proportion for the first cue", x=0.018, fontsize=16)
-    fig.text(0.55, 0.018, "Points: participants   |   Lines: linear fits   |   Shading: 95% confidence intervals",
-             ha="center", fontsize=11, color=MUTED_TEXT_COLOR)
     return fig
 
 

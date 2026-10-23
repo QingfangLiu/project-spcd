@@ -35,14 +35,13 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 import numpy as np
 import pandas as pd
 from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from figure_style import (
-    MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR, SPINE_COLOR, SUMMARY_COLOR,
+    NOTE_SIZE, REFERENCE_COLOR, SPINE_COLOR, SUMMARY_COLOR,
     add_panel_header, configure_matplotlib, style_axis,
 )
 from scripts_behavior.make_behavior_figure import DEFAULT_SKIP_SUBS
@@ -138,14 +137,6 @@ def make_figure(source: pd.DataFrame, summary: pd.DataFrame) -> plt.Figure:
         label = "$p$ < 0.001" if p < 0.001 else f"$p$ = {p:.3f}"
         ax.text(0.5, 0.98, label, transform=ax.transAxes, ha="center", va="top", fontsize=NOTE_SIZE)
     fig.supylabel("Rating", x=0.012, fontsize=16)
-    fig.legend(handles=[
-        Line2D([], [], color=SPINE_COLOR, linewidth=1, label="Participants"),
-        Line2D([], [], color=SUMMARY_COLOR, marker="D", markerfacecolor="white",
-               markeredgewidth=1.6, linewidth=2, label="Mean (95% CI)"),
-    ], loc="upper center", bbox_to_anchor=(0.54, 0.99), ncol=2, frameon=False,
-       handlelength=2, columnspacing=2)
-    fig.text(0.985, 0.035, f"n = {source.subject.nunique()} participants", ha="right",
-             fontsize=NOTE_SIZE, color=MUTED_TEXT_COLOR)
     return fig
 
 
