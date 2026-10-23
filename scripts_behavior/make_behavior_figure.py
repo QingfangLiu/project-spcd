@@ -9,7 +9,8 @@ The calculations follow analyze_precond.ipynb (A), analyze_conditioning.ipynb
 19, 31, and 33 are excluded before aggregation. Missing pleasantness files
 are reported separately; they do not remove subjects from other panels.
 
-A displays mean +/- SD; its inset and all other panels display mean +/- SEM.
+Panels A/B and their insets display mean +/- SD.
+Panels C-E display means with t-based 95% confidence intervals.
 Day 2 preconditioning uses the notebook's final-run correction (run 7 takes
 precedence over run 6; both are recoded to run 1). The preconditioning inset
 averages the two pairs within each pair group with equal weight. Conditioning
@@ -23,6 +24,9 @@ sated (A2/B2), gray = clean air (C/D). They do not encode learning route.
 Panels D/E use neutral points and descriptive comparison labels, retaining
 the analysis cue codes underneath. Negative changes indicate reduced choice
 of the cue named before ">", independently of stimulus presentation order.
+Panels C-E annotate two-sided Wilcoxon signed-rank tests of post-minus-pre
+changes against zero: * denotes uncorrected p < 0.05; otherwise n.s.
+Changes are rounded to 12 decimal places for ranks to preserve numerical ties.
 """
 
 from __future__ import annotations
@@ -44,10 +48,11 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from figure_style import (
-    INSET_LABEL_SIZE, INSET_TICK_SIZE, MUTED_TEXT_COLOR, REFERENCE_COLOR,
+    INSET_LABEL_SIZE, INSET_TICK_SIZE, MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR,
     SPINE_COLOR, SUMMARY_COLOR, add_panel_header, configure_matplotlib, style_axis,
 )
 
@@ -176,40 +181,67 @@ def _summary(data: pd.DataFrame, order: tuple) -> pd.DataFrame:
     return data.groupby("category")["value"].agg(["count", "mean", "std", "sem"]).loc[list(order)]
 
 
+def _change_tests(data: pd.DataFrame, order: tuple) -> pd.DataFrame:
+    """Test each category's paired change against zero, without correction."""
+    results = []
+    for category in order:
+        values = data.loc[data["category"].eq(category), "value"].to_numpy(dtype=float)
+        # Subtraction can otherwise split ties in discrete choice proportions.
+        ranked_values = np.round(values, decimals=12)
+        if np.all(ranked_values == 0):
+            statistic, p_value = 0.0, 1.0
+        else:
+            result = stats.wilcoxon(ranked_values, alternative="two-sided")
+            statistic, p_value = float(result.statistic), float(result.pvalue)
+        if not np.isfinite(p_value):
+            raise ValueError(f"Nonfinite Wilcoxon p-value for category {category}")
+        results.append({
+            "category": category, "n": len(values), "W": statistic,
+            "p_uncorrected": p_value, "marker": "*" if p_value < 0.05 else "n.s.",
+        })
+    return pd.DataFrame(results).set_index("category")
+
+
 def _bar_inset(
     ax: plt.Axes, data: pd.DataFrame, order: tuple, title: str,
     *, outcome_order: tuple[int, ...],
 ) -> None:
     summary = _summary(data, order)
     x = np.arange(len(order))
-    ax.bar(x, summary["mean"], yerr=summary["sem"], width=0.6,
+    ax.bar(x, summary["mean"], yerr=summary["std"], width=0.6,
            color=[OUTCOME_COLORS[odor] for odor in outcome_order],
            capsize=2.5, error_kw={"elinewidth": 1})
-    ax.set(xticks=x, xticklabels=order, ylim=(0, 1.07), yticks=[0, 0.5, 1], ylabel="Accuracy")
+    ax.set(xticks=x, xticklabels=order, ylim=(0, 1.1), yticks=[0, 0.5, 1], ylabel="Accuracy")
     ax.set_title(title, loc="left", fontsize=INSET_LABEL_SIZE, pad=8)
     style_axis(ax, inset=True)
 
 
 def _plot_changes(
     ax: plt.Axes, data: pd.DataFrame, order: tuple, labels: tuple,
-    title: str, ylabel: str, ylim: tuple[float, float], *, legend_loc: str = "upper left",
+    title: str, ylabel: str, ylim: tuple[float, float], *,
     colors: dict | None = None,
 ) -> None:
     summary = _summary(data, order)
+    ci_half_width = stats.t.ppf(0.975, summary["count"] - 1) * summary["sem"]
     positions = data["category"].map({label: i for i, label in enumerate(order)}).to_numpy(dtype=float)
     jitter = np.random.default_rng(0).normal(0, 0.08, size=len(data))
     point_colors = data["category"].map(colors) if colors is not None else MUTED_TEXT_COLOR
     ax.scatter(positions + jitter, data["value"], color=point_colors, alpha=0.4,
                s=34, linewidths=0, zorder=2)
-    ax.errorbar(np.arange(len(order)), summary["mean"], yerr=summary["sem"],
+    ax.errorbar(np.arange(len(order)), summary["mean"], yerr=ci_half_width,
                 fmt="D", color=SUMMARY_COLOR, markersize=6.5, capsize=4,
                 markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6,
-                linewidth=2, label="mean ± SEM", zorder=3)
+                linewidth=2, zorder=3)
+    tests = _change_tests(data, order)
+    for x, category in enumerate(order):
+        marker = tests.loc[category, "marker"]
+        ax.text(x, 0.985, marker, transform=ax.get_xaxis_transform(),
+                ha="center", va="top", fontsize=20 if marker == "*" else NOTE_SIZE,
+                color=SUMMARY_COLOR)
     ax.axhline(0, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.2, zorder=1)
     ax.set(xticks=np.arange(len(order)), xticklabels=labels, ylabel=ylabel,
            ylim=ylim, xlim=(-0.45, len(order) - 0.55))
     ax.set_title(title, loc="left", pad=16)
-    ax.legend(loc=legend_loc)
 
 
 def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
@@ -228,13 +260,11 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     summary = _summary(data["A"], (1, 2, 3, 4))
     a.errorbar([1, 2, 3, 4], summary["mean"], yerr=summary["std"], fmt="D",
                color=SUMMARY_COLOR, markersize=6.5, capsize=4, linewidth=2,
-               markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6,
-               label="mean ± SD")
+               markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6)
     a.axvline(3.5, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.2)
     a.set(xticks=[1, 2, 3, 4], xticklabels=["Day 1\nrun 1", "Day 1\nrun 2", "Day 1\nrun 3", "Day 2\nlast run"],
           ylim=(0, 1.05), xlim=(0.85, 4.15), ylabel="Accuracy")
     a.set_title("Preconditioning across runs", loc="left", pad=16)
-    a.legend(loc="lower left")
     _bar_inset(a.inset_axes([0.47, 0.17, 0.45, 0.40]), data["A inset"],
                ("A1-B1", "A2-B2", "C-D"), "Day 2 last run", outcome_order=(1, 2, 0))
 
@@ -242,21 +272,21 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     jitter = np.random.default_rng(0).normal(0, 0.04, size=len(data["B"]))
     b.scatter(data["B"]["category"] + jitter, data["B"]["value"], color=MUTED_TEXT_COLOR,
                alpha=0.4, s=32, linewidths=0)
-    b.errorbar([1, 2, 3], summary["mean"], yerr=summary["sem"], fmt="D-",
+    b.errorbar([1, 2, 3], summary["mean"], yerr=summary["std"], fmt="D-",
                color=SUMMARY_COLOR, markersize=6.5, capsize=4, linewidth=2,
                markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6)
     b.set(xticks=[1, 2, 3], xticklabels=["Run 1", "Run 2", "Run 3"],
-          ylim=(0, 1.05), xlim=(0.78, 3.22), ylabel="Accuracy")
+          ylim=(0, 1.1), xlim=(0.78, 3.22), ylabel="Accuracy")
     b.set_title("Conditioning across runs", loc="left", pad=16)
     _bar_inset(b.inset_axes([0.60, 0.17, 0.37, 0.40]), data["B inset"],
                ("B1", "B2", "D"), "Run 3", outcome_order=(1, 2, 0))
 
     _plot_changes(c, data["C"], (2, 1, 0), ("Sated\nodor", "Non-sated\nodor", "Clean\nair"),
                   "Selective decrease\nin pleasantness", "Change in pleasantness rating\n(post − pre)",
-                  (-4.05, 2.15), legend_loc="lower right", colors=OUTCOME_COLORS)
+                  (-4.05, 2.55), colors=OUTCOME_COLORS)
     for ax, letter, order, title in (
-        (d, "D", CONDITIONED_CHOICES, "Conditioned\ncue choices"),
-        (e, "E", PRECONDITIONED_CHOICES, "Preconditioned\ncue choices"),
+        (d, "D", CONDITIONED_CHOICES, "Devaluation of\nconditioned cues"),
+        (e, "E", PRECONDITIONED_CHOICES, "Devaluation transfer to\npreconditioned cues"),
     ):
         _plot_changes(ax, data[letter], order, COMPARISON_LABELS, title,
                       "Change in choice proportion\n(post − pre)", (-1.1, 1.1))
@@ -268,7 +298,7 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
                 xy=(x, 0), xycoords=ax.get_xaxis_transform(),
                 xytext=(0, -49), textcoords="offset points",
                 ha="center", va="top", fontsize=INSET_TICK_SIZE,
-                color=MUTED_TEXT_COLOR, annotation_clip=False,
+                color="black", annotation_clip=False,
             )
     for ax, letter in zip(axes, "ABCDE"):
         style_axis(ax)
@@ -302,6 +332,9 @@ def main() -> None:
     for panel, table in data.items():
         print(f"\nPanel {panel} (subject-level observations):")
         print(_summary(table, tuple(table["category"].unique())).to_string(float_format=lambda x: f"{x:.6f}"))
+    for panel, order in (("C", (2, 1, 0)), ("D", CONDITIONED_CHOICES), ("E", PRECONDITIONED_CHOICES)):
+        print(f"\nPanel {panel}: two-sided Wilcoxon change vs zero (uncorrected)")
+        print(_change_tests(data[panel], order).to_string(float_format=lambda x: f"{x:.8f}"))
     fig = make_figure(data)
     output_prefix.parent.mkdir(parents=True, exist_ok=True)
     for extension in dict.fromkeys(args.formats):
