@@ -24,8 +24,9 @@ from matplotlib.ticker import FixedLocator
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PDF_PATH = REPO_ROOT / "output" / "pdf" / "adaptive_identity_allocation.pdf"
-PNG_PATH = REPO_ROOT / "output" / "png" / "adaptive_identity_allocation.png"
+FIGURES_DIR = REPO_ROOT / "figures"
+PDF_PATH = FIGURES_DIR / "adaptive_identity_allocation.pdf"
+PNG_PATH = FIGURES_DIR / "adaptive_identity_allocation.png"
 
 EXAMPLE_BUDGET = 4.0
 EXAMPLE_A_P = 4.0
@@ -514,8 +515,7 @@ def create_figure():
 def save_figure(figure) -> None:
     """Write an editable vector PDF and a high-resolution PNG preview."""
 
-    PDF_PATH.parent.mkdir(parents=True, exist_ok=True)
-    PNG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     figure.savefig(
         PDF_PATH,
         bbox_inches="tight",
