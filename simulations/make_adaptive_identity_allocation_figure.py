@@ -5,6 +5,8 @@ The figure visualizes a normative model in which inferred/preconditioned (P)
 and directly conditioned (C) cues share a finite identity-representation
 budget. All numerical choices used for illustration are collected near the
 top of this file so the figure can be revised without changing plotting logic.
+Panel D uses noisy readouts of optimal allocations in simulated participants;
+these readouts are illustrative coding proxies, not fitted fMRI RSA values.
 """
 
 from __future__ import annotations
@@ -17,6 +19,7 @@ import numpy as np
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FixedLocator
+from scipy import stats
 
 
 # ---------------------------------------------------------------------------
@@ -32,6 +35,13 @@ EXAMPLE_BUDGET = 4.0
 EXAMPLE_A_P = 4.0
 EXAMPLE_A_C = 1.0
 
+# Illustrative choices, specified independently of the empirical correlation.
+PARTICIPANT_COUNT = 100
+PARTICIPANT_SEED = 20261023
+LOG_VALUE_RATIO_MEAN = float(np.log(EXAMPLE_A_P / EXAMPLE_A_C))
+LOG_VALUE_RATIO_SD = 1.2
+MEASUREMENT_NOISE_SD = 0.75
+
 
 # ---------------------------------------------------------------------------
 # Visual style
@@ -41,11 +51,13 @@ TEXT_COLOR = "#20252B"
 MUTED_TEXT_COLOR = "#5D6871"
 GRID_COLOR = "#E5E7E9"
 SPINE_COLOR = "#9AA3AA"
-INFERRED_COLOR = "#2878B5"
-DIRECT_COLOR = "#D97721"
+# Local model palette distinguishes allocation from behavioral outcome colors.
+INFERRED_COLOR = "#7A3E73"
+DIRECT_COLOR = "#6C8B4A"
 TOTAL_COLOR = "#29343D"
 REFERENCE_COLOR = "#7A858D"
-LOSS_COLORS = ("#B9D7EA", "#83B9D8", "#4C91C3", "#195D91")
+COMPETITION_COLOR = "#29343D"
+LOSS_COLORS = ("#DCC9DC", "#BE9ABC", "#9B6A97", "#7A3E73")
 
 
 def configure_matplotlib() -> None:
@@ -97,7 +109,7 @@ def optimal_allocation(a_p: float, a_c: float, budget: float) -> tuple[float, fl
 
 
 def validate_example() -> None:
-    """Guard the calculations shown in panels B and C."""
+    """Guard the example optimum shown in panel B."""
 
     r_p, r_c = optimal_allocation(EXAMPLE_A_P, EXAMPLE_A_C, EXAMPLE_BUDGET)
     expected_r_p = 0.5 * (EXAMPLE_BUDGET + np.log(EXAMPLE_A_P / EXAMPLE_A_C))
@@ -110,6 +122,39 @@ def validate_example() -> None:
     marginal_c = single_cue_loss(EXAMPLE_A_C, r_c)
     if not np.isclose(marginal_p, marginal_c):
         raise AssertionError("Interior optimum does not equalize marginal values")
+
+
+def simulate_participants(
+    *,
+    seed: int = PARTICIPANT_SEED,
+    noise_sd: float = MEASUREMENT_NOISE_SD,
+) -> dict[str, np.ndarray]:
+    """Allocate a common budget, then add independent readout noise.
+
+    Participants differ in log(a_P/a_C); a_C is held at one. The same
+    constrained optimizer used in B determines their latent allocations.
+    Gaussian readouts remain unclipped because they are noisy measurements,
+    whereas latent resources must remain nonnegative and sum to R.
+    """
+
+    if not np.isfinite(noise_sd) or noise_sd < 0:
+        raise ValueError("noise_sd must be finite and nonnegative")
+    rng = np.random.default_rng(seed)
+    log_value_ratio = rng.normal(
+        LOG_VALUE_RATIO_MEAN, LOG_VALUE_RATIO_SD, PARTICIPANT_COUNT,
+    )
+    allocation = np.array([
+        optimal_allocation(float(np.exp(log_ratio)), 1.0, EXAMPLE_BUDGET)
+        for log_ratio in log_value_ratio
+    ])
+    measured = allocation + rng.normal(0.0, noise_sd, allocation.shape)
+    return {
+        "log_value_ratio": log_value_ratio,
+        "resource_p": allocation[:, 0],
+        "resource_c": allocation[:, 1],
+        "coding_p": measured[:, 0],
+        "coding_c": measured[:, 1],
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -150,7 +195,7 @@ def add_panel_header(axis, panel_label: str, title: str) -> None:
 
 
 def add_example_note(axis) -> None:
-    """Label the parameter values shared by panels B and C."""
+    """Label the example parameter values in panel B."""
 
     axis.text(
         0.98,
@@ -296,83 +341,6 @@ def draw_panel_b(axis) -> None:
 
 
 def draw_panel_c(axis) -> None:
-    """Show equality of marginal values at the optimal allocation."""
-
-    budget = EXAMPLE_BUDGET
-    resource_p = np.linspace(0.0, budget, 600)
-    resource_c = budget - resource_p
-    marginal_p = single_cue_loss(EXAMPLE_A_P, resource_p)
-    marginal_c = single_cue_loss(EXAMPLE_A_C, resource_c)
-    r_p_star, r_c_star = optimal_allocation(
-        EXAMPLE_A_P, EXAMPLE_A_C, EXAMPLE_BUDGET
-    )
-    shared_marginal_value = float(single_cue_loss(EXAMPLE_A_P, r_p_star))
-
-    axis.plot(
-        resource_p,
-        marginal_p,
-        color=INFERRED_COLOR,
-        linewidth=2.2,
-        label=r"Benefit of more resource for $P$",
-    )
-    axis.plot(
-        resource_p,
-        marginal_c,
-        color=DIRECT_COLOR,
-        linewidth=2.2,
-        label=r"Cost of taking resource from $C$",
-    )
-    axis.axvline(
-        r_p_star,
-        color=REFERENCE_COLOR,
-        linestyle=(0, (3, 3)),
-        linewidth=1.0,
-    )
-    axis.scatter(
-        [r_p_star],
-        [shared_marginal_value],
-        s=36,
-        facecolor="white",
-        edgecolor=TOTAL_COLOR,
-        linewidth=1.3,
-        zorder=4,
-    )
-
-    style_axis(axis)
-    add_panel_header(axis, "C", "Marginal values are equal at the optimum")
-    add_example_note(axis)
-    axis.set_xlim(0.0, budget)
-    axis.set_ylim(0.0, 4.25)
-    axis.set_xlabel(r"Resource to inferred identity, $r_P$")
-    axis.set_ylabel("Marginal value of resource")
-    axis.legend(
-        loc="upper right",
-        bbox_to_anchor=(0.99, 0.82),
-        frameon=True,
-        facecolor="white",
-        edgecolor="none",
-        framealpha=0.92,
-        handlelength=2.3,
-        borderaxespad=0.0,
-        labelspacing=0.45,
-    )
-    axis.annotate(
-        "Equal marginal values",
-        xy=(r_p_star, shared_marginal_value),
-        xytext=(1.40, 1.15),
-        fontsize=7.8,
-        fontweight="bold",
-        ha="left",
-        va="center",
-        arrowprops={
-            "arrowstyle": "-",
-            "color": REFERENCE_COLOR,
-            "linewidth": 0.9,
-        },
-    )
-
-
-def draw_panel_d(axis) -> None:
     """Plot the constrained allocation difference across relative values."""
 
     budget = EXAMPLE_BUDGET
@@ -428,7 +396,7 @@ def draw_panel_d(axis) -> None:
     )
 
     style_axis(axis, grid_axis="y")
-    add_panel_header(axis, "D", "Allocation follows relative computational value")
+    add_panel_header(axis, "C", "Allocation follows relative value")
     axis.set_xscale("log")
     axis.set_xlim(value_ratio.min(), value_ratio.max())
     axis.set_ylim(-4.4, 4.4)
@@ -479,6 +447,54 @@ def draw_panel_d(axis) -> None:
         va="bottom",
         fontsize=7.3,
         color=MUTED_TEXT_COLOR,
+    )
+
+
+def draw_panel_d(axis) -> None:
+    """Show the noisy between-participant prediction of a shared budget."""
+
+    participants = simulate_participants()
+    x = participants["coding_c"]
+    y = participants["coding_p"]
+    rho = float(stats.spearmanr(x, y).statistic)
+    fit = stats.linregress(x, y)
+    fit_x = np.linspace(x.min(), x.max(), 250)
+    fit_y = fit.intercept + fit.slope * fit_x
+    residual_sd = np.sqrt(np.sum((y - fit.intercept - fit.slope * x)**2) / (len(x) - 2))
+    mean_se = residual_sd * np.sqrt(
+        1 / len(x) + (fit_x - x.mean())**2 / np.sum((x - x.mean())**2)
+    )
+    half_width = stats.t.ppf(0.975, len(x) - 2) * mean_se
+
+    axis.fill_between(
+        fit_x, fit_y - half_width, fit_y + half_width,
+        color=COMPETITION_COLOR, alpha=0.16, linewidth=0,
+    )
+    axis.plot(fit_x, fit_y, color=COMPETITION_COLOR, linewidth=2.0)
+    axis.scatter(
+        x, y, s=17, color=COMPETITION_COLOR, alpha=0.75,
+        edgecolor="white", linewidth=0.35, zorder=3,
+    )
+    style_axis(axis)
+    add_panel_header(axis, "D", "Direct and inferred coding compete")
+    axis.set_xlabel("Direct identity coding (a.u.)")
+    axis.set_ylabel("Inferred identity coding (a.u.)")
+    axis.margins(x=0.08)
+    span_y = np.ptp(y)
+    axis.set_ylim(y.min() - 0.18 * span_y, y.max() + 0.30 * span_y)
+    axis.text(
+        0.97, 0.97,
+        rf"Simulated Spearman $\rho={rho:.3f}$" + "\n"
+        + rf"$n={len(x)}$ simulated participants",
+        transform=axis.transAxes, ha="right", va="top", fontsize=7.5,
+        bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.9, "pad": 1.5},
+    )
+    axis.text(
+        0.03, 0.04,
+        "Shared budget + independent measurement noise\nIllustrative prediction; no fit to fMRI",
+        transform=axis.transAxes, ha="left", va="bottom", fontsize=6.9,
+        color=MUTED_TEXT_COLOR,
+        bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.9, "pad": 1.5},
     )
 
 
@@ -539,6 +555,12 @@ def main() -> None:
 
     validate_example()
     save_figure(create_figure())
+    participants = simulate_participants()
+    rho = stats.spearmanr(participants["coding_c"], participants["coding_p"]).statistic
+    print(
+        f"Panel D: n={PARTICIPANT_COUNT}, Spearman rho={rho:.6f}, "
+        f"seed={PARTICIPANT_SEED}, measurement noise SD={MEASUREMENT_NOISE_SD}"
+    )
 
 
 if __name__ == "__main__":

@@ -381,48 +381,7 @@ Suggested annotations:
 
 ---
 
-## Panel C — Why the optimum occurs: equality of marginal values
-
-Using the same parameter values as Panel B, plot as a function of \(r_P\):
-
-\[
-MB_P=a_Pe^{-r_P}
-\]
-
-and:
-
-\[
-MC_C=a_Ce^{-r_C}
-=
-a_Ce^{-(R-r_P)}.
-\]
-
-Interpretation:
-
-- \(MB_P\): benefit of giving a small additional unit of resource to \(P\)
-- \(MC_C\): cost of taking that same unit away from \(C\)
-
-These curves should intersect at the same \(r_P^*\) as Panel B.
-
-At the intersection:
-
-\[
-a_Pe^{-r_P}
-=
-a_Ce^{-r_C}.
-\]
-
-Use a vertical line connecting the intersection to the x-axis.
-
-Purpose:
-
-> Make the first-order optimality condition intuitive: if one marginal value is larger, resource should continue moving toward that cue; the optimum occurs when the two marginal values are equal.
-
-This is the most important conceptual panel.
-
----
-
-## Panel D — Core model prediction
+## Panel C — Allocation follows relative computational value
 
 Plot:
 
@@ -466,6 +425,46 @@ Indicate:
 Purpose:
 
 > Show that preferential allocation is a consequence of relative computational utility, not cue category itself.
+
+---
+
+## Panel D — Competition between direct and inferred identity coding
+
+Simulate 100 participants with a common budget \(R=4\). Draw each
+participant's \(\log(a_P/a_C)\) from a normal distribution with mean
+\(\log 4\) and standard deviation 1.2, set \(a_C=1\), and calculate
+\(r_P^*,r_C^*\) using the same constrained optimum as Panel B.
+
+Plot direct identity coding on the x-axis and inferred identity coding on
+the y-axis, using noisy measurements of those latent allocations:
+
+\[
+x_j=r_{C,j}^*+\epsilon_{C,j},\qquad
+y_j=r_{P,j}^*+\epsilon_{P,j}.
+\]
+
+The measurement errors are independent, zero-mean Gaussian draws with
+standard deviation 0.75 in arbitrary resource units. Use random seed
+20261023 for reproducibility. Latent allocations remain nonnegative and sum
+to \(R\); noisy readouts are not clipped. These readouts are illustrative
+coding proxies, not simulated RSA coefficients, and need not lie in
+\([-1,1]\).
+
+Show the simulated Spearman correlation, a descriptive linear fit, and its
+pointwise 95% confidence interval for the mean response. The shading is not
+a confidence interval for Spearman rho. Do not assign empirical ROI labels
+or significance stars to the simulated sample.
+
+At a fixed budget without measurement noise, \(r_P^*=R-r_C^*\), so the
+rank correlation is exactly \(-1\) when allocations vary across participants.
+Independent readout noise attenuates this relationship. Across-participant
+budget variation, if added in a future model, can further weaken or obscure
+the negative association. A negative empirical correlation alone does not
+establish resource competition.
+
+All parameters are illustrative and are not optimized to reproduce the fMRI
+correlation. This panel demonstrates a qualitative prediction of the
+shared-budget assumption.
 
 ---
 
@@ -667,8 +666,8 @@ The figure should be understandable before reading the detailed mathematical der
 **Figure X. A normative model of adaptive outcome-identity representation.**  
 **A.** Decision loss for a cue decreases with the amount of representational resource allocated to its outcome identity, \(L_i=a_i e^{-r_i}\). The parameter \(a_i\) determines the computational value of explicitly representing that outcome identity, whereas \(r_i\) denotes representational resource. The exponential form produces diminishing returns.  
 **B.** When inferred and directly learned cues share a finite representational budget, \(r_P+r_C=R\), total loss is minimized by balancing the costs associated with insufficient representation of each cue. An example with \(a_P>a_C\) yields greater optimal allocation to the inferred cue.  
-**C.** At the optimum, the marginal benefit of allocating additional resource to the inferred cue equals the marginal cost of removing that resource from the directly learned cue, such that \(a_Pe^{-r_P}=a_Ce^{-r_C}\).  
-**D.** The optimal allocation difference follows \(r_P-r_C=\log(a_P/a_C)\) for interior solutions, with boundary solutions imposed by the finite resource constraint. Thus, preferential representation of inferred outcomes emerges when their explicit identity representation has greater computational value; it is not assumed from cue type itself.  
+**C.** The optimal allocation difference follows \(r_P-r_C=\log(a_P/a_C)\) for interior solutions, with boundary solutions imposed by the finite resource constraint. Thus, preferential representation of inferred outcomes emerges when their explicit identity representation has greater computational value; it is not assumed from cue type itself.
+**D.** Simulated participants differ in relative computational value while sharing a fixed budget. Direct and inferred identity coding are represented by optimal allocations plus independent Gaussian measurement noise, yielding a negative between-participant association. Points show 100 simulated participants, the line is a descriptive linear fit, and shading is its pointwise 95% confidence interval for the mean response. Coding units and parameters are illustrative; the model is not fitted to fMRI RSA values.
 **E.** [Optional] A parameter sweep illustrates how relative computational value and total representational budget jointly determine whether resources are shared or preferentially allocated.
 
 ---

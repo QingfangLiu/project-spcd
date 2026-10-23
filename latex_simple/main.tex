@@ -221,13 +221,13 @@ $r_P + r_C = R$, total loss is
 L = a_P e^{-r_P} + a_C e^{-r_C}.
 \end{equation}
 
-The optimal allocation occurs where the marginal benefit of assigning additional resource to the inferred cue equals the marginal cost of removing that resource from the directly learned cue (\autoref{fig-identity-simu}B,C),
+The optimal allocation occurs where the marginal benefit of assigning additional resource to the inferred cue equals the marginal cost of removing that resource from the directly learned cue (\autoref{fig-identity-simu}B),
 
 \begin{equation}
 a_P e^{-r_P} = a_C e^{-r_C}.
 \end{equation}
 
-Therefore, when explicit identity information has greater computational value for inferred outcomes ($a_P > a_C$), the optimal solution assigns more representational resource to them ($r_P > r_C$) (\autoref{fig-identity-simu}D). Preferential representation of inferred outcomes therefore emerges from differences in computational utility between preconditioned cues and conditioned cues. 
+Therefore, when explicit identity information has greater computational value for inferred outcomes ($a_P > a_C$), the optimal solution assigns more representational resource to them ($r_P > r_C$) (\autoref{fig-identity-simu}C). Preferential representation of inferred outcomes therefore emerges from differences in computational utility between preconditioned cues and conditioned cues. Across simulated participants with a common total budget, differences in relative computational value also produce a negative relationship between direct and inferred identity coding, which is attenuated by independent measurement noise (\autoref{fig-identity-simu}D). This illustrates a qualitative prediction of resource competition without fitting the empirical correlation.
 
 
 
@@ -243,8 +243,8 @@ Therefore, when explicit identity information has greater computational value fo
 \textbf{A normative model of adaptive outcome-identity representation.}
 \textbf{A,} Decision loss for cue $i$ decreases as representational resource $r_i$ is allocated to its outcome identity, according to $L_i=a_i e^{-r_i}$. Larger values of $a_i$ indicate a greater computational cost of weak identity representation, while the exponential form produces diminishing returns.
 \textbf{B,} When inferred or preconditioned cues ($P$) and directly conditioned cues ($C$) share a finite representational budget, $r_P+r_C=R$, total decision loss is minimized by allocating resources according to their relative computational value. For the illustrative parameters $R=4$, $a_P=4$, and $a_C=1$, the optimum is $r_P^*=2.69$ and $r_C^*=1.31$.
-\textbf{C,} At an interior optimum, the marginal benefit of allocating additional resource to the inferred outcome identity equals the marginal cost of removing that resource from the directly learned outcome identity, such that $a_Pe^{-r_P}=a_Ce^{-r_C}$.
-\textbf{D,} The optimal allocation difference is $r_P^*-r_C^*=\log(a_P/a_C)$ for interior solutions and is bounded by $\pm R$ because allocations must be nonnegative. Thus, preferential representation of inferred outcomes emerges when their explicit identity representation has greater computational value ($a_P>a_C$); it is not imposed by cue category. 
+\textbf{C,} The optimal allocation difference is $r_P^*-r_C^*=\log(a_P/a_C)$ for interior solutions and is bounded by $\pm R$ because allocations must be nonnegative. Thus, preferential representation of inferred outcomes emerges when their explicit identity representation has greater computational value ($a_P>a_C$); it is not imposed by cue category.
+\textbf{D,} A shared budget produces competition between direct and inferred identity coding across 100 simulated participants. Each participant's $\log(a_P/a_C)$ is sampled from $\mathcal{N}(\log 4,1.2^2)$, and the constrained optimal allocations are measured with independent Gaussian noise (standard deviation 0.75; random seed 20261023). Axes show coding proxies in arbitrary resource units, not RSA coefficients. The line is a descriptive linear fit, and shading is its pointwise 95\% confidence interval for the mean response. The displayed Spearman correlation is illustrative and is not fitted to the fMRI result.
 \par
 
 \label{fig-identity-simu}
