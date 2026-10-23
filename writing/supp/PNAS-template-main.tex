@@ -1,28 +1,28 @@
-\documentclass[9pt]{article}
-
-\usepackage[margin=1in]{geometry}
+\documentclass[9pt,twoside,lineno]{pnas-new}
+% Compile in the existing PNAS Overleaf project with its support files.
+\templatetype{pnassupportinginfo}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
-\usepackage{booktabs}
-\usepackage{hyperref}
+\usepackage{placeins}
+
+\title{Model-based inference of reward identity in the lateral orbitofrontal cortex}
+\author{Qingfang Liu, Yao Zhao, Taaseen Khan, Nicole Moussa, Geoffrey Schoenbaum, and Thorsten Kahnt}
+\correspondingauthor{Thorsten Kahnt.\\E-mail: thorsten.kahnt@nih.gov}
 
 \renewcommand{\thefigure}{S\arabic{figure}}
 
 \begin{document}
-
-\section*{Supporting Information}
+\maketitle
+\SItext
 
 \subsection*{Supplementary Methods}
-
 
 \paragraph*{Self-reported hunger and satiety}
 
 Participants also rated hunger and satiety before and after the meal by responding to three questions: “How would you rate your current level of hunger?”, “How would you rate your current level of satiety (feeling full)?”, and “How would you rate your current desire to eat?”. Ratings were made using the same horizontal slider scale as the odor pleasantness ratings.
 
 \paragraph*{Recognition memory task.}
-
-
 
 During the recognition memory task, participants judged whether specific character--place pairs had been encountered during preconditioning. Each trial consisted of a 3\,s presentation of the first cue (cue\,1), followed by a 0.3\,s blank interval and a 3\,s presentation of the second cue (cue\,2). Participants then indicated whether the pair was ``old'' or a recombined foil. No corrective feedback was provided. Trials were separated by a jittered 3--8\,s inter-trial interval. The task comprised 36 trials in total (6 cue pairs $\times$ old/foil $\times$ 3 repetitions). Foil pairs were constructed by randomly pairing each first cue (A1, A2 or C) with a second cue (B1, B2 or D) that had not been associated with it during pre-conditioning.
 
@@ -32,26 +32,9 @@ During the recognition memory task, participants judged whether specific charact
 
 Ratings showed the expected shifts in hunger, satiety, and desire to eat after the meal ($n = 30$; Fig.~\ref{fig_hunger}). Mean hunger ratings decreased from 1.40 before the meal to $-2.77$ afterward. Mean satiety ratings increased from $-1.40$ to 1.88, and mean desire-to-eat ratings decreased from 1.58 to $-2.43$. All three changes were significant (two-sided Wilcoxon signed-rank tests, all $p < 0.001$, uncorrected). Analyses applied the main-figure participant exclusions, including participant 31, and additionally omitted one participant with missing ratings.
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{figures/supplementary/hungry_ratings.pdf}
-    \caption{\textbf{Change in self-reported hunger, satiety, and desire to eat.}
-Panels A--C show hunger, satiety, and desire-to-eat ratings, respectively, before and after the meal. Gray lines connect measurements from individual participants ($n = 30$). Open diamonds indicate group means, with t-based 95\% confidence intervals. Horizontal dashed lines mark zero on the rating scale. Hunger and desire-to-eat ratings decreased, whereas satiety ratings increased (two-sided Wilcoxon signed-rank tests, all $p < 0.001$, uncorrected for multiple comparisons). Analyses applied the main-figure participant exclusions, including participant 31, and additionally omitted one participant with missing ratings.}
-    \label{fig_hunger}
-\end{figure}
-
 \paragraph*{Recognition memory.}
 
 Recognition accuracy did not differ significantly across the three cue-pair types ($n = 31$; Friedman test: $\chi^2(2) = 1.60$, $p = 0.449$; Fig.~\ref{fig_recog}). Analyses used the main-figure participant exclusions, including participant 31.
-
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.48\linewidth]{figures/supplementary/recognition_accuracy.pdf}
-\caption{\textbf{Recognition memory accuracy across cue-pair types.}
-Points show individual participants' mean recognition accuracy for each cue-pair group ($n = 31$). Accuracy was averaged within each cue pair and then equally across the two pairs in each group. Open diamonds indicate group means, with t-based 95\% confidence intervals. The horizontal dashed line marks chance-level performance (0.5). Recognition accuracy did not differ significantly across cue-pair types (Friedman test: $\chi^2(2) = 1.60$, $p = 0.449$). Analyses used the main-figure participant exclusions, including participant 31.}
-\label{fig_recog}
-\end{figure}
 
 \paragraph*{Choice preference and odor pleasantness.}
 
@@ -59,31 +42,44 @@ We examined the relationship between probe choices and odor pleasantness in part
 
 Choice proportions were also positively correlated with the pleasantness difference between the associated outcomes for all six comparisons, both before the meal ($r = 0.43$--$0.77$, all $p \leq 0.018$) and after the meal ($r = 0.42$--$0.81$, all $p \leq 0.020$; Fig.~\ref{fig_probe_corr_pre_post}). All choice--pleasantness tests were two-sided Pearson correlations, uncorrected for multiple comparisons.
 
-\begin{figure}[ht]
+% Supplementary figures, one per page.
+
+\clearpage
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{../../supp_fig/hungry_ratings.pdf}
+    \caption{\textbf{Change in self-reported hunger, satiety, and desire to eat.}
+Panels A--C show hunger, satiety, and desire-to-eat ratings, respectively, before and after the meal. Gray lines connect measurements from individual participants ($n = 30$). Open diamonds indicate group means, with t-based 95\% confidence intervals. Horizontal dashed lines mark zero on the rating scale. Hunger and desire-to-eat ratings decreased, whereas satiety ratings increased (two-sided Wilcoxon signed-rank tests, all $p < 0.001$, uncorrected for multiple comparisons). Analyses applied the main-figure participant exclusions, including participant 31, and additionally omitted one participant with missing ratings.}
+    \label{fig_hunger}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth]{figures/supplementary/probe_change_corr.pdf}
+\includegraphics[width=0.48\linewidth]{../../supp_fig/recognition_accuracy.pdf}
+\caption{\textbf{Recognition memory accuracy across cue-pair types.}
+Points show individual participants' mean recognition accuracy for each cue-pair group ($n = 31$). Accuracy was averaged within each cue pair and then equally across the two pairs in each group. Open diamonds indicate group means, with t-based 95\% confidence intervals. The horizontal dashed line marks chance-level performance (0.5). Recognition accuracy did not differ significantly across cue-pair types (Friedman test: $\chi^2(2) = 1.60$, $p = 0.449$). Analyses used the main-figure participant exclusions, including participant 31.}
+\label{fig_recog}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{../../supp_fig/probe_change_corr.pdf}
 \caption{\textbf{Changes in choice preference correlate with relative changes in odor pleasantness.}
 Panels A--C show preconditioned cues, and panels D--F show conditioned cues. Each point represents one participant ($n = 30$). Choice changes were calculated as post-meal minus pre-meal proportions of choosing the first cue in each comparison. Relative pleasantness change was calculated as the difference between the associated outcomes' post-minus-pre changes in pleasantness ratings, ordered as first cue minus second cue. Lines show ordinary least-squares fits; shaded regions indicate pointwise 95\% bootstrap confidence intervals for the fitted mean. Horizontal dashed lines indicate zero choice change. Positive correlations were significant for A2$>$A1 ($r = 0.43$, $p = 0.018$), B2$>$B1 ($r = 0.41$, $p = 0.023$), and B2$>$D ($r = 0.42$, $p = 0.019$). Correlations were positive but nonsignificant for A1$>$C ($r = 0.31$, $p = 0.096$), A2$>$C ($r = 0.27$, $p = 0.155$), and B1$>$D ($r = 0.26$, $p = 0.168$). All tests were two-sided Pearson correlations, uncorrected for multiple comparisons. Analyses applied the main-figure participant exclusions, including participant 31, and additionally omitted one participant with missing pleasantness ratings.}
 \label{fig_probe_change_corr}
 \end{figure}
 
-
-
-
-\begin{figure}[ht]
+\clearpage
+\begin{figure}[p]
 \centering
-\includegraphics[width=1\linewidth]{figures/supplementary/probe_corr_pre_post.pdf}
+\includegraphics[width=1\linewidth]{../../supp_fig/probe_corr_pre_post.pdf}
 \caption{\textbf{Choice preference correlates with odor pleasantness before and after the meal.}
 Panels A--C show preconditioned cues, and panels D--F show conditioned cues. Each point represents one participant ($n = 30$). Choice proportions for the first cue in each comparison are plotted against the pleasantness difference between the associated outcomes, ordered as first cue minus second cue. Light-gray circles and dashed regression lines represent pre-meal measurements; dark diamonds and solid regression lines represent post-meal measurements. Lines show ordinary least-squares fits; shaded regions indicate pointwise 95\% bootstrap confidence intervals for the fitted mean. Horizontal dashed lines indicate chance choice (0.5). Positive correlations were significant in both phases for all six comparisons: A1$>$C (pre: $r = 0.43$, $p = 0.018$; post: $r = 0.54$, $p = 0.002$), A2$>$A1 (pre: $r = 0.72$, $p < 0.001$; post: $r = 0.81$, $p < 0.001$), A2$>$C (pre: $r = 0.56$, $p = 0.001$; post: $r = 0.74$, $p < 0.001$), B1$>$D (pre: $r = 0.64$, $p < 0.001$; post: $r = 0.42$, $p = 0.020$), B2$>$B1 (pre: $r = 0.77$, $p < 0.001$; post: $r = 0.80$, $p < 0.001$), and B2$>$D (pre: $r = 0.66$, $p < 0.001$; post: $r = 0.74$, $p < 0.001$). All tests were two-sided Pearson correlations, uncorrected for multiple comparisons. Analyses applied the main-figure participant exclusions, including participant 31, and additionally omitted one participant with missing pleasantness ratings.}
 \label{fig_probe_corr_pre_post}
 \end{figure}
 
-
-
-
-
-
-
-
+\FloatBarrier
 
 \end{document}
