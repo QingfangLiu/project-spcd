@@ -6,6 +6,10 @@
 - Do not start editing until the user explicitly says `gogogo`.
 - If the user has already said `gogogo` for the current requested change, continue within that approved scope. Ask again before expanding the scope.
 
+## Writing Workflow
+
+- After editing manuscript `.tex` files, compile them and update the corresponding PDF files on disk. Confirm compilation succeeds.
+
 ## Git Workflow
 
 - Ask before each commit, unless the user explicitly says "commit."
