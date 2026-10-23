@@ -51,13 +51,13 @@ TEXT_COLOR = "#20252B"
 MUTED_TEXT_COLOR = "#5D6871"
 GRID_COLOR = "#E5E7E9"
 SPINE_COLOR = "#9AA3AA"
-# Local model palette distinguishes allocation from behavioral outcome colors.
-INFERRED_COLOR = "#7A3E73"
-DIRECT_COLOR = "#6C8B4A"
+# Local model palette distinguishes allocation from behavioral outcomes and fMRI ROIs.
+INFERRED_COLOR = "#B43C39"
+DIRECT_COLOR = "#29343D"
 TOTAL_COLOR = "#29343D"
 REFERENCE_COLOR = "#7A858D"
 COMPETITION_COLOR = "#29343D"
-LOSS_COLORS = ("#DCC9DC", "#BE9ABC", "#9B6A97", "#7A3E73")
+LOSS_COLORS = ("#EBC8C7", "#DDA19F", "#CA6B68", "#B43C39")
 
 
 def configure_matplotlib() -> None:
