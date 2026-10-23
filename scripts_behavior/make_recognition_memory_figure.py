@@ -14,7 +14,7 @@ Friedman test compares the three paired participant-level accuracies.
 The figure uses the shared manuscript style and mean +/- t-based 95% CIs,
 replacing the original notebook's SEM bars. Jitter is fixed, independent of
 accuracy, and shared across groups. Original notebook outputs are preserved.
-PDF/PNG files go to figures/supplementary/; source pair-level observations
+PDF/PNG files go to supp_fig/; source pair-level observations
 and statistics go to beh_processed_subs/. The joint Friedman result is
 repeated alongside each group summary in the statistics CSV.
 """
@@ -154,14 +154,14 @@ def make_figure(participants: pd.DataFrame, summary: pd.DataFrame) -> plt.Figure
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--output-dir", type=Path, help="Figure directory (default: <project>/figures/supplementary). CSVs go to beh_processed_subs.")
+    parser.add_argument("--output-dir", type=Path, help="Figure directory (default: <project>/supp_fig). CSVs go to beh_processed_subs.")
     parser.add_argument("--skip-subs", nargs="*", default=list(DEFAULT_SKIP_SUBS))
     parser.add_argument("--dpi", type=int, default=300)
     args = parser.parse_args()
     if args.dpi <= 0:
         parser.error("--dpi must be positive")
     root = args.project_root.expanduser().resolve()
-    destination = args.output_dir.expanduser().resolve() if args.output_dir else root / "figures/supplementary"
+    destination = args.output_dir.expanduser().resolve() if args.output_dir else root / "supp_fig"
     source = build_source_data(root, tuple(args.skip_subs))
     participants, summary = summarize(source)
     print(f"Excluded: {', '.join(args.skip_subs)}; included n = {participants.subject.nunique()}")

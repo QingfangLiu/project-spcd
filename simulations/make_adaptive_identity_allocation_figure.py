@@ -27,7 +27,7 @@ from scipy import stats
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-FIGURES_DIR = REPO_ROOT / "figures"
+FIGURES_DIR = REPO_ROOT / "fig"
 PDF_PATH = FIGURES_DIR / "fig_model.pdf"
 PNG_PATH = FIGURES_DIR / "fig_model.png"
 

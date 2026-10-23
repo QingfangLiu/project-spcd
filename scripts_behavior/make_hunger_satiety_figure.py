@@ -15,7 +15,7 @@ Wilcoxon convention, without continuity or multiple-comparison correction.
 Shared manuscript styling uses paired gray trajectories and open-diamond
 means +/- t-based 95% CIs, as in the main figures. The original notebook
 also used 95% CIs (seaborn bootstrap), despite the old supplement caption
-saying SEM. Figures go to figures/supplementary/; source observations and
+saying SEM. Figures go to supp_fig/; source observations and
 full precision statistics go to beh_processed_subs/. Originals are retained.
 """
 
@@ -152,14 +152,14 @@ def make_figure(source: pd.DataFrame, summary: pd.DataFrame) -> plt.Figure:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--output-dir", type=Path, help="Figure directory (default: <project>/figures/supplementary). CSVs go to beh_processed_subs.")
+    parser.add_argument("--output-dir", type=Path, help="Figure directory (default: <project>/supp_fig). CSVs go to beh_processed_subs.")
     parser.add_argument("--skip-subs", nargs="*", default=list(DEFAULT_SKIP_SUBS))
     parser.add_argument("--dpi", type=int, default=300)
     args = parser.parse_args()
     if args.dpi <= 0:
         parser.error("--dpi must be positive")
     root = args.project_root.expanduser().resolve()
-    destination = args.output_dir.expanduser().resolve() if args.output_dir else root / "figures/supplementary"
+    destination = args.output_dir.expanduser().resolve() if args.output_dir else root / "supp_fig"
     source = build_source_data(root, tuple(args.skip_subs))
     summary = summarize(source)
     print(f"Excluded: {', '.join(args.skip_subs)}; included n = {source.subject.nunique()}")

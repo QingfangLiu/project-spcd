@@ -24,7 +24,7 @@ Fits and intervals are restricted to the observed x range and are not
 clipped to [0, 1]. Points are not jittered. Neutral phase colors avoid
 repurposing the main behavior figure's odor-outcome colors.
 
-Outputs: two vector PDFs and two 300-dpi PNGs under figures/supplementary/;
+Outputs: two vector PDFs and two 300-dpi PNGs under supp_fig/;
 source observations and full precision statistics under beh_processed_subs/.
 Existing notebook outputs and the manuscript are left untouched.
 """
@@ -268,14 +268,14 @@ def make_figure(source: pd.DataFrame, statistics: pd.DataFrame, *, change: bool)
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--output-dir", type=Path, help="Figure output directory (default: <project>/figures/supplementary). CSVs always go to <project>/beh_processed_subs.")
+    parser.add_argument("--output-dir", type=Path, help="Figure output directory (default: <project>/supp_fig). CSVs always go to <project>/beh_processed_subs.")
     parser.add_argument("--skip-subs", nargs="*", default=list(DEFAULT_SKIP_SUBS))
     parser.add_argument("--dpi", type=int, default=300)
     args = parser.parse_args()
     if args.dpi <= 0:
         parser.error("--dpi must be positive")
     root = args.project_root.expanduser().resolve()
-    destination = args.output_dir.expanduser().resolve() if args.output_dir else root / "figures/supplementary"
+    destination = args.output_dir.expanduser().resolve() if args.output_dir else root / "supp_fig"
     data_destination = root / "beh_processed_subs"
     source = build_source_data(root, tuple(args.skip_subs))
     statistics = compute_statistics(source)
