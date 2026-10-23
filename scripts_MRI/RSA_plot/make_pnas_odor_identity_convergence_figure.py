@@ -435,28 +435,29 @@ def _plot_paired_results(
     title: str,
     ylabel: str,
     panel_letter: str,
-    ylim: tuple[float, float],
     round_for_ranks: bool,
     baseline_label: str,
 ) -> None:
+    ax.set_axis_off()
     add_panel_header(ax, panel_letter, title)
-    positions = {
-        (ROI_ORDER[0], CONDITIONED): 0.0,
-        (ROI_ORDER[0], PRECONDITIONED): 0.9,
-        (ROI_ORDER[1], CONDITIONED): 2.7,
-        (ROI_ORDER[1], PRECONDITIONED): 3.6,
-    }
+    positions = {CONDITIONED: 0.0, PRECONDITIONED: 0.9}
 
-    for roi in ROI_ORDER:
+    for index, roi in enumerate(ROI_ORDER):
+        child = ax.inset_axes([0.56 * index, 0.0, 0.44, 1.0])
         subset = data.loc[data["roi"] == roi]
         wide = subset.pivot(index="sub", columns="cue_subset", values=metric)
         wide = wide.loc[:, list(CUE_ORDER)].dropna().sort_index()
-        x_conditioned = positions[(roi, CONDITIONED)]
-        x_preconditioned = positions[(roi, PRECONDITIONED)]
+        summaries = {cue: _mean_ci(wide[cue].to_numpy(dtype=float)) for cue in CUE_ORDER}
+        lower = min(baseline, wide.to_numpy().min(), *(ci[1] for ci in summaries.values()))
+        upper = max(baseline, wide.to_numpy().max(), *(ci[2] for ci in summaries.values()))
+        span = max(upper - lower, 0.01)
+        child.set_ylim(lower - 0.12 * span, upper + 0.20 * span)
+        x_conditioned = positions[CONDITIONED]
+        x_preconditioned = positions[PRECONDITIONED]
         jitter = np.array([subject_offsets[sub] for sub in wide.index])
         for sub, row in wide.iterrows():
             offset = subject_offsets[sub]
-            ax.plot(
+            child.plot(
                 [x_conditioned + offset, x_preconditioned + offset],
                 [row[CONDITIONED], row[PRECONDITIONED]],
                 color=SPINE_COLOR,
@@ -467,8 +468,8 @@ def _plot_paired_results(
 
         for cue_subset in CUE_ORDER:
             values = wide[cue_subset].to_numpy(dtype=float)
-            x = positions[(roi, cue_subset)]
-            ax.scatter(
+            x = positions[cue_subset]
+            child.scatter(
                 x + jitter,
                 values,
                 s=28,
@@ -478,8 +479,8 @@ def _plot_paired_results(
                 linewidth=0.3,
                 zorder=2,
             )
-            mean, low, high = _mean_ci(values)
-            ax.errorbar(
+            mean, low, high = summaries[cue_subset]
+            child.errorbar(
                 x,
                 mean,
                 yerr=np.array([[mean - low], [high - mean]]),
@@ -501,46 +502,46 @@ def _plot_paired_results(
                 round_for_ranks=round_for_ranks,
             )
             annotation = _significance_label(summary["p_t"])
-            ax.text(
+            child.text(
                 x,
-                ylim[1] - 0.015 * (ylim[1] - ylim[0]),
+                0.985,
                 annotation,
+                transform=child.get_xaxis_transform(),
                 ha="center",
                 va="top",
                 fontsize=20 if annotation == "*" else NOTE_SIZE,
                 color=SUMMARY_COLOR,
             )
 
-    ax.axhline(baseline, color=REFERENCE_COLOR, linewidth=1.2, linestyle=(0, (3, 3)))
-    ax.text(
-        1.015,
-        baseline,
-        baseline_label,
-        transform=ax.get_yaxis_transform(),
-        fontsize=12,
-        ha="left",
-        va="center",
-        color=MUTED_TEXT_COLOR,
-        clip_on=False,
-    )
-    ax.set_xlim(-0.48, 4.08)
-    ax.set_ylim(*ylim)
-    ax.set_ylabel(ylabel, fontsize=LABEL_SIZE)
-    ax.set_xticks(
-        [positions[(roi, cue)] for roi in ROI_ORDER for cue in CUE_ORDER],
-        CUE_LABELS * 2,
-        rotation=24,
-        ha="right",
-        fontsize=TICK_SIZE,
-    )
-    x_transform = ax.get_xaxis_transform()
-    for roi in ROI_ORDER:
-        center = np.mean([positions[(roi, cue)] for cue in CUE_ORDER])
-        ax.text(
-            center,
+        child.axhline(baseline, color=REFERENCE_COLOR, linewidth=1.2, linestyle=(0, (3, 3)))
+        child.annotate(
+            baseline_label,
+            xy=(0.98, baseline),
+            xycoords=child.get_yaxis_transform(),
+            xytext=(0, 4),
+            textcoords="offset points",
+            fontsize=10,
+            ha="right",
+            va="bottom",
+            color=MUTED_TEXT_COLOR,
+        )
+        child.set_xlim(-0.48, 1.60)
+        if index == 0:
+            child.set_ylabel(ylabel, fontsize=LABEL_SIZE)
+        child.set_xticks(
+            list(positions.values()), CUE_LABELS,
+            rotation=24, ha="right", fontsize=TICK_SIZE,
+        )
+        child.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(nbins=4))
+        if metric == DECODING_METRIC:
+            child.yaxis.set_major_formatter(
+                matplotlib.ticker.PercentFormatter(xmax=1.0, decimals=0)
+            )
+        child.text(
+            0.5,
             -0.32,
             ROI_SHORT[roi],
-            transform=x_transform,
+            transform=child.transAxes,
             ha="center",
             va="top",
             fontsize=NOTE_SIZE,
@@ -548,7 +549,7 @@ def _plot_paired_results(
             color=ROI_COLORS[roi],
             clip_on=False,
         )
-    style_axis(ax)
+        style_axis(child)
 
 
 def _plot_rsa_correlations(ax, data: pd.DataFrame) -> list[dict]:
@@ -761,7 +762,6 @@ def main() -> None:
         title="Representation of\npredicted odor identity",
         ylabel="Spearman ρ: neural vs\nodor-identity RDM",
         panel_letter="B",
-        ylim=(-0.215, 0.35),
         round_for_ranks=False,
         baseline_label="zero",
     )
@@ -774,12 +774,8 @@ def main() -> None:
         title="Sensory reinstatement of\npredicted odor identity",
         ylabel="Perception-to-cue\ndecoding accuracy",
         panel_letter="C",
-        ylim=(0.18, 0.88),
         round_for_ranks=True,
         baseline_label="chance",
-    )
-    ax_c.yaxis.set_major_formatter(
-        matplotlib.ticker.PercentFormatter(xmax=1.0, decimals=0)
     )
     correlation_summaries = _plot_rsa_correlations(ax_d, rsa_data)
 
