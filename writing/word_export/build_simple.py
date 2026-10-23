@@ -2,7 +2,7 @@
 """Refresh the plain manuscript from the PNAS source and build its PDF.
 
 Run from the repository root:
-    python3 writing/latex_simple/build_simple.py
+    python3 writing/word_export/build_simple.py
 
 The source is writing/main/main.tex. The generated files are main.tex,
 main.conversion.json, and main.pdf beside this script. Figures and the

@@ -2,7 +2,7 @@
 
 Edit **`writing/main/main.tex`** as the authoritative manuscript. This folder
 generates a plain, single-column version from that source for PDF-to-Word
-conversion. Do not edit the generated `writing/latex_simple/main.tex` directly:
+conversion. Do not edit the generated `writing/word_export/main.tex` directly:
 the next refresh replaces it. The PNAS source is never modified by conversion.
 
 ## Refresh and build locally
@@ -10,17 +10,17 @@ the next refresh replaces it. The PNAS source is never modified by conversion.
 From the repository root, run:
 
 ```sh
-python3 writing/latex_simple/build_simple.py
+python3 writing/word_export/build_simple.py
 ```
 
 Or run from any folder using the script's full path:
 
 ```sh
-python3 /Users/liuq13/project-spcd/writing/latex_simple/build_simple.py
+python3 /Users/liuq13/project-spcd/writing/word_export/build_simple.py
 ```
 
 This regenerates `main.tex` and `main.conversion.json` here, then builds
-**`writing/latex_simple/main.pdf`**, running BibTeX and the necessary LaTeX passes
+**`writing/word_export/main.pdf`**, running BibTeX and the necessary LaTeX passes
 through `latexmk`. It requires Python 3 and a TeX installation with `latexmk` and
 `pdflatex`; no Python packages are needed. MacTeX at `/Library/TeX/texbin` is
 detected even when it is not on your shell's PATH.
@@ -68,8 +68,8 @@ breaks may still need cleanup after Word imports the PDF.
 To regenerate the plain source without building its PDF:
 
 ```sh
-python3 writing/latex_simple/convert_pnas.py writing/main/main.tex \
-  -o writing/latex_simple/main.tex --asset-mode link --overwrite
+python3 writing/word_export/convert_pnas.py writing/main/main.tex \
+  -o writing/word_export/main.tex --asset-mode link --overwrite
 ```
 
 `link` mode requires all assets to exist and permits parent-relative paths.
@@ -88,6 +88,6 @@ example.
 Run the regression checks:
 
 ```sh
-cd writing/latex_simple
+cd writing/word_export
 python3 -m unittest -v test_convert_pnas.py
 ```
