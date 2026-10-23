@@ -200,9 +200,10 @@ def _plot_changes(
     jitter = np.random.default_rng(0).normal(0, 0.08, size=len(data))
     point_colors = data["category"].map(colors) if colors is not None else MUTED_TEXT_COLOR
     ax.scatter(positions + jitter, data["value"], color=point_colors, alpha=0.4,
-               s=34, linewidths=0, label="individual", zorder=2)
+               s=34, linewidths=0, zorder=2)
     ax.errorbar(np.arange(len(order)), summary["mean"], yerr=summary["sem"],
-                fmt="o", color=SUMMARY_COLOR, markersize=6, capsize=4,
+                fmt="D", color=SUMMARY_COLOR, markersize=6.5, capsize=4,
+                markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6,
                 linewidth=2, label="mean ± SEM", zorder=3)
     ax.axhline(0, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.2, zorder=1)
     ax.set(xticks=np.arange(len(order)), xticklabels=labels, ylabel=ylabel,
@@ -225,8 +226,10 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     for _, subject_data in data["A"].groupby("subject"):
         a.plot(subject_data["category"], subject_data["value"], color=SPINE_COLOR, alpha=0.4, linewidth=0.9)
     summary = _summary(data["A"], (1, 2, 3, 4))
-    a.errorbar([1, 2, 3, 4], summary["mean"], yerr=summary["std"], fmt="o",
-               color=SUMMARY_COLOR, markersize=6, capsize=4, linewidth=2, label="mean ± SD")
+    a.errorbar([1, 2, 3, 4], summary["mean"], yerr=summary["std"], fmt="D",
+               color=SUMMARY_COLOR, markersize=6.5, capsize=4, linewidth=2,
+               markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6,
+               label="mean ± SD")
     a.axvline(3.5, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.2)
     a.set(xticks=[1, 2, 3, 4], xticklabels=["Day 1\nrun 1", "Day 1\nrun 2", "Day 1\nrun 3", "Day 2\nlast run"],
           ylim=(0, 1.05), xlim=(0.85, 4.15), ylabel="Accuracy")
@@ -239,8 +242,9 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     jitter = np.random.default_rng(0).normal(0, 0.04, size=len(data["B"]))
     b.scatter(data["B"]["category"] + jitter, data["B"]["value"], color=MUTED_TEXT_COLOR,
                alpha=0.4, s=32, linewidths=0)
-    b.errorbar([1, 2, 3], summary["mean"], yerr=summary["sem"], fmt="o-",
-               color=SUMMARY_COLOR, markersize=6, capsize=4, linewidth=2)
+    b.errorbar([1, 2, 3], summary["mean"], yerr=summary["sem"], fmt="D-",
+               color=SUMMARY_COLOR, markersize=6.5, capsize=4, linewidth=2,
+               markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6)
     b.set(xticks=[1, 2, 3], xticklabels=["Run 1", "Run 2", "Run 3"],
           ylim=(0, 1.05), xlim=(0.78, 3.22), ylabel="Accuracy")
     b.set_title("Conditioning across runs", loc="left", pad=16)

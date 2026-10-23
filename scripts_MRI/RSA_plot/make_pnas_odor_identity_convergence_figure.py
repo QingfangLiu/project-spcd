@@ -41,7 +41,7 @@ from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from figure_style import (
-    DIRECT_COLOR, INFERRED_COLOR, LABEL_SIZE, MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR,
+    LABEL_SIZE, MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR,
     SPINE_COLOR, SUMMARY_COLOR, TICK_SIZE, add_panel_header,
     configure_matplotlib, style_axis,
 )
@@ -70,10 +70,7 @@ ROI_COLORS = {
     ROI_ORDER[0]: "#8C6BB1",
     ROI_ORDER[1]: "#238B8E",
 }
-CUE_COLORS = {
-    CONDITIONED: DIRECT_COLOR,
-    PRECONDITIONED: INFERRED_COLOR,
-}
+INDIVIDUAL_COLOR = "#7F8992"
 
 RSA_METRIC = "odor_identity_no_image_spearman_rho"
 DECODING_METRIC = "cue_balanced_accuracy"
@@ -475,7 +472,7 @@ def _plot_paired_results(
                 x + jitter,
                 values,
                 s=28,
-                color=CUE_COLORS[cue_subset],
+                color=INDIVIDUAL_COLOR,
                 alpha=0.40,
                 edgecolor="white",
                 linewidth=0.3,
