@@ -1,0 +1,521 @@
+\documentclass[12pt,letterpaper]{article}
+
+% Standard Overleaf packages; compile with pdfLaTeX.
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage{cmap}
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec}
+  \setmainfont{lmroman10-regular.otf}[
+    BoldFont=lmroman10-bold.otf,
+    ItalicFont=lmroman10-italic.otf,
+    BoldItalicFont=lmroman10-bolditalic.otf]
+\fi
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+
+% Plain, single-column text, without running headers or line numbers.
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+\setlength{\emergencystretch}{3em}
+\linespread{1.08}
+\urlstyle{same}
+
+\begin{document}
+\raggedright
+
+\begin{center}
+
+{\Large\bfseries Model-based inference of reward identity in the lateral orbitofrontal cortex\par}
+
+\medskip
+
+Qingfang Liu\textsuperscript{a}, Yao Zhao\textsuperscript{b}, Taaseen Khan\textsuperscript{c}, Nicole Moussa\textsuperscript{a}, Geoffrey Schoenbaum\textsuperscript{a}, Thorsten Kahnt\textsuperscript{a,1}\par
+
+\medskip
+
+\textsuperscript{a}National Institute on Drug Abuse Intramural Research Program, Baltimore, MD 21224, USA\par
+
+\textsuperscript{b}Department of Psychology, University of Pennsylvania,
+Philadelphia, PA 19104, USA\par
+
+\textsuperscript{c}Feinberg School of Medicine, Northwestern University,
+Chicago, IL 60611, USA\par
+
+\end{center}
+
+
+\section*{Abstract}
+Flexible behavior requires using learned relationships to infer outcomes that have not been directly experienced, but it remains unclear whether such inference retrieves only scalar value or the identity of a specific expected outcome. We combined sensory preconditioning, selective outcome devaluation, and functional MRI to test the content and neural representation of inferred outcomes in humans. Participants first learned associations between visual cues and then learned that one member of each pair predicted a specific food odor. After selective satiation reduced the value of one odor, choices decreased not only for cues directly associated with that odor but also for preconditioned cues that had never been paired with it. This transfer of devaluation indicates that model-based inference recovers specific outcome identity rather than only cached value. During choice, multivariate fMRI analyses revealed odor-identity representations in lateral orbitofrontal cortex (OFC) for preconditioned cues, whose outcomes had to be inferred through associative structure. In contrast, ventromedial prefrontal cortex represented the relative values of the odor outcomes. To account for the preferential representation of inferred outcomes in lateral OFC, we propose a resource-limited framework in which explicit outcome identities receive greater representational resources when they provide greater computational benefit. Together, these findings show that human model-based inference accesses specific reward identities and suggest that lateral OFC adaptively prioritizes outcome information according to its computational utility.
+
+
+\section*{Significance statement}
+Adaptive decisions often require inferring the consequences of choices that have never been directly experienced. Here, we show that such inference can recover the identity of a specific expected reward, not merely whether an outcome is good or bad. We further find that the lateral orbitofrontal cortex preferentially represents reward identity when it must be inferred through learned associations rather than recalled from direct experience. These findings suggest that the brain does not represent all outcome information equally, but instead prioritizes detailed information when it is most useful for guiding behavior.
+
+
+\noindent\textbf{Keywords:} goal-directed behavior $|$ cognitive map $|$ orbitofrontal cortex $|$ outcome-guided behavior $|$ resource-limited model
+
+
+\noindent\textbf{Correspondence:} \textsuperscript{1}To whom correspondence should be addressed. E-mail: thorsten.kahnt@nih.gov
+
+
+\noindent\textbf{Author contributions:} Q.L., Y.Z., G.S., and T. Kahnt designed research; Q.L., Y.Z., T. Khan, and N.M. performed research; Q.L. and T. Kahnt analyzed data; Q.L. developed the theoretical model; G.S. and T. Kahnt supervised research; Q.L. wrote the original draft; and all authors reviewed and edited the manuscript.
+
+
+\noindent\textbf{Competing interests:} The authors declare no competing interest.
+
+\section*{Introduction}
+
+Model-based behavior requires mental simulation of outcomes that have never been
+directly experienced \cite{daw2011model,doll2015model,wangkahnt21}. Rather than relying only on cached values learned through direct reinforcement, animals can infer the likely consequences of a choice by combining separately learned associations. Such model-based inference supports adaptive behavior when outcomes change, while impairments in this process may contribute to maladaptive or compulsive behavior, including substance use disorders \cite{kahsch21,kahnt2023computationally}. Sensory preconditioning (SPC) provides a framework for studying such inference \cite{kahnt2023computationally,jones12,wang2020interactions}. In a typical SPC procedure, neutral cue pairs are first learned (A $\rightarrow$ B, C $\rightarrow$ D), after which one cue from each pair is directly conditioned with an outcome (B $\rightarrow$ reward, D $\rightarrow$ no reward). During a subsequent probe test without feedback, responding to A over C indicates that subjects have inferred the outcome associated with B from the learned A--B association.
+
+Prior work indicates that the orbitofrontal cortex (OFC) is necessary for responding to preconditioned, but not directly conditioned, cues during the probe phase. For example, inactivating the OFC during the probe test leaves responding to B, which was directly associated with reward, intact, while selectively impairing responding to A, which requires inferring the associated reward \cite{jones12}. Consistent findings have been observed in humans: combining the SPC task with transcranial magnetic stimulation targeting the OFC network selectively disrupted inference-based responding during the probe test without affecting direct reward learning \cite{wang2020targeted}. Together, these results demonstrate a cross-species role for the OFC network in model-based inference.
+
+
+
+However, it remains unclear what information is inferred during SPC. In particular, behavioral responses to preconditioned cues could reflect inference of a scalar outcome value or retrieval of a more specific outcome identity. One possibility is that SPC supports inference over reward value: a cue may come to predict that ``something good'' or ``something bad'' will occur. Another possibility is that subjects infer a richer reward identity: a cue may predict a specific outcome, such as a particular food odor, whose value can later be updated. Given extensive evidence that lateral OFC represents reward identity \cite{howard2015identity,howard2017identity,howard2018identity,howard2021specific,liuyaoatt24,witkowski2026identity}, this possibility raises a further question: does lateral OFC represent inferred and directly learned outcome identities in the same manner?
+
+
+Selective outcome devaluation provides a direct test of the value vs. identity debate here \cite{HowRey2020,liu2025distinct,hart20}. In this procedure, the value of a specific outcome is reduced by inducing satiety or conditioned taste aversion. If responding to a cue depends on the representation of a specific outcome, devaluing that outcome should reduce responding to cues that predict it. In contrast, if responding is driven by a cached scalar value that is not linked to the specific outcome identity, devaluing one particular outcome should have little or no effect on the previously learned cue value. 
+
+
+
+
+In current work, we used a modified sensory preconditioning \cite{Brogden39} paradigm combined with outcome devaluation \cite{HowRey2020,liu2025distinct}. Participants learned associations among visual cues and two odor outcomes and completed two probe tests, with a selective satiation procedure between tests to reduce the pleasantness of one odor outcome. Behaviorally, we asked whether devaluation changes choices for both directly conditioned and preconditioned cues, and whether these changes track individual changes in odor pleasantness. Neurally, we examined brain regions with cue-evoked activity patterns reflecting odor value or identity. We found, first, that devaluation altered choices for both directly conditioned and preconditioned cues, indicating that inference involved specific outcome identity rather than only cached value. Second, fMRI representational analyses revealed that lateral OFC preferentially represented reward identity for preconditioned compared with conditioned cues, suggesting that outcome-identity representations are prioritized according to their computational utility.
+
+
+
+
+
+
+\par\bigskip\begingroup
+\refstepcounter{figure}
+
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{fig/fig_design.pdf}
+\end{center}
+\par\noindent\textbf{Figure~\thefigure. }\textbf{Experimental design.} 
+\textbf{A. Preconditioning.} Participants learned associations between pairs of visual cues, where the first cue served as the preconditioned cue (A1, A2, C) and the second as the conditioned cue (B1, B2, D). On each trial, the first cue was shown for 3\,s, followed by a 0.3\,s gap and then a 3\,s choice display with two possible second cues—the correct associate and one alternative from the same cue set. Participants indicated the associated cue via left/right keypress, with jittered 3--8\,s inter-trial intervals and trial-by-trial feedback. The mapping of stimulus type (character vs.\ place) to first/second cue positions was counterbalanced across participants.
+\textbf{B. Conditioning.} Participants learned associations between the conditioned cues and their outcomes: two value-matched food odors (one sweet, one savory) and clean air. One of the two odors was later selectively devalued by having participants consume a meal matching that odor. Each trial began with a 2\,s presentation of a conditioned cue, followed by a 3\,s prediction period in which the cue remained on the screen alongside three odor abbreviations. Participants indicated their predicted outcome. After a 2\,s delay, the associated odor (or clean air) was delivered for 2\,s. 
+\textbf{C. Probe test.} Before and after the meal, participants made choices between pairs of cues to assess preferences. Each trial began with a 3\,s presentation of the first cue (cue\,1), followed by a jittered 4--10\,s interval before the second cue (cue\,2) appeared for 3\,s. Participants then had 2\,s to indicate their choice, after which the trial ended with a jittered 4--10\,s inter-trial interval.
+\par
+
+\label{fig-design}
+
+\par\endgroup\bigskip
+
+
+
+
+
+\section*{Results}
+\label{sec-res}
+
+
+\subsection*{Experimental design}
+\label{subsec-design}
+
+
+
+During preconditioning (\autoref{fig-design}A), participants learn associations between pairs of visual cues, where the first cue in a pair is referred to as the preconditioned cue (A1, A2, C), and the second cue is the conditioned cue (B1, B2, D). Next, during conditioning (\autoref{fig-design}B), participants learn associations between conditioned cues and two specific food odor rewards (one savory, one sweet, value-matched) as well as clean air. Later, participants consume a meal matching one of the two food odors to satiate that particular odor. Finally, during the probe test (\autoref{fig-design}C), preferences for all cues are probed. Consuming the meal will devalue one of the two food odor rewards \cite{howard2017identity,HowRey2020,liu2025distinct}, leading to a preference for the non-satiated over the satiated conditioned cues in the probe test. We also expect that participants will prefer preconditioned cues that have been paired with non-satiated conditioned cues. This would indicate that participants, despite not having directly learned pairings between preconditioned cues and rewards (e.g., between A1 and sweet odor), can generalize the specific rewards (not only the general reward value) from conditioned cues to preconditioned cues (e.g., from B1 to A1).
+
+
+
+
+\subsection*{Direct and transferred effects of outcome devaluation}
+\label{subsec-beh}
+
+
+Participants showed a clear learning pattern across runs in the preconditioning task (\autoref{fig-beh}A), with selection accuracy increasing from the initial training ($0.80 \pm 0.12$) to the final run ($0.99 \pm 0.03$). Accuracy did not differ across the three cue pairs (A1--B1, A2--B2, and C--D; Friedman test: $\chi^2(2) = 0.29$, $p = 0.867$). In the conditioning task (\autoref{fig-beh}B), accuracy of odor predictions also improved steadily across runs. By the final run, all participants reached at least 0.75 accuracy (mean $= 0.94 \pm 0.068$), and final accuracy did not differ among cues B1, B2, and D (Friedman test: $\chi^2(2) = 3.887$, $p = 0.143$).
+
+
+The effectiveness of our selective satiation procedure by eating a meal was confirmed by changes in participants’ odor pleasantness ratings before and after the meal (\autoref{fig-beh}C). The sated odor showed a robust decrease in pleasantness following the meal ($W = 30.0$, $p < 0.001$; Wilcoxon signed-rank test), consistent with a sensory-specific satiety effect. In contrast, ratings for clean air ($W = 57.5$, $p = 0.221$) and the non-sated odor ($W = 141.0$, $p = 0.157$) did not differ before and after the meal. 
+
+
+The behavioral consequence of the selective satiation was also evident in probe choices. For conditioned cues (\autoref{fig-beh}D), choice proportions for the sated-odor–associated cue B2 decreased after the meal, both in the $B1>B2$ pair ($p = 0.0015$) and the $B2>D$ pair ($p = 0.0183$). A similar pattern emerged for preconditioned cues involving A2 (\autoref{fig-beh}E): participants selected A2 less frequently in both the $A1>A2$ pair ($p = 0.0023$) and the $A2>C$ pair ($p = 0.0043$). As expected, cue pairs not involving A2 or B2 showed no significant change from pre- to post-meal ($A1>C$: $p = 0.2296$; $B1>D$: $p = 0.5085$).
+
+
+
+
+\par\bigskip\begingroup
+\refstepcounter{figure}
+
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{fig/fig_behavior.pdf}
+\end{center}
+\par\noindent\textbf{Figure~\thefigure. }
+\textbf{Direct and transferred effects of outcome devaluation. } 
+\textbf{A. Preconditioning accuracy across runs.} Open diamonds indicate mean accuracy with standard-deviation bars; thin gray lines show individual participants. Accuracy is defined as selecting the conditioned cue previously paired with the preconditioned cue against an alternative. The inset shows mean accuracy with standard-deviation bars for the three pair types (A1–B1, A2–B2, C–D) in the final preconditioning run on Day 2.
+\textbf{B. Accuracy in the odor prediction task during conditioning.} Dots represent individual participants; connected open diamonds indicate mean accuracy with standard-deviation bars across the three runs. The inset shows mean accuracy with standard-deviation bars for B1, B2, and D in Run 3.
+\textbf{C. Change in odor pleasantness ratings from pre- to post-meal.} Negative values indicate reduced pleasantness after the meal. Only the sated odor exhibits a reliable decrease, whereas clean air and the non-sated odor remain stable.
+\textbf{D. Devaluation of conditioned cues.} Choice proportion is defined as selecting the first cue over the second (e.g., $B2>B1$). The y-axis shows the post-meal minus pre-meal change in this proportion.
+\textbf{E. Devaluation transfer to preconditioned cues.} Choice proportions and changes are defined analogously (e.g., $A2>A1$). In D and E, negative values indicate reduced preference for the first cue named in each comparison.
+In C–E, dots represent individual participants, open diamonds indicate means, and error bars show t-based 95\% confidence intervals. Dashed horizontal lines indicate zero change. Asterisks denote uncorrected $p<0.05$ from two-sided Wilcoxon signed-rank tests of paired changes against zero; n.s., not significant. In the insets of A and B and in C, blue denotes the non-sated odor, orange the sated odor, and gray clean air. \
+Note. Analyses include 31 participants, except for pleasantness ratings (30 participants because one participant's ratings were unavailable).
+\par
+
+\label{fig-beh}
+
+\par\endgroup\bigskip
+
+
+
+
+\subsection*{Lateral OFC representation of odor identity}
+
+
+Using independently defined OFC regions (\autoref{fig-fmri}A) \cite{kahnt2012connectivity}, we identified reward odor-identity representations in central/anterior-lateral OFC during the premeal probe task. Representational similarity analysis (RSA) revealed that neural patterns evoked by preconditioned cues reflected the identities of their associated reward odors (mean Spearman $\rho = 0.029$, $t(30) = 2.35$, $p = 0.013$; \autoref{fig-fmri}B). Consistent with this finding, a classifier trained to discriminate odor identities using neural responses during passive odor smelling successfully decoded the associated odor identities from activity evoked by preconditioned cues in the same OFC region (balanced accuracy = 54.10\%; chance = 50\%; $t(30) = 2.22$, $p = 0.017$; \autoref{fig-fmri}C). This cross-task decoding result provides converging evidence that preconditioned cues reinstated neural representations shared with the direct sensory experience of their associated odors. In contrast, neither analysis detected significant odor-identity information for conditioned cues in either OFC region (all $p > 0.05$; \autoref{fig-fmri}B–C). Odor-identity effects for preconditioned cues also did not reach significance in medial/posterior-lateral OFC (RSA: $p = 0.186$; decoding: $p = 0.084$). Across participants, odor-identity coding for conditioned and preconditioned cues was negatively correlated in central/anterior-lateral OFC (Spearman $\rho = -0.317$, $p = 0.041$; \autoref{fig-fmri}D): participants with stronger coding of directly associated odor identities showed weaker coding of inferred odor identities, suggesting a trade-off between direct and inferred odor-identity representations in central/anterior-lateral OFC. This association was not significant in medial/posterior-lateral OFC (Spearman $\rho = -0.030$, $p = 0.437$).  
+
+
+
+
+\par\bigskip\begingroup
+\refstepcounter{figure}
+
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{fig/odor_identity_fmri.pdf}
+\end{center}
+\par\noindent\textbf{Figure~\thefigure. }
+\textbf{Lateral OFC representation of odor identity.} (A) Independently defined orbitofrontal cortex (OFC) regions of interest and analysis schematics. (B) Representational similarity analysis assessed whether premeal cue responses reflected predicted odor identity. Neural representational dissimilarity matrices (RDMs) were correlated with a model assigning zero dissimilarity to cues predicting the same odor and unit dissimilarity to cues predicting different odors. Spearman correlations were calculated using cross-run pairs, separately for conditioned and preconditioned cues. (C) Cross-task decoding assessed whether odor representations generalized from perception to prediction. A linear support vector machine trained to distinguish two passively presented odors was tested on premeal cue responses. Preconditioned cues showed significant odor-identity RSA and above-chance decoding in central/anterior-lateral OFC. Points represent individual participants (n = 31); gray lines connect measurements from the same participant. Open diamonds indicate means, with 95\% confidence intervals. (D) Conditioned-cue (direct) and preconditioned-cue (inferred) odor-identity RSA values were correlated across participants within each ROI to test the hypothesized negative association consistent with competition between these representations. Solid lines show linear least-squares fits; shaded bands indicate pointwise 95\% confidence intervals for the fitted mean. Points represent individual participants ($n = 31$). 
+Dashed lines indicate zero correlation (B) and 50\% chance accuracy (C). Asterisks denote $P < 0.05$ from one-sided one-sample $t$ tests against zero (B) or chance (C), or one-sided Spearman tests for negative correlations (D). n.s., not significant.
+\par
+
+\label{fig-fmri}
+
+\par\endgroup\bigskip
+
+
+ 
+
+
+\subsection*{A resource-limited account of inferred reward representation}
+
+To explain the representation of preconditioned cues, instead of conditioned cues for the lateral OFC representation, we propose a resource-limited account in which explicit outcome-identity representations are allocated according to their computational value (\autoref{fig-identity-simu}A). For cue $i$, we define decision loss as
+
+
+\begin{equation}
+L_i = a_i e^{-r_i},
+\end{equation}
+
+where $r_i$ is the representational resource devoted to that cue's outcome identity and $a_i$ reflects the computational value of explicitly representing that identity. We define this value as
+
+\begin{equation}
+a_i = (1-q_i) D_i,
+\end{equation}
+
+where $q_i$ is the probability that the outcome identity can be reliably recovered through an alternative associative route, and $D_i$ is the behavioral cost of failing to recover the correct identity. For directly conditioned cues, the outcome has been directly experienced with the cue ($C \rightarrow O$), providing a relatively reliable alternative route and therefore a larger $q_C$. In contrast, preconditioned cues have never been directly paired with the outcome and require composition of separately learned associations ($P \rightarrow C \rightarrow O$), leading to a smaller $q_P$. Thus, when the behavioral cost of an identity error is comparable across cue types ($D_P \approx D_C$), then $q_P < q_C$ implies $a_P > a_C$.
+
+When inferred and directly learned cues share a fixed representational budget,
+$r_P + r_C = R$, total loss is
+
+\begin{equation}
+L = a_P e^{-r_P} + a_C e^{-r_C}.
+\end{equation}
+
+The optimal allocation occurs where the marginal benefit of assigning additional resource to the inferred cue equals the marginal cost of removing that resource from the directly learned cue (\autoref{fig-identity-simu}B,C),
+
+\begin{equation}
+a_P e^{-r_P} = a_C e^{-r_C}.
+\end{equation}
+
+Therefore, when explicit identity information has greater computational value for inferred outcomes ($a_P > a_C$), the optimal solution assigns more representational resource to them ($r_P > r_C$) (\autoref{fig-identity-simu}D). Preferential representation of inferred outcomes therefore emerges from differences in computational utility between preconditioned cues and conditioned cues. 
+
+
+
+
+\par\bigskip\begingroup
+\refstepcounter{figure}
+
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{fig/adaptive_identity_allocation.pdf}
+\end{center}
+\par\noindent\textbf{Figure~\thefigure. }
+\textbf{A normative model of adaptive outcome-identity representation.}
+\textbf{A,} Decision loss for cue $i$ decreases as representational resource $r_i$ is allocated to its outcome identity, according to $L_i=a_i e^{-r_i}$. Larger values of $a_i$ indicate a greater computational cost of weak identity representation, while the exponential form produces diminishing returns.
+\textbf{B,} When inferred or preconditioned cues ($P$) and directly conditioned cues ($C$) share a finite representational budget, $r_P+r_C=R$, total decision loss is minimized by allocating resources according to their relative computational value. For the illustrative parameters $R=4$, $a_P=4$, and $a_C=1$, the optimum is $r_P^*=2.69$ and $r_C^*=1.31$.
+\textbf{C,} At an interior optimum, the marginal benefit of allocating additional resource to the inferred outcome identity equals the marginal cost of removing that resource from the directly learned outcome identity, such that $a_Pe^{-r_P}=a_Ce^{-r_C}$.
+\textbf{D,} The optimal allocation difference is $r_P^*-r_C^*=\log(a_P/a_C)$ for interior solutions and is bounded by $\pm R$ because allocations must be nonnegative. Thus, preferential representation of inferred outcomes emerges when their explicit identity representation has greater computational value ($a_P>a_C$); it is not imposed by cue category. 
+\par
+
+\label{fig-identity-simu}
+
+\par\endgroup\bigskip
+
+
+
+
+
+\subsection*{vmPFC representation of value}
+
+Because probe choices closely tracked participants’ subjective odor values, as indexed by individual pleasantness ratings, we next asked whether the neural representational geometry of the three outcomes reflected their relative values and could thereby support value-guided choice. Using data across the pre- and post-meal probe phases, we found that representational geometry in the ventromedial prefrontal cortex (vmPFC) tracked the relative subjective values of the three odor outcomes. This finding is consistent with extensive evidence identifying vmPFC as a core region for representing subjective value across reward domains and during value-based choice \cite{levy2012root,bartra2013valuation}.
+
+
+\section*{Discussion}
+
+
+
+\subsection*{Information content of inferred outcomes}
+
+Our behavioral findings show that model-based inference in sensory preconditioning extends beyond the retrieval of scalar reward value to include information about specific outcome identity. Selective satiation reduced choices not only for directly conditioned cues associated with the devalued odor, but also for preconditioned cues that had never been directly paired with that odor. Because the value of the visual cues themselves was never directly updated after satiation, this transfer of devaluation to preconditioned cues requires access to information about the specific outcome predicted through the learned associative chain. These findings extend previous evidence that responding to preconditioned cues is sensitive to outcome devaluation in rodents \cite{hart20} and complement human work showing that OFC activity during sensory preconditioning contains information about inferred outcomes \cite{wang2020interactions}. 
+
+
+\subsection*{Adaptive representation of reward identity in lateral OFC}
+
+Our neural findings further suggest that reward-identity representations in lateral OFC are not expressed uniformly across all reward-predictive cues. Previous studies using directly learned cue--outcome associations have consistently identified identity-specific reward representations in lateral OFC, including representations that are updated by selective devaluation and predict subsequent goal-directed choices \cite{howard2015identity,howard2017identity,howard2018identity,liuyaoatt24,witkowski2026identity}. In the present task, however, identity information in lateral OFC was preferentially expressed for preconditioned cues, whose outcomes had to be inferred through associative structure, rather than for conditioned cues whose outcome identities had been directly learned. Thus, the present findings do not simply extend previous work by showing that lateral OFC represents another class of reward predictor. Instead, they suggest that the content of lateral OFC representations may depend on the computational demands imposed by the current task.
+
+This interpretation is consistent with cognitive-map accounts proposing that OFC represents task-state information that is relevant but may not be directly observable for ongoing learning and decision making \cite{wilson2014orbitofrontal,schuck2016human,niv2019learning}. A central problem for such accounts is determining which of the many available features should be included in the task-state representation. Our resource-limited model provides one possible principle: detailed outcome identity should be represented where doing so provides the greatest marginal computational benefit. Under a cost on representational resources, this difference can make explicit outcome-identity coding more valuable for preconditioned cues, producing the observed representational asymmetry without assuming that lateral OFC is intrinsically specialized for preconditioned cues. 
+
+More broadly, this account is compatible with prior work showing that working-memory constraints shape reinforcement learning, such that learning performance declines as the number of stimulus–response associations that must be maintained increases \cite{collins2012much,collins2018tortoise}. In our task, maintaining outcome information for both conditioned and preconditioned cues may impose a conceptually similar competition for limited representational resources.
+
+
+\subsection*{Limitation and future directions}
+
+One limitation is that the proposed resource-limited account is intended as a normative explanation of the observed representational asymmetry rather than as a model that was directly manipulated and tested in the present experiment. In particular, the behavioral cost of failing to recover the correct outcome identity, \(D_i\), was not experimentally varied and therefore remained effectively constant across conditions. Future studies could manipulate the consequences of identity errors, as well as the reliability of alternative routes for recovering outcome identity, to test whether representational resources shift in the manner predicted by the model. Such manipulations would provide a more direct test of whether lateral OFC representations are allocated according to the computational utility of explicit outcome information.
+
+
+A second limitation is the modest sample size. Although the assignment of stimulus category—cartoon characters versus landmark places—to preconditioned and conditioned cues was fully counterbalanced across participants, the present sample may provide limited power to test whether stimulus category interacts with cue type or neural representation. Larger samples would allow these potential category-specific effects to be evaluated more directly. 
+
+We did not find significant difference between the preconditioned cues and conditioned cue identity representation, so we could not make the conclusion saying that the lateral OFC regions did not represent conditioned cues at all and only represented preconditioned cues. 
+
+
+\subsection*{Conclusions}
+
+Together, our findings show that model-based inference in sensory preconditioning extends beyond scalar reward value to include the identity of specific expected outcomes. Selective devaluation altered choices for both directly conditioned and preconditioned cues, demonstrating that behavior toward indirectly related cues depends on access to specific outcome information. At the neural level, lateral OFC preferentially represented odor identity for preconditioned cues, whereas vmPFC reflected the relative subjective values of the outcomes. These results suggest that outcome representations in OFC are not expressed uniformly across reward-predictive cues, but instead depend on the computational demands imposed by the task. Our resource-limited account provides one possible principle for this selectivity: detailed outcome information may be preferentially represented when it offers the greatest benefit for successful inference and choice. More broadly, these findings support a view of OFC as an adaptive cognitive map whose representational content is shaped by the information most useful for current behavior.
+
+
+
+
+
+\section*{Materials and methods}
+
+
+\subsection*{Study participants}
+
+Thirty-five healthy, right-handed participants with no history of major psychiatric or neuro-logical disorders provided written informed consent to participate in the study. One participant withdrew due to scheduling constraints, leaving 34 individuals who completed all experimental sessions. All participants fasted for approximately 2–4 hours before each study visit. Two participants were excluded from data analysis because they did not demonstrate learning during the conditioning task, rendering their data unsuitable for further analyses. One additional participant was excluded because of a persistent preference for clean-air cues and absent odor devaluation, suggesting limited engagement with the odor outcomes central to the study. The final sample comprised 31 participants (11 males, 20 females; ages 21–42, $M = 28.58$, $SD = 6.03$). The study protocol was approved by the NIDA-IRP Institutional Review Board (Study~\#001156) and registered on ClinicalTrials.gov (NCT05707806).
+
+
+
+\subsection*{Study design}
+
+
+This study used a modified sensory preconditioning paradigm combined with outcome devaluation. Participants first completed a preconditioning phase, during which they learned associations between pairs of visual cues (A1-B1, A2-B2, and C-D). For a given participant, cues A1, A2 and C were images of places whereas B1, B2 and D cues were cartoon characters (counterbalanced across participants). There were two sets of cue pairs, and each set comprised two A-B pairs (A1-B1 and A2-B2) and one C-D pair (Table~\ref{tab:cue-mapping}). This was followed by a conditioning phase, where participants learned associations between the second cue in each pair and a sweet (B1) or savory (B2) food odor, or no odor (D). Finally, participants completed a probe task in which they made choices among both conditioned and preconditioned cues, reflecting their preferences for the associated odors. The probe task was administered twice: once before and once after participants consumed a meal that was matched to either the sweet or the savory food odor (counterbalanced across participants).
+
+
+
+
+\par\bigskip\begingroup
+\refstepcounter{table}
+
+
+\par\noindent\textbf{Table~\thetable. }Cue–outcome mapping structure for preconditioned cues, conditioned cues, and their associated odor outcomes. 
+In this illustration, the sweet odor is paired with A1 and B1 for consistency with \autoref{fig-design}; 
+in the actual experiment, the sweet–savory assignment was counterbalanced across participants.
+\par
+
+\label{tab:cue-mapping}
+\small\setlength{\tabcolsep}{4pt}\begin{tabular}{ccccc}
+\hline
+\textbf{Cue set} & \textbf{Preconditioned cue} & \textbf{Conditioned cue} & \textbf{Outcome} \\
+\hline
+Set 1 & $A1_{1}$ & $B1_{1}$ & sweet odor \\
+Set 1 & $A2_{1}$ & $B2_{1}$ & savory odor \\
+Set 1 & $C_{1}$ & $D_{1}$ & clean air \\
+Set 2 & $A1_{2}$ & $B1_{2}$ & sweet odor \\
+Set 2 & $A2_{2}$ & $B2_{2}$ & savory odor \\
+Set 2 & $C_{2}$ & $D_{2}$ & clean air \\
+\hline
+\end{tabular}
+
+\par\endgroup\bigskip
+
+
+
+
+
+\subsection*{Study sessions}
+
+The study spanned three days, consisting of a stimulus selection session, Day 1, and Day 2. During the stimulus selection session, participants rated the images and odors. Day 1 included an MRI localizer scan followed by preconditioning training. Day 2 began with a brief preconditioning refresher (outside the scanner), followed by the conditioning task (three runs, inside the scanner) and two probe tasks (three runs each, inside the scanner), separated by the meal. Immediately before and after the meal, participants rated odor pleasantness and self-reported satiation. The session concluded with a recognition memory task (outside the scanner). The interval between the stimulus selection session and Day~1 was, on average, \(8.03 \pm 11.13\) days, and the interval between Day~1 and Day~2 was \(7.41 \pm 5.06\) days.
+
+
+\subsubsection*{Stimulus selection session}
+
+In the stimulus selection session, participants first completed an image rating task outside the scanner, in which they evaluated a series of character images followed by place images, indicating how much they liked each one. The purpose of this task was to identify images with neutral---or as similar as possible---liking ratings so that these images could be used as visual cues, ensuring that subsequent preference-based choices would primarily reflect participants' odor preferences rather than any preexisting preferences for particular visual stimuli. Participants rated each image three times, and we selected eight character images and eight place images based on their average ratings.
+
+
+Next, participants completed an odor rating and selection procedure in which they evaluated the pleasantness and intensity of ten food odors. On each trial, participants smelled one odor for 2 s and then rated how much they liked it using a visual analog scale ranging from “Most Disliked Sensation Imaginable” to “Most Liked Sensation Imaginable.” Ratings were made by positioning a cursor along the scale. Each odor was presented three times in a pseudo-randomized order, and the three ratings for each odor were averaged. Based on these averaged ratings, two odors—one savory and one sweet—were selected for each participant. We selected odors that were rated above neutral and as closely matched in pleasantness as possible, and at least medium in perceived intensity. These individualized odors served as the reward outcomes for the remainder of the experiment.
+
+
+\subsubsection*{Study day 1 – Localizer (fMRI)}
+
+On study day 1, participants completed a series of fMRI localizer scans designed to obtain neural responses to all visual and olfactory stimuli before any associative learning occurred. The session included two odor localizer runs, four character localizer runs, and four place localizer runs. 
+
+
+\paragraph*{Odor localizer}
+
+Participants completed two runs of the odor localizer, in which each trial consisted of a 2\,s sniff cue followed by 2\,s of odor delivery (one of the two participant-specific food odors or clean air), separated by a jittered 9--13\,s ITI. Each run contained 30 trials (3 odor types $\times$ 10 repetitions). Participants were instructed to inhale deeply at the sniff cue while minimizing head and body movement.
+
+
+
+
+
+
+\subsubsection*{Study day 1 – Preconditioning training}
+
+On Day 1, following the localizer MRI scans, participants completed preconditioning training outside the scanner. During this phase, they learned six deterministic associations comprising six cue pairs: two A1–B1 pairs, two A2–B2 pairs, and two C–D pairs. For each participant, the A1, A2, and C cues were places, whereas the B1, B2, and D cues were characters. Participants were instructed to learn and remember which place was associated with each character. Instead of a passive viewing paradigm, we implemented a choice-based design to facilitate active engagement and promote more robust encoding of the paired associations \cite{bunsey1996conservation}. 
+
+
+Each trial began with a 3\,s presentation of the first cue (e.g., A1), followed by a 0.3\,s gap and then a 3\,s presentation of two possible second cues, one of which was the correct associate (e.g., B1), whereas the incorrect cue was from one of the other cue pairs within the same cue set (i.e., B2 or D). During this 3\,s choice period, participants indicated which of the two cues was associated with the preceding cue A1 by pressing left or right arrow key. Trials were separated by a jittered 3–8\,s inter-trial interval. Feedback (correct, incorrect) was provided after each choice. Whether the character or the place served as cue A1 and B1 (appeared first and second) was counterbalanced across participants as part of the experimental design.
+
+
+Each run comprised 24 trials (6 cue pairs $\times$ 2 incorrect alternatives drawn from the same cue set $\times$ left/right balancing). Participants completed 3--5 runs in total, with the task terminating early if they achieved $\geq 90\%$ accuracy after the third or fourth run.
+
+
+\subsubsection*{Study day 2 – Main task}
+
+
+
+\paragraph*{Preconditioning refresher}
+
+Day 2 began with a brief preconditioning refresher outside the scanner to reinforce the character–place associations learned on Day 1. Participants were allowed up to three refresher runs; those who achieved greater than 90\% accuracy after the first or second run skipped the remaining runs. The structure of each run was identical to the preconditioning training on day 1. Of the 32 participants retained for analysis, 30 met the accuracy threshold after one run, whereas only 2 participants required a second run.
+
+
+\paragraph*{Conditioning task}
+
+In the conditioning task, participants viewed the second cue of each pair (i.e., B1, B2, and D) and predicted which odor (or clean air) would follow. Cues B1 and B2 were associated with the sweet and savory odor, respectively, whereas cues D were associated with no odor. To encourage retrieval of the associated, absent preconditioned cues (A1, A2 and C), participants were provided with a cover story instructing them to think about the related cue while making their predictions. Each trial began with a 2\,s presentation of a conditioned cue, followed by a 3\,s prediction period during which the cue remained on the screen and three odor abbreviations were displayed. Participants indicated which odor they expected. After a 2\,s delay, the odor (or clean air) associated with the cue was delivered for 2\,s. If no response was made, no odor was delivered and a “too slow” message appeared. Trials concluded with a jittered 4–-10\,s inter-trial interval. Each run comprised 36 trials (6 cues $\times$ 6 orderings of odor names). 
+
+
+\paragraph*{Probe task (pre-meal and post-meal)}
+
+In the probe task, administered both before and after the meal, participants made choices between two sequentially presented cues based on which associated odor (or clean air) they preferred to smell. The two sequentially presented cues could either be two conditioned cues (i.e., B1 vs. B2, B1 vs. D, or B2 vs. D) or two preconditioned cues (i.e., A1 vs. A2, A1 vs. C, or A2 vs. C). Participants were informed that no odors would be delivered during the task; instead, five trials would be randomly selected and the odor corresponding to their choice would be delivered at the end of the experiment.
+
+
+Each trial began with a 3\,s presentation of the first cue (cue\,1), followed by a jittered 4--10\,s interval before the second cue (cue\,2) appeared for 3\,s. Participants then had 2\,s to indicate their choice, after which the trial ended with a jittered 4--10\,s inter-trial interval. Each run comprised 24 trials (6 pairwise choice pairs $\times$ 2 cue sets $\times$ left/right balancing).
+
+
+
+
+\paragraph*{Meal consumption}
+
+Between the two probe tasks, participants exited the scanner to consume a meal corresponding to one of the two selected food odors. The meal was designed to selectively satiate the corresponding odor (savory or sweet, counter-balanced across participants). 
+
+Food items were chosen to match the target odor as closely as possible, and water was provided. Participants were given 15\,minutes and instructed to eat until they felt very full. Participants in the savory group consumed an average of $693.5 \pm 318.3$~kcal, whereas those in the sweet group consumed $705.0 \pm 232.2$~kcal. A two-sample $t$-test confirmed no significant difference between groups ($t(30) = -0.12$, $p = 0.91$), indicating that caloric intake was comparable across conditions.
+
+
+\paragraph*{Odor pleasantness ratings}
+
+Participants rated the pleasantness of each odor before and after the meal using a horizontal slider ranging from –4 (very unpleasant) to +4 (very pleasant) in 0.5-point increments. Each odor was rated three times, and the average of the three ratings was used in subsequent analyses. Because of an operational error, pleasantness ratings (also the self-reported hunger and satiety, see below) were not collected for one participant; accordingly, this analysis is based on the remaining 31 participants.
+
+
+
+
+\paragraph*{Post-task interview}
+
+After completing all tasks, participants took part in a brief post-task interview designed to assess awareness, subjective experience, and task compliance.
+
+
+\subsection*{Task stimuli}
+
+\paragraph*{Visual stimuli}
+
+We used two categories of visual stimuli—cartoon characters and landmark places—along with ten food-related odors. The visual stimulus set comprised 30 familiar cartoon characters (e.g., Jerry Mouse, Snoopy, Charmander) and 30 commonly recognizable places (e.g., office buildings, university campuses, bridges). Images were selected to avoid strong positive or negative affective content and to minimize any real-world associations with specific odors. For cartoon characters, we also excluded images with pronounced lateral gaze directions to prevent potential biases in participants’ left–right choices during the task. All images were converted to grayscale to reduce visual saliency and to ensure that any differences in preference or neural representation were not driven by low-level perceptual features.
+
+\paragraph*{Odor stimuli and delivery}
+
+We used five savory odors (potato chip, garlic, cheddar, pizza, tuna) and five sweet odors (strawberry, chocolate, apple cinnamon, peach, vanilla). Food odors were sourced from several commercial suppliers: Takasago International Corporation (Tokyo, Japan), International Flavors \& Fragrances (New York, NY), The Flaming Candle (Strongsville, OH), The Candlemaker’s Store (Butler County, OH), and the Midwest Sea Salt Company (West Chester, OH).
+
+
+We used a custom-built computer-controlled olfactometer to deliver food odors with precise timing directly to nasal masks worn by subjects. This olfactometer directed medical-grade air through the headspace of amber bottles containing liquid solutions of food odors, maintaining a constant flow rate of 3.2~L/min. Using two independent mass flow controllers (Alicat, Tucson, AZ), the olfactometer enabled the dilution of odorized air with odorless air. Throughout the experiment, a constant stream of odorless air was delivered to subjects’ noses. Odorized air was mixed into this airstream at specific time points, while ensuring no impact on the overall flow rate and preventing any alteration in somatosensory stimulation.
+
+
+\subsection*{MRI data acquisition}
+
+
+MRI data were acquired on a Siemens 3T Prisma-Fit system using a 32-channel head coil. Functional images were collected with a multi-echo gradient-echo EPI sequence (TR = 1.5\,s; TE$_1$--TE$_4$ = 12.60, 29.16, 45.72, and 62.28\,ms; flip angle = 67$^\circ$; in-plane voxel size = 2.51~$\times$~2.51\,mm; slice thickness = 2.5\,mm (no gap); matrix size = 86~$\times$~86 voxels; field of view = 216~$\times$~216\,mm; 60 axial slices acquired in an interleaved order; multiband acceleration factor = 4). The short first echo time helps reduce susceptibility-induced signal dropout in orbitofrontal cortex, as demonstrated in previous resting-state and task-based fMRI studies \cite{RN619,RN524,kirlutpos16,zhao24img}. High-resolution T1-weighted structural images (1\,mm isotropic) were acquired on Day~1 to facilitate spatial normalization.
+
+Across the two study days, functional MRI runs varied in length depending on the task. On Day~1, the odor localizer scan comprised 320 volumes, and each character and place localizer run comprised 244 volumes. On Day~2, the odor prediction task consisted of 404 volumes, and each pre- and post-meal probe run contained 372 volumes.
+
+
+\subsection*{Multi-echo MRI data processing}
+
+
+Preprocessing of the multi-echo fMRI data followed the procedures described in our recent work \cite{liu2025distinct}. First, all functional images from the shortest echo across all fMRI runs were realigned to the first volume of the first echo using SPM12, and the resulting voxel-to-world mapping matrix was applied to the other three echoes, volume by volume. All functional images were then resliced for each echo. Next, the images across the four echoes were combined using temporal signal-to-noise ratio (tSNR) weighting, following parallel-acquired inhomogeneity desensitized (PAID) approach \cite{RN524}. Specifically, voxel-wise tSNR maps were computed for each echo, multiplied by the echo time (TE), and normalized across the four echoes to generate weight maps. These weight maps were then used to combine the resliced images by multiplying each volume by its respective weight map. Finally, the combined multi-echo data were coregistered, normalized to MNI space, resampled to 2 mm isotropic resolution, and smoothed with a 2\,mm full-width at half-maximum (FWHM) Gaussian kernel, all using SPM12.
+
+
+
+\subsection*{Sniff recording and analysis}
+
+We measured subjects’ nasal airflow (i.e., sniffing) directly at the nose using a nasal mask connected to a respiratory flow head and spirometer. Nasal airflow was recorded with PowerLab equipment (ADInstruments, Dunedin, New Zealand) at a sampling rate of 1\,kHz. Airflow traces for each fMRI run were preprocessed by smoothing with a 250\,ms moving window, down-sampling to 10\,Hz, applying a high-pass filter (50\,s cutoff) to remove slow drifts, normalizing each run by subtracting the mean and dividing by the standard deviation, and finally down-sampling to match the fMRI repetition time of 1.5\,s (TR). Sniff volume was computed as the integral of the nasal airflow. Nasal airflow, sniff volume, and their squared terms were included as nuisance regressors in the fMRI GLM analyses.
+
+
+\subsection*{Behavioral data analysis}
+
+We analyzed behavioral performance from the preconditioning task, the conditioning task, as well as the pre- and post-meal probe tasks. We excluded data from two participants whose run-wise accuracies in the conditioning task were consistently below 0.40. Among the remaining 32 participants, accuracy in the final run of conditioning was high: all participants achieved at least 0.75, with a mean of 0.94 and a standard deviation of 0.068. These results indicate robust learning of the cue–odor (or clean-air) associations by the end of the conditioning task. 
+
+
+
+\subsection*{Single-trial GLMs}
+
+
+We estimated single-presentation GLMs for the premeal and postmeal probe tasks using the least-squares-separate approach \cite{mumford2012deconvolving}. A separate GLM was fitted for each cue presentation, modeling the target cue at its onset with a duration of 3 s and pooling all other cue presentations within the same run into a second regressor. Both cue positions were estimated, yielding two GLMs per trial. Each model additionally included decision periods, modeled with a duration of 2 s; separate left- and right-hand button-press regressors, modeled as zero-duration events; and the nuisance regressors described above. Models were estimated on resliced, coregistered, normalized functional EPIs smoothed with a 2 mm FWHM Gaussian kernel. A high-pass filter with a cutoff of 128 s was applied.
+
+
+
+\subsection*{Representation similarity analysis}
+\label{rsa-probe}
+
+We conducted a region-of-interest (ROI) RSA examining odor-associated representational structure in the premeal probe task, before devaluation could introduce confounding changes in odor value. Analyses used two bilateral orbitofrontal cortex regions from the connectivity-based K = 2 parcellation: medial/posterior-lateral OFC and central/anterior-lateral OFC \cite{kahnt2012connectivity}.
+
+Single-image beta estimates were selected for the first cue presentation of each trial. Conditioned and preconditioned cues were analyzed separately, each comprising four odor-predictive cue identities across the two stimulus sets. Clean-air-associated cues were excluded. Individual presentation patterns were retained without averaging across trials or runs. Each cue subset ordinarily contained 24 samples across three runs, with two presentations of each cue per run. Participant 36 contributed 16 samples from two runs.
+
+Within each ROI and cue subset, voxels with nonfinite values in any selected sample were removed. Each voxel’s responses were mean-centered across the selected samples within each run. Neural representational dissimilarity matrices were constructed using one minus the Pearson correlation between activity patterns. An odor-identity model assigned zero to pairs associated with the same odor and one to pairs associated with different odors. Correspondence between neural and model dissimilarities was assessed using Spearman correlation, retaining only pairs of samples acquired in different runs. Group inference used one-sided one-sample t tests of participant-level Spearman coefficients against zero. 
+
+
+\subsection*{Cross-task decoding of odor identity}
+
+We tested whether multivoxel representations of perceived odor identity generalized to odor-associated visual cues. Analyses used the same two bilateral OFC regions described for RSA: medial/posterior-lateral OFC and central/anterior-lateral OFC. For each participant and ROI, a linear support vector machine with a fixed regularization parameter of C = 1 was trained to distinguish the two odors using single-trial beta patterns from the passive odor task conducted before associative learning. Training included 40 odor presentations across two runs, with 20 presentations per odor. Clean-air trials were excluded.
+
+The classifier was subsequently tested on single-image beta patterns from the premeal probe task, during which no odors were delivered. Only the first cue presentation of each trial was included. Conditioned and preconditioned cues were evaluated separately, retaining four odor-predictive cue identities per subset across the two stimulus sets. Each subset ordinarily contained 24 samples across three runs; participant 36 contributed 16 samples from two runs. Test labels indicated the odor associated with each cue.
+
+For each participant, ROI, and cue subset, voxels with nonfinite values in any training or test sample were excluded. Voxel responses were z-scored across samples separately within each run and task, with the two stimulus sets pooled within each probe run. Normalization statistics were calculated independently for the passive odor and probe datasets. The classifier was fitted using both passive odor runs and applied to the probe patterns without further fitting or hyperparameter selection. One-sided one-sample t tests assessed whether participant-level balanced accuracy exceeded the chance level of 50\%. 
+
+
+
+
+
+
+
+
+
+ 
+
+\section*{Data availability}
+Anonymized behavioral data and analysis and simulation code are available at https://github.com/QingfangLiu/project-spcd. Additional data are available from the corresponding author upon reasonable request, subject to applicable institutional and participant-consent restrictions.
+
+
+
+
+\section*{Acknowledgments}
+This work was supported by National Institute on Deafness and Other Communication Disorders grant R01DC015426 (to T.K.) and the Intramural Research Program at the National Institute on Drug Abuse (ZIA DA000642 to T.K. and DA000587 to G.S.), as well as by a fellowship from the National Institutes of Health (NIH) Center on Compulsive Behaviors (to Q.L.). This research was also supported in part by the Intramural Research Program of the National Institutes of Health (NIH). The contributions of the NIH authors are considered “works of the United States government.” The findings and conclusions presented in this paper are those of the authors and do not necessarily reflect the views of the NIH or the US Department of Health and Human Services.
+
+
+
+ 
+
+
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{sn-bibliography}
+
+\end{document}

@@ -1,0 +1,91 @@
+\documentclass[12pt,letterpaper]{article}
+
+% Standard Overleaf packages; compile with pdfLaTeX.
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage{cmap}
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec}
+  \setmainfont{lmroman10-regular.otf}[
+    BoldFont=lmroman10-bold.otf,
+    ItalicFont=lmroman10-italic.otf,
+    BoldItalicFont=lmroman10-bolditalic.otf]
+\fi
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+
+% Plain, single-column text, without running headers or line numbers.
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+\setlength{\emergencystretch}{3em}
+\linespread{1.08}
+\urlstyle{same}
+
+\begin{document}
+\raggedright
+
+%<simple-front>
+\begin{center}
+{\Large\bfseries Manuscript title\par}
+\medskip
+Author One\textsuperscript{a}, Author Two\textsuperscript{b}\par
+\medskip
+\textsuperscript{a}First affiliation\par
+\textsuperscript{b}Second affiliation\par
+\end{center}
+
+\section*{Abstract}
+Write the abstract here.
+
+\section*{Significance statement}
+Write the significance statement here, if needed.
+
+\noindent\textbf{Keywords:} keyword one; keyword two; keyword three
+%</simple-front>
+
+%<simple-body>
+\section*{Introduction}
+Write the introduction here.
+
+\section*{Results}
+Write the results here. Inline mathematics, such as $r_P+r_C=R$, and
+display equations use ordinary LaTeX:
+\begin{equation}
+L_i = a_i e^{-r_i}.
+\end{equation}
+
+% Figures can be ordinary blocks rather than floats. Captions remain normal
+% paragraphs and can continue on the next page without clipping.
+% \par\bigskip\begingroup
+% \refstepcounter{figure}
+% \begin{center}
+% \includegraphics[width=0.95\linewidth]{fig/example.pdf}
+% \end{center}
+% \noindent\textbf{Figure~\thefigure. }Your caption.\par
+% \label{fig:example}
+% \endgroup\bigskip
+
+\section*{Discussion}
+Write the discussion here.
+
+\section*{Materials and methods}
+Write the methods here.
+
+\section*{Data availability}
+Write the data availability statement here.
+
+\section*{Acknowledgments}
+Write the acknowledgments here.
+
+% Add your bibliography when available:
+% \bibliographystyle{unsrt}
+% \bibliography{references}
+%</simple-body>
+
+\end{document}
