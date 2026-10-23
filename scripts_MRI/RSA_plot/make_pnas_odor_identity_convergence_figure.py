@@ -34,6 +34,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import patches
 import nibabel as nib
+from nibabel.processing import resample_from_to
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -51,6 +52,7 @@ PRECONDITIONED = "preconditioned_odor_only"
 CUE_ORDER = (CONDITIONED, PRECONDITIONED)
 CUE_LABELS = ("Conditioned", "Preconditioned")
 DEFAULT_SKIP_SUBS = ("sub-19", "sub-31", "sub-33")
+ANATOMY_RELATIVE_PATH = Path("masks/MNI152_T1_1mm_brain.nii.gz")
 
 ROI_ORDER = (
     "OFC_K2_cluster1_medial_posterior_lateral",
@@ -184,24 +186,6 @@ def _participant_offsets(
     return dict(zip(subjects, offsets))
 
 
-def _canonical_projection(path: Path) -> tuple[np.ndarray, list[float]]:
-    image = nib.as_closest_canonical(nib.load(str(path)))
-    data = np.asanyarray(image.dataobj, dtype=float)
-    projection = np.max(data, axis=1).T
-    shape = np.asarray(image.shape[:3], dtype=float)
-    corners = nib.affines.apply_affine(
-        image.affine,
-        np.array([[0, 0, 0], shape - 1]),
-    )
-    extent = [
-        float(corners[0, 0]),
-        float(corners[1, 0]),
-        float(corners[0, 2]),
-        float(corners[1, 2]),
-    ]
-    return projection, extent
-
-
 def _draw_method_box(
     ax,
     xy: tuple[float, float],
@@ -253,79 +237,70 @@ def _draw_arrow(
 def _plot_analysis_logic(ax, project_root: Path) -> None:
     ax.set_axis_off()
     add_panel_header(ax, "A", "", title_lines=2)
-    roi_vertical_shift = 0.035
-    ax.add_patch(
-        patches.FancyBboxPatch(
-            (-0.065, 0.590 + roi_vertical_shift), 1.095, 0.520,
-            boxstyle="round,pad=0.008,rounding_size=0.02",
-            transform=ax.transAxes, facecolor="#F8F7F4",
-            edgecolor="#E4E1DA", linewidth=0.8, zorder=-1,
-            clip_on=False,
-        )
+    anatomy = nib.as_closest_canonical(
+        nib.load(str(project_root / ANATOMY_RELATIVE_PATH))
     )
-
-    gm_path = project_root / "masks" / "gm_0.1.nii"
+    anatomy_data = np.asanyarray(anatomy.dataobj, dtype=float)
+    corners = nib.affines.apply_affine(
+        anatomy.affine,
+        np.array([[-0.5, -0.5, -0.5], np.asarray(anatomy.shape[:3]) - 0.5]),
+    )
+    extent = [corners[0, 0], corners[1, 0], corners[0, 2], corners[1, 2]]
     mask_dir = project_root / "masks" / "OFC_clusterMap_K2_gm0p1"
-    gm_projection, extent = _canonical_projection(gm_path)
-    roi_projections = []
+    roi_masks = {}
     for roi in ROI_ORDER:
-        mask_path = (
-            mask_dir
-            / f"mask-{roi}_gm0p1.nii.gz"
-        )
-        projection, roi_extent = _canonical_projection(mask_path)
-        if not np.allclose(extent, roi_extent):
-            raise ValueError("GM and OFC masks do not share one image space.")
-        roi_projections.append((roi, projection))
+        mask = nib.load(str(mask_dir / f"mask-{roi}_gm0p1.nii.gz"))
+        # Preserve discrete ROI labels when matching the anatomical image grid.
+        roi_masks[roi] = resample_from_to(mask, anatomy, order=0).get_fdata() > 0
 
-    brain_ax = ax.inset_axes([0.00, 0.66 + roi_vertical_shift, 0.40, 0.34])
-    brain_ax.set_facecolor("none")
-    brain_ax.imshow(
-        np.ma.masked_where(gm_projection <= 0, gm_projection > 0),
-        cmap=matplotlib.colors.ListedColormap(["#D6D6D6"]),
-        alpha=0.72,
-        origin="lower",
-        extent=extent,
-        interpolation="nearest",
-        aspect="equal",
-    )
-    brain_ax.contour(
-        (gm_projection > 0).astype(float),
-        levels=[0.5],
-        colors=["#AFAFAF"],
-        linewidths=0.45,
-        origin="lower",
-        extent=extent,
-    )
-    for roi, projection in roi_projections:
-        rgba = matplotlib.colors.to_rgba(ROI_COLORS[roi], 0.86)
-        cmap = matplotlib.colors.ListedColormap([rgba])
+    intensity_max = np.percentile(anatomy_data[anatomy_data > 0], 99)
+    for column, (y_mm, label) in enumerate(((24, "Posterior"), (40, "Anterior"))):
+        y_index = int(round(nib.affines.apply_affine(
+            np.linalg.inv(anatomy.affine), [0, y_mm, 0],
+        )[1]))
+        brain_ax = ax.inset_axes([column * 0.53, 0.755, 0.47, 0.30])
+        brain_ax.set_facecolor("none")
+        anatomical_slice = anatomy_data[:, y_index, :].T
         brain_ax.imshow(
-            np.ma.masked_where(projection <= 0, projection),
-            cmap=cmap,
+            np.ma.masked_where(anatomical_slice <= 0, anatomical_slice),
+            cmap="gray",
+            vmin=0,
+            vmax=intensity_max,
             origin="lower",
             extent=extent,
-            interpolation="nearest",
+            interpolation="bilinear",
             aspect="equal",
         )
-    brain_ax.set_xlim(*extent[:2])
-    brain_ax.set_ylim(*extent[2:])
-    brain_ax.axis("off")
-    ax.text(
-        0.20,
-        0.635 + roi_vertical_shift,
-        "Coronal maximum projection",
-        transform=ax.transAxes,
-        ha="center",
-        va="top",
-        fontsize=12,
-        color=MUTED_TEXT_COLOR,
-    )
+        for roi in ROI_ORDER:
+            roi_slice = roi_masks[roi][:, y_index, :].T
+            brain_ax.imshow(
+                np.ma.masked_where(~roi_slice, roi_slice),
+                cmap=matplotlib.colors.ListedColormap([ROI_COLORS[roi]]),
+                alpha=0.85,
+                origin="lower",
+                extent=extent,
+                interpolation="nearest",
+                aspect="equal",
+            )
+        # Radiological convention: positive MNI x (right) appears on the left.
+        brain_ax.set_xlim(74, -74)
+        brain_ax.set_ylim(-34, 70)
+        brain_ax.axis("off")
+        brain_ax.set_title(
+            f"{label} · y = +{y_mm} mm", fontsize=10,
+            color=MUTED_TEXT_COLOR, pad=5,
+        )
+        for x, side, alignment in ((0.02, "R", "left"), (0.98, "L", "right")):
+            brain_ax.text(
+                x, 0.5, side, transform=brain_ax.transAxes, fontsize=10,
+                fontweight="bold", color=MUTED_TEXT_COLOR,
+                ha=alignment, va="center",
+            )
 
     ax.text(
-        0.20,
-        1.035 + roi_vertical_shift,
-        "Independent OFC ROIs",
+        0.50,
+        1.13,
+        "Anatomical OFC ROIs",
         transform=ax.transAxes,
         fontsize=14,
         fontweight="bold",
@@ -334,25 +309,24 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
         clip_on=False,
     )
     for row, roi in enumerate(ROI_ORDER):
-        y = 0.86 + roi_vertical_shift - row * 0.14
+        y = 0.70 - row * 0.06
         ax.add_patch(
             patches.Rectangle(
-                (0.47, y - 0.018),
-                0.035,
-                0.036,
+                (0.14, y - 0.013),
+                0.028,
+                0.028,
                 transform=ax.transAxes,
                 color=ROI_COLORS[roi],
             )
         )
         ax.text(
-            0.53,
+            0.19,
             y,
-            ROI_SHORT[roi],
+            ROI_SHORT[roi].replace("\n", ""),
             transform=ax.transAxes,
-            fontsize=NOTE_SIZE,
+            fontsize=12,
             va="center",
         )
-
     ax.text(
         0.00,
         0.52,
@@ -412,7 +386,7 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
         (0.00, 0.015),
         0.26,
         0.12,
-        "Passive odor\npatterns",
+        "Odor-evoked\npatterns",
     )
     _draw_method_box(ax, (0.38, 0.015), 0.24, 0.12, "Linear SVM")
     _draw_method_box(
@@ -420,7 +394,7 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
         (0.74, 0.015),
         0.26,
         0.12,
-        "Premeal cue\nodor identity",
+        "Cue-predicted\nodor identity",
     )
     _draw_arrow(ax, (0.27, 0.075), (0.37, 0.075))
     _draw_arrow(ax, (0.63, 0.075), (0.73, 0.075))
@@ -731,7 +705,12 @@ def main() -> None:
     required_paths = [
         *rsa_paths,
         *decoding_paths,
-        project_root / "masks" / "gm_0.1.nii",
+        project_root / ANATOMY_RELATIVE_PATH,
+        *[
+            project_root / "masks" / "OFC_clusterMap_K2_gm0p1"
+            / f"mask-{roi}_gm0p1.nii.gz"
+            for roi in ROI_ORDER
+        ],
     ]
     missing = [path for path in required_paths if not path.is_file()]
     if missing:
