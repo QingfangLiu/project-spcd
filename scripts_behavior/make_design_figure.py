@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Draw a separate Python version of Figure 1, preserving the Adobe originals.
+"""Draw manuscript Figure 1 using the shared style and checked-in image assets.
 
 Run from any directory: python3 /path/to/scripts_behavior/make_design_figure.py
 Requires matplotlib, numpy, and Pillow. Image paths and layout use project-relative
 paths and inches, respectively. The two food illustrations were extracted from
-the original PDF; the six cues use the higher-resolution repository originals.
+the retired Adobe figure and are checked in under fig/design_assets; the six
+cues use the higher-resolution repository originals.
 
 The default 4 s conditioning delay is the effective interval from the end of
 prediction to odor arrival at the nose: 2 s programmed delay plus approximately
@@ -211,7 +212,7 @@ def main():
     parser.add_argument("--conditioning-delay", type=float, default=4,
                         help="Effective delay to odor arrival in seconds (default 4: 2 programmed + 2 transit).")
     parser.add_argument("--output-stem", type=Path, default=ROOT / "fig/fig_design_python",
-                        help="Output path without extension; existing Adobe paths are protected.")
+                        help="Output path without a file extension.")
     parser.add_argument("--dpi", type=int, default=300)
     args = parser.parse_args()
     if args.conditioning_delay <= 0 or args.dpi <= 0:
@@ -219,8 +220,6 @@ def main():
     stem = args.output_stem.expanduser().resolve()
     if stem.suffix:
         parser.error("The output stem must have no file extension.")
-    if stem == (ROOT / "fig/fig_design").resolve():
-        parser.error("The original Adobe figure is protected. Choose a different output stem.")
     configure_matplotlib()
     plt.rcParams["svg.fonttype"] = "none"
     fig = plt.figure(figsize=(WIDTH, YMAX - YMIN))

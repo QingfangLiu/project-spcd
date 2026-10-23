@@ -1,18 +1,20 @@
 # Python Figure 1 assets
 
-The separate Figure 1 generator is `scripts_behavior/make_design_figure.py`.
+The Figure 1 generator is `scripts_behavior/make_design_figure.py`.
 Run `python3 scripts_behavior/make_design_figure.py` from the project root.
 It exports `fig/fig_design_python.pdf`, `.png`, and `.svg` and imports the
-shared `figure_style.py`. The main manuscript uses this Python-generated PDF;
-the original Adobe `.ai` and `.pdf` remain preserved as alternatives.
+shared `figure_style.py`. Both the main manuscript and the generated Word-export
+manuscript use this Python-generated PDF. The obsolete Adobe files have been
+removed; their earlier versions remain available in Git history.
 
 Six higher-resolution stimulus images are loaded directly from `cues/`:
 Charmander (A1), Stitch (A2), Tigger (C), waterfall_small (B1), museum (B2),
 and city_road_night (D). These match the examples in the original figure.
 
 `sweet_odor.png` and `savory_odor.png` preserve the strawberry and potato-chip
-illustrations embedded in the original `fig/fig_design.pdf`. They were extracted
-losslessly with their alpha masks (PDF image/mask objects 27/32 and 26/31).
+illustrations from the retired Adobe figure. Before its removal, they were
+extracted losslessly with their alpha masks (PDF image/mask objects 27/32 and
+26/31). The generator reads these checked-in PNGs directly.
 They illustrate example odor identities, rather than a fixed assignment across
 participants. Colors follow the behavior figure: blue for A1/B1, orange for
 A2/B2, and gray for C/D.
@@ -39,6 +41,5 @@ interval, followed by fixation for the remainder. ITI information for all three
 trial types is provided in the main manuscript's Figure 1 caption, rather than
 the trial-demo labels. Each trial-demo cue image uses
 the same size: 42.5% of screen width, including paired choices and prediction.
-Display widths
-are schematic, rather than proportional to time. Original `.ai` and `.pdf` files
-are preserved, and the generator rejects their output stem.
+Display widths are schematic, rather than proportional to time. Rebuilding the
+figure does not require the retired Adobe files.
