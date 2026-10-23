@@ -25,8 +25,8 @@ from matplotlib.ticker import FixedLocator
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 FIGURES_DIR = REPO_ROOT / "figures"
-PDF_PATH = FIGURES_DIR / "adaptive_identity_allocation.pdf"
-PNG_PATH = FIGURES_DIR / "adaptive_identity_allocation.png"
+PDF_PATH = FIGURES_DIR / "fig_model.pdf"
+PNG_PATH = FIGURES_DIR / "fig_model.png"
 
 EXAMPLE_BUDGET = 4.0
 EXAMPLE_A_P = 4.0

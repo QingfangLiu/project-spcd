@@ -574,8 +574,8 @@ adaptive-identity-allocation/
 ├── scripts/
 │   └── make_figure.py
 ├── figures/
-│   ├── adaptive_identity_allocation.pdf
-│   └── adaptive_identity_allocation.png
+│   ├── fig_model.pdf
+│   └── fig_model.png
 └── results/
     └── simulation_summary.csv
 ```

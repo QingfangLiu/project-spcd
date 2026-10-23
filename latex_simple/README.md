@@ -8,22 +8,21 @@ or Python packages are required.
 
 1. Upload `simple_latex_bundle.zip` to a new Overleaf project, or upload this
    folder's `main.tex` and `fig/` folder.
-2. Add the two missing original assets:
-   - `fig/adaptive_identity_allocation.pdf`
-   - `sn-bibliography.bib` (in the project root)
+2. Add `sn-bibliography.bib` in the project root. All four figure PDFs are included.
 3. Set `main.tex` as the main document and choose **pdfLaTeX**. XeLaTeX and
    LuaLaTeX are also supported by the template's font setup.
 4. Recompile. Allow Overleaf to run BibTeX and resolve references; recompile
    again if citations or figure references still show question marks.
 5. Download the PDF and use your usual PDF-to-Word conversion workflow.
 
-The three included figure PDFs were copied from this repository's `figures/`
+The four included figure PDFs were copied from this repository's `figures/`
 folder by matching filenames. If those figures differ from your current
 Overleaf originals, replace them with your original figure PDFs.
 
-The missing fourth figure and bibliography were not invented or replaced.
-Consequently, the delivered manuscript needs those files before it can compile
-fully. `main.conversion.json` records the missing assets and preservation checks.
+The model figure is named `fig/fig_model.pdf`. The original bibliography is
+still needed before the manuscript can compile fully with resolved citations.
+`main.conversion.json` records the asset rename, missing bibliography, and
+preservation checks.
 The separate `simple_template.tex` is a compilable blank/example manuscript.
 
 ## Convert future revisions
@@ -47,6 +46,10 @@ For this manuscript in this repository, run from the repository root:
 ```sh
 python3 latex_simple/convert_pnas.py /Users/liuq13/Downloads/main.tex -o latex_simple/main.tex --asset-dir figures --overwrite
 ```
+
+The converter preserves graphics paths from its input. For future conversions,
+use `fig/fig_model.pdf` in the PNAS source; the earlier manuscript used
+`fig/adaptive_identity_allocation.pdf`, which is no longer the generated PDF name.
 
 Existing output is protected unless `--overwrite` is supplied. Existing asset
 files with different contents are never overwritten automatically. Each run
