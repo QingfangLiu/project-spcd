@@ -252,7 +252,7 @@ def make_figure(source: pd.DataFrame, statistics: pd.DataFrame, *, change: bool)
                    linestyle="--" if p == "pre" else "-", linewidth=2,
                    markersize=6, label="Pre-meal" if p == "pre" else "Post-meal")
             for p in ("pre", "post")
-        ], loc="upper center", bbox_to_anchor=(0.56, 0.947), ncol=2,
+        ], loc="upper center", bbox_to_anchor=(0.56, 0.995), ncol=2,
            frameon=False, handlelength=2.4, columnspacing=2)
     fig.supxlabel("Relative change in odor pleasantness (post - pre)" if change
                   else "Odor pleasantness difference (first cue - second cue)", y=0.065, fontsize=16)
