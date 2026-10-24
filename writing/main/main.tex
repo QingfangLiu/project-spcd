@@ -420,6 +420,8 @@ We measured subjects’ nasal airflow (i.e., sniffing) directly at the nose usin
 
 We analyzed behavioral performance from the preconditioning task, the conditioning task, as well as the pre- and post-meal probe tasks. We excluded data from two participants whose run-wise accuracies in the conditioning task were consistently below 0.40. Among the remaining 32 participants, accuracy in the final run of conditioning was high: all participants achieved at least 0.75, with a mean of 0.94 and a standard deviation of 0.068. These results indicate robust learning of the cue–odor (or clean-air) associations by the end of the conditioning task. 
 
+Details of behavioral measure calculation, trial inclusion, and statistical testing are provided in Supplementary Methods.
+
 
 
 \subsection*{Single-presentation GLMs}
@@ -439,6 +441,8 @@ We conducted a region-of-interest (ROI) RSA examining odor-associated representa
 Single-image beta estimates were selected for the first cue presentation of each trial. Conditioned and preconditioned cues were analyzed separately, each comprising four odor-predictive cue identities across the two stimulus sets. Clean-air-associated cues were excluded. Individual presentation patterns were retained without averaging across trials or runs. Each cue subset ordinarily contained 24 samples across three runs, with two presentations of each cue per run. Participant 36 contributed 16 samples from two runs.
 
 Within each ROI and cue subset, voxels with nonfinite values in any selected sample were removed. Each voxel’s responses were mean-centered across the selected samples within each run. Neural representational dissimilarity matrices were constructed using one minus the Pearson correlation between activity patterns. An odor-identity model assigned zero to pairs associated with the same odor and one to pairs associated with different odors. Correspondence between neural and model dissimilarities was assessed using Spearman correlation, retaining only pairs of samples acquired in different runs. Group inference used one-sided one-sample t tests of participant-level Spearman coefficients against zero. 
+
+Within each OFC ROI, participant-level odor-identity RSA coefficients for conditioned and preconditioned cues were correlated across participants using Spearman rank correlation. Negative associations were assessed using one-sided tests, with an uncorrected significance threshold of $p < 0.05$.
 
 
 \subsection*{Cross-task decoding of odor identity}
