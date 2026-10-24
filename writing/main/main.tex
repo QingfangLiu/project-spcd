@@ -422,17 +422,19 @@ We analyzed behavioral performance from the preconditioning task, the conditioni
 
 
 
-\subsection*{Single-trial GLMs}
+\subsection*{Single-presentation GLMs}
 
 
 We estimated single-presentation GLMs for the premeal and postmeal probe tasks using the least-squares-separate approach \cite{mumford2012deconvolving}. A separate GLM was fitted for each cue presentation, modeling the target cue at its onset with a duration of 3 s and pooling all other cue presentations within the same run into a second regressor. Both cue positions were estimated, yielding two GLMs per trial. Each model additionally included decision periods, modeled with a duration of 2 s; separate left- and right-hand button-press regressors, modeled as zero-duration events; and the nuisance regressors described above. Models were estimated on resliced, coregistered, normalized functional EPIs smoothed with a 2 mm FWHM Gaussian kernel. A high-pass filter with a cutoff of 128 s was applied.
+
+Single-trial beta estimates were also obtained from the passive odor localizer using the least-squares-separate approach. A separate GLM was fitted for each presentation, with the target presentation modeled as a zero-duration event at sniff-cue onset and all remaining presentations within the same run pooled into a second regressor. Models used the same preprocessed functional images and nuisance regressors described above, with a high-pass filter cutoff of 128 s. Beta estimates for the two food odors were used to train the cross-task decoder.
 
 
 
 \subsection*{Representation similarity analysis}
 \label{rsa-probe}
 
-We conducted a region-of-interest (ROI) RSA examining odor-associated representational structure in the premeal probe task, before devaluation could introduce confounding changes in odor value. Analyses used two bilateral orbitofrontal cortex regions from the connectivity-based K = 2 parcellation: medial/posterior-lateral OFC and central/anterior-lateral OFC \cite{kahnt2012connectivity}.
+We conducted a region-of-interest (ROI) RSA examining odor-associated representational structure in the premeal probe task, before devaluation could introduce confounding changes in odor value. Analyses used the two bilateral orbitofrontal cortex (OFC) regions defined below.
 
 Single-image beta estimates were selected for the first cue presentation of each trial. Conditioned and preconditioned cues were analyzed separately, each comprising four odor-predictive cue identities across the two stimulus sets. Clean-air-associated cues were excluded. Individual presentation patterns were retained without averaging across trials or runs. Each cue subset ordinarily contained 24 samples across three runs, with two presentations of each cue per run. Participant 36 contributed 16 samples from two runs.
 
@@ -441,11 +443,15 @@ Within each ROI and cue subset, voxels with nonfinite values in any selected sam
 
 \subsection*{Cross-task decoding of odor identity}
 
-We tested whether multivoxel representations of perceived odor identity generalized to odor-associated visual cues. Analyses used the same two bilateral OFC regions described for RSA: medial/posterior-lateral OFC and central/anterior-lateral OFC. For each participant and ROI, a linear support vector machine with a fixed regularization parameter of C = 1 was trained to distinguish the two odors using single-trial beta patterns from the passive odor task conducted before associative learning. Training included 40 odor presentations across two runs, with 20 presentations per odor. Clean-air trials were excluded.
+We tested whether multivoxel representations of perceived odor identity generalized to odor-associated visual cues. Analyses used the same two bilateral OFC regions as RSA. For each participant and ROI, a linear support vector machine with a fixed regularization parameter of C = 1 was trained to distinguish the two odors using single-trial beta patterns from the passive odor task conducted before associative learning. Training included 40 odor presentations across two runs, with 20 presentations per odor. Clean-air trials were excluded.
 
 The classifier was subsequently tested on single-image beta patterns from the premeal probe task, during which no odors were delivered. Only the first cue presentation of each trial was included. Conditioned and preconditioned cues were evaluated separately, retaining four odor-predictive cue identities per subset across the two stimulus sets. Each subset ordinarily contained 24 samples across three runs; participant 36 contributed 16 samples from two runs. Test labels indicated the odor associated with each cue.
 
 For each participant, ROI, and cue subset, voxels with nonfinite values in any training or test sample were excluded. Voxel responses were z-scored across samples separately within each run and task, with the two stimulus sets pooled within each probe run. Normalization statistics were calculated independently for the passive odor and probe datasets. The classifier was fitted using both passive odor runs and applied to the probe patterns without further fitting or hyperparameter selection. One-sided one-sample t tests assessed whether participant-level balanced accuracy exceeded the chance level of 50\%. 
+
+\subsection*{Region-of-interest definition}
+
+Analyses used two independently defined bilateral orbitofrontal cortex (OFC) regions from the connectivity-based K = 2 parcellation: medial/posterior-lateral OFC and central/anterior-lateral OFC \cite{kahnt2012connectivity}. The parcellation map was resampled to the 2 mm isotropic analysis grid using nearest-neighbor interpolation. Each region was then intersected with a gray-matter mask derived from the SPM12 gray-matter tissue probability map thresholded at probability $>0.1$. The same ROI definitions were used for odor-identity RSA and cross-task decoding.
 
 
 
