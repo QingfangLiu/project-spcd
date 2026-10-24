@@ -18,6 +18,10 @@
 
 \subsection*{Supplementary Methods}
 
+\paragraph*{Nuisance regressors}
+
+Nuisance regressors were constructed following procedures used in our previous work \cite{liu2025distinct,liuyaoatt24}. Each run included six rigid-body motion parameters, their first temporal differences, and the squared terms of both, yielding 24 motion regressors, together with the respiratory regressors described in the main text. To capture image artifacts, two additional measures were calculated from the unprocessed shortest-echo images: the difference in mean signal between odd- and even-numbered slices and the variance of mean signal across slices. Each measure was expressed as an absolute standardized deviation using its mean and standard deviation across all runs within each participant. These two time series, their first temporal differences, and their squared temporal differences were included as nuisance regressors. Volumes exceeding four standard deviations on either artifact measure were modeled using separate indicator regressors. All nuisance regressors were z-scored within each run before inclusion in the GLMs.
+
 \paragraph*{Behavioral data analysis}
 
 Preconditioning and conditioning performance were quantified as the proportion of correct responses within each run. For comparisons among preconditioning cue-pair types, accuracy from the final Day 2 refresher run was calculated separately for each cue pair and then averaged across the two stimulus sets with equal weighting. Conditioning accuracy was compared among the three outcome-associated cue types in the final conditioning run, pooling across stimulus sets. Differences among cue-pair or cue types were assessed using Friedman tests.
@@ -89,5 +93,7 @@ Panels A--C show preconditioned cues, and panels D--F show conditioned cues. Eac
 \end{figure}
 
 \FloatBarrier
+
+\bibliography{../main/sn-bibliography}
 
 \end{document}

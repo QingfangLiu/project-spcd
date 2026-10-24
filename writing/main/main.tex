@@ -415,6 +415,8 @@ Preprocessing of the multi-echo fMRI data followed the procedures described in o
 
 We measured subjects’ nasal airflow (i.e., sniffing) directly at the nose using a nasal mask connected to a respiratory flow head and spirometer. Nasal airflow was recorded with PowerLab equipment (ADInstruments, Dunedin, New Zealand) at a sampling rate of 1\,kHz. Airflow traces for each fMRI run were preprocessed by smoothing with a 250\,ms moving window, down-sampling to 10\,Hz, applying a high-pass filter (50\,s cutoff) to remove slow drifts, normalizing each run by subtracting the mean and dividing by the standard deviation, and finally down-sampling to match the fMRI repetition time of 1.5\,s (TR). Sniff volume was computed as the integral of the nasal airflow. Nasal airflow, sniff volume, and their squared terms were included as nuisance regressors in the fMRI GLM analyses.
 
+Additional nuisance regressors accounting for head motion and image artifacts are described in Supplementary Methods.
+
 
 \subsection*{Behavioral data analysis}
 
