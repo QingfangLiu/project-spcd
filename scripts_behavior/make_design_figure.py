@@ -30,7 +30,8 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+from matplotlib.path import Path as MplPath
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, PathPatch
 import numpy as np
 from PIL import Image
 
@@ -43,7 +44,7 @@ from figure_style import (
 )
 
 WIDTH = 13.4
-YMIN, YMAX = 1.15, 8.6
+YMIN, YMAX = 1.82, 8.6
 CUES = {
     "A1": ROOT / "cues/characters_gray/charmander.jpeg",
     "A2": ROOT / "cues/characters_gray/stitch.jpg",
@@ -84,6 +85,26 @@ def arrow(ax, x1, y1, x2, y2, *, color=REFERENCE_COLOR):
                                 color=color, zorder=2))
 
 
+def airflow(ax, x, y, *, width=.65):
+    """Draw the clean-air outcome as three vector airflow strokes."""
+    strokes = (
+        ((.23, .69), (.41, .69), (.61, .69), (.65, .69),
+         (.76, .69), (.76, .85), (.65, .85),
+         (.61, .85), (.59, .82), (.59, .79)),
+        ((.18, .59), (.39, .59), (.68, .59), (.79, .59)),
+        ((.27, .49), (.42, .49), (.58, .49), (.62, .49),
+         (.72, .49), (.72, .35), (.62, .35),
+         (.58, .35), (.56, .38), (.56, .40)),
+    )
+    for stroke in strokes:
+        vertices = (np.asarray(stroke) - (.485, .60)) * width / .61 + (x, y)
+        codes = [MplPath.MOVETO] + [MplPath.CURVE4] * (len(stroke) - 1)
+        ax.add_patch(PathPatch(
+            MplPath(vertices, codes), fill=False, edgecolor=REFERENCE_COLOR,
+            linewidth=1.6, capstyle="round", joinstyle="round", zorder=3,
+        ))
+
+
 def cue(ax, code, x, y, *, width=.64, label=True):
     image(ax, CUES[code], x, y, width)
     if label:
@@ -107,9 +128,11 @@ def association_panels(ax):
     panel_header(ax, .28, "A", "Preconditioning")
     panel_header(ax, 3.40, "B", "Conditioning")
     panel_header(ax, 6.76, "C", "Probe tests")
-    text(ax, 1.57, 7.78, "Learn cue pairs", color=MUTED_TEXT_COLOR)
-    text(ax, 4.86, 7.78, "Learn cue-outcome associations", size=12, color=MUTED_TEXT_COLOR)
-    text(ax, 9.97, 7.78, "Choices before and after selective satiation", color=MUTED_TEXT_COLOR)
+    text(ax, 9.12, 8.22, "Before and after selective satiation",
+         size=12, color=MUTED_TEXT_COLOR, ha="left")
+    text(ax, 1.57, 7.78, "Learn cue pairs", color="black")
+    text(ax, 4.86, 7.78, "Learn cue-outcome associations", size=12, color="black")
+    text(ax, 9.97, 7.78, "Choose the cue predicting the preferred odor", color="black")
 
     for y, first, second, outcome, color in zip(
             (7.12, 6.10, 5.08), ("A1", "A2", "C"), ("B1", "B2", "D"),
@@ -120,8 +143,7 @@ def association_panels(ax):
         cue(ax, second, 3.93, y)
         arrow(ax, 4.38, y, 4.91, y)
         if second == "D":
-            # Clean air is an actual outcome, rather than a missing image.
-            text(ax, 5.55, y, "Air", size=19, color=REFERENCE_COLOR)
+            airflow(ax, 5.55, y)
         else:
             asset = "sweet_odor.png" if second == "B1" else "savory_odor.png"
             image(ax, ROOT / "fig/design_assets" / asset, 5.55, y, .65)
@@ -201,11 +223,6 @@ def trial_timelines(ax, conditioning_delay):
             if i + 1 < len(xs):
                 arrow(ax, x + .43, 3.05, xs[i + 1] - .43, 3.05)
 
-    text(ax, 2.20, 1.60, "Choose the associated second cue",
-         size=13, color=MUTED_TEXT_COLOR)
-    text(ax, 6.55, 1.60, "Predict the associated odor", size=13, color=MUTED_TEXT_COLOR)
-    text(ax, 10.93, 1.60, "Choose the preferred cue", size=13, color=MUTED_TEXT_COLOR)
-
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -221,7 +238,6 @@ def main():
     if stem.suffix:
         parser.error("The output stem must have no file extension.")
     configure_matplotlib()
-    plt.rcParams["svg.fonttype"] = "none"
     fig = plt.figure(figsize=(WIDTH, YMAX - YMIN))
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set(xlim=(0, WIDTH), ylim=(YMIN, YMAX), aspect="equal")
@@ -229,7 +245,7 @@ def main():
     association_panels(ax)
     trial_timelines(ax, args.conditioning_delay)
     stem.parent.mkdir(parents=True, exist_ok=True)
-    for extension in ("pdf", "png", "svg"):
+    for extension in ("pdf", "png"):
         path = stem.with_suffix(f".{extension}")
         fig.savefig(path, dpi=args.dpi, facecolor="white")
         print(path)

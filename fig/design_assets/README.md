@@ -2,7 +2,7 @@
 
 The Figure 1 generator is `scripts_behavior/make_design_figure.py`.
 Run `python3 scripts_behavior/make_design_figure.py` from the project root.
-It exports `fig/fig_design_python.pdf`, `.png`, and `.svg` and imports the
+It exports `fig/fig_design_python.pdf` and `.png` and imports the
 shared `figure_style.py`. Both the main manuscript and the generated Word-export
 manuscript use this Python-generated PDF. The obsolete Adobe files have been
 removed; their earlier versions remain available in Git history.
