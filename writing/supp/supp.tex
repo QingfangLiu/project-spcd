@@ -46,6 +46,14 @@ During the recognition memory task, participants judged whether specific charact
 
 After completing all tasks, participants took part in a brief post-task interview designed to assess awareness, subjective experience, and task compliance.
 
+\paragraph*{Searchlight RSA of subjective odor value}
+
+We examined subjective odor-value representations by combining single-image beta estimates from the premeal and postmeal probe tasks in one searchlight multiple-regression RSA. Both cue-presentation positions and all cue identities were included, including cues associated with clean air. Neural RDMs were constructed using one minus the Pearson correlation between activity patterns. Model fitting retained only pairs acquired in different runs, with premeal and postmeal runs assigned distinct identifiers so that cross-phase pairs were included.
+
+For each participant, the three outcome pleasantness ratings from each phase were jointly z-scored across the six phase-by-outcome values. Each cue presentation was assigned its associated outcome's rating from the corresponding phase. The odor-value RDM contained absolute differences between these assigned values. Neural dissimilarities were regressed on odor-value dissimilarity together with cue type (conditioned versus preconditioned), image identity, button presence, and button side RDMs, using ordinary least squares with an intercept. Image identity was defined independently of first versus second presentation position. Button labels were assigned to second-cue presentations, whereas first-cue presentations were labeled as having no response. Separate odor-identity and phase RDMs were not included in this regression.
+
+Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction used the independently defined vmPFC component of the positive-greater-than-negative subjective-value meta-analysis map from Bartra et al.\ \cite{bartra2013valuation}, Fig.~3D. The vmPFC component contained 1,245 voxels at 2\,mm isotropic resolution, of which 1,233 overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within this volume, using the smoothness estimated from the group model. Cluster-level inference was additionally evaluated with a voxelwise cluster-defining threshold of $p < 0.001$, uncorrected.
+
 \subsection*{Supplementary Results}
 
 \paragraph*{Self-reported hunger and satiety.}
@@ -61,6 +69,10 @@ Recognition accuracy did not differ significantly across the three cue-pair type
 We examined the relationship between probe choices and odor pleasantness in participants with complete pleasantness data after applying the main-figure exclusions ($n = 30$). Meal-related changes in choice proportions were positively correlated with relative changes in outcome pleasantness for A2$>$A1 ($r = 0.43$, $p = 0.018$), B2$>$B1 ($r = 0.41$, $p = 0.023$), and B2$>$D ($r = 0.42$, $p = 0.019$; Fig.~\ref{fig_probe_change_corr}). Correlations for the remaining three comparisons were positive but nonsignificant (all $p \geq 0.096$).
 
 Choice proportions were also positively correlated with the pleasantness difference between the associated outcomes for all six comparisons, both before the meal ($r = 0.43$--$0.77$, all $p \leq 0.018$) and after the meal ($r = 0.42$--$0.81$, all $p \leq 0.020$; Fig.~\ref{fig_probe_corr_pre_post}). All choice--pleasantness tests were two-sided Pearson correlations, uncorrected for multiple comparisons.
+
+\paragraph*{vmPFC representation of odor value.}
+
+Across the premeal and postmeal probe phases, searchlight multiple-regression RSA identified a positive association between neural dissimilarity and subjective odor-value differences in vmPFC ($n = 30$; peak MNI coordinates: $[12, 48, 0]$; $t(29) = 3.79$; peak-level $p_{\mathrm{FWE}} = 0.045$, small-volume corrected; Fig.~\ref{fig_vmpfc_value}). The voxelwise FWE-corrected critical threshold within the vmPFC volume was $t = 3.743$. The effect did not reach cluster-level significance ($p_{\mathrm{FWE}} = 0.096$ at a voxelwise cluster-defining threshold of $p < 0.001$, uncorrected).
 
 % Supplementary figures, one per page.
 
@@ -98,6 +110,15 @@ Panels A--C show preconditioned cues, and panels D--F show conditioned cues. Eac
 \caption{\textbf{Choice preference correlates with odor pleasantness before and after the meal.}
 Panels A--C show preconditioned cues, and panels D--F show conditioned cues. Each point represents one participant ($n = 30$). Choice proportions for the first cue in each comparison are plotted against the pleasantness difference between the associated outcomes, ordered as first cue minus second cue. Light-gray circles and dashed regression lines represent pre-meal measurements; dark diamonds and solid regression lines represent post-meal measurements. Lines show ordinary least-squares fits; shaded regions indicate pointwise 95\% bootstrap confidence intervals for the fitted mean. Horizontal dashed lines indicate chance choice (0.5). Positive correlations were significant in both phases for all six comparisons: A1$>$C (pre: $r = 0.43$, $p = 0.018$; post: $r = 0.54$, $p = 0.002$), A2$>$A1 (pre: $r = 0.72$, $p < 0.001$; post: $r = 0.81$, $p < 0.001$), A2$>$C (pre: $r = 0.56$, $p = 0.001$; post: $r = 0.74$, $p < 0.001$), B1$>$D (pre: $r = 0.64$, $p < 0.001$; post: $r = 0.42$, $p = 0.020$), B2$>$B1 (pre: $r = 0.77$, $p < 0.001$; post: $r = 0.80$, $p < 0.001$), and B2$>$D (pre: $r = 0.66$, $p < 0.001$; post: $r = 0.74$, $p < 0.001$). All tests were two-sided Pearson correlations, uncorrected for multiple comparisons.}
 \label{fig_probe_corr_pre_post}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{../../supp_fig/vmpfc_value_rsa.pdf}
+\caption{\textbf{vmPFC representation of subjective odor value.}
+Coronal ($y = 48$), sagittal ($x = 12$), and axial ($z = 0$) views show the positive group-level odor-value RSA t map from the combined premeal and postmeal probe analysis ($n = 30$), overlaid on the SPM-normalized ICBM152NLin2009 anatomical reference distributed with MRIcroGL. Crosshairs intersect at MNI $[12, 48, 0]$. Colored voxels show the whole-brain map at $p < 0.001$, uncorrected, with no extent threshold, for visualization; native 2\,mm statistical voxels are displayed without interpolation. Peak-level FWE correction was confined to the independently defined vmPFC component of the meta-analysis mask from Bartra et al.\ \cite{bartra2013valuation}, Fig.~3D. The vmPFC peak survived correction within that volume ($t(29) = 3.79$, peak-level $p_{\mathrm{FWE}} = 0.045$), whereas cluster-level correction within the vmPFC volume did not reach significance ($p_{\mathrm{FWE}} = 0.096$). The color bar indicates t values. Coronal and axial views use neurological orientation (left hemisphere shown on the left).}
+\label{fig_vmpfc_value}
 \end{figure}
 
 \FloatBarrier
