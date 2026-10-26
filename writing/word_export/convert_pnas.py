@@ -88,8 +88,9 @@ ARG_COUNTS = {
     "dates": 1, "doi": 1, "matmethods": 1, "dataavail": 1, "acknow": 1,
     "showmatmethods": 1, "showacknow": 1, "thispagestyle": 1,
     "ifthenelse": 3, "bibliographystyle": 1,
+    "usepackage": 1, "renewcommand": 2,
 }
-OPTIONAL = {"documentclass", "author", "affil", "bibsplit"}
+OPTIONAL = {"documentclass", "author", "affil", "bibsplit", "usepackage"}
 LAYOUT = {
     "articletype", "templatetype", "leadauthor", "dates", "doi",
     "thispagestyle", "Firstpage", "Endparasplit", "Parasplit", "bibsplit",
@@ -209,7 +210,10 @@ def flatten_floats(text):
     return pattern.sub(block, text)
 
 
-def convert(source, template):
+def convert(source, template, document_kind="main"):
+    if document_kind not in {"main", "supp"}:
+        raise ConversionError(f"Unknown document kind: {document_kind}")
+    supplement = document_kind == "supp"
     clean = strip_comments(source)
     if not re.search(r"\\documentclass(?:\[[^\]]*\])?\{pnas-new\}", clean):
         raise ConversionError("Expected a pnas-new documentclass.")
@@ -227,6 +231,19 @@ def convert(source, template):
     body = document.split(r"\end{document}", 1)[0]
     preamble_edits = [(c.start, c.end, "") for c in commands(preamble)
                       if c.name == "documentclass" or c.name in LAYOUT or c.name in FRONT]
+    if supplement:
+        if not any(c.name == "templatetype" and c.args == ("pnassupportinginfo",) for c in found):
+            raise ConversionError("Expected the pnassupportinginfo template for a supplement.")
+        for cmd in commands(preamble):
+            # These packages are supplied by the plain template or only control
+            # floats, which become ordinary blocks. Reject other custom setup.
+            if (cmd.name == "usepackage" and not cmd.option
+                    and set(cmd.args[0].replace(" ", "").split(",")) <= {"graphicx", "amsmath", "placeins"}):
+                preamble_edits.append((cmd.start, cmd.end, ""))
+            elif (cmd.name == "renewcommand" and len(cmd.args) == 2
+                  and any(tuple(plain_space(x) for x in cmd.args) == ("\\the" + kind, "S\\arabic{" + kind + "}")
+                          for kind in ("figure", "table"))):
+                preamble_edits.append((cmd.start, cmd.end, ""))
     if replace_spans(preamble, preamble_edits).strip():
         raise ConversionError("Custom preamble content requires manual review; it was not discarded.")
     metadata = {key: [] for key in FRONT}
@@ -239,19 +256,22 @@ def convert(source, template):
     if not metadata["title"]:
         raise ConversionError("No manuscript title found.")
     abstract_match = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", body, re.S)
-    if not abstract_match or len(re.findall(r"\\begin\{abstract\}", body)) != 1:
+    abstract_count = len(re.findall(r"\\begin\{abstract\}", body))
+    if abstract_count > 1 or (not supplement and not abstract_match):
         raise ConversionError("Expected exactly one abstract.")
-    abstract = abstract_match[1].strip()
-    edits = [(abstract_match.start(), abstract_match.end(), "")]
+    abstract = abstract_match[1].strip() if abstract_match else ""
+    edits = [(abstract_match.start(), abstract_match.end(), "")] if abstract_match else []
     removed = [{"command": c.name, "argument": list(c.args), "option": c.option}
                for c in found if c.name in LAYOUT]
     for cmd in commands(body):
-        if abstract_match.start() <= cmd.start < abstract_match.end():
+        if abstract_match and abstract_match.start() <= cmd.start < abstract_match.end():
             continue
         value = None
         if cmd.name in FRONT or cmd.name == "maketitle":
             value = ""
         elif cmd.name in LAYOUT:
+            value = ""
+        elif supplement and cmd.name in {"SItext", "FloatBarrier"}:
             value = ""
         elif cmd.name == "ifthenelse":
             compact = re.sub(r"\s+", "", body[cmd.start:cmd.end])
@@ -277,6 +297,8 @@ def convert(source, template):
         raise ConversionError("Final manuscript text did not survive conversion.")
     front = [r"\begin{center}", r"{\Large\bfseries " + metadata["title"][0].args[0]
              + r"\par}", r"\medskip"]
+    if supplement:
+        front.insert(1, r"{\large\bfseries Supporting Information\par}\medskip")
     author_lines = []
     for cmd in metadata["author"]:
         author_lines.append(cmd.args[0] + (r"\textsuperscript{" + cmd.option + "}" if cmd.option else ""))
@@ -284,7 +306,9 @@ def convert(source, template):
     for cmd in metadata["affil"]:
         front.append((r"\textsuperscript{" + cmd.option + "}" if cmd.option else "")
                      + cmd.args[0] + r"\par")
-    front.extend([r"\end{center}", "\n\\section*{Abstract}\n" + abstract])
+    front.append(r"\end{center}")
+    if abstract_match:
+        front.append("\n\\section*{Abstract}\n" + abstract)
     for key, heading in [("significancestatement", "Significance statement")]:
         if metadata[key]:
             front.append("\n\\section*{" + heading + "}\n" + metadata[key][0].args[0])
@@ -307,8 +331,11 @@ def convert(source, template):
     if r"\bibliography{" in body:
         body = body.replace(r"\bibliography{", r"\bibliographystyle{unsrt}" + "\n"
                             + r"\bibliography{", 1)
-    if not re.match(r"\\section\*?\{", body.lstrip()):
+    if not supplement and not re.match(r"\\section\*?\{", body.lstrip()):
         body = "\\section*{Introduction}\n\n" + body
+    if supplement:
+        body = (r"\renewcommand{\thefigure}{S\arabic{figure}}" + "\n"
+                + r"\renewcommand{\thetable}{S\arabic{table}}" + "\n\n" + body)
     output = template
     for name, content in [("front", "\n\n".join(front)), ("body", body)]:
         pattern = r"%<simple-" + name + r">.*?%</simple-" + name + r">"
@@ -329,6 +356,7 @@ def convert(source, template):
         if Counter(content_items(output)[key]) != Counter(expected[key]):
             raise ConversionError(f"Content check failed: {key}.")
     report = {"source_sha256": hashlib.sha256(source.encode()).hexdigest(),
+              "document_kind": document_kind,
               "checks": {key: {"count": len(value), "preserved": True}
                          for key, value in expected.items()},
               "metadata_and_abstract_preserved": True,
@@ -375,6 +403,8 @@ def main(argv=None):
     parser.add_argument("source", type=Path)
     parser.add_argument("-o", "--output", type=Path, required=True)
     parser.add_argument("--template", type=Path, default=Path(__file__).with_name("simple_template.tex"))
+    parser.add_argument("--document-kind", choices=("main", "supp"), default="main",
+                        help="Convert a main manuscript (default) or PNAS supporting information.")
     parser.add_argument("--asset-dir", type=Path, action="append", default=[],
                         help="Additional folder to search for assets, including by filename; repeatable.")
     parser.add_argument("--asset-mode", choices=("copy", "link"), default="copy",
@@ -392,7 +422,7 @@ def main(argv=None):
         if not args.overwrite and (output_path.exists() or report_path.exists()):
             raise ConversionError("Output/report already exists; use --overwrite to replace it.")
         output, report = convert(source_path.read_text(encoding="utf-8-sig"),
-                                 args.template.read_text(encoding="utf-8"))
+                                 args.template.read_text(encoding="utf-8"), args.document_kind)
         report["source"] = str(source_path)
         report["output"] = str(output_path)
         report["asset_mode"] = args.asset_mode

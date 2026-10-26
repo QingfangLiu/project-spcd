@@ -60,8 +60,87 @@ Methods sentence that must never be lost, with \cite{key3}.
 \end{document}
 """
 
+SUPPLEMENT = r"""\documentclass[9pt,twoside,lineno]{pnas-new}
+\templatetype{pnassupportinginfo}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{placeins}
+\title{A supplementary manuscript}
+\author{Author One and Author Two}
+\correspondingauthor{Author One.\\E-mail: one@example.org}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\begin{document}
+\maketitle
+\SItext
+\subsection*{Supplementary Methods}
+Methods must survive unchanged, with \cite{key1} and Fig.~\ref{fig:supp}.
+\subsection*{Supplementary Results}
+Results with $p < 0.05$.
+\clearpage
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{fig/one.pdf}
+\caption{A supplementary caption with \textbf{formatting}.}
+\label{fig:supp}
+\end{figure}
+\FloatBarrier
+\bibliography{references}
+\end{document}
+"""
+
 
 class ConversionTests(unittest.TestCase):
+    def test_supplement_without_abstract_preserves_content_and_numbering(self):
+        output, report = convert(SUPPLEMENT, TEMPLATE, "supp")
+        for text in [r"\subsection*{Supplementary Methods}",
+                     r"\subsection*{Supplementary Results}",
+                     r"Methods must survive unchanged, with \cite{key1} and Fig.~\ref{fig:supp}.",
+                     r"Results with $p < 0.05$.",
+                     r"A supplementary caption with \textbf{formatting}.",
+                     r"\renewcommand{\thefigure}{S\arabic{figure}}",
+                     r"\renewcommand{\thetable}{S\arabic{table}}",
+                     r"\bibliographystyle{unsrt}", r"\clearpage"]:
+            self.assertIn(text, output)
+        for text in [r"\section*{Introduction}", r"\section*{Abstract}",
+                     r"\SItext", r"\FloatBarrier", r"\begin{figure}", "pnas-new"]:
+            self.assertNotIn(text, output)
+        self.assertEqual(report["document_kind"], "supp")
+        self.assertTrue(all(x["preserved"] for x in report["checks"].values()))
+
+    def test_supplement_rejects_custom_setup_and_external_content(self):
+        for old, replacement in [
+            (r"\usepackage{amsmath}", r"\usepackage{unreviewed}"),
+            (r"\renewcommand{\thefigure}{S\arabic{figure}}", r"\renewcommand{\thefigure}{X}"),
+            (r"\SItext", r"\input{extra}"),
+            (r"\templatetype{pnassupportinginfo}", r"\templatetype{pnasresearcharticle}"),
+        ]:
+            with self.subTest(replacement=replacement), self.assertRaises(ConversionError):
+                convert(SUPPLEMENT.replace(old, replacement), TEMPLATE, "supp")
+
+    def test_supplement_png_export_links_assets_without_changing_source(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source_dir = root / "writing" / "supp"
+            source_dir.mkdir(parents=True)
+            (root / "supp_fig").mkdir()
+            pdf = root / "supp_fig" / "one.pdf"
+            pdf.write_bytes(b"Original PDF artwork")
+            png = pdf.with_suffix(".png")
+            png.write_bytes(b"PNG artwork")
+            (source_dir / "references.bib").write_text("@article{key1, title={Reference}}")
+            source = source_dir / "supp.tex"
+            source_text = SUPPLEMENT.replace("fig/one.pdf", "../../supp_fig/one.pdf")
+            source.write_text(source_text)
+            output = root / "writing" / "word_export" / "supp.tex"
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(main([str(source), "-o", str(output), "--document-kind", "supp",
+                                       "--asset-mode", "link", "--figure-format", "png"]), 0)
+            self.assertIn("{../../supp_fig/one.png}", output.read_text())
+            self.assertIn(r"\bibliography{../supp/references}", output.read_text())
+            self.assertEqual(source.read_text(), source_text)
+            self.assertEqual(pdf.read_bytes(), b"Original PDF artwork")
+            self.assertFalse((output.parent / "supp_fig").exists())
+
     def test_nested_groups_and_optional_arguments(self):
         value, end = group(r" {a {b} \{c\}} trailing", 0)
         self.assertEqual(value, r"a {b} \{c\}")

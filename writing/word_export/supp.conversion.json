@@ -1,0 +1,137 @@
+{
+  "source_sha256": "403b2da66d0c13cfe47c538dd25cf5491309c8985531046e023cf39f2d97f543",
+  "document_kind": "supp",
+  "checks": {
+    "citations": {
+      "count": 3,
+      "preserved": true
+    },
+    "labels": {
+      "count": 5,
+      "preserved": true
+    },
+    "references": {
+      "count": 5,
+      "preserved": true
+    },
+    "equations": {
+      "count": 0,
+      "preserved": true
+    },
+    "tables": {
+      "count": 0,
+      "preserved": true
+    },
+    "captions": {
+      "count": 5,
+      "preserved": true
+    },
+    "graphics": {
+      "count": 5,
+      "preserved": true
+    },
+    "bibliography": {
+      "count": 1,
+      "preserved": true
+    }
+  },
+  "metadata_and_abstract_preserved": true,
+  "ordinary_body_spans_preserved": true,
+  "removed_layout_metadata": [
+    {
+      "command": "templatetype",
+      "argument": [
+        "pnassupportinginfo"
+      ],
+      "option": ""
+    }
+  ],
+  "layout": "12pt article, one column, 1-inch margins; nonfloating figures and tables; unsrt bibliography",
+  "note": "Checks verify source content, not PDF appearance or reference resolution.",
+  "source": "/Users/liuq13/project-spcd/writing/supp/supp.tex",
+  "output": "/Users/liuq13/project-spcd/writing/word_export/supp.tex",
+  "asset_mode": "link",
+  "figure_format": "png",
+  "asset_path_rewrites": [
+    {
+      "from": "../../supp_fig/hungry_ratings.pdf",
+      "to": "../../supp_fig/hungry_ratings.png",
+      "kind": "figure"
+    },
+    {
+      "from": "../../supp_fig/recognition_accuracy.pdf",
+      "to": "../../supp_fig/recognition_accuracy.png",
+      "kind": "figure"
+    },
+    {
+      "from": "../../supp_fig/probe_change_corr.pdf",
+      "to": "../../supp_fig/probe_change_corr.png",
+      "kind": "figure"
+    },
+    {
+      "from": "../../supp_fig/probe_corr_pre_post.pdf",
+      "to": "../../supp_fig/probe_corr_pre_post.png",
+      "kind": "figure"
+    },
+    {
+      "from": "../../supp_fig/vmpfc_value_rsa.pdf",
+      "to": "../../supp_fig/vmpfc_value_rsa.png",
+      "kind": "figure"
+    },
+    {
+      "from": "../main/sn-bibliography.bib",
+      "to": "../main/sn-bibliography.bib",
+      "kind": "bibliography"
+    }
+  ],
+  "assets": [
+    {
+      "path": "../../supp_fig/hungry_ratings.png",
+      "source_path": "../../supp_fig/hungry_ratings.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/supp_fig/hungry_ratings.png"
+    },
+    {
+      "path": "../../supp_fig/recognition_accuracy.png",
+      "source_path": "../../supp_fig/recognition_accuracy.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/supp_fig/recognition_accuracy.png"
+    },
+    {
+      "path": "../../supp_fig/probe_change_corr.png",
+      "source_path": "../../supp_fig/probe_change_corr.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/supp_fig/probe_change_corr.png"
+    },
+    {
+      "path": "../../supp_fig/probe_corr_pre_post.png",
+      "source_path": "../../supp_fig/probe_corr_pre_post.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/supp_fig/probe_corr_pre_post.png"
+    },
+    {
+      "path": "../../supp_fig/vmpfc_value_rsa.png",
+      "source_path": "../../supp_fig/vmpfc_value_rsa.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/supp_fig/vmpfc_value_rsa.png"
+    },
+    {
+      "path": "../main/sn-bibliography.bib",
+      "source_path": "../main/sn-bibliography.bib",
+      "kind": "bibliography",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/writing/main/sn-bibliography.bib"
+    }
+  ],
+  "compilation_ready": true,
+  "pdf_build": {
+    "status": "success",
+    "engine": "pdflatex via latexmk",
+    "unresolved_references": false
+  }
+}

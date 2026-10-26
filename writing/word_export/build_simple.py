@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Refresh the plain manuscript from the PNAS source and build its PDF.
+"""Refresh plain versions of the PNAS manuscript and supplement and build PDFs.
 
 Run from the repository root:
     python3 writing/word_export/build_simple.py
+    python3 writing/word_export/build_simple.py --target supp
+    python3 writing/word_export/build_simple.py --target all
 
-The source is writing/main/main.tex. The generated files are main.tex,
-main.conversion.json, and main.pdf beside this script. Matching PNG figures and
-the bibliography stay in their shared locations; no asset copies are created.
+Sources are writing/main/main.tex and writing/supp/supp.tex. Generated .tex,
+.conversion.json, and .pdf files live beside this script. Matching PNG figures
+and the bibliography stay in their shared locations; no asset copies are created.
 """
 
+import argparse
 import json
 import os
 from pathlib import Path
@@ -19,10 +22,21 @@ import sys
 from convert_pnas import main as convert_main
 
 
-def main():
+def build_target(target, directory, executable, environment):
+    source = directory.parent / target / (target + ".tex")
+    output = directory / (target + ".tex")
+    if convert_main([str(source), "-o", str(output), "--document-kind", target,
+                     "--asset-mode", "link", "--figure-format", "png", "--overwrite"]):
+        return 1
+    return build_pdf(output, executable, environment)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--target", choices=("main", "supp", "all"), default="main",
+                        help="Refresh the main manuscript (default), supplement, or both.")
+    args = parser.parse_args(argv)
     directory = Path(__file__).resolve().parent
-    source = directory.parent / "main" / "main.tex"
-    output = directory / "main.tex"
     executable = shutil.which("latexmk")
     if executable is None:
         mactex = Path("/Library/TeX/texbin/latexmk")
@@ -36,15 +50,20 @@ def main():
     if shutil.which("pdflatex", path=environment["PATH"]) is None:
         print("pdflatex was not found beside latexmk or on PATH.", file=sys.stderr)
         return 1
-    if convert_main([str(source), "-o", str(output), "--asset-mode", "link",
-                     "--figure-format", "png", "--overwrite"]):
-        return 1
+    targets = ("main", "supp") if args.target == "all" else (args.target,)
+    for target in targets:
+        if build_target(target, directory, executable, environment):
+            return 1
+    return 0
+
+
+def build_pdf(output, executable, environment):
     report_path = output.with_suffix(".conversion.json")
     report = json.loads(report_path.read_text())
     result = subprocess.run(
         [executable, "-pdf", "-interaction=nonstopmode", "-halt-on-error",
          "-file-line-error", "-synctex=1", output.name],
-        cwd=directory, env=environment, capture_output=True, text=True, errors="replace",
+        cwd=output.parent, env=environment, capture_output=True, text=True, errors="replace",
     )
     log_path = output.with_suffix(".log")
     log = log_path.read_text(errors="replace") if log_path.is_file() else ""

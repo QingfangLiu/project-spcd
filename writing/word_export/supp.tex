@@ -1,0 +1,202 @@
+\documentclass[12pt,letterpaper]{article}
+
+% Standard Overleaf packages; compile with pdfLaTeX.
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage{cmap}
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec}
+  \setmainfont{lmroman10-regular.otf}[
+    BoldFont=lmroman10-bold.otf,
+    ItalicFont=lmroman10-italic.otf,
+    BoldItalicFont=lmroman10-bolditalic.otf]
+\fi
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+
+% Plain, single-column text, without running headers or line numbers.
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+\setlength{\emergencystretch}{3em}
+\linespread{1.08}
+\urlstyle{same}
+
+\begin{document}
+\raggedright
+
+\begin{center}
+
+{\large\bfseries Supporting Information\par}\medskip
+
+{\Large\bfseries Model-based inference of reward identity in the lateral orbitofrontal cortex\par}
+
+\medskip
+
+Qingfang Liu, Yao Zhao, Taaseen Khan, Nicole Moussa, Geoffrey Schoenbaum, and Thorsten Kahnt\par
+
+\medskip
+
+\end{center}
+
+
+\noindent\textbf{Correspondence:} Thorsten Kahnt.\\E-mail: thorsten.kahnt@nih.gov
+
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+
+\subsection*{Supplementary Methods}
+
+\paragraph*{Nuisance regressors}
+
+Nuisance regressors were constructed following procedures used in our previous work \cite{liu2025distinct,liuyaoatt24}. Each run included six rigid-body motion parameters, their first temporal differences, and the squared terms of both, yielding 24 motion regressors, together with the respiratory regressors described in the main text. To capture image artifacts, two additional measures were calculated from the unprocessed shortest-echo images: the difference in mean signal between odd- and even-numbered slices and the variance of mean signal across slices. Each measure was expressed as an absolute standardized deviation using its mean and standard deviation across all runs within each participant. These two time series, their first temporal differences, and their squared temporal differences were included as nuisance regressors. Volumes exceeding four standard deviations on either artifact measure were modeled using separate indicator regressors. All nuisance regressors were z-scored within each run before inclusion in the GLMs.
+
+\paragraph*{Behavioral data analysis}
+
+Preconditioning and conditioning performance were quantified as the proportion of correct responses within each run. For comparisons among preconditioning cue-pair types, accuracy from the final Day 2 refresher run was calculated separately for each cue pair and then averaged across the two stimulus sets with equal weighting. Conditioning accuracy was compared among the three outcome-associated cue types in the final conditioning run, pooling across stimulus sets. Differences among cue-pair or cue types were assessed using Friedman tests.
+
+Unanswered trials were counted as incorrect when calculating run-wise learning accuracy. For the final-run conditioning comparison among cue types, trials with missing response times were excluded.
+
+For each probe phase, choice proportions were calculated separately for each participant and pairwise cue comparison, pooling valid trials across runs and stimulus sets. Proportions represented selection of the cue named first in each comparison, irrespective of its presentation position. Trials with missing choices or response times were excluded. Changes in choice proportions and odor pleasantness were calculated as post-meal minus pre-meal values. Changes were tested against zero using two-sided Wilcoxon signed-rank tests, with an uncorrected significance threshold of $p < 0.05$.
+
+\paragraph*{Meal consumption}
+
+Food items were chosen to match the target odor as closely as possible, and water was provided. Participants in the savory group consumed an average of $693.5 \pm 318.3$~kcal, whereas those in the sweet group consumed $705.0 \pm 232.2$~kcal. A two-sample $t$-test confirmed no significant difference between groups ($t(30) = -0.12$, $p = 0.91$), indicating that caloric intake was comparable across conditions.
+
+\paragraph*{Self-reported hunger and satiety}
+
+Participants also rated hunger and satiety before and after the meal by responding to three questions: “How would you rate your current level of hunger?”, “How would you rate your current level of satiety (feeling full)?”, and “How would you rate your current desire to eat?”. Ratings were made using the same horizontal slider scale as the odor pleasantness ratings.
+
+\paragraph*{Recognition memory task.}
+
+During the recognition memory task, participants judged whether specific character--place pairs had been encountered during preconditioning. Each trial consisted of a 3\,s presentation of the first cue (cue\,1), followed by a 0.3\,s blank interval and a 3\,s presentation of the second cue (cue\,2). Participants then indicated whether the pair was ``old'' or a recombined foil. No corrective feedback was provided. Trials were separated by a jittered 3--8\,s inter-trial interval. The task comprised 36 trials in total (6 cue pairs $\times$ old/foil $\times$ 3 repetitions). Foil pairs were constructed by randomly pairing each first cue (A1, A2 or C) with a second cue (B1, B2 or D) that had not been associated with it during pre-conditioning.
+
+\paragraph*{Post-task interview}
+
+After completing all tasks, participants took part in a brief post-task interview designed to assess awareness, subjective experience, and task compliance.
+
+\paragraph*{Searchlight RSA of subjective odor value}
+
+We examined subjective odor-value representations by combining single-image beta estimates from the premeal and postmeal probe tasks in one searchlight multiple-regression RSA. Both cue-presentation positions and all cue identities were included, including cues associated with clean air. Neural RDMs were constructed using one minus the Pearson correlation between activity patterns. Model fitting retained only pairs acquired in different runs, with premeal and postmeal runs assigned distinct identifiers so that cross-phase pairs were included.
+
+For each participant, the three outcome pleasantness ratings from each phase were jointly z-scored across the six phase-by-outcome values. Each cue presentation was assigned its associated outcome's rating from the corresponding phase. The odor-value RDM contained absolute differences between these assigned values. Neural dissimilarities were regressed on odor-value dissimilarity together with cue type (conditioned versus preconditioned), image identity, button presence, and button side RDMs, using ordinary least squares with an intercept. Image identity was defined independently of first versus second presentation position. Button labels were assigned to second-cue presentations, whereas first-cue presentations were labeled as having no response. Separate odor-identity and phase RDMs were not included in this regression.
+
+Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction used the independently defined vmPFC component of the positive-greater-than-negative subjective-value meta-analysis map from Bartra et al.\ \cite{bartra2013valuation}, Fig.~3D. The vmPFC component contained 1,245 voxels at 2\,mm isotropic resolution, of which 1,233 overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within this volume, using the smoothness estimated from the group model. Cluster-level inference was additionally evaluated with a voxelwise cluster-defining threshold of $p < 0.001$, uncorrected.
+
+\subsection*{Supplementary Results}
+
+\paragraph*{Self-reported hunger and satiety.}
+
+Ratings showed the expected shifts in hunger, satiety, and desire to eat after the meal ($n = 30$; Fig.~\ref{fig_hunger}). Mean hunger ratings decreased from 1.40 before the meal to $-2.77$ afterward. Mean satiety ratings increased from $-1.40$ to 1.88, and mean desire-to-eat ratings decreased from 1.58 to $-2.43$. All three changes were significant (two-sided Wilcoxon signed-rank tests, all $p < 0.001$, uncorrected). Analyses applied the main-figure participant exclusions, and additionally omitted one participant with missing ratings.
+
+\paragraph*{Recognition memory.}
+
+Recognition accuracy did not differ significantly across the three cue-pair types ($n = 31$; Friedman test: $\chi^2(2) = 1.60$, $p = 0.449$; Fig.~\ref{fig_recog}). Analyses used the main-figure participant exclusions.
+
+\paragraph*{Choice preference and odor pleasantness.}
+
+We examined the relationship between probe choices and odor pleasantness in participants with complete pleasantness data after applying the main-figure exclusions ($n = 30$). Meal-related changes in choice proportions were positively correlated with relative changes in outcome pleasantness for A2$>$A1 ($r = 0.43$, $p = 0.018$), B2$>$B1 ($r = 0.41$, $p = 0.023$), and B2$>$D ($r = 0.42$, $p = 0.019$; Fig.~\ref{fig_probe_change_corr}). Correlations for the remaining three comparisons were positive but nonsignificant (all $p \geq 0.096$).
+
+Choice proportions were also positively correlated with the pleasantness difference between the associated outcomes for all six comparisons, both before the meal ($r = 0.43$--$0.77$, all $p \leq 0.018$) and after the meal ($r = 0.42$--$0.81$, all $p \leq 0.020$; Fig.~\ref{fig_probe_corr_pre_post}). All choice--pleasantness tests were two-sided Pearson correlations, uncorrected for multiple comparisons.
+
+\paragraph*{vmPFC representation of odor value.}
+
+Across the premeal and postmeal probe phases, searchlight multiple-regression RSA identified a positive association between neural dissimilarity and subjective odor-value differences in vmPFC ($n = 30$; peak MNI coordinates: $[12, 48, 0]$; $t(29) = 3.79$; peak-level $p_{\mathrm{FWE}} = 0.045$, small-volume corrected; Fig.~\ref{fig_vmpfc_value}). The voxelwise FWE-corrected critical threshold within the vmPFC volume was $t = 3.743$. The effect did not reach cluster-level significance ($p_{\mathrm{FWE}} = 0.096$ at a voxelwise cluster-defining threshold of $p < 0.001$, uncorrected).
+
+
+\clearpage
+
+\par\bigskip\begingroup
+\refstepcounter{figure}
+
+
+    \begin{center}
+\includegraphics[width=\textwidth]{../../supp_fig/hungry_ratings.png}
+\end{center}
+    \par\noindent\textbf{Figure~\thefigure. }\textbf{Change in self-reported hunger, satiety, and desire to eat.}
+Panels A--C show hunger, satiety, and desire-to-eat ratings, respectively, before and after the meal. Gray lines connect measurements from individual participants ($n = 30$). Open diamonds indicate group means, with t-based 95\% confidence intervals. Horizontal dashed lines mark zero on the rating scale. Hunger and desire-to-eat ratings decreased, whereas satiety ratings increased (two-sided Wilcoxon signed-rank tests, all $p < 0.001$, uncorrected for multiple comparisons).\par
+
+    \label{fig_hunger}
+
+\par\endgroup\bigskip
+
+
+\clearpage
+
+\par\bigskip\begingroup
+\refstepcounter{figure}
+
+
+\begin{center}
+\includegraphics[width=0.48\linewidth]{../../supp_fig/recognition_accuracy.png}
+\end{center}
+\par\noindent\textbf{Figure~\thefigure. }\textbf{Recognition memory accuracy across cue-pair types.}
+Points show individual participants' mean recognition accuracy for each cue-pair group ($n = 31$). Accuracy was averaged within each cue pair and then equally across the two pairs in each group. Open diamonds indicate group means, with t-based 95\% confidence intervals. The horizontal dashed line marks chance-level performance (0.5). Recognition accuracy did not differ significantly across cue-pair types (Friedman test: $\chi^2(2) = 1.60$, $p = 0.449$).\par
+
+\label{fig_recog}
+
+\par\endgroup\bigskip
+
+
+\clearpage
+
+\par\bigskip\begingroup
+\refstepcounter{figure}
+
+
+\begin{center}
+\includegraphics[width=\linewidth]{../../supp_fig/probe_change_corr.png}
+\end{center}
+\par\noindent\textbf{Figure~\thefigure. }\textbf{Changes in choice preference correlate with relative changes in odor pleasantness.}
+Panels A--C show preconditioned cues, and panels D--F show conditioned cues. Each point represents one participant ($n = 30$). Choice changes were calculated as post-meal minus pre-meal proportions of choosing the first cue in each comparison. Relative pleasantness change was calculated as the difference between the associated outcomes' post-minus-pre changes in pleasantness ratings, ordered as first cue minus second cue. Lines show ordinary least-squares fits; shaded regions indicate pointwise 95\% bootstrap confidence intervals for the fitted mean. Horizontal dashed lines indicate zero choice change. Positive correlations were significant for A2$>$A1 ($r = 0.43$, $p = 0.018$), B2$>$B1 ($r = 0.41$, $p = 0.023$), and B2$>$D ($r = 0.42$, $p = 0.019$). Correlations were positive but nonsignificant for A1$>$C ($r = 0.31$, $p = 0.096$), A2$>$C ($r = 0.27$, $p = 0.155$), and B1$>$D ($r = 0.26$, $p = 0.168$). All tests were two-sided Pearson correlations, uncorrected for multiple comparisons.\par
+
+\label{fig_probe_change_corr}
+
+\par\endgroup\bigskip
+
+
+\clearpage
+
+\par\bigskip\begingroup
+\refstepcounter{figure}
+
+
+\begin{center}
+\includegraphics[width=1\linewidth]{../../supp_fig/probe_corr_pre_post.png}
+\end{center}
+\par\noindent\textbf{Figure~\thefigure. }\textbf{Choice preference correlates with odor pleasantness before and after the meal.}
+Panels A--C show preconditioned cues, and panels D--F show conditioned cues. Each point represents one participant ($n = 30$). Choice proportions for the first cue in each comparison are plotted against the pleasantness difference between the associated outcomes, ordered as first cue minus second cue. Light-gray circles and dashed regression lines represent pre-meal measurements; dark diamonds and solid regression lines represent post-meal measurements. Lines show ordinary least-squares fits; shaded regions indicate pointwise 95\% bootstrap confidence intervals for the fitted mean. Horizontal dashed lines indicate chance choice (0.5). Positive correlations were significant in both phases for all six comparisons: A1$>$C (pre: $r = 0.43$, $p = 0.018$; post: $r = 0.54$, $p = 0.002$), A2$>$A1 (pre: $r = 0.72$, $p < 0.001$; post: $r = 0.81$, $p < 0.001$), A2$>$C (pre: $r = 0.56$, $p = 0.001$; post: $r = 0.74$, $p < 0.001$), B1$>$D (pre: $r = 0.64$, $p < 0.001$; post: $r = 0.42$, $p = 0.020$), B2$>$B1 (pre: $r = 0.77$, $p < 0.001$; post: $r = 0.80$, $p < 0.001$), and B2$>$D (pre: $r = 0.66$, $p < 0.001$; post: $r = 0.74$, $p < 0.001$). All tests were two-sided Pearson correlations, uncorrected for multiple comparisons.\par
+
+\label{fig_probe_corr_pre_post}
+
+\par\endgroup\bigskip
+
+
+\clearpage
+
+\par\bigskip\begingroup
+\refstepcounter{figure}
+
+
+\begin{center}
+\includegraphics[width=\linewidth]{../../supp_fig/vmpfc_value_rsa.png}
+\end{center}
+\par\noindent\textbf{Figure~\thefigure. }\textbf{vmPFC representation of subjective odor value.}
+Coronal ($y = 48$), sagittal ($x = 12$), and axial ($z = 0$) views show the positive group-level odor-value RSA t map from the combined premeal and postmeal probe analysis ($n = 30$), overlaid on the SPM-normalized ICBM152NLin2009 anatomical reference distributed with MRIcroGL. Crosshairs intersect at MNI $[12, 48, 0]$. Colored voxels show the whole-brain map at $p < 0.001$, uncorrected, with no extent threshold, for visualization; native 2\,mm statistical voxels are displayed without interpolation. Peak-level FWE correction was confined to the independently defined vmPFC component of the meta-analysis mask from Bartra et al.\ \cite{bartra2013valuation}, Fig.~3D. The vmPFC peak survived correction within that volume ($t(29) = 3.79$, peak-level $p_{\mathrm{FWE}} = 0.045$), whereas cluster-level correction within the vmPFC volume did not reach significance ($p_{\mathrm{FWE}} = 0.096$). The color bar indicates t values. Coronal and axial views use neurological orientation (left hemisphere shown on the left).\par
+
+\label{fig_vmpfc_value}
+
+\par\endgroup\bigskip
+
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{../main/sn-bibliography}
+
+\end{document}

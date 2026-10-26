@@ -1,9 +1,11 @@
-# Simple manuscript PDF for opening in Word
+# Simple manuscript and supplement PDFs for opening in Word
 
-Edit **`writing/main/main.tex`** as the authoritative manuscript. This folder
-generates a plain, single-column version from that source for PDF-to-Word
-conversion. Do not edit the generated `writing/word_export/main.tex` directly:
-the next refresh replaces it. The PNAS source is never modified by conversion.
+Edit **`writing/main/main.tex`** and **`writing/supp/supp.tex`** as the authoritative
+manuscript and supplement. This folder generates plain, single-column versions
+for PDF-to-Word conversion. Do not edit the generated `main.tex` or `supp.tex`
+here directly: the next refresh replaces them. The sources and PDFs under
+`writing/main/` and `writing/supp/` continue to use the original PDF figures;
+conversion never modifies those files. Only the Word exports use PNG figures.
 
 ## Refresh and build locally
 
@@ -12,6 +14,17 @@ From the repository root, run:
 ```sh
 python3 writing/word_export/build_simple.py
 ```
+
+To refresh the supplement or both documents:
+
+```sh
+python3 writing/word_export/build_simple.py --target supp
+python3 writing/word_export/build_simple.py --target all
+```
+
+The default target remains `main`. The supplement target reads
+`writing/supp/supp.tex` and generates `supp.tex`, `supp.conversion.json`, and
+**`writing/word_export/supp.pdf`** here, using the same layout and build checks.
 
 Or run from any folder using the script's full path:
 
@@ -30,17 +43,18 @@ manuscript revision, rerun the command. This is an on-demand refresh, not an
 automatic background sync. Typesetting the generated `main.tex` in TeXShop alone
 does not refresh it from the PNAS source; run the script first.
 
-Figures use the matching PNG files directly from the repository's shared `fig/`
-folder. The bibliography comes from `writing/main/sn-bibliography.bib`. No figure or bibliography
-copies are created. PNG artwork keeps each figure as a single raster image in
+Figures use matching PNG files directly from the shared `fig/` (main) and
+`supp_fig/` (supplement) folders. Both bibliographies come from
+`writing/main/sn-bibliography.bib`. No figure or bibliography copies are created.
+PNG artwork keeps each figure as a single raster image in
 the PDF, reducing fragmentation when Word imports vector graphics. Refresh
 stops if a matching PNG is missing. Keep the repository folder structure intact.
-The supplement is not part of this conversion.
 
 LaTeX creates temporary files alongside the PDF during a build (`.aux`, `.bbl`,
 `.blg`, `.fdb_latexmk`, `.fls`, `.log`, `.out`, and `.synctex.gz`). These can be
 removed after a successful build and will be regenerated when needed. Keep
-`main.pdf`, `main.tex`, and `main.conversion.json` as the current output.
+`main.pdf`, `main.tex`, and `main.conversion.json`, and the corresponding `supp.*`
+files, as the current outputs.
 
 ## Layout and content
 
@@ -59,6 +73,9 @@ removed after a successful build and will be regenerated when needed. Keep
   their labels and panels are embedded together in each image.
 - References use `unsrt`: numbered in first-citation order. Their typography
   differs from the PNAS submission style.
+- The supplement retains its methods and results headings, figure page breaks,
+  and S-prefixed figure and table numbering. It has a plain title block without
+  the PNAS cover page and does not require an abstract or add an Introduction.
 
 The conversion report records the source hash, preservation checks, shared asset
 paths, and build status. Source checks verify content preservation; the build
@@ -72,6 +89,9 @@ To regenerate the plain source without building its PDF:
 ```sh
 python3 writing/word_export/convert_pnas.py writing/main/main.tex \
   -o writing/word_export/main.tex --asset-mode link --figure-format png --overwrite
+python3 writing/word_export/convert_pnas.py writing/supp/supp.tex \
+  -o writing/word_export/supp.tex --document-kind supp \
+  --asset-mode link --figure-format png --overwrite
 ```
 
 `link` mode requires all assets to exist and permits parent-relative paths.
@@ -84,8 +104,10 @@ is supplied; the refresh/build command always supplies it. PNG files must have
 the same basename and folder as the resolved source figures. Regenerate those
 PNGs when updating the artwork; this command does not rasterize PDF figures.
 
-The converter targets the `pnas-new` structure used by this manuscript, rather
-than arbitrary LaTeX. External `\input`/`\include` files, custom preambles,
+The converter targets the `pnas-new` structures used by these documents, rather
+than arbitrary LaTeX. Supplement conversion accepts the existing `graphicx`,
+`amsmath`, and `placeins` packages and S-prefixed figure/table counter setup.
+External `\input`/`\include` files, other custom preambles,
 unfamiliar conditional blocks, and verbatim content stop conversion for review.
 Other retained body commands may need additional packages if introduced later.
 `simple_template.tex` controls the plain layout and also serves as a standalone
