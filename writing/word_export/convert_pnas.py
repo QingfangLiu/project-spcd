@@ -348,7 +348,7 @@ def assets_for(output):
 
 
 def link_asset_paths(output, paths):
-    """Rebase only graphics/bibliography arguments to existing shared files."""
+    """Rewrite only graphics/bibliography arguments to selected asset paths."""
     edits = []
     for cmd in commands(output):
         if cmd.name not in {"includegraphics", "bibliography"}:
@@ -379,6 +379,8 @@ def main(argv=None):
                         help="Additional folder to search for assets, including by filename; repeatable.")
     parser.add_argument("--asset-mode", choices=("copy", "link"), default="copy",
                         help="Copy assets into the output project (default), or link existing files without copying. Link mode supports parent-relative paths and requires every asset to exist.")
+    parser.add_argument("--figure-format", choices=("source", "png"), default="source",
+                        help="Keep source figure formats (default), or require matching PNG files for Word import.")
     parser.add_argument("--overwrite", action="store_true", help="Replace existing output and report.")
     args = parser.parse_args(argv)
     try:
@@ -394,6 +396,7 @@ def main(argv=None):
         report["source"] = str(source_path)
         report["output"] = str(output_path)
         report["asset_mode"] = args.asset_mode
+        report["figure_format"] = args.figure_format
         asset_results = []
         copy_plan = []
         linked_paths = {}
@@ -401,7 +404,6 @@ def main(argv=None):
             rel = Path(relative)
             if args.asset_mode == "copy" and (rel.is_absolute() or ".." in rel.parts):
                 raise ConversionError(f"Asset must use a project-relative path: {relative}")
-            destination = output_path.parent / rel
             candidates = [source_path.parent / rel]
             for root in args.asset_dir:
                 candidates.extend([root / rel, root / rel.name])
@@ -411,6 +413,12 @@ def main(argv=None):
                 if len(digests) > 1:
                     raise ConversionError(f"Conflicting asset copies: {relative}")
             origin = next(iter(sorted(matches)), None)
+            if kind == "figure" and args.figure_format == "png":
+                if origin is None or not origin.with_suffix(".png").is_file():
+                    raise ConversionError(f"Matching PNG figure not found: {relative}")
+                origin = origin.with_suffix(".png")
+                rel = rel.with_suffix(".png")
+            destination = output_path.parent / rel
             if args.asset_mode == "link":
                 if origin is None:
                     raise ConversionError(f"Shared asset not found: {relative}")
@@ -428,9 +436,11 @@ def main(argv=None):
                 copy_plan.append((origin, destination))
             else:
                 state = "missing"
-            asset_results.append({"path": relative, "kind": kind, "status": state,
+            linked_paths[relative, kind] = rel.as_posix()
+            asset_results.append({"path": rel.as_posix(), "source_path": relative,
+                                  "kind": kind, "status": state,
                                   "origin": str(origin) if origin else None})
-        if args.asset_mode == "link":
+        if args.asset_mode == "link" or args.figure_format == "png":
             output = link_asset_paths(output, linked_paths)
             report["asset_path_rewrites"] = [
                 {"from": item["source_path"], "to": item["path"], "kind": item["kind"]}

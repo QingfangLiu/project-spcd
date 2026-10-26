@@ -184,6 +184,55 @@ class ConversionTests(unittest.TestCase):
             self.assertEqual(output.read_text(), "Preserve previous output")
             self.assertFalse(output.with_suffix(".conversion.json").exists())
 
+    def test_png_figures_in_link_and_copy_modes(self):
+        for mode in ("link", "copy"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                (root / "fig").mkdir()
+                (root / "fig" / "one.pdf").write_bytes(b"PDF artwork")
+                png = root / "fig" / "one.png"
+                png.write_bytes(b"PNG artwork")
+                (root / "references.bib").write_text("@article{key1, title={Reference}}")
+                source = root / "source.tex"
+                source.write_text(SOURCE)
+                output = root / "converted" / "main.tex"
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(main([str(source), "-o", str(output),
+                                           "--asset-mode", mode, "--figure-format", "png"]), 0)
+                expected = "../fig/one.png" if mode == "link" else "fig/one.png"
+                self.assertIn("{" + expected + "}", output.read_text())
+                self.assertNotIn("{fig/one.pdf}", output.read_text())
+                report = json.loads(output.with_suffix(".conversion.json").read_text())
+                self.assertEqual(report["figure_format"], "png")
+                self.assertEqual(report["assets"][0]["origin"], str(png.resolve()))
+                self.assertEqual(report["assets"][0]["source_path"], "fig/one.pdf")
+                self.assertTrue(all(check["preserved"] for check in report["checks"].values()))
+                if mode == "copy":
+                    self.assertEqual((output.parent / expected).read_bytes(), png.read_bytes())
+                    self.assertFalse((output.parent / "fig" / "one.pdf").exists())
+                else:
+                    self.assertFalse((output.parent / "fig").exists())
+                self.assertEqual(source.read_text(), SOURCE)
+
+    def test_missing_png_does_not_overwrite_previous_output(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "fig").mkdir()
+            (root / "fig" / "one.pdf").write_bytes(b"PDF artwork")
+            source = root / "source.tex"
+            source.write_text(SOURCE)
+            output = root / "converted" / "main.tex"
+            output.parent.mkdir()
+            output.write_text("Previous output")
+            report = output.with_suffix(".conversion.json")
+            report.write_text("Previous report")
+            with contextlib.redirect_stderr(io.StringIO()) as errors:
+                self.assertEqual(main([str(source), "-o", str(output), "--asset-mode", "link",
+                                       "--figure-format", "png", "--overwrite"]), 1)
+            self.assertIn("Matching PNG figure not found", errors.getvalue())
+            self.assertEqual(output.read_text(), "Previous output")
+            self.assertEqual(report.read_text(), "Previous report")
+
     def test_copy_mode_still_rejects_parent_relative_assets(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

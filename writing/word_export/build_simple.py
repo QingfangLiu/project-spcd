@@ -5,8 +5,8 @@ Run from the repository root:
     python3 writing/word_export/build_simple.py
 
 The source is writing/main/main.tex. The generated files are main.tex,
-main.conversion.json, and main.pdf beside this script. Figures and the
-bibliography stay in their shared locations; no asset copies are created.
+main.conversion.json, and main.pdf beside this script. Matching PNG figures and
+the bibliography stay in their shared locations; no asset copies are created.
 """
 
 import json
@@ -36,7 +36,8 @@ def main():
     if shutil.which("pdflatex", path=environment["PATH"]) is None:
         print("pdflatex was not found beside latexmk or on PATH.", file=sys.stderr)
         return 1
-    if convert_main([str(source), "-o", str(output), "--asset-mode", "link", "--overwrite"]):
+    if convert_main([str(source), "-o", str(output), "--asset-mode", "link",
+                     "--figure-format", "png", "--overwrite"]):
         return 1
     report_path = output.with_suffix(".conversion.json")
     report = json.loads(report_path.read_text())

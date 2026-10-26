@@ -30,10 +30,12 @@ manuscript revision, rerun the command. This is an on-demand refresh, not an
 automatic background sync. Typesetting the generated `main.tex` in TeXShop alone
 does not refresh it from the PNAS source; run the script first.
 
-Figures are read directly from the repository's shared `fig/` folder, and the
-bibliography from `writing/main/sn-bibliography.bib`. No figure or bibliography
-copies are created. Keep the repository folder structure intact. The supplement
-is not part of this conversion.
+Figures use the matching PNG files directly from the repository's shared `fig/`
+folder. The bibliography comes from `writing/main/sn-bibliography.bib`. No figure or bibliography
+copies are created. PNG artwork keeps each figure as a single raster image in
+the PDF, reducing fragmentation when Word imports vector graphics. Refresh
+stops if a matching PNG is missing. Keep the repository folder structure intact.
+The supplement is not part of this conversion.
 
 LaTeX creates temporary files alongside the PDF during a build (`.aux`, `.bbl`,
 `.blg`, `.fdb_latexmk`, `.fls`, `.log`, `.out`, and `.synctex.gz`). These can be
@@ -53,8 +55,8 @@ removed after a successful build and will be regenerated when needed. Keep
 - Body text, equations, citation keys, labels, cross-references, table cells,
   and captions are preserved. Asset paths are rebased to the shared files.
 - Figures and tables appear in source order as ordinary blocks with numbered
-  captions. Long captions can continue across pages. Figure artwork remains
-  artwork, rather than editable Word shapes.
+  captions. Long captions can continue across pages. Figures use PNG artwork;
+  their labels and panels are embedded together in each image.
 - References use `unsrt`: numbered in first-citation order. Their typography
   differs from the PNAS submission style.
 
@@ -69,7 +71,7 @@ To regenerate the plain source without building its PDF:
 
 ```sh
 python3 writing/word_export/convert_pnas.py writing/main/main.tex \
-  -o writing/word_export/main.tex --asset-mode link --overwrite
+  -o writing/word_export/main.tex --asset-mode link --figure-format png --overwrite
 ```
 
 `link` mode requires all assets to exist and permits parent-relative paths.
@@ -77,6 +79,10 @@ The default `copy` mode remains available for a separate, self-contained project
 whose source uses project-relative asset paths without `..` components. Extra
 asset search folders can be passed with `--asset-dir`. Conflicting asset copies
 stop conversion. Existing output is protected unless `--overwrite` is supplied.
+The converter itself keeps source figure formats unless `--figure-format png`
+is supplied; the refresh/build command always supplies it. PNG files must have
+the same basename and folder as the resolved source figures. Regenerate those
+PNGs when updating the artwork; this command does not rasterize PDF figures.
 
 The converter targets the `pnas-new` structure used by this manuscript, rather
 than arbitrary LaTeX. External `\input`/`\include` files, custom preambles,
