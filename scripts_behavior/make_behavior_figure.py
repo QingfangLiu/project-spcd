@@ -19,8 +19,8 @@ Probe changes are paired post-minus-pre proportions, with A2/B2 choices
 oriented against A1/B1 and A3/B3 relabeled C/D. The generator does not read
 the Illustrator file, existing panel PDFs, or cached group-level summaries.
 
-Outcome colors are local to this figure: blue = non-sated (A1/B1), orange =
-sated (A2/B2), gray = clean air (C/D). They do not encode learning route.
+Outcome colors are local to this figure: blue = non-devalued (A1/B1), orange =
+devalued (A2/B2), gray = clean air (C/D). They do not encode learning route.
 Panels D/E use neutral points and descriptive comparison labels, retaining
 the analysis cue codes underneath. Negative changes indicate reduced choice
 of the cue named before ">", independently of stimulus presentation order.
@@ -63,7 +63,7 @@ CONDITIONED_CHOICES = ("B2>B1", "B2>D", "B1>D")
 PRECONDITIONED_CHOICES = ("A2>A1", "A2>C", "A1>C")
 # Odor-number codes match pleasantness_summary.csv and the cue-odor mappings.
 OUTCOME_COLORS = {0: "#9AA3AA", 1: "#2878B5", 2: "#D97721"}
-COMPARISON_LABELS = ("Sated\n> non-sated", "Sated\n> air", "Non-sated\n> air")
+COMPARISON_LABELS = ("Devalued\n> non-devalued", "Devalued\n> air", "Non-devalued\n> air")
 
 
 def _load_subjects(
@@ -281,7 +281,7 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     _bar_inset(b.inset_axes([0.60, 0.17, 0.37, 0.40]), data["B inset"],
                ("B1", "B2", "D"), "Run 3", outcome_order=(1, 2, 0))
 
-    _plot_changes(c, data["C"], (2, 1, 0), ("Sated\nodor", "Non-sated\nodor", "Clean\nair"),
+    _plot_changes(c, data["C"], (2, 1, 0), ("Devalued\nodor", "Non-devalued\nodor", "Clean\nair"),
                   "Selective decrease\nin pleasantness", "Change in pleasantness rating\n(post − pre)",
                   (-4.05, 2.55), colors=OUTCOME_COLORS)
     for ax, letter, order, title in (
@@ -303,10 +303,12 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     for ax, letter in zip(axes, "ABCDE"):
         style_axis(ax)
         add_panel_header(ax, letter, ax.get_title(loc="left"))
+        if ax in axes[2:]:
+            ax.tick_params(axis="x", labelsize=11)
     fig.legend(
         handles=[
-            Patch(facecolor=OUTCOME_COLORS[1], label="Non-sated odor: A1/B1"),
-            Patch(facecolor=OUTCOME_COLORS[2], label="Sated odor: A2/B2"),
+            Patch(facecolor=OUTCOME_COLORS[1], label="Non-devalued odor: A1/B1"),
+            Patch(facecolor=OUTCOME_COLORS[2], label="Devalued odor: A2/B2"),
             Patch(facecolor=OUTCOME_COLORS[0], label="Clean air: C/D"),
         ],
         loc="upper center", bbox_to_anchor=(0.54, 0.998), ncol=3,

@@ -59,7 +59,7 @@ from scripts_behavior.make_behavior_figure import DEFAULT_SKIP_SUBS
 
 
 COMPARISONS = ("A1>C", "A2>A1", "A2>C", "B1>D", "B2>B1", "B2>D")
-DESCRIPTIONS = ("Non-sated > air", "Sated > non-sated", "Sated > air") * 2
+DESCRIPTIONS = ("Non-devalued > air", "Devalued > non-devalued", "Devalued > air") * 2
 CUE_TO_ODOR = {"A1": 1, "A2": 2, "C": 0, "B1": 1, "B2": 2, "D": 0}
 PHASE_COLORS = {"pre": "#929CA5", "post": SUMMARY_COLOR, "change": MUTED_TEXT_COLOR}
 PHASE_MARKERS = {"pre": "o", "post": "D", "change": "o"}

@@ -131,7 +131,7 @@ def make_figure(participants: pd.DataFrame, summary: pd.DataFrame) -> plt.Figure
                 fmt="D", color=SUMMARY_COLOR, markersize=7, markerfacecolor="white",
                 markeredgewidth=1.6, linewidth=2, capsize=4, zorder=3)
     ax.axhline(0.5, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.2, zorder=1)
-    ax.set(xticks=np.arange(3), xticklabels=["Non-sated\n(A1-B1)", "Sated\n(A2-B2)", "Clean air\n(C-D)"],
+    ax.set(xticks=np.arange(3), xticklabels=["Non-devalued\n(A1-B1)", "Devalued\n(A2-B2)", "Clean air\n(C-D)"],
            ylabel="Accuracy", xlim=(-0.45, 2.45), ylim=(0, max(1.08, summary["ci95_upper"].max() + 0.04)),
            yticks=[0, 0.25, 0.5, 0.75, 1])
     ax.set_title("Recognition memory", loc="left", pad=16)
