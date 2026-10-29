@@ -3,10 +3,13 @@
 
 Panels
 ------
-A. OFC K=2 ROIs and analysis logic.
-B. Probe-only odor-identity Spearman RSA.
-C. Passive-odor to premeal-cue cross-task decoding.
-D. Conditioned/preconditioned RSA correlations within each OFC ROI.
+A. Independently defined OFC K=2 ROIs.
+B. Cross-run RSA illustrated with an actual example neural RDM.
+C. Probe-only odor-identity Spearman RSA results.
+D. Passive-odor to premeal-cue decoding schematic.
+E. Cross-task decoding results.
+
+The former correlation panel is saved separately for the model figure.
 """
 
 from __future__ import annotations
@@ -33,6 +36,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 from matplotlib import patches
+from matplotlib.path import Path as MplPath
 import nibabel as nib
 from nibabel.processing import resample_from_to
 import numpy as np
@@ -42,7 +46,7 @@ from scipy import stats
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from figure_style import (
     LABEL_SIZE, MUTED_TEXT_COLOR, NOTE_SIZE, REFERENCE_COLOR,
-    SPINE_COLOR, SUMMARY_COLOR, TICK_SIZE, add_panel_header,
+    SPINE_COLOR, SUMMARY_COLOR, TITLE_SIZE, add_panel_header,
     configure_matplotlib, style_axis,
 )
 
@@ -53,23 +57,25 @@ CUE_ORDER = (CONDITIONED, PRECONDITIONED)
 CUE_LABELS = ("Conditioned", "Preconditioned")
 DEFAULT_SKIP_SUBS = ("sub-19", "sub-31", "sub-33")
 ANATOMY_RELATIVE_PATH = Path("masks/MNI152_T1_1mm_brain.nii.gz")
+# Reuse the illustrative cue/outcome mapping shown in Figure 1.
+DECODING_ASSETS = {
+    "odor1": "fig/design_assets/sweet_odor.png",
+    "odor2": "fig/design_assets/savory_odor.png",
+    "A1": "cues/characters_gray/charmander.jpeg",
+    "B1": "cues/places_gray/waterfall_small.jpg",
+    "A2": "cues/characters_gray/stitch.jpg",
+    "B2": "cues/places_gray/museum.jpg",
+}
 
-ROI_ORDER = (
-    "OFC_K2_cluster1_medial_posterior_lateral",
-    "OFC_K2_cluster2_central_anterior_lateral",
-)
-ROI_SHORT = {
-    ROI_ORDER[0]: "Medial/posterior-\nlateral OFC",
-    ROI_ORDER[1]: "Central/anterior-\nlateral OFC",
-}
+LATERAL_ROI = "OFC_K2_cluster2_central_anterior_lateral"
+MEDIAL_ROI = "OFC_K2_cluster1_medial_posterior_lateral"
+ROI_ORDER = (LATERAL_ROI, MEDIAL_ROI)
+ROI_SHORT = {LATERAL_ROI: "Lateral OFC", MEDIAL_ROI: "Medial OFC"}
 ROI_FILE_KEYS = {
-    ROI_ORDER[0]: "cluster1_medial_posterior_lateral",
-    ROI_ORDER[1]: "cluster2_central_anterior_lateral",
+    LATERAL_ROI: "cluster2_central_anterior_lateral",
+    MEDIAL_ROI: "cluster1_medial_posterior_lateral",
 }
-ROI_COLORS = {
-    ROI_ORDER[0]: "#8C6BB1",
-    ROI_ORDER[1]: "#238B8E",
-}
+ROI_COLORS = {LATERAL_ROI: "#238B8E", MEDIAL_ROI: "#8C6BB1"}
 INDIVIDUAL_COLOR = "#7F8992"
 
 RSA_METRIC = "odor_identity_no_image_spearman_rho"
@@ -173,7 +179,7 @@ def _mean_ci(values: np.ndarray) -> tuple[float, float, float]:
 def _participant_offsets(
     subjects: list[str], width: float = 0.16,
 ) -> dict[str, float]:
-    """Assign reproducible, value-independent jitter shared across B and C."""
+    """Assign reproducible, value-independent jitter shared across C and E."""
     subjects = sorted(set(subjects))
     offsets = (
         np.linspace(-width, width, len(subjects))
@@ -181,39 +187,6 @@ def _participant_offsets(
     )
     offsets = np.random.default_rng(20261022).permutation(offsets)
     return dict(zip(subjects, offsets))
-
-
-def _draw_method_box(
-    ax,
-    xy: tuple[float, float],
-    width: float,
-    height: float,
-    text: str,
-    *,
-    facecolor: str = "white",
-    fontsize: float = NOTE_SIZE,
-) -> None:
-    box = patches.FancyBboxPatch(
-        xy,
-        width,
-        height,
-        boxstyle="round,pad=0.009,rounding_size=0.012",
-        linewidth=0.8,
-        edgecolor=SPINE_COLOR,
-        facecolor=facecolor,
-        transform=ax.transAxes,
-        clip_on=False,
-    )
-    ax.add_patch(box)
-    ax.text(
-        xy[0] + width / 2,
-        xy[1] + height / 2,
-        text,
-        transform=ax.transAxes,
-        ha="center",
-        va="center",
-        fontsize=fontsize,
-    )
 
 
 def _draw_arrow(
@@ -231,12 +204,13 @@ def _draw_arrow(
     )
 
 
-def _plot_analysis_logic(ax, project_root: Path) -> None:
+def _plot_roi_anatomy(ax, project_root: Path) -> None:
+    """Show two coronal views of the original masks with a compact key."""
     ax.set_axis_off()
-    add_panel_header(ax, "A", "", title_lines=2)
-    anatomy = nib.as_closest_canonical(
-        nib.load(str(project_root / ANATOMY_RELATIVE_PATH))
-    )
+    ax.set_title("Independently defined OFC regions", loc="left", pad=16)
+    ax.text(-0.045, 1.06, "A", transform=ax.transAxes, fontsize=20,
+            fontweight="bold", ha="left", va="bottom", clip_on=False)
+    anatomy = nib.as_closest_canonical(nib.load(str(project_root / ANATOMY_RELATIVE_PATH)))
     anatomy_data = np.asanyarray(anatomy.dataobj, dtype=float)
     corners = nib.affines.apply_affine(
         anatomy.affine,
@@ -244,185 +218,254 @@ def _plot_analysis_logic(ax, project_root: Path) -> None:
     )
     extent = [corners[0, 0], corners[1, 0], corners[0, 2], corners[1, 2]]
     mask_dir = project_root / "masks" / "OFC_clusterMap_K2_gm0p1"
-    roi_masks = {}
-    for roi in ROI_ORDER:
-        mask = nib.load(str(mask_dir / f"mask-{roi}_gm0p1.nii.gz"))
-        # Preserve discrete ROI labels when matching the anatomical image grid.
-        roi_masks[roi] = resample_from_to(mask, anatomy, order=0).get_fdata() > 0
-
+    roi_masks = {
+        roi: resample_from_to(
+            nib.load(str(mask_dir / f"mask-{roi}_gm0p1.nii.gz")), anatomy, order=0,
+        ).get_fdata() > 0 for roi in ROI_ORDER
+    }
     intensity_max = np.percentile(anatomy_data[anatomy_data > 0], 99)
-    for column, (y_mm, label) in enumerate(((24, "Posterior"), (40, "Anterior"))):
+    views, bounds = [], []
+    for y_mm in (24, 40):
         y_index = int(round(nib.affines.apply_affine(
             np.linalg.inv(anatomy.affine), [0, y_mm, 0],
         )[1]))
-        brain_ax = ax.inset_axes([column * 0.53, 0.755, 0.47, 0.30])
+        occupied = np.argwhere(anatomy_data[:, y_index, :] > 0)
+        if not len(occupied):
+            raise ValueError(f"Empty anatomical slice at y={y_mm} mm")
+        low, high = occupied.min(axis=0), occupied.max(axis=0)
+        bounds.extend(nib.affines.apply_affine(
+            anatomy.affine, [[low[0], y_index, low[1]], [high[0], y_index, high[1]]],
+        ))
+        views.append((y_mm, y_index))
+    bounds = np.asarray(bounds)
+    # A common padded field of view includes the full brain in both slices.
+    x_limits = (float(bounds[:, 0].max() + 4), float(bounds[:, 0].min() - 4))
+    z_limits = (float(bounds[:, 2].min() - 4), float(bounds[:, 2].max() + 4))
+    for column, (y_mm, y_index) in enumerate(views):
+        brain_ax = ax.inset_axes([0.07 + column * 0.34, 0.0, 0.30, 0.91])
         brain_ax.set_facecolor("none")
         anatomical_slice = anatomy_data[:, y_index, :].T
         brain_ax.imshow(
             np.ma.masked_where(anatomical_slice <= 0, anatomical_slice),
-            cmap="gray",
-            vmin=0,
-            vmax=intensity_max,
-            origin="lower",
-            extent=extent,
-            interpolation="bilinear",
-            aspect="equal",
+            cmap="gray", vmin=0, vmax=intensity_max, origin="lower", extent=extent,
+            interpolation="bilinear", aspect="equal",
         )
         for roi in ROI_ORDER:
             roi_slice = roi_masks[roi][:, y_index, :].T
             brain_ax.imshow(
                 np.ma.masked_where(~roi_slice, roi_slice),
                 cmap=matplotlib.colors.ListedColormap([ROI_COLORS[roi]]),
-                alpha=0.85,
-                origin="lower",
-                extent=extent,
-                interpolation="nearest",
-                aspect="equal",
+                alpha=0.85, origin="lower", extent=extent,
+                interpolation="nearest", aspect="equal",
             )
-        # Radiological convention: positive MNI x (right) appears on the left.
-        brain_ax.set_xlim(74, -74)
-        brain_ax.set_ylim(-34, 70)
+        # Radiological convention: anatomical right is shown on the left.
+        brain_ax.set_xlim(*x_limits)
+        brain_ax.set_ylim(*z_limits)
         brain_ax.axis("off")
-        brain_ax.set_title(
-            f"{label} · y = +{y_mm} mm", fontsize=10,
-            color=MUTED_TEXT_COLOR, pad=5,
-        )
+        brain_ax.set_title(f"y = +{y_mm} mm", fontsize=12, color=MUTED_TEXT_COLOR, pad=5)
         for x, side, alignment in ((0.02, "R", "left"), (0.98, "L", "right")):
-            brain_ax.text(
-                x, 0.5, side, transform=brain_ax.transAxes, fontsize=10,
-                fontweight="bold", color=MUTED_TEXT_COLOR,
-                ha=alignment, va="center",
-            )
-
-    ax.text(
-        0.50,
-        1.13,
-        "Anatomical OFC ROIs",
-        transform=ax.transAxes,
-        fontsize=14,
-        fontweight="bold",
-        ha="center",
-        va="bottom",
-        clip_on=False,
-    )
+            brain_ax.text(x, 0.5, side, transform=brain_ax.transAxes, fontsize=11,
+                          fontweight="bold", color=MUTED_TEXT_COLOR, ha=alignment, va="center")
     for row, roi in enumerate(ROI_ORDER):
-        y = 0.70 - row * 0.06
-        ax.add_patch(
-            patches.Rectangle(
-                (0.14, y - 0.013),
-                0.028,
-                0.028,
-                transform=ax.transAxes,
-                color=ROI_COLORS[roi],
-            )
-        )
-        ax.text(
-            0.19,
-            y,
-            ROI_SHORT[roi].replace("\n", ""),
-            transform=ax.transAxes,
-            fontsize=12,
-            va="center",
-        )
-    ax.text(
-        0.00,
-        0.52,
-        "Within-probe RSA",
-        transform=ax.transAxes,
-        fontsize=14,
-        fontweight="bold",
-    )
-    ax.text(
-        0.42, 0.52, "(B,D)", transform=ax.transAxes,
-        fontsize=12,
-    )
-    _draw_method_box(ax, (0.00, 0.35), 0.26, 0.12, "Premeal cue\npatterns")
-    _draw_method_box(ax, (0.38, 0.35), 0.24, 0.12, "Neural RDM")
-    _draw_method_box(
-        ax,
-        (0.74, 0.35),
-        0.26,
-        0.12,
-        "Odor-identity\nRDM",
-    )
-    _draw_arrow(ax, (0.27, 0.41), (0.37, 0.41))
-    ax.text(
-        0.68,
-        0.41,
-        "ρ",
-        transform=ax.transAxes,
-        fontsize=20,
-        ha="center",
-        va="center",
-    )
-    ax.text(
-        1.00,
-        0.325,
-        "same = 0; different = 1",
-        transform=ax.transAxes,
-        fontsize=12,
-        ha="right",
-        va="top",
-        color=MUTED_TEXT_COLOR,
-    )
+        y = 0.62 - row * 0.25
+        ax.add_patch(patches.Rectangle((0.78, y - 0.025), 0.025, 0.065,
+                                      transform=ax.transAxes, color=ROI_COLORS[roi]))
+        ax.text(0.825, y, ROI_SHORT[roi], transform=ax.transAxes,
+                fontsize=14, fontweight="bold", color=ROI_COLORS[roi], va="center")
 
-    ax.text(
-        0.00,
-        0.21,
-        "Perception-to-cue decoding",
-        transform=ax.transAxes,
-        fontsize=14,
-        fontweight="bold",
+
+def _example_rdms(project_root: Path, subject: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Use the first retained participant, without selecting on RSA strength."""
+    root = (project_root / "rsa_roi" / "probe_imagewise_odor_identity_no_image_first_image"
+            / "premeal_ofc_k2_spearman" / ROI_FILE_KEYS[LATERAL_ROI]
+            / "diagnostics" / subject)
+    path = root / "preconditioned_odor_only_roi_patterns.npz"
+    with np.load(path) as saved:
+        patterns = saved["analysis_patterns"]
+        runs = saved["run_ids"]
+        conditions = saved["conditions"]
+    odors = np.array([condition[1] for condition in conditions])
+    if set(odors) != {"1", "2"} or len(np.unique(runs)) < 2:
+        raise ValueError("Example RDM requires both odor identities and multiple runs")
+    order = np.lexsort((conditions, odors, runs))
+    neural = (1 - np.corrcoef(patterns))[np.ix_(order, order)]
+    model = (odors[:, None] != odors[None, :]).astype(float)[np.ix_(order, order)]
+    runs = runs[order]
+    mask = runs[:, None] == runs[None, :]
+    return np.ma.array(neural, mask=mask), np.ma.array(model, mask=mask), runs
+
+
+def _plot_rsa_logic(ax, project_root: Path, subject: str) -> None:
+    ax.set_axis_off()
+    add_panel_header(ax, "B", "Representational\nsimilarity analysis")
+    neural, model, _ = _example_rdms(project_root, subject)
+    positions = ((0.0, neural, "Neural RDM"), (0.62, model, "Odor-identity\nRDM"))
+    cmap = plt.get_cmap("viridis").copy()
+    cmap.set_bad("#E5E7E9")
+    for x, matrix, title in positions:
+        child = ax.inset_axes([x, 0.33, 0.37, 0.53])
+        low, high = (float(matrix.min()), float(matrix.max())) if x == 0 else (0.0, 1.0)
+        im = child.imshow(matrix, cmap=cmap, vmin=low, vmax=high, interpolation="nearest")
+        child.set_title(title, fontsize=12, pad=7)
+        child.set_xticks([])
+        child.set_yticks([])
+        for spine in child.spines.values():
+            spine.set_visible(False)
+        bar_ax = ax.inset_axes([x, 0.24, 0.37, 0.025])
+        bar = ax.figure.colorbar(im, cax=bar_ax, orientation="horizontal")
+        bar.set_ticks([low, high])
+        bar.set_ticklabels(["Low", "High"] if x == 0 else ["Same (0)", "Different (1)"])
+        bar.ax.tick_params(labelsize=11, length=2)
+        if x == 0:
+            bar.set_label("Dissimilarity", fontsize=11, labelpad=3)
+    ax.text(0.495, 0.58, "Spearman\nρ", transform=ax.transAxes,
+            ha="center", va="center", fontsize=12, color="black")
+    ax.text(0.49, 0.035, "Cross-run pairs only", transform=ax.transAxes,
+            ha="center", fontsize=12, fontweight="bold")
+
+
+def _decoding_asset(ax, project_root: Path, key: str, x: float, y: float,
+                    width: float, height: float, *, alpha: float = 1.0) -> None:
+    child = ax.inset_axes([x - width / 2, y - height / 2, width, height])
+    child.imshow(plt.imread(project_root / DECODING_ASSETS[key]), cmap="gray", alpha=alpha)
+    child.set_axis_off()
+
+
+def _draw_smelling_icon(ax) -> None:
+    """Draw a compact nose profile and scent lines as editable vector paths."""
+    icon = ax.inset_axes([0.0, 0.85, 0.12, 0.16])
+    icon.set_xlim(0, 1.1)
+    icon.set_ylim(0, 1)
+    icon.set_aspect("equal")
+    icon.set_axis_off()
+    nose = MplPath(
+        [(0.28, 0.94),
+         (0.30, 0.73), (0.39, 0.57), (0.57, 0.43),
+         (0.69, 0.33), (0.61, 0.24), (0.47, 0.26),
+         (0.40, 0.28), (0.37, 0.33), (0.31, 0.27),
+         (0.26, 0.21), (0.22, 0.25), (0.22, 0.32),
+         (0.22, 0.20), (0.25, 0.14), (0.20, 0.08)],
+        [MplPath.MOVETO] + [MplPath.CURVE4] * 15,
     )
-    ax.text(
-        0.66, 0.21, "(C)", transform=ax.transAxes,
-        fontsize=12,
+    icon.add_patch(patches.PathPatch(
+        nose, fill=False, edgecolor=SUMMARY_COLOR, linewidth=1.6,
+        capstyle="round", joinstyle="round",
+    ))
+    for y in (0.48, 0.72):
+        scent = MplPath(
+            [(0.72, y), (0.82, y + 0.09), (0.93, y - 0.07), (1.04, y + 0.02)],
+            [MplPath.MOVETO, MplPath.CURVE4, MplPath.CURVE4, MplPath.CURVE4],
+        )
+        icon.add_patch(patches.PathPatch(
+            scent, fill=False, edgecolor=MUTED_TEXT_COLOR,
+            linewidth=1.3, capstyle="round",
+        ))
+
+
+def _draw_viewing_icon(ax) -> None:
+    """Match the smelling icon with an outline eye for cue viewing."""
+    icon = ax.inset_axes([0.0, 0.405, 0.12, 0.13])
+    icon.set_xlim(0, 1.1)
+    icon.set_ylim(0, 1)
+    icon.set_aspect("equal")
+    icon.set_axis_off()
+    outline = MplPath(
+        [(0.10, 0.50), (0.32, 0.88), (0.78, 0.88), (1.00, 0.50),
+         (0.78, 0.12), (0.32, 0.12), (0.10, 0.50)],
+        [MplPath.MOVETO] + [MplPath.CURVE4] * 6,
     )
-    _draw_method_box(
-        ax,
-        (0.00, 0.015),
-        0.26,
-        0.12,
-        "Odor-evoked\npatterns",
-    )
-    _draw_method_box(ax, (0.38, 0.015), 0.24, 0.12, "Linear SVM")
-    _draw_method_box(
-        ax,
-        (0.74, 0.015),
-        0.26,
-        0.12,
-        "Cue-predicted\nodor identity",
-    )
-    _draw_arrow(ax, (0.27, 0.075), (0.37, 0.075))
-    _draw_arrow(ax, (0.63, 0.075), (0.73, 0.075))
-    ax.text(
-        0.32,
-        0.145,
-        "train",
-        transform=ax.transAxes,
-        fontsize=12,
-        ha="center",
-        color=MUTED_TEXT_COLOR,
-    )
-    ax.text(
-        0.68,
-        0.145,
-        "test",
-        transform=ax.transAxes,
-        fontsize=12,
-        ha="center",
-        color=MUTED_TEXT_COLOR,
-    )
-    ax.text(
-        0.13,
-        -0.025,
-        "odor 1 vs odor 2",
-        transform=ax.transAxes,
-        fontsize=12,
-        ha="center",
-        va="top",
-        color=MUTED_TEXT_COLOR,
-    )
+    icon.add_patch(patches.PathPatch(
+        outline, fill=False, edgecolor=SUMMARY_COLOR, linewidth=1.6,
+        capstyle="round", joinstyle="round",
+    ))
+    icon.add_patch(patches.Circle(
+        (0.55, 0.50), 0.19, fill=False, edgecolor=SUMMARY_COLOR, linewidth=1.3,
+    ))
+    icon.add_patch(patches.Circle(
+        (0.55, 0.50), 0.085, facecolor=SUMMARY_COLOR, edgecolor="none",
+    ))
+
+
+def _plot_decoding_logic(ax, project_root: Path) -> None:
+    """Different task inputs share one schematic binary odor classifier."""
+    ax.set_axis_off()
+    add_panel_header(ax, "D", "Cross-task decoding")
+    # Widen the schematic while keeping its heading aligned with panel B.
+    ax = ax.inset_axes([0, 0, 1.15, 1])
+    ax.set_axis_off()
+    blue, orange = "#2878B5", "#D97721"
+    for bottom, height in ((0.565, 0.465), (-0.15, 0.68)):
+        ax.add_patch(patches.FancyBboxPatch(
+            (-0.025, bottom), 0.56, height,
+            boxstyle="round,pad=0,rounding_size=0.018",
+            transform=ax.transAxes, facecolor="none", edgecolor=SPINE_COLOR,
+            linewidth=0.9, clip_on=False,
+        ))
+    _draw_smelling_icon(ax)
+    ax.text(0.14, 0.93, "Smelling odors", transform=ax.transAxes,
+            fontsize=12, fontweight="bold", va="center")
+    ax.text(0.805, 0.95, "Odor-identity\nSVM classifier", transform=ax.transAxes,
+            fontsize=12, fontweight="bold", va="top", ha="center")
+    for center, key, label, color in (
+        (0.105, "odor1", "Odor 1", blue), (0.37, "odor2", "Odor 2", orange),
+    ):
+        _decoding_asset(ax, project_root, key, center, 0.73, 0.19, 0.19)
+        ax.text(center, 0.59, label, transform=ax.transAxes, fontsize=11,
+                color=color, fontweight="bold", ha="center")
+    _draw_arrow(ax, (0.535, 0.73), (0.61, 0.73))
+    ax.text(0.58, 0.79, "Train", transform=ax.transAxes, fontsize=11,
+            ha="center", color="black")
+
+    _draw_viewing_icon(ax)
+    ax.text(0.14, 0.465, "Viewing cues", transform=ax.transAxes,
+            fontsize=12, fontweight="bold", va="center")
+    for center, cues, key, color in (
+        (0.105, ("A1", "B1"), "odor1", blue),
+        (0.37, ("A2", "B2"), "odor2", orange),
+    ):
+        for offset, cue in zip((-0.055, 0.055), cues):
+            _decoding_asset(ax, project_root, cue, center + offset, 0.31, 0.09, 0.15)
+            ax.text(center + offset, 0.205, cue, transform=ax.transAxes,
+                    fontsize=11, fontweight="bold", ha="center")
+        ax.annotate("", xy=(center, 0.085), xytext=(center, 0.165),
+                    xycoords=ax.transAxes, textcoords=ax.transAxes,
+                    arrowprops={"arrowstyle": "-|>", "lw": 1.0,
+                                "linestyle": (0, (3, 3)), "color": color})
+        _decoding_asset(ax, project_root, key, center, 0.015, 0.14, 0.12, alpha=0.72)
+        ax.add_patch(patches.FancyBboxPatch(
+            (center - 0.085, -0.055), 0.17, 0.14,
+            boxstyle="round,pad=0,rounding_size=0.012",
+            transform=ax.transAxes, facecolor="none", edgecolor=color,
+            linewidth=1.0, linestyle=(0, (3, 3)), clip_on=False,
+        ))
+    ax.text(0.24, -0.105, "Expected odors only", transform=ax.transAxes,
+            ha="center", fontsize=11, color=MUTED_TEXT_COLOR)
+    _draw_arrow(ax, (0.61, 0.31), (0.535, 0.31))
+    ax.text(0.58, 0.37, "Test", transform=ax.transAxes, fontsize=11,
+            ha="center", color="black")
+
+    space = ax.inset_axes([0.63, 0.29, 0.35, 0.50])
+    space.set_xlim(-2.3, 2.3)
+    space.set_ylim(-1.8, 1.8)
+    x = np.linspace(-2.3, 2.3, 200)
+    space.fill_between(x, np.clip(0.63 * x, -1.8, 1.8), 1.8, color=blue, alpha=0.065, lw=0)
+    space.fill_between(x, -1.8, np.clip(0.63 * x, -1.8, 1.8), color=orange, alpha=0.065, lw=0)
+    odor1 = np.array([[-1.7, 0.5], [-1.4, 0.9], [-1.1, 1.25], [-0.8, 0.8], [-1.5, 1.25]])
+    odor2 = np.array([[0.8, -0.9], [1.3, -0.6], [1.6, -1.2], [1.0, -1.4], [1.7, -0.5]])
+    space.scatter(odor1[:, 0], odor1[:, 1], s=17, color=blue,
+                  edgecolors="white", linewidths=0.4, zorder=3)
+    space.scatter(odor2[:, 0], odor2[:, 1], s=17, marker="o", color=orange,
+                  edgecolors="white", linewidths=0.4, zorder=3)
+    space.plot(x, 0.63 * x, color=SUMMARY_COLOR, lw=1.3)
+    space.scatter(-0.1, 0.48, s=46, marker="D", color=SUMMARY_COLOR,
+                  edgecolors="white", linewidths=0.7, zorder=5)
+    space.annotate("Cue", xy=(-0.1, 0.48), xytext=(-1.1, -0.2), fontsize=10,
+                   ha="center", arrowprops={"arrowstyle": "->", "lw": 0.8,
+                                           "color": SUMMARY_COLOR, "shrinkB": 5})
+    space.set_xticks([])
+    space.set_yticks([])
+    for spine in space.spines.values():
+        spine.set_visible(False)
 
 
 def _plot_paired_results(
@@ -436,22 +479,29 @@ def _plot_paired_results(
     ylabel: str,
     panel_letter: str,
     round_for_ranks: bool,
-    baseline_label: str,
+    heading_lines: int = 1,
 ) -> None:
     ax.set_axis_off()
-    add_panel_header(ax, panel_letter, title)
-    positions = {CONDITIONED: 0.0, PRECONDITIONED: 0.9}
+    add_panel_header(ax, panel_letter, title, title_lines=heading_lines)
+    if heading_lines > 1:
+        ax.set_title(title, loc="left", pad=16 + TITLE_SIZE * 1.2 * (heading_lines - 1))
+    positions = {CONDITIONED: 0.0, PRECONDITIONED: 1.2}
+    summaries_all = [
+        _mean_ci(group[metric].to_numpy(dtype=float))
+        for _, group in data.groupby(["roi", "cue_subset"])
+    ]
+    lower = min(baseline, data[metric].min(), *(ci[1] for ci in summaries_all))
+    upper = max(baseline, data[metric].max(), *(ci[2] for ci in summaries_all))
+    span = max(upper - lower, 0.01)
+    limits = (lower - 0.12 * span, upper + 0.20 * span)
 
     for index, roi in enumerate(ROI_ORDER):
-        child = ax.inset_axes([0.56 * index, 0.0, 0.44, 1.0])
+        child = ax.inset_axes([0.58 * index, 0.0, 0.42, 0.90])
         subset = data.loc[data["roi"] == roi]
         wide = subset.pivot(index="sub", columns="cue_subset", values=metric)
         wide = wide.loc[:, list(CUE_ORDER)].dropna().sort_index()
         summaries = {cue: _mean_ci(wide[cue].to_numpy(dtype=float)) for cue in CUE_ORDER}
-        lower = min(baseline, wide.to_numpy().min(), *(ci[1] for ci in summaries.values()))
-        upper = max(baseline, wide.to_numpy().max(), *(ci[2] for ci in summaries.values()))
-        span = max(upper - lower, 0.01)
-        child.set_ylim(lower - 0.12 * span, upper + 0.20 * span)
+        child.set_ylim(*limits)
         x_conditioned = positions[CONDITIONED]
         x_preconditioned = positions[PRECONDITIONED]
         jitter = np.array([subject_offsets[sub] for sub in wide.index])
@@ -514,23 +564,12 @@ def _plot_paired_results(
             )
 
         child.axhline(baseline, color=REFERENCE_COLOR, linewidth=1.2, linestyle=(0, (3, 3)))
-        child.annotate(
-            baseline_label,
-            xy=(0.98, baseline),
-            xycoords=child.get_yaxis_transform(),
-            xytext=(0, 4),
-            textcoords="offset points",
-            fontsize=10,
-            ha="right",
-            va="bottom",
-            color=MUTED_TEXT_COLOR,
-        )
-        child.set_xlim(-0.48, 1.60)
+        child.set_xlim(-0.48, 1.68)
         if index == 0:
             child.set_ylabel(ylabel, fontsize=LABEL_SIZE)
         child.set_xticks(
             list(positions.values()), CUE_LABELS,
-            rotation=24, ha="right", fontsize=TICK_SIZE,
+            rotation=0, ha="center", fontsize=12,
         )
         child.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(nbins=4))
         if metric == DECODING_METRIC:
@@ -539,17 +578,18 @@ def _plot_paired_results(
             )
         child.text(
             0.5,
-            -0.32,
+            1.045,
             ROI_SHORT[roi],
             transform=child.transAxes,
             ha="center",
-            va="top",
+            va="bottom",
             fontsize=NOTE_SIZE,
             fontweight="bold",
             color=ROI_COLORS[roi],
             clip_on=False,
         )
         style_axis(child)
+        child.tick_params(axis="x", labelsize=12)
 
 
 def _plot_rsa_correlations(ax, data: pd.DataFrame) -> list[dict]:
@@ -561,7 +601,7 @@ def _plot_rsa_correlations(ax, data: pd.DataFrame) -> list[dict]:
     """
     ax.set_axis_off()
     add_panel_header(
-        ax, "D", "Competition between direct and\ninferred odor-identity representations",
+        ax, "", "Empirical competition between direct and\ninferred odor-identity representations",
     )
     paired = []
     for roi in ROI_ORDER:
@@ -575,14 +615,14 @@ def _plot_rsa_correlations(ax, data: pd.DataFrame) -> list[dict]:
             raise ValueError(f"At least three paired subjects are required: {roi}")
         paired.append(wide)
     if not paired[0].index.equals(paired[1].index):
-        raise ValueError("Panel D requires matching subjects across the two ROIs.")
+        raise ValueError("Correlation plots require matching subjects across the two ROIs.")
 
     all_values = np.concatenate([wide.to_numpy().ravel() for wide in paired])
     padding = 0.12 * np.ptp(all_values)
     limits = (float(all_values.min() - padding), float(all_values.max() + padding))
     summaries = []
     for index, (roi, wide) in enumerate(zip(ROI_ORDER, paired)):
-        # Fill the parent plot height so D aligns with C in the lower row.
+        # Use a common scale and matching plot heights for the two ROIs.
         child = ax.inset_axes([0.56 * index, 0.0, 0.44, 1.0])
         x = wide[CONDITIONED].to_numpy(dtype=float)
         y = wide[PRECONDITIONED].to_numpy(dtype=float)
@@ -622,7 +662,7 @@ def _plot_rsa_correlations(ax, data: pd.DataFrame) -> list[dict]:
         child.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(nbins=4))
         style_axis(child)
         child.text(
-            0.5, -0.32, ROI_SHORT[roi], transform=child.transAxes,
+            0.5, -0.50, ROI_SHORT[roi], transform=child.transAxes,
             ha="center", va="top", fontsize=NOTE_SIZE,
             fontweight="bold", color=color, clip_on=False,
         )
@@ -668,7 +708,7 @@ def _subject_paths(project_root: Path, analysis: str) -> list[Path]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Create the draft 2x2 PNAS odor-identity figure."
+        description="Create the five-panel odor-identity figure and preserve the correlation plots separately."
     )
     parser.add_argument(
         "--project_root",
@@ -704,6 +744,7 @@ def main() -> None:
         *rsa_paths,
         *decoding_paths,
         project_root / ANATOMY_RELATIVE_PATH,
+        *[project_root / asset for asset in DECODING_ASSETS.values()],
         *[
             project_root / "masks" / "OFC_clusterMap_K2_gm0p1"
             / f"mask-{roi}_gm0p1.nii.gz"
@@ -730,54 +771,33 @@ def main() -> None:
     )
 
     configure_matplotlib()
-    figure = plt.figure(figsize=(13.4, 11.6), facecolor="white")
+    figure = plt.figure(figsize=(13.4, 13.5), facecolor="white")
+    # Give each row's labels clear separation from the next row's headings,
+    # using a taller canvas to preserve the anatomy and result plot heights.
     grid = figure.add_gridspec(
-        2,
-        2,
-        left=0.095,
-        right=0.985,
-        top=0.90,
-        bottom=0.155,
-        wspace=0.43,
-        hspace=0.72,
+        5, 2, left=0.08, right=0.98, top=0.94, bottom=0.13,
+        height_ratios=(0.85, 0.35, 1, 0.42, 1), width_ratios=(1, 1.5),
+        wspace=0.50, hspace=0,
     )
-    ax_a = figure.add_subplot(grid[0, 0])
-    ax_b = figure.add_subplot(grid[0, 1])
-    ax_c = figure.add_subplot(grid[1, 0])
-    ax_d = figure.add_subplot(grid[1, 1])
-
-    # Use the open inter-row space for a readable diagram, keeping its header
-    # aligned with panel B and all result panels in their existing positions.
-    position = ax_a.get_position()
-    ax_a.set_position([
-        position.x0, position.y0 - 0.08, position.width, position.height + 0.08,
-    ])
-    _plot_analysis_logic(ax_a, project_root)
+    ax_a = figure.add_subplot(grid[0, :])
+    ax_b = figure.add_subplot(grid[2, 0])
+    ax_c = figure.add_subplot(grid[2, 1])
+    ax_d = figure.add_subplot(grid[4, 0])
+    ax_e = figure.add_subplot(grid[4, 1])
+    _plot_roi_anatomy(ax_a, project_root)
+    example_subject = sorted(rsa_data["sub"].unique())[0]
+    _plot_rsa_logic(ax_b, project_root, example_subject)
     _plot_paired_results(
-        ax_b,
-        rsa_data,
-        subject_offsets=subject_offsets,
-        metric=RSA_METRIC,
-        baseline=0.0,
-        title="Representation of\npredicted odor identity",
-        ylabel="Spearman ρ: neural vs\nodor-identity RDM",
-        panel_letter="B",
-        round_for_ranks=False,
-        baseline_label="zero",
+        ax_c, rsa_data, subject_offsets=subject_offsets, metric=RSA_METRIC,
+        baseline=0.0, title="Odor-identity RSA", ylabel="Spearman ρ: neural vs\nodor-identity RDM",
+        panel_letter="C", round_for_ranks=False, heading_lines=2,
     )
+    _plot_decoding_logic(ax_d, project_root)
     _plot_paired_results(
-        ax_c,
-        decoding_data,
-        subject_offsets=subject_offsets,
-        metric=DECODING_METRIC,
-        baseline=0.5,
-        title="Sensory reinstatement of\npredicted odor identity",
-        ylabel="Perception-to-cue\ndecoding accuracy",
-        panel_letter="C",
-        round_for_ranks=True,
-        baseline_label="chance",
+        ax_e, decoding_data, subject_offsets=subject_offsets, metric=DECODING_METRIC,
+        baseline=0.5, title="Odor-identity decoding accuracy", ylabel="Perception-to-cue\ndecoding accuracy",
+        panel_letter="E", round_for_ranks=True,
     )
-    correlation_summaries = _plot_rsa_correlations(ax_d, rsa_data)
 
     output_prefix.parent.mkdir(parents=True, exist_ok=True)
     for extension in dict.fromkeys(args.formats):
@@ -790,12 +810,23 @@ def main() -> None:
         print(f"Saved: {output_path}")
     plt.close(figure)
 
-    print("\nPanel D Spearman correlations (one-sided negative, uncorrected):")
+    # Preserve the removed empirical panel for the forthcoming model figure.
+    correlation_figure, correlation_ax = plt.subplots(figsize=(8.2, 4.7))
+    correlation_figure.subplots_adjust(left=0.14, right=0.98, bottom=0.29, top=0.77)
+    correlation_summaries = _plot_rsa_correlations(correlation_ax, rsa_data)
+    correlation_prefix = output_prefix.with_name(
+        "odor_identity_correlation" if output_prefix.name == "odor_identity_fmri"
+        else output_prefix.name + "_correlation"
+    )
+    for extension in dict.fromkeys(args.formats):
+        extension = extension.lstrip(".")
+        path = correlation_prefix.with_suffix(f".{extension}")
+        correlation_figure.savefig(path, dpi=args.dpi, bbox_inches="tight", facecolor="white")
+        print(f"Preserved correlation panel: {path}")
+    plt.close(correlation_figure)
+    print("\nPreserved empirical Spearman correlations (one-sided negative, uncorrected):")
     for summary in correlation_summaries:
-        print(
-            f"  {summary['roi']}: n={summary['n']}, "
-            f"rho={summary['rho']:.6f}, p={summary['p_spearman']:.6f}"
-        )
+        print(f"  {summary['roi']}: n={summary['n']}, rho={summary['rho']:.6f}, p={summary['p_spearman']:.6f}")
 
     print("\nPrimary displayed statistics (one-sided):")
     for roi in ROI_ORDER:
