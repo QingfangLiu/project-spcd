@@ -269,9 +269,10 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
                ("A1-B1", "A2-B2", "C-D"), "Day 2 last run", outcome_order=(1, 2, 0))
 
     summary = _summary(data["B"], (1, 2, 3))
-    jitter = np.random.default_rng(0).normal(0, 0.04, size=len(data["B"]))
-    b.scatter(data["B"]["category"] + jitter, data["B"]["value"], color=MUTED_TEXT_COLOR,
-               alpha=0.4, s=32, linewidths=0)
+    for _, subject_data in data["B"].groupby("subject"):
+        subject_data = subject_data.sort_values("category")
+        b.plot(subject_data["category"], subject_data["value"], color=SPINE_COLOR,
+               alpha=0.4, linewidth=0.9)
     b.errorbar([1, 2, 3], summary["mean"], yerr=summary["std"], fmt="D-",
                color=SUMMARY_COLOR, markersize=6.5, capsize=4, linewidth=2,
                markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6)
