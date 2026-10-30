@@ -105,6 +105,7 @@ SECTIONS = {
     "acknow": "Acknowledgments",
 }
 REJECT = {"input", "include", "includeonly", "endinput", "verbatim", "verb"}
+CITATION_COMMANDS = {"cite", "citep", "citet", "citeyearpar", "citeyear", "citeauthor"}
 
 
 def commands(text):
@@ -147,6 +148,33 @@ def plain_space(text):
     return re.sub(r"\s+", " ", text).strip()
 
 
+def canonical_citations(text):
+    """Ignore citation presentation when checking that source content survived."""
+    return re.sub(r"\\(?:" + "|".join(sorted(CITATION_COMMANDS)) + r")\b",
+                  lambda _: r"\cite", text)
+
+
+def author_year_citations(text):
+    """Change citation commands only; preserve keys, notes, and surrounding prose."""
+    edits = []
+    counts = {"parenthetical": 0, "narrative_year": 0}
+    for cmd in commands(text):
+        if cmd.name != "cite":
+            continue
+        end = cmd.end
+        has_notes = False
+        while text[skip_space(text, end):].startswith("["):
+            has_notes = True
+            _, end = group(text, end, "[")
+        keys, _ = group(text, end)
+        narrative = (not has_notes and "," not in keys
+                     and re.search(r"\bet\s+al\.(?:\s|\\\s|~)*$", text[:cmd.start]))
+        name = "citeyearpar" if narrative else "citep"
+        counts["narrative_year" if narrative else "parenthetical"] += 1
+        edits.append((cmd.start, cmd.end, "\\" + name))
+    return replace_spans(text, edits), counts
+
+
 def content_items(text):
     """Fingerprint semantic objects that must survive the layout translation."""
     items = {"citations": [], "labels": [], "references": [], "equations": [],
@@ -156,6 +184,7 @@ def content_items(text):
                  "autoref": "references", "eqref": "references",
                  "caption": "captions", "includegraphics": "graphics",
                  "bibliography": "bibliography"}
+        names.update({name: "citations" for name in CITATION_COMMANDS})
         if cmd.name in names:
             end = cmd.end
             while text[skip_space(text, end):].startswith("["):
@@ -329,7 +358,7 @@ def convert(source, template, document_kind="main"):
         raise ConversionError("Content inventory mismatch before layout conversion.")
     body = flatten_floats(body)
     if r"\bibliography{" in body:
-        body = body.replace(r"\bibliography{", r"\bibliographystyle{unsrt}" + "\n"
+        body = body.replace(r"\bibliography{", r"\bibliographystyle{plainnat}" + "\n"
                             + r"\bibliography{", 1)
     if not supplement and not re.match(r"\\section\*?\{", body.lstrip()):
         body = "\\section*{Introduction}\n\n" + body
@@ -343,17 +372,20 @@ def convert(source, template, document_kind="main"):
             raise ConversionError(f"Template needs one simple-{name} marker pair.")
         output = re.sub(pattern, lambda _: content, output, flags=re.S)
     output = re.sub(r"[ \t]+$", "", output, flags=re.M)
+    output, citation_rewrites = author_year_citations(output)
     # Verify relocated metadata, abstract, wrapper contents, and captions verbatim
-    # (apart from whitespace). Figures and tables now use ordinary paragraphs.
-    normalized = plain_space(output)
+    # apart from whitespace and citation presentation. Figures and tables now
+    # use ordinary paragraphs; citation keys and notes must remain unchanged.
+    normalized = plain_space(canonical_citations(output))
     protected = [abstract]
     protected += [c.args[0] for c in found if c.name in FRONT or c.name in set(SECTIONS) - {"matmethods"}]
     protected += expected["captions"]
     for content in protected:
-        if plain_space(content) not in normalized:
+        if plain_space(canonical_citations(content)) not in normalized:
             raise ConversionError("Protected content did not survive conversion.")
     for key in ["equations", "tables", "citations", "labels", "references", "graphics", "bibliography"]:
-        if Counter(content_items(output)[key]) != Counter(expected[key]):
+        actual_values = content_items(output)[key]
+        if Counter(map(canonical_citations, actual_values)) != Counter(map(canonical_citations, expected[key])):
             raise ConversionError(f"Content check failed: {key}.")
     report = {"source_sha256": hashlib.sha256(source.encode()).hexdigest(),
               "document_kind": document_kind,
@@ -362,7 +394,10 @@ def convert(source, template, document_kind="main"):
               "metadata_and_abstract_preserved": True,
               "ordinary_body_spans_preserved": True,
               "removed_layout_metadata": removed,
-              "layout": "12pt article, one column, 1-inch margins; nonfloating figures and tables; unsrt bibliography",
+              "citation_style": "author-year",
+              "bibliography_style": "plainnat",
+              "citation_rewrites": citation_rewrites,
+              "layout": "12pt article, one column, 1-inch margins; nonfloating figures and tables; author-year plainnat bibliography",
               "note": "Checks verify source content, not PDF appearance or reference resolution."}
     return output, report
 

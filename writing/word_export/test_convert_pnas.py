@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 from convert_pnas import ConversionError, convert, group, main, strip_comments
+from build_simple import clear_incompatible_bibliography_cache
 
 
 TEMPLATE = Path(__file__).with_name("simple_template.tex").read_text()
@@ -94,12 +95,12 @@ class ConversionTests(unittest.TestCase):
         output, report = convert(SUPPLEMENT, TEMPLATE, "supp")
         for text in [r"\subsection*{Supplementary Methods}",
                      r"\subsection*{Supplementary Results}",
-                     r"Methods must survive unchanged, with \cite{key1} and Fig.~\ref{fig:supp}.",
+                     r"Methods must survive unchanged, with \citep{key1} and Fig.~\ref{fig:supp}.",
                      r"Results with $p < 0.05$.",
                      r"A supplementary caption with \textbf{formatting}.",
                      r"\renewcommand{\thefigure}{S\arabic{figure}}",
                      r"\renewcommand{\thetable}{S\arabic{table}}",
-                     r"\bibliographystyle{unsrt}", r"\clearpage"]:
+                     r"\bibliographystyle{plainnat}", r"\clearpage"]:
             self.assertIn(text, output)
         for text in [r"\section*{Introduction}", r"\section*{Abstract}",
                      r"\SItext", r"\FloatBarrier", r"\begin{figure}", "pnas-new"]:
@@ -156,7 +157,7 @@ class ConversionTests(unittest.TestCase):
         for text in ["Methods sentence that must never be lost", "Original conclusion.",
                      r"A caption with \textbf{nested {formatting}} and 95\%.",
                      r"We thank \textbf{our colleagues}.",
-                     r"Author One\textsuperscript{a,1}", r"\cite{key3}"]:
+                     r"Author One\textsuperscript{a,1}", r"\citep{key3}"]:
             self.assertIn(text, output)
         self.assertIn(r"\section*{Materials and methods}", output)
         self.assertNotIn(r"\begin{figure*}", output)
@@ -166,6 +167,39 @@ class ConversionTests(unittest.TestCase):
         self.assertEqual(report["checks"]["citations"]["count"], 2)
         self.assertEqual(report["checks"]["captions"]["count"], 2)
         self.assertTrue(all(x["preserved"] for x in report["checks"].values()))
+
+    def test_author_year_citations_preserve_multiple_keys_and_optional_notes(self):
+        source = SOURCE.replace(r"\cite{key1,key2}", r"\cite[see][pp.~{2--3}]{key1,key2}")
+        output, report = convert(source, TEMPLATE)
+        self.assertIn(r"\citep[see][pp.~{2--3}]{key1,key2}", output)
+        self.assertIn(r"\usepackage[authoryear,round,sort]{natbib}", output)
+        self.assertIn(r"\bibliographystyle{plainnat}", output)
+        self.assertEqual(report["citation_style"], "author-year")
+        self.assertEqual(report["checks"]["citations"]["count"], 2)
+        self.assertEqual(report["citation_rewrites"], {"parenthetical": 2, "narrative_year": 0})
+
+    def test_existing_narrative_authors_in_body_and_caption_get_year_only(self):
+        source = SOURCE.replace(r"\cite{key1,key2}", r"Bartra et al.\ \cite{key1}")
+        source = source.replace("A caption with", r"Bartra et al.~\cite{key2}. A caption with")
+        output, report = convert(source, TEMPLATE)
+        self.assertIn(r"Bartra et al.\ \citeyearpar{key1}", output)
+        self.assertIn(r"Bartra et al.~\citeyearpar{key2}. A caption with", output)
+        self.assertEqual(report["citation_rewrites"], {"parenthetical": 1, "narrative_year": 2})
+        self.assertTrue(report["checks"]["captions"]["preserved"])
+
+    def test_bibliography_cache_migration_keeps_pdf_and_matching_cache(self):
+        with tempfile.TemporaryDirectory() as temp:
+            output = Path(temp) / "main.tex"
+            for suffix in (".pdf", ".bbl", ".blg", ".fdb_latexmk"):
+                output.with_suffix(suffix).write_bytes(b"Keep final output")
+            output.with_suffix(".aux").write_text(r"\bibstyle{unsrt}")
+            clear_incompatible_bibliography_cache(output, "plainnat")
+            self.assertEqual(output.with_suffix(".pdf").read_bytes(), b"Keep final output")
+            self.assertFalse(output.with_suffix(".bbl").exists())
+            output.with_suffix(".aux").write_text(r"\bibstyle{plainnat}")
+            output.with_suffix(".bbl").write_bytes(b"Compatible bibliography")
+            clear_incompatible_bibliography_cache(output, "plainnat")
+            self.assertEqual(output.with_suffix(".bbl").read_bytes(), b"Compatible bibliography")
 
     def test_front_matter_can_also_be_in_preamble(self):
         source = SOURCE.replace(r"\title{A title with \textbf{nested braces}}", "")

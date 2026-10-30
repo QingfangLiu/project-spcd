@@ -71,8 +71,13 @@ files, as the current outputs.
 - Figures and tables appear in source order as ordinary blocks with numbered
   captions. Long captions can continue across pages. Figures use PNG artwork;
   their labels and panels are embedded together in each image.
-- References use `unsrt`: numbered in first-citation order. Their typography
-  differs from the PNAS submission style.
+- In-text citations use author and year, such as `(Daw et al., 2011)`, with
+  an alphabetical, unnumbered reference list (`natbib` and `plainnat`). This
+  applies to both Word-export PDFs; the PNAS sources retain numbered citations.
+  Existing narrative mentions ending in `et al.` receive year-only parentheses
+  for single-key citations without notes, avoiding duplicated author names.
+  Citation keys and optional notes are preserved. The build clears obsolete
+  bibliography caches automatically when changing bibliography styles.
 - The supplement retains its methods and results headings, figure page breaks,
   and S-prefixed figure and table numbering. It has a plain title block without
   the PNAS cover page and does not require an abstract or add an Introduction.

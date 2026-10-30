@@ -57,9 +57,22 @@ def main(argv=None):
     return 0
 
 
+def clear_incompatible_bibliography_cache(output, bibliography_style):
+    """Remove rebuildable numeric caches before the first author-year build."""
+    auxiliary = output.with_suffix(".aux")
+    if not bibliography_style or not auxiliary.is_file():
+        return
+    styles = [line.strip() for line in auxiliary.read_text(errors="replace").splitlines()
+              if line.startswith(r"\bibstyle{")]
+    if styles and styles != [r"\bibstyle{" + bibliography_style + "}"]:
+        for suffix in (".aux", ".bbl", ".blg", ".fdb_latexmk"):
+            output.with_suffix(suffix).unlink(missing_ok=True)
+
+
 def build_pdf(output, executable, environment):
     report_path = output.with_suffix(".conversion.json")
     report = json.loads(report_path.read_text())
+    clear_incompatible_bibliography_cache(output, report.get("bibliography_style"))
     result = subprocess.run(
         [executable, "-pdf", "-interaction=nonstopmode", "-halt-on-error",
          "-file-line-error", "-synctex=1", output.name],

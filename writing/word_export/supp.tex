@@ -17,6 +17,8 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
+\usepackage[authoryear,round,sort]{natbib}
+\setcitestyle{aysep={,},citesep={;}}
 \usepackage[hidelinks]{hyperref}
 
 % Plain, single-column text, without running headers or line numbers.
@@ -54,7 +56,7 @@ Qingfang Liu, Yao Zhao, Taaseen Khan, Nicole Moussa, Geoffrey Schoenbaum, and Th
 
 \paragraph*{Nuisance regressors}
 
-Nuisance regressors were constructed following procedures used in our previous work \cite{liu2025distinct,liuyaoatt24}. Each run included six rigid-body motion parameters, their first temporal differences, and the squared terms of both, yielding 24 motion regressors, together with the respiratory regressors described in the main text. To capture image artifacts, two additional measures were calculated from the unprocessed shortest-echo images: the difference in mean signal between odd- and even-numbered slices and the variance of mean signal across slices. Each measure was expressed as an absolute standardized deviation using its mean and standard deviation across all runs within each participant. These two time series, their first temporal differences, and their squared temporal differences were included as nuisance regressors. Volumes exceeding four standard deviations on either artifact measure were modeled using separate indicator regressors. All nuisance regressors were z-scored within each run before inclusion in the GLMs.
+Nuisance regressors were constructed following procedures used in our previous work \citep{liu2025distinct,liuyaoatt24}. Each run included six rigid-body motion parameters, their first temporal differences, and the squared terms of both, yielding 24 motion regressors, together with the respiratory regressors described in the main text. To capture image artifacts, two additional measures were calculated from the unprocessed shortest-echo images: the difference in mean signal between odd- and even-numbered slices and the variance of mean signal across slices. Each measure was expressed as an absolute standardized deviation using its mean and standard deviation across all runs within each participant. These two time series, their first temporal differences, and their squared temporal differences were included as nuisance regressors. Volumes exceeding four standard deviations on either artifact measure were modeled using separate indicator regressors. All nuisance regressors were z-scored within each run before inclusion in the GLMs.
 
 \paragraph*{Behavioral data analysis}
 
@@ -88,7 +90,7 @@ We examined subjective odor-value representations by combining single-image beta
 
 For each participant, the three outcome pleasantness ratings from each phase were jointly z-scored across the six phase-by-outcome values. Each cue presentation was assigned its associated outcome's rating from the corresponding phase. The odor-value RDM contained absolute differences between these assigned values. Neural dissimilarities were regressed on odor-value dissimilarity together with cue type (conditioned versus preconditioned), image identity, button presence, and button side RDMs, using ordinary least squares with an intercept. Image identity was defined independently of first versus second presentation position. Button labels were assigned to second-cue presentations, whereas first-cue presentations were labeled as having no response. Separate odor-identity and phase RDMs were not included in this regression.
 
-Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction used the independently defined vmPFC component of the positive-greater-than-negative subjective-value meta-analysis map from Bartra et al.\ \cite{bartra2013valuation}, Fig.~3D. The vmPFC component contained 1,245 voxels at 2\,mm isotropic resolution, of which 1,233 overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within this volume, using the smoothness estimated from the group model. Cluster-level inference was additionally evaluated with a voxelwise cluster-defining threshold of $p < 0.001$, uncorrected.
+Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction used the independently defined vmPFC component of the positive-greater-than-negative subjective-value meta-analysis map from Bartra et al.\ \citeyearpar{bartra2013valuation}, Fig.~3D. The vmPFC component contained 1,245 voxels at 2\,mm isotropic resolution, of which 1,233 overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within this volume, using the smoothness estimated from the group model. Cluster-level inference was additionally evaluated with a voxelwise cluster-defining threshold of $p < 0.001$, uncorrected.
 
 \subsection*{Supplementary Results}
 
@@ -189,7 +191,7 @@ Panels A--C show preconditioned cues, and panels D--F show conditioned cues. Eac
 \includegraphics[width=\linewidth]{../../supp_fig/vmpfc_value_rsa.png}
 \end{center}
 \par\noindent\textbf{Figure~\thefigure. }\textbf{vmPFC representation of subjective odor value.}
-Coronal ($y = 48$), sagittal ($x = 12$), and axial ($z = 0$) views show the positive group-level odor-value RSA t map from the combined premeal and postmeal probe analysis ($n = 30$), overlaid on the SPM-normalized ICBM152NLin2009 anatomical reference distributed with MRIcroGL. Crosshairs intersect at MNI $[12, 48, 0]$. Colored voxels show the whole-brain map at $p < 0.001$, uncorrected, with no extent threshold, for visualization; native 2\,mm statistical voxels are displayed without interpolation. Peak-level FWE correction was confined to the independently defined vmPFC component of the meta-analysis mask from Bartra et al.\ \cite{bartra2013valuation}, Fig.~3D. The vmPFC peak survived correction within that volume ($t(29) = 3.79$, peak-level $p_{\mathrm{FWE}} = 0.045$), whereas cluster-level correction within the vmPFC volume did not reach significance ($p_{\mathrm{FWE}} = 0.096$). The color bar indicates t values. Coronal and axial views use neurological orientation (left hemisphere shown on the left).\par
+Coronal ($y = 48$), sagittal ($x = 12$), and axial ($z = 0$) views show the positive group-level odor-value RSA t map from the combined premeal and postmeal probe analysis ($n = 30$), overlaid on the SPM-normalized ICBM152NLin2009 anatomical reference distributed with MRIcroGL. Crosshairs intersect at MNI $[12, 48, 0]$. Colored voxels show the whole-brain map at $p < 0.001$, uncorrected, with no extent threshold, for visualization; native 2\,mm statistical voxels are displayed without interpolation. Peak-level FWE correction was confined to the independently defined vmPFC component of the meta-analysis mask from Bartra et al.\ \citeyearpar{bartra2013valuation}, Fig.~3D. The vmPFC peak survived correction within that volume ($t(29) = 3.79$, peak-level $p_{\mathrm{FWE}} = 0.045$), whereas cluster-level correction within the vmPFC volume did not reach significance ($p_{\mathrm{FWE}} = 0.096$). The color bar indicates t values. Coronal and axial views use neurological orientation (left hemisphere shown on the left).\par
 
 \label{fig_vmpfc_value}
 
@@ -198,7 +200,7 @@ Coronal ($y = 48$), sagittal ($x = 12$), and axial ($z = 0$) views show the posi
 
 
 
-\bibliographystyle{unsrt}
+\bibliographystyle{plainnat}
 \bibliography{../main/sn-bibliography}
 
 \end{document}

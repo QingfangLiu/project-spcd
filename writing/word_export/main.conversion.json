@@ -110,7 +110,13 @@
       "option": "17"
     }
   ],
-  "layout": "12pt article, one column, 1-inch margins; nonfloating figures and tables; unsrt bibliography",
+  "citation_style": "author-year",
+  "bibliography_style": "plainnat",
+  "citation_rewrites": {
+    "parenthetical": 27,
+    "narrative_year": 0
+  },
+  "layout": "12pt article, one column, 1-inch margins; nonfloating figures and tables; author-year plainnat bibliography",
   "note": "Checks verify source content, not PDF appearance or reference resolution.",
   "source": "/Users/liuq13/project-spcd/writing/main/main.tex",
   "output": "/Users/liuq13/project-spcd/writing/word_export/main.tex",
