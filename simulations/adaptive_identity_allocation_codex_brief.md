@@ -586,8 +586,8 @@ adaptive-identity-allocation/
 ├── scripts/
 │   └── make_figure.py
 ├── figures/
-│   ├── fig4_model.pdf
-│   └── fig4_model.png
+│   ├── fig5_model.pdf
+│   └── fig5_model.png
 └── results/
     └── simulation_summary.csv
 ```
@@ -676,7 +676,7 @@ The figure should be understandable before reading the detailed mathematical der
 
 # Draft figure caption
 
-**Figure 4. A resource-limited model of outcome-identity representation.**
+**Figure 5. A resource-limited model of outcome-identity representation.**
 
 **A. Benefits of identity representation.** Decision loss for a cue decreases with the amount of representational resource allocated to its outcome identity, \(L_i=a_i e^{-r_i}\). The parameter \(a_i\) determines the computational value of explicitly representing that outcome identity, whereas \(r_i\) denotes representational resource. The exponential form produces diminishing returns.
 

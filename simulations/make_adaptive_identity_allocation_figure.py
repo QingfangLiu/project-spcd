@@ -39,8 +39,8 @@ sys.path.insert(0, str(REPO_ROOT))
 from figure_style import configure_matplotlib as configure_shared, style_axis as style_shared
 
 FIGURES_DIR = REPO_ROOT / "fig"
-PDF_PATH = FIGURES_DIR / "fig4_model.pdf"
-PNG_PATH = FIGURES_DIR / "fig4_model.png"
+PDF_PATH = FIGURES_DIR / "fig5_model.pdf"
+PNG_PATH = FIGURES_DIR / "fig5_model.png"
 
 EXAMPLE_BUDGET = 4.0
 EXAMPLE_A_P = 4.0

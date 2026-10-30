@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""Build the draft PNAS odor-identity convergence figure.
+"""Build separate PNAS odor-identity RSA and cross-task decoding figures.
 
-Panels
-------
+Figure 3
+--------
 A. Independently defined OFC K=2 ROIs.
 B. Cross-run RSA illustrated with an actual example neural RDM.
 C. Probe-only odor-identity Spearman RSA results.
-D. Passive-odor to premeal-cue decoding schematic.
-E. Cross-task decoding results.
 
-Figure 4 presents the empirical correlation analysis alongside the model prediction.
+Figure 4
+--------
+A. Passive-odor to premeal-cue decoding schematic.
+B. Cross-task decoding results.
+
+Figure 5 presents the empirical correlation analysis alongside the model prediction.
 """
 
 from __future__ import annotations
@@ -441,8 +444,8 @@ def _draw_viewing_icon(ax) -> None:
 def _plot_decoding_logic(ax, project_root: Path) -> None:
     """Different task inputs share one schematic binary odor classifier."""
     ax.set_axis_off()
-    add_panel_header(ax, "D", "Cross-task decoding")
-    # Widen the schematic while keeping its heading aligned with panel B.
+    add_panel_header(ax, "A", "Cross-task decoding")
+    # Widen the schematic while keeping its heading aligned with the RSA schematic.
     ax = ax.inset_axes([0, 0, 1.15, 1])
     ax.set_axis_off()
     blue, orange = "#2878B5", "#D97721"
@@ -668,7 +671,7 @@ def _subject_paths(project_root: Path, analysis: str) -> list[Path]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Create the five-panel odor-identity convergence figure."
+        description="Create separate odor-identity RSA and cross-task decoding figures."
     )
     parser.add_argument(
         "--project_root",
@@ -679,9 +682,14 @@ def main() -> None:
         "--output_prefix",
         type=Path,
         help=(
-            "Output path without extension. Default: <project_root>/fig/"
-            "fig3_fmri."
+            "RSA output path without extension. Default: <project_root>/fig/"
+            "fig3_rsa."
         ),
+    )
+    parser.add_argument(
+        "--decoding_output_prefix",
+        type=Path,
+        help="Decoding output path without extension. Default: <project_root>/fig/fig4_decoding.",
     )
     parser.add_argument(
         "--skip_subs",
@@ -696,7 +704,12 @@ def main() -> None:
     output_prefix = (
         args.output_prefix.expanduser().resolve()
         if args.output_prefix is not None
-        else project_root / "fig" / "fig3_fmri"
+        else project_root / "fig" / "fig3_rsa"
+    )
+    decoding_output_prefix = (
+        args.decoding_output_prefix.expanduser().resolve()
+        if args.decoding_output_prefix is not None
+        else project_root / "fig" / "fig4_decoding"
     )
     rsa_paths = _subject_paths(project_root, "rsa")
     decoding_paths = _subject_paths(project_root, "decoding")
@@ -731,19 +744,16 @@ def main() -> None:
     )
 
     configure_matplotlib()
-    figure = plt.figure(figsize=(13.4, 13.5), facecolor="white")
-    # Give each row's labels clear separation from the next row's headings,
-    # using a taller canvas to preserve the anatomy and result plot heights.
-    grid = figure.add_gridspec(
-        5, 2, left=0.08, right=0.98, top=0.94, bottom=0.13,
-        height_ratios=(0.85, 0.35, 1, 0.42, 1), width_ratios=(1, 1.5),
+    rsa_figure = plt.figure(figsize=(13.4, 8.5), facecolor="white")
+    # Keep the shared anatomy above the RSA schematic and results.
+    grid = rsa_figure.add_gridspec(
+        3, 2, left=0.08, right=0.98, top=0.91, bottom=0.12,
+        height_ratios=(0.85, 0.35, 1), width_ratios=(1, 1.5),
         wspace=0.50, hspace=0,
     )
-    ax_a = figure.add_subplot(grid[0, :])
-    ax_b = figure.add_subplot(grid[2, 0])
-    ax_c = figure.add_subplot(grid[2, 1])
-    ax_d = figure.add_subplot(grid[4, 0])
-    ax_e = figure.add_subplot(grid[4, 1])
+    ax_a = rsa_figure.add_subplot(grid[0, :])
+    ax_b = rsa_figure.add_subplot(grid[2, 0])
+    ax_c = rsa_figure.add_subplot(grid[2, 1])
     _plot_roi_anatomy(ax_a, project_root)
     example_subject = sorted(rsa_data["sub"].unique())[0]
     _plot_rsa_logic(ax_b, project_root, example_subject)
@@ -752,23 +762,33 @@ def main() -> None:
         baseline=0.0, title="Odor-identity RSA", ylabel="Spearman ρ: neural vs\nodor-identity RDM",
         panel_letter="C", round_for_ranks=False, heading_lines=2,
     )
-    _plot_decoding_logic(ax_d, project_root)
+    decoding_figure = plt.figure(figsize=(13.4, 4.6), facecolor="white")
+    decoding_grid = decoding_figure.add_gridspec(
+        1, 2, left=0.08, right=0.98, top=0.80, bottom=0.19,
+        width_ratios=(1, 1.5), wspace=0.50,
+    )
+    ax_decoding_logic = decoding_figure.add_subplot(decoding_grid[0, 0])
+    ax_decoding_results = decoding_figure.add_subplot(decoding_grid[0, 1])
+    _plot_decoding_logic(ax_decoding_logic, project_root)
     _plot_paired_results(
-        ax_e, decoding_data, subject_offsets=subject_offsets, metric=DECODING_METRIC,
+        ax_decoding_results, decoding_data, subject_offsets=subject_offsets, metric=DECODING_METRIC,
         baseline=0.5, title="Odor-identity decoding accuracy", ylabel="Perception-to-cue\ndecoding accuracy",
-        panel_letter="E", round_for_ranks=True,
+        panel_letter="B", round_for_ranks=True,
     )
 
-    output_prefix.parent.mkdir(parents=True, exist_ok=True)
-    for extension in dict.fromkeys(args.formats):
-        extension = extension.lstrip(".")
-        output_path = output_prefix.with_suffix(f".{extension}")
-        save_options = {"bbox_inches": "tight", "facecolor": "white"}
-        if extension.lower() in {"png", "jpg", "jpeg", "tif", "tiff"}:
-            save_options["dpi"] = args.dpi
-        figure.savefig(output_path, **save_options)
-        print(f"Saved: {output_path}")
-    plt.close(figure)
+    for figure, prefix in (
+        (rsa_figure, output_prefix), (decoding_figure, decoding_output_prefix),
+    ):
+        prefix.parent.mkdir(parents=True, exist_ok=True)
+        for extension in dict.fromkeys(args.formats):
+            extension = extension.lstrip(".")
+            output_path = prefix.with_suffix(f".{extension}")
+            save_options = {"bbox_inches": "tight", "facecolor": "white"}
+            if extension.lower() in {"png", "jpg", "jpeg", "tif", "tiff"}:
+                save_options["dpi"] = args.dpi
+            figure.savefig(output_path, **save_options)
+            print(f"Saved: {output_path}")
+        plt.close(figure)
 
     print("\nPrimary displayed statistics (one-sided):")
     for roi in ROI_ORDER:
