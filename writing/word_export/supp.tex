@@ -92,6 +92,46 @@ For each participant, the three outcome pleasantness ratings from each phase wer
 
 Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction used the independently defined vmPFC component of the positive-greater-than-negative subjective-value meta-analysis map from Bartra et al.\ \citeyearpar{bartra2013valuation}, Fig.~3D. The vmPFC component contained 1,245 voxels at 2\,mm isotropic resolution, of which 1,233 overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within this volume, using the smoothness estimated from the group model. Cluster-level inference was additionally evaluated with a voxelwise cluster-defining threshold of $p < 0.001$, uncorrected.
 
+\paragraph*{Optimal allocation of representational resources}
+
+We derive the allocation that minimizes the total decision loss in the resource-limited model. Let $P$ and $C$ denote preconditioned and directly conditioned cue classes, respectively. The computational values $a_P,a_C>0$ are held fixed during optimization. Representational resources are nonnegative and share a fixed budget $r_P+r_C=R$, with $R>0$. Substituting $r_C=R-r_P$ expresses total loss as a function of one allocation:
+\begin{equation}
+L(r_P)=a_Pe^{-r_P}+a_Ce^{-(R-r_P)},\qquad 0\leq r_P\leq R.
+\tag{S1}
+\end{equation}
+Differentiating with respect to $r_P$ gives
+\begin{equation}
+\frac{dL}{dr_P}=-a_Pe^{-r_P}+a_Ce^{-(R-r_P)}.
+\tag{S2}
+\end{equation}
+At an interior optimum, this derivative equals zero. Thus, the marginal reduction in loss from assigning additional resource to the preconditioned cue class equals the marginal increase in loss from removing that resource from the conditioned cue class:
+\begin{equation}
+a_Pe^{-r_P}=a_Ce^{-r_C}
+\quad\Longrightarrow\quad
+r_P-r_C=\log(a_P/a_C).
+\tag{S3}
+\end{equation}
+Here, $\log$ denotes the natural logarithm. Combining this equality with the budget constraint yields the interior solution:
+\begin{equation}
+r_P^*=\frac{R+\log(a_P/a_C)}{2},\qquad
+r_C^*=\frac{R-\log(a_P/a_C)}{2}.
+\tag{S4}
+\end{equation}
+The second derivative is strictly positive:
+\begin{equation}
+\frac{d^2L}{dr_P^2}=a_Pe^{-r_P}+a_Ce^{-(R-r_P)}>0.
+\tag{S5}
+\end{equation}
+Therefore, total loss is strictly convex, and the stationary point is the unique global minimum whenever it lies within the feasible interval. If it lies outside that interval, the constrained minimum occurs at the nearest boundary. The general solution is
+\begin{equation}
+r_P^*=\operatorname{clip}\!\left(\frac{R+\log(a_P/a_C)}{2},0,R\right),\qquad
+r_C^*=R-r_P^*,
+\tag{S6}
+\end{equation}
+where $\operatorname{clip}(x,0,R)=\min\{R,\max\{0,x\}\}$. The solution is interior when $-R<\log(a_P/a_C)<R$. All resources are assigned to the preconditioned cue class when $\log(a_P/a_C)\geq R$, and to the conditioned cue class when $\log(a_P/a_C)\leq -R$. If $R=0$, both allocations are zero.
+
+For an interior solution, $a_P>a_C$ implies $r_P^*>r_C^*$: outcome identities receive more resources when representing them has greater computational value. For the illustrative parameters in Figure~4B ($R=4$, $a_P=4$, and $a_C=1$), the solution is $r_P^*=2.69$ and $r_C^*=1.31$.
+
 \subsection*{Supplementary Results}
 
 \paragraph*{Self-reported hunger and satiety.}
