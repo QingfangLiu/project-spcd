@@ -9,8 +9,7 @@ C. Probe-only odor-identity Spearman RSA results.
 D. Passive-odor to premeal-cue decoding schematic.
 E. Cross-task decoding results.
 
-The former correlation panel remains available as a standalone inspection export;
-Figure 4 presents the same empirical analysis alongside the model prediction.
+Figure 4 presents the empirical correlation analysis alongside the model prediction.
 """
 
 from __future__ import annotations
@@ -593,98 +592,6 @@ def _plot_paired_results(
         child.tick_params(axis="x", labelsize=12)
 
 
-def _plot_rsa_correlations(ax, data: pd.DataFrame) -> list[dict]:
-    """Show negative-direction Spearman tests and descriptive linear fits.
-
-    P-values are one-sided and uncorrected; * denotes p < 0.05, otherwise n.s.
-    Shading is the pointwise 95% confidence interval for the OLS mean response,
-    not for Spearman rho.
-    """
-    ax.set_axis_off()
-    add_panel_header(
-        ax, "", "Empirical competition between direct and\ninferred odor-identity representations",
-    )
-    paired = []
-    for roi in ROI_ORDER:
-        wide = data.loc[data["roi"] == roi].pivot(
-            index="sub", columns="cue_subset", values=RSA_METRIC,
-        )
-        wide = wide.loc[:, list(CUE_ORDER)].sort_index()
-        if wide.isna().any().any():
-            raise ValueError(f"Incomplete conditioned/preconditioned pairs: {roi}")
-        if len(wide) < 3:
-            raise ValueError(f"At least three paired subjects are required: {roi}")
-        paired.append(wide)
-    if not paired[0].index.equals(paired[1].index):
-        raise ValueError("Correlation plots require matching subjects across the two ROIs.")
-
-    all_values = np.concatenate([wide.to_numpy().ravel() for wide in paired])
-    padding = 0.12 * np.ptp(all_values)
-    limits = (float(all_values.min() - padding), float(all_values.max() + padding))
-    summaries = []
-    for index, (roi, wide) in enumerate(zip(ROI_ORDER, paired)):
-        # Use a common scale and matching plot heights for the two ROIs.
-        child = ax.inset_axes([0.56 * index, 0.0, 0.44, 1.0])
-        x = wide[CONDITIONED].to_numpy(dtype=float)
-        y = wide[PRECONDITIONED].to_numpy(dtype=float)
-        result = stats.spearmanr(x, y, alternative="less")
-        fit = stats.linregress(x, y)
-        fit_x = np.linspace(x.min(), x.max(), 250)
-        fit_y = fit.intercept + fit.slope * fit_x
-        residuals = y - (fit.intercept + fit.slope * x)
-        residual_sd = np.sqrt(np.sum(residuals**2) / (len(x) - 2))
-        mean_se = residual_sd * np.sqrt(
-            1 / len(x)
-            + (fit_x - x.mean())**2 / np.sum((x - x.mean())**2)
-        )
-        half_width = stats.t.ppf(0.975, len(x) - 2) * mean_se
-        color = ROI_COLORS[roi]
-        child.fill_between(
-            fit_x, fit_y - half_width, fit_y + half_width,
-            color=color, alpha=0.18, linewidth=0, zorder=1,
-        )
-        child.plot(fit_x, fit_y, color=color, linewidth=1.6, zorder=2)
-        child.scatter(
-            x, y, s=28, color=color, alpha=0.85, edgecolor="white",
-            linewidth=0.4, zorder=3,
-        )
-        child.axhline(0, color=REFERENCE_COLOR, linewidth=0.8, linestyle="--")
-        child.axvline(0, color=REFERENCE_COLOR, linewidth=0.8, linestyle="--")
-        child.set_xlim(*limits)
-        child.set_ylim(*limits)
-        child.set_xlabel(
-            "Direct odor-identity\ncoding (RSA ρ)", fontsize=LABEL_SIZE,
-        )
-        if index == 0:
-            child.set_ylabel(
-                "Inferred odor-identity\ncoding (RSA ρ)", fontsize=LABEL_SIZE,
-            )
-        child.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(nbins=4))
-        child.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(nbins=4))
-        style_axis(child)
-        child.text(
-            0.5, -0.50, ROI_SHORT[roi], transform=child.transAxes,
-            ha="center", va="top", fontsize=NOTE_SIZE,
-            fontweight="bold", color=color, clip_on=False,
-        )
-        significance = _significance_label(float(result.pvalue))
-        child.text(
-            0.72, 0.97, f"ρ = {result.statistic:.3f}",
-            transform=child.transAxes, ha="center", va="top", fontsize=NOTE_SIZE,
-        )
-        child.text(
-            0.72, 0.89, significance,
-            transform=child.transAxes, ha="center", va="top",
-            fontsize=20 if significance == "*" else NOTE_SIZE,
-            color=SUMMARY_COLOR,
-        )
-        summaries.append({
-            "roi": roi, "n": len(x), "rho": float(result.statistic),
-            "p_spearman": float(result.pvalue),
-        })
-    return summaries
-
-
 def _subject_paths(project_root: Path, analysis: str) -> list[Path]:
     if analysis == "rsa":
         root = (
@@ -709,7 +616,7 @@ def _subject_paths(project_root: Path, analysis: str) -> list[Path]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Create the five-panel odor-identity figure and preserve the correlation plots separately."
+        description="Create the five-panel odor-identity convergence figure."
     )
     parser.add_argument(
         "--project_root",
@@ -810,24 +717,6 @@ def main() -> None:
         figure.savefig(output_path, **save_options)
         print(f"Saved: {output_path}")
     plt.close(figure)
-
-    # Retain the standalone correlation export for inspection alongside Figure 4.
-    correlation_figure, correlation_ax = plt.subplots(figsize=(8.2, 4.7))
-    correlation_figure.subplots_adjust(left=0.14, right=0.98, bottom=0.29, top=0.77)
-    correlation_summaries = _plot_rsa_correlations(correlation_ax, rsa_data)
-    correlation_prefix = output_prefix.with_name(
-        "odor_identity_correlation" if output_prefix.name == "odor_identity_fmri"
-        else output_prefix.name + "_correlation"
-    )
-    for extension in dict.fromkeys(args.formats):
-        extension = extension.lstrip(".")
-        path = correlation_prefix.with_suffix(f".{extension}")
-        correlation_figure.savefig(path, dpi=args.dpi, bbox_inches="tight", facecolor="white")
-        print(f"Preserved correlation panel: {path}")
-    plt.close(correlation_figure)
-    print("\nPreserved empirical Spearman correlations (one-sided negative, uncorrected):")
-    for summary in correlation_summaries:
-        print(f"  {summary['roi']}: n={summary['n']}, rho={summary['rho']:.6f}, p={summary['p_spearman']:.6f}")
 
     print("\nPrimary displayed statistics (one-sided):")
     for roi in ROI_ORDER:
