@@ -24,6 +24,8 @@ devalued (A2/B2), gray = clean air (C/D). They do not encode learning route.
 Panels D/E use neutral points and descriptive comparison labels, retaining
 the analysis cue codes underneath. Negative changes indicate reduced choice
 of the cue named before ">", independently of stimulus presentation order.
+Panels C-E color outcome labels consistently and use orange downward arrows
+beside devalued-odor labels to indicate predicted decreases after devaluation.
 Panels C-E annotate two-sided Wilcoxon signed-rank tests of post-minus-pre
 changes against zero: * denotes uncorrected p < 0.05; otherwise n.s.
 Changes are rounded to 12 decimal places for ranks to preserve numerical ties.
@@ -46,6 +48,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
+from matplotlib.offsetbox import AnnotationBbox, HPacker, TextArea, VPacker
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -63,7 +66,6 @@ CONDITIONED_CHOICES = ("B2>B1", "B2>D", "B1>D")
 PRECONDITIONED_CHOICES = ("A2>A1", "A2>C", "A1>C")
 # Odor-number codes match pleasantness_summary.csv and the cue-odor mappings.
 OUTCOME_COLORS = {0: "#9AA3AA", 1: "#2878B5", 2: "#D97721"}
-COMPARISON_LABELS = ("Devalued\n> non-devalued", "Devalued\n> air", "Non-devalued\n> air")
 
 
 def _load_subjects(
@@ -211,7 +213,7 @@ def _bar_inset(
     ax.bar(x, summary["mean"], yerr=summary["std"], width=0.6,
            color=[OUTCOME_COLORS[odor] for odor in outcome_order],
            capsize=2.5, error_kw={"elinewidth": 1})
-    ax.set(xticks=x, xticklabels=order, ylim=(0, 1.1), yticks=[0, 0.5, 1], ylabel="Accuracy")
+    ax.set(xticks=x, xticklabels=order, ylim=(0, 1.1), yticks=[0, 0.5, 1])
     ax.set_title(title, loc="left", fontsize=INSET_LABEL_SIZE, pad=8)
     style_axis(ax, inset=True)
 
@@ -244,13 +246,45 @@ def _plot_changes(
     ax.set_title(title, loc="left", pad=16)
 
 
+def _outcome_labels(ax: plt.Axes, *, comparisons: bool) -> None:
+    """Use colored label fragments with predictions embedded in the first line."""
+    # Spread categories across the panel so the longer outcome names have room.
+    ax.set_xlim(-0.3, 2.3)
+    orange, blue, gray = OUTCOME_COLORS[2], OUTCOME_COLORS[1], MUTED_TEXT_COLOR
+    if comparisons:
+        labels = (
+            ((("Devalued ↓", orange),), (("> ", SUMMARY_COLOR), ("non-devalued", blue))),
+            ((("Devalued ↓", orange),), (("> ", SUMMARY_COLOR), ("air", gray))),
+            ((("Non-devalued", blue),), (("> ", SUMMARY_COLOR), ("air", gray))),
+        )
+    else:
+        labels = (
+            ((("Devalued ↓", orange),), (("odor", orange),)),
+            ((("Non-devalued", blue),), (("odor", blue),)),
+            ((("Clean", gray),), (("air", gray),)),
+        )
+    ax.set_xticklabels([""] * len(labels))
+    for x, lines in enumerate(labels):
+        rows = [
+            HPacker(children=[TextArea(text, textprops={"color": color, "fontsize": 11})
+                              for text, color in fragments], pad=0, sep=0, align="baseline")
+            for fragments in lines
+        ]
+        label = VPacker(children=rows, pad=0, sep=1, align="center")
+        ax.add_artist(AnnotationBbox(
+            label, (x, 0), xycoords=ax.get_xaxis_transform(),
+            xybox=(0, -9), boxcoords="offset points", box_alignment=(0.5, 1),
+            frameon=False, pad=0, annotation_clip=False,
+        ))
+
+
 def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     configure_matplotlib()
     fig = plt.figure(figsize=(13.4, 11.8), facecolor="white")
     outer = fig.add_gridspec(2, 1, left=0.095, right=0.985, bottom=0.14,
                             top=0.91, hspace=0.48, height_ratios=(1, 1.08))
     top = outer[0].subgridspec(1, 2, wspace=0.27)
-    bottom = outer[1].subgridspec(1, 3, width_ratios=(1.18, 1, 1), wspace=0.53)
+    bottom = outer[1].subgridspec(1, 3, wspace=0.53)
     axes = [fig.add_subplot(top[0, 0]), fig.add_subplot(top[0, 1])]
     axes.extend(fig.add_subplot(bottom[0, i]) for i in range(3))
     a, b, c, d, e = axes
@@ -263,7 +297,7 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
                markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6)
     a.axvline(3.5, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.2)
     a.set(xticks=[1, 2, 3, 4], xticklabels=["Day 1\nrun 1", "Day 1\nrun 2", "Day 1\nrun 3", "Day 2\nlast run"],
-          ylim=(0, 1.05), xlim=(0.85, 4.15), ylabel="Accuracy")
+          ylim=(0, 1.05), xlim=(0.85, 4.15), ylabel="Cue-pair matching accuracy")
     a.set_title("Preconditioning", loc="left", pad=16)
     _bar_inset(a.inset_axes([0.47, 0.17, 0.45, 0.40]), data["A inset"],
                ("A1-B1", "A2-B2", "C-D"), "Day 2 last run", outcome_order=(1, 2, 0))
@@ -277,7 +311,7 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
                color=SUMMARY_COLOR, markersize=6.5, capsize=4, linewidth=2,
                markerfacecolor="white", markeredgecolor=SUMMARY_COLOR, markeredgewidth=1.6)
     b.set(xticks=[1, 2, 3], xticklabels=["Run 1", "Run 2", "Run 3"],
-          ylim=(0, 1.1), xlim=(0.78, 3.22), ylabel="Accuracy")
+          ylim=(0, 1.1), xlim=(0.78, 3.22), ylabel="Odor prediction accuracy")
     b.set_title("Conditioning", loc="left", pad=16)
     _bar_inset(b.inset_axes([0.60, 0.17, 0.37, 0.40]), data["B inset"],
                ("B1", "B2", "D"), "Run 3", outcome_order=(1, 2, 0))
@@ -285,19 +319,21 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
     _plot_changes(c, data["C"], (2, 1, 0), ("Devalued\nodor", "Non-devalued\nodor", "Clean\nair"),
                   "Pleasantness ratings", "Change in pleasantness rating\n(post − pre)",
                   (-4.05, 2.55), colors=OUTCOME_COLORS)
+    _outcome_labels(c, comparisons=False)
     for ax, letter, order, title in (
         (d, "D", CONDITIONED_CHOICES, "Probe test -\nconditioned cues"),
         (e, "E", PRECONDITIONED_CHOICES, "Probe test -\npreconditioned cues"),
     ):
-        _plot_changes(ax, data[letter], order, COMPARISON_LABELS, title,
+        _plot_changes(ax, data[letter], order, ("", "", ""), title,
                       "Change in choice proportion\n(post − pre)", (-1.1, 1.1))
+        _outcome_labels(ax, comparisons=True)
         # Keep the original codes as a secondary label below the two-line
         # meaning, with identical contrast order across learning routes.
         for x, choice in enumerate(order):
             ax.annotate(
                 f"({choice.replace('>', ' > ')})",
                 xy=(x, 0), xycoords=ax.get_xaxis_transform(),
-                xytext=(0, -49), textcoords="offset points",
+                xytext=(0, -36), textcoords="offset points",
                 ha="center", va="top", fontsize=INSET_TICK_SIZE,
                 color="black", annotation_clip=False,
             )
