@@ -6,7 +6,7 @@ and directly conditioned (C) cues share a finite identity-representation
 budget. All numerical choices used for illustration are collected near the
 top of this file so the figure can be revised without changing plotting logic.
 Panel D uses noisy readouts of optimal allocations in simulated participants;
-these readouts are illustrative coding proxies, not fitted fMRI RSA values.
+these readouts are illustrative proxies for representational strength, not fitted fMRI RSA values.
 Panel E tests the prediction using existing participant-level OFC RSA results.
 """
 
@@ -164,8 +164,10 @@ def style_axis(axis, *, grid_axis: str = "y") -> None:
 def add_panel_header(axis, panel_label: str, title: str, *, pad: float = 18) -> None:
     """Use a fixed letter offset for both single plots and the paired E panel."""
     for text, offset, size in ((panel_label, -28, 20), (title, 0, 17)):
+        # Keep the panel letter beside the first line of a wrapped heading.
+        text_pad = pad + 20 * title.count("\n") if text == panel_label else pad
         axis.annotate(
-            text, xy=(0, 1), xycoords="axes fraction", xytext=(offset, pad),
+            text, xy=(0, 1), xycoords="axes fraction", xytext=(offset, text_pad),
             textcoords="offset points", fontsize=size, fontweight="bold",
             color=TEXT_COLOR, ha="left", va="bottom", annotation_clip=False,
         )
@@ -248,7 +250,7 @@ def draw_panel_a(axis) -> None:
         axis.plot(resource, single_cue_loss(a_value, resource), color=color,
                   linewidth=2.4, label=rf"$a_i={a_value:g}$")
     style_axis(axis)
-    add_panel_header(axis, "A", "Benefits of identity coding")
+    add_panel_header(axis, "A", "Benefits of identity\nrepresentation")
     axis.set_xlim(0.0, 5.0)
     axis.set_ylim(0.0, 4.25)
     axis.set_xlabel("Representational\nresource, $r_i$")
@@ -271,7 +273,7 @@ def draw_panel_b(axis) -> None:
     axis.scatter([r_p_star], [minimum_loss], s=50, facecolor="white",
                  edgecolor=TOTAL_COLOR, linewidth=1.5, zorder=4)
     style_axis(axis)
-    add_panel_header(axis, "B", "Optimal allocation")
+    add_panel_header(axis, "B", "Optimal allocation", pad=38)
     axis.set_xlim(0.0, budget)
     axis.set_ylim(0.0, 4.25)
     axis.set_xlabel("Resource to preconditioned\nidentity, $r_P$")
@@ -294,7 +296,7 @@ def draw_panel_c(axis) -> None:
     for boundary in (-budget, budget):
         axis.axhline(boundary, color=GRID_COLOR, linestyle=(0, (2, 3)), linewidth=0.9)
     style_axis(axis)
-    add_panel_header(axis, "C", "Allocation follows utility")
+    add_panel_header(axis, "C", "Allocation follows utility", pad=38)
     axis.set_xscale("log")
     axis.set_xlim(value_ratio.min(), value_ratio.max())
     axis.set_ylim(-4.4, 4.4)
@@ -320,8 +322,8 @@ def draw_panel_d(axis) -> None:
     add_panel_header(axis, "D", "Model prediction", pad=45)
     axis.text(0.5, 1.045, "Simulated participants", transform=axis.transAxes,
               ha="center", va="bottom", fontsize=13, fontweight="bold", color=COMPETITION_COLOR)
-    axis.set_xlabel("Conditioned-cue identity\ncoding (a.u.)")
-    axis.set_ylabel("Preconditioned-cue identity\ncoding (a.u.)")
+    axis.set_xlabel("Conditioned-cue identity\nrepresentation (a.u.)")
+    axis.set_ylabel("Preconditioned-cue identity\nrepresentation (a.u.)")
     axis.margins(x=0.08)
     span_y = np.ptp(y)
     axis.set_ylim(y.min() - 0.18 * span_y, y.max() + 0.30 * span_y)
@@ -343,9 +345,9 @@ def draw_panel_e(axes, empirical: list[dict]) -> None:
         axis.set_ylim(*limits)
         axis.xaxis.set_major_locator(MaxNLocator(nbins=4))
         axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
-        axis.set_xlabel("Conditioned-cue identity\ncoding (RSA ρ)")
+        axis.set_xlabel("Conditioned-cue identity\nrepresentation (RSA ρ)")
         if index == 0:
-            axis.set_ylabel("Preconditioned-cue identity\ncoding (RSA ρ)")
+            axis.set_ylabel("Preconditioned-cue identity\nrepresentation (RSA ρ)")
         axis.text(0.5, 1.045, result["label"], transform=axis.transAxes,
                   ha="center", va="bottom", fontsize=13, fontweight="bold", color=result["color"])
         axis.text(0.98, 0.97, f"ρ = {result['rho']:.3f}\np = {result['p']:.3f}",

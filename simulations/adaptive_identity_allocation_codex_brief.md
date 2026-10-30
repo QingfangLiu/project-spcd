@@ -299,9 +299,9 @@ The model should make clear that this is a **normative explanation**, not a caus
 
 Create one publication-quality figure with **five labeled panels and six plots** arranged in two rows of three. Panels A, B, and C occupy the top row. Panel D shows the simulated prediction at bottom left; panel E spans the remaining two bottom positions and tests the prediction in lateral and medial OFC.
 
-Match the typography and spacing of Figures 2 and 3. Keep long parameter explanations in the caption, and use gray for simulation, teal for lateral OFC, and purple for medial OFC. Simulated coding has arbitrary units, while empirical coding uses RSA coefficients.
+Match the typography and spacing of Figures 2 and 3. Keep long parameter explanations in the caption, and use gray for simulation, teal for lateral OFC, and purple for medial OFC. Simulated representational strength has arbitrary units, while empirical representational strength is measured using RSA coefficients.
 
-## Panel A — Benefits of identity coding
+## Panel A — Benefits of identity representation
 
 Plot:
 
@@ -437,7 +437,7 @@ participant's \(\log(a_P/a_C)\) from a normal distribution with mean
 \(\log 4\) and standard deviation 1.2, set \(a_C=1\), and calculate
 \(r_P^*,r_C^*\) using the same constrained optimum as Panel B.
 
-Plot direct identity coding on the x-axis and inferred identity coding on
+Plot direct identity representation on the x-axis and inferred identity representation on
 the y-axis, using noisy measurements of those latent allocations:
 
 \[
@@ -449,7 +449,7 @@ The measurement errors are independent, zero-mean Gaussian draws with
 standard deviation 0.75 in arbitrary resource units. Use random seed
 20261023 for reproducibility. Latent allocations remain nonnegative and sum
 to \(R\); noisy readouts are not clipped. These readouts are illustrative
-coding proxies, not simulated RSA coefficients, and need not lie in
+proxies for representational strength, not simulated RSA coefficients, and need not lie in
 \([-1,1]\).
 
 Show the simulated Spearman correlation, a descriptive linear fit, and its
@@ -474,7 +474,7 @@ shared-budget assumption.
 
 Use the existing first-cue, premeal odor-identity RSA coefficients for conditioned and preconditioned odor-predictive cues. Retain the same subject exclusions as Figure 3 (`sub-19`, `sub-31`, and `sub-33`), leaving 31 participants. Place lateral OFC and medial OFC in matched plots under one shared E heading.
 
-Plot conditioned-cue identity coding on x and preconditioned-cue identity coding on y, with RSA Spearman coefficients as the units. Use common empirical axis limits, zero-reference lines, and the original one-sided, uncorrected Spearman tests of negative associations:
+Plot conditioned-cue identity representation on x and preconditioned-cue identity representation on y, with RSA Spearman coefficients as the units. Use common empirical axis limits, zero-reference lines, and the original one-sided, uncorrected Spearman tests of negative associations:
 
 - Lateral OFC: rho = -0.316564, p = 0.041365.
 - Medial OFC: rho = -0.029640, p = 0.437117.
@@ -678,13 +678,13 @@ The figure should be understandable before reading the detailed mathematical der
 
 **Figure 4. A resource-limited model of outcome-identity representation.**
 
-**A. Benefits of identity coding.** Decision loss for a cue decreases with the amount of representational resource allocated to its outcome identity, \(L_i=a_i e^{-r_i}\). The parameter \(a_i\) determines the computational value of explicitly representing that outcome identity, whereas \(r_i\) denotes representational resource. The exponential form produces diminishing returns.
+**A. Benefits of identity representation.** Decision loss for a cue decreases with the amount of representational resource allocated to its outcome identity, \(L_i=a_i e^{-r_i}\). The parameter \(a_i\) determines the computational value of explicitly representing that outcome identity, whereas \(r_i\) denotes representational resource. The exponential form produces diminishing returns.
 
 **B. Optimal allocation.** When inferred and directly learned cues share a finite representational budget, \(r_P+r_C=R\), total loss is minimized by balancing the costs associated with insufficient representation of each cue. An example with \(a_P>a_C\) yields greater optimal allocation to the inferred cue.
 
 **C. Allocation follows utility.** The optimal allocation difference follows \(r_P-r_C=\log(a_P/a_C)\) for interior solutions, with boundary solutions imposed by the finite resource constraint. Thus, preferential representation of inferred outcomes emerges when their explicit identity representation has greater computational value; it is not assumed from cue type itself.
 
-**D. Model prediction.** Simulated participants differ in relative computational value while sharing a fixed budget. Direct and inferred identity coding are represented by optimal allocations plus independent Gaussian measurement noise, yielding a negative between-participant association. Points show 100 simulated participants, the line is a descriptive linear fit, and shading is its pointwise 95% confidence interval for the mean response. Coding units and parameters are illustrative; the model is not fitted to fMRI RSA values.
+**D. Model prediction.** Simulated participants differ in relative computational value while sharing a fixed budget. Direct and inferred identity representations are quantified by optimal allocations plus independent Gaussian measurement noise, yielding a negative between-participant association. Points show 100 simulated participants, the line is a descriptive linear fit, and shading is its pointwise 95% confidence interval for the mean response. Representational units and parameters are illustrative; the model is not fitted to fMRI RSA values.
 
 **E. Test in fMRI data.** Correlations between conditioned- and preconditioned-cue odor-identity RSA coefficients test the prediction in lateral and medial OFC (31 participants per region). The lateral OFC association is negative (Spearman rho = -0.317, p = 0.041); the medial OFC association is not significant (rho = -0.030, p = 0.437). Tests assess negative associations and are one-sided. Lines show descriptive linear least-squares fits; shading indicates pointwise 95% confidence intervals for the fitted mean response.
 
