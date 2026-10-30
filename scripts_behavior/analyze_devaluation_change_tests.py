@@ -5,9 +5,11 @@ Run from any directory:
     python3 /path/to/project-spcd/scripts_behavior/analyze_devaluation_change_tests.py
 
 Reuse the Figure 2 participant exclusions, trial filters, cue orientation, and
-post-minus-pre changes. One-sided paired t-tests assess whether the devalued
+post-minus-pre changes. One-sided Wilcoxon signed-rank tests assess whether the devalued
 condition has a more negative change than the non-devalued condition.
-All p-values are uncorrected; negative t statistics match this prediction.
+Contrasts are rounded to 12 decimal places to preserve numerical ties, as in
+the Figure 2 change tests. Zero differences are excluded from ranking. W is
+the positive-rank sum, and all p-values are uncorrected.
 
 Write participant-level contrasts and full-precision statistics to
 beh_processed_subs/ without changing existing data or figure outputs.
@@ -42,16 +44,19 @@ def analyze(panels: dict[str, pd.DataFrame]) -> tuple[pd.DataFrame, pd.DataFrame
         values = contrast["difference_in_changes"].to_numpy(dtype=float)
         if len(values) < 2 or not np.isfinite(values).all() or np.std(values, ddof=1) == 0:
             raise ValueError(f"Invalid participant contrasts for {name}")
-        test = stats.ttest_rel(contrast["first_change"], contrast["second_change"], alternative="less")
-        ci = test.confidence_interval(confidence_level=0.95)
+        ranked_values = np.round(values, decimals=12)
+        test = stats.wilcoxon(
+            ranked_values, alternative="less", zero_method="wilcox", method="auto",
+        )
         results.append({
             "contrast": name, "first_condition": first_label, "second_condition": second_label,
             "n": len(values), "mean_first_change": contrast["first_change"].mean(),
             "mean_second_change": contrast["second_change"].mean(),
             "mean_difference_in_changes": values.mean(),
             "sd_difference_in_changes": values.std(ddof=1),
-            "ci95_one_sided_upper": float(ci.high),
-            "t": float(test.statistic), "t_df": len(values) - 1,
+            "test": "Wilcoxon signed-rank", "W": float(test.statistic),
+            "n_nonzero": int(np.count_nonzero(ranked_values)),
+            "zero_method": "wilcox", "method": "auto", "rank_round_decimals": 12,
             "alternative": "first_change_less_than_second_change",
             "p_one_sided_uncorrected": float(test.pvalue),
         })
@@ -72,7 +77,7 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     observations.to_csv(output / "behavioral_devaluation_change_test_source_data.csv", index=False)
     results.to_csv(output / "behavioral_devaluation_change_test_statistics.csv", index=False)
-    print(results[["contrast", "n", "t", "t_df", "p_one_sided_uncorrected"]].to_string(index=False))
+    print(results[["contrast", "n", "W", "p_one_sided_uncorrected"]].to_string(index=False))
     print(f"Saved participant contrasts and statistics to {output}")
 
 
