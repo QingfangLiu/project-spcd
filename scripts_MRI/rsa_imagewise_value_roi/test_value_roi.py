@@ -189,6 +189,113 @@ class ValueROITest(unittest.TestCase):
             with self.assertRaisesRegex(FileNotFoundError, "Events TSV"):
                 build_samples(base, "sub-01")
 
+    def run_export(self, name, *extra):
+        output = self.root / name
+        command = [sys.executable, "-B", str(SCRIPTS / "rsa_imagewise_value_roi/export_roi_patterns.py"),
+                   "--base_dir", str(self.data), "--project_root", str(self.project),
+                   "--output_dir", str(output), *extra]
+        return output, subprocess.run(command, capture_output=True, text=True)
+
+    def make_coverage_subject(self, sub, missing_image=False, wrong_grid=False):
+        # No ratings: extraction must still work and flag value-analysis eligibility.
+        (self.project / "beh_processed_subs" / sub).mkdir(parents=True, exist_ok=True)
+        for phase in ("premeal", "postmeal"):
+            folder = self.data / "GLM" / f"{phase}_trialwise_2mm" / sub
+            events = self.data / "nii" / sub / "func_PAID" / phase
+            folder.mkdir(parents=True)
+            events.mkdir(parents=True)
+            rows = []
+            for position in (1, 2):
+                name = f"img-{position}.nii.gz"
+                values = np.arange(np.prod(self.shape), dtype=float).reshape(self.shape)
+                if phase == "postmeal" and position == 2:
+                    values[:] = np.nan
+                    if wrong_grid:
+                        values = values[:-1]
+                if not (missing_image and phase == "postmeal" and position == 2):
+                    nib.save(nib.Nifti1Image(values, self.affine), folder / name)
+                rows.append(dict(beta_file=name, trial=1, img_index=position,
+                                 cue_index=1 if position == 1 else 3,
+                                 odor_index=1 if position == 1 else 2))
+            pd.DataFrame(rows).to_csv(folder / f"{sub}_{phase}_run-1_beta_index.csv", index=False)
+            pd.DataFrame(dict(trial=[1], trial_type=["button"], response_hand=["left"])).to_csv(
+                events / f"{sub}_task-{phase}_run-1_events.tsv", sep="\t", index=False)
+
+    def test_export_preserves_raw_patterns_metadata_and_coordinates(self):
+        output, result = self.run_export("raw_export", "--subjects", "sub-01", "sub-03", "sub-31")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = pd.read_csv(output / "subject_export.csv").set_index("sub")
+        self.assertEqual(report.loc["sub-31", "status"], "excluded_paper_rule")
+        self.assertFalse((output / "sub-31").exists())
+        # sub-03 fails the original RSA due to a constant pattern, but all raw ROIs export.
+        self.assertEqual(report.loc["sub-03", "n_rois_exported"], 3)
+        ratings = pd.read_csv(output / "ratings.csv")
+        self.assertEqual(len(ratings), 12)
+        self.assertTrue(ratings.rating_available.all())
+        for roi in ROI_NAMES:
+            samples = pd.read_csv(output / "sub-01/samples.csv")
+            with np.load(output / "sub-01" / f"roi-{roi}_patterns.npz", allow_pickle=False) as raw:
+                self.assertEqual(raw["raw_patterns"].shape[0], 96)
+                self.assertEqual(raw["raw_patterns"].dtype, np.float64)
+                np.testing.assert_array_equal(raw["sample_index"], samples.sample_index)
+                np.testing.assert_array_equal(raw["phase_labels"], samples.session)
+                np.testing.assert_array_equal(raw["run_ids"], samples.run)
+                np.testing.assert_allclose(raw["voxel_mni"],
+                                           nib.affines.apply_affine(raw["affine"], raw["voxel_ijk"]))
+                for index in (0, 23, 95):
+                    image = nib.load(samples.iloc[index].beta_path)
+                    expected = np.asarray(image.dataobj)[tuple(raw["voxel_ijk"].T)]
+                    np.testing.assert_array_equal(raw["raw_patterns"][index], expected)
+                # Read every archive member without permitting object/pickle data.
+                for key in raw.files:
+                    self.assertNotEqual(raw[key].dtype.kind, "O")
+        first = samples.loc[samples.img_index == 1]
+        self.assertTrue((first.button_label == "none").all())
+        self.assertIn("left", set(first.trial_button_label))
+        self.assertEqual(set(samples.odor_group), {"odor1", "odor2", "clean"})
+        self.assertEqual(set(samples.cue_set), {1, 2})
+        _, repeated = self.run_export("raw_export", "--subjects", "sub-01")
+        self.assertNotEqual(repeated.returncode, 0)
+        self.assertIn("not empty", repeated.stderr)
+
+    def test_export_nonfinite_roi_and_missing_ratings_keep_all_rois(self):
+        self.make_coverage_subject("sub-04")
+        output, result = self.run_export("nonfinite_export", "--subjects", "sub-04")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = pd.read_csv(output / "subject_export.csv")
+        self.assertFalse(bool(report.iloc[0].ratings_complete))
+        self.assertEqual(report.iloc[0].n_rois_exported, 3)
+        coverage = pd.read_csv(output / "coverage_summary.csv")
+        all_samples = coverage.loc[coverage.scope == "all"]
+        self.assertTrue((all_samples.n_voxels_finite_all_samples == 0).all())
+        self.assertTrue((all_samples.n_all_nonfinite_samples == 1).all())
+        first_only = coverage.loc[(coverage.scope == "image") & (coverage.img_index == "1")]
+        self.assertEqual(len(first_only), 3)
+        self.assertTrue((first_only.n_voxels_finite_all_samples == first_only.n_voxels).all())
+        for roi in ROI_NAMES:
+            with np.load(output / "sub-04" / f"roi-{roi}_patterns.npz") as raw:
+                self.assertTrue(np.isnan(raw["raw_patterns"][-1]).all())
+                self.assertTrue((raw["beta_read_status"] == "ok").all())
+
+    def test_export_input_errors_preserve_alignment_and_continue(self):
+        self.make_coverage_subject("sub-05", missing_image=True)
+        self.make_coverage_subject("sub-06", wrong_grid=True)
+        output, result = self.run_export("input_error_export", "--subjects", "sub-05", "sub-06", "sub-02")
+        self.assertNotEqual(result.returncode, 0)
+        report = pd.read_csv(output / "subject_export.csv").set_index("sub")
+        self.assertEqual(report.loc["sub-02", "status"], "exported")
+        for sub in ("sub-05", "sub-06"):
+            self.assertEqual(report.loc[sub, "status"], "exported_with_input_errors")
+            self.assertEqual(report.loc[sub, "n_rois_exported"], 3)
+            with np.load(output / sub / f"roi-{ROI_NAMES[0]}_patterns.npz") as raw:
+                self.assertEqual(len(raw["raw_patterns"]), 4)
+                self.assertEqual(raw["beta_read_status"][-1], "error")
+                self.assertTrue(np.isnan(raw["raw_patterns"][-1]).all())
+        issues = pd.read_csv(output / "input_issues.csv")
+        self.assertEqual(set(issues.kind), {"beta_image"})
+        config = json.loads((output / "export_config.json").read_text())
+        self.assertEqual(set(config["input_error_subjects"]), {"sub-05", "sub-06"})
+
 
 if __name__ == "__main__":
     unittest.main()

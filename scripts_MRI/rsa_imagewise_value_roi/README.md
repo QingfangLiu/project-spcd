@@ -136,6 +136,79 @@ The standalone aggregator verifies a balanced three-ROI table and applies the
 current paper exclusions again. It cannot infer participants absent from the
 input table; consult the accompanying inclusion report.
 
+## Export raw patterns for analysis on another computer
+
+Use the standalone exporter on the computer containing the beta images:
+
+```bash
+python -B scripts_MRI/rsa_imagewise_value_roi/export_roi_patterns.py \
+  --base_dir /path/to/SPCD_data
+```
+
+It reuses the three independent ROI definitions and writes to
+`rsa_roi/probe_imagewise_value/raw_patterns/` inside the clone. Copy or sync
+that entire directory back to the analysis computer. No RSA regression is
+performed during export. Existing `both/` results are preserved. The same
+dependency list applies; use a fresh `--output_dir` for subsequent exports.
+
+The default paper exclusions remain sub-19, sub-31, and sub-33. Missing ratings
+do **not** block raw extraction: sub-36 can be exported and is flagged as
+having incomplete ratings, so later value analyses must apply that additional
+eligibility rule. Sub-38's raw values are saved even if every voxel fails the
+all-presentations RSA check. The exporter attempts every ROI for every sample;
+it never requires an earlier ROI or a model fit to succeed.
+
+Each participant has a `samples.csv` and one `roi-<ROI>_patterns.npz` archive
+per ROI. Archives contain the raw **presentations × voxels** matrix as float64,
+preserving the scaled beta-image values, including NaN/Inf. There is no
+centering, normalization, averaging, or nonfinite-voxel removal. Voxel columns
+are in NumPy mask-index order; `voxel_ijk`, `voxel_mni`, and `affine` retain
+their exact locations on the analysis grid. Archives contain numeric/string
+arrays and can be opened with `np.load(..., allow_pickle=False)`.
+
+`samples.csv` preserves row indices, participant, phase (`session`), unique
+run ID, within-phase run, trial, presentation position, cue/odor indices,
+condition/image labels, odor group, cue type, cue set, and response labels.
+Both the trial response and the RSA button label are retained; the latter
+is `none` for first presentations. Source beta paths, beta-index row numbers,
+and index-file hashes are included. Phase/run/sample labels are also embedded
+in each archive, and its `sample_index` aligns with the CSV rows.
+
+The bundle also includes:
+
+- `ratings.csv`: unstandardized pre/post pleasantness for each outcome and
+  participant, with explicit availability flags;
+- `subject_export.csv`: paper exclusions, export status, missing runs, sample
+  counts, rating completeness/provenance, and exported archive paths;
+- `coverage_summary.csv`: finite-voxel intersections and all-nonfinite sample
+  counts for all samples, each phase/run, each phase/presentation position,
+  and first/second presentations across phases;
+- per-ROI `roi-<ROI>_sample_coverage.csv` files: finite, NaN, and Inf counts for
+  each beta image, making the specific problematic phase/run/trial identifiable;
+- `mask_manifest.csv`, `masks/`, `export_config.json`, and `input_issues.csv`:
+  analysis masks and provenance, export settings/schema version, and any
+  unreadable or malformed inputs.
+
+Absent beta-index CSVs are recorded as missing runs; available phases/runs are
+still exported. A missing or unreadable beta image, or a grid mismatch, gets an
+explicit `beta_read_status=error` and an all-NaN placeholder row, preserving
+sample alignment. Missing events are flagged and response labels remain
+`unknown`; a later analysis requiring those labels must resolve that issue.
+The exporter continues other samples, ROIs, and participants, saves its reports,
+and exits with an error if unexpected input problems occurred. Readable images
+containing NaN/Inf are exported successfully and flagged in coverage reports.
+
+For sub-38, inspect coverage rows with `scope=all`, `phase`, `phase_run`, and
+`phase_image`, then the per-sample reports. This distinguishes coverage loss
+across all samples from a particular beta image or phase. Later analyses must
+choose usable voxel intersections after selecting their samples, preserving
+the raw exports and documenting all analysis variants.
+
+The bundle supports changes to sample selection, averaging, run centering,
+model RDMs, and correlation-distance RSA locally. Properly noise-normalized
+distances would additionally require GLM noise estimates, which are not part
+of this exporter.
+
 ## Verification
 
 ```bash
@@ -148,3 +221,6 @@ searchlight estimator and an independent least-squares fit, run/phase pair
 selection, paper exclusions, missing ratings, voxel QC, optional centering,
 wide-format ratings, refusal to overwrite outputs, and common-participant
 handling when only one ROI fails. No real participant analysis is performed.
+Exporter tests additionally verify raw-value/coordinate alignment, retention
+of nonfinite values and missing-rating participants, first-cue coverage
+recovery, and continued export after unreadable or mismatched beta images.
