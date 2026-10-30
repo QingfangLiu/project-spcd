@@ -234,7 +234,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--conditioning-delay", type=float, default=4,
                         help="Effective delay to odor arrival in seconds (default 4: 2 programmed + 2 transit).")
-    parser.add_argument("--output-stem", type=Path, default=ROOT / "fig/fig_design_python",
+    parser.add_argument("--output-stem", type=Path, default=ROOT / "fig/fig1_design",
                         help="Output path without a file extension.")
     parser.add_argument("--dpi", type=int, default=300)
     args = parser.parse_args()

@@ -361,7 +361,7 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--output-prefix", type=Path, help="Output path without extension (default: <project>/fig/fig_behavior).")
+    parser.add_argument("--output-prefix", type=Path, help="Output path without extension (default: <project>/fig/fig2_behavior).")
     parser.add_argument("--skip-subs", nargs="*", default=list(DEFAULT_SKIP_SUBS))
     parser.add_argument("--formats", nargs="+", choices=("pdf", "png"), default=["pdf", "png"])
     parser.add_argument("--dpi", type=int, default=300)
@@ -369,7 +369,7 @@ def main() -> None:
     if args.dpi <= 0:
         parser.error("--dpi must be positive")
     project_root = args.project_root.expanduser().resolve()
-    output_prefix = args.output_prefix.expanduser().resolve() if args.output_prefix else project_root / "fig" / "fig_behavior"
+    output_prefix = args.output_prefix.expanduser().resolve() if args.output_prefix else project_root / "fig" / "fig2_behavior"
     data = build_panel_data(project_root, tuple(args.skip_subs))
     print(f"Excluded subjects: {', '.join(args.skip_subs) or '(none)'}")
     for panel, table in data.items():

@@ -628,7 +628,7 @@ def main() -> None:
         type=Path,
         help=(
             "Output path without extension. Default: <project_root>/fig/"
-            "odor_identity_fmri."
+            "fig3_fmri."
         ),
     )
     parser.add_argument(
@@ -644,7 +644,7 @@ def main() -> None:
     output_prefix = (
         args.output_prefix.expanduser().resolve()
         if args.output_prefix is not None
-        else project_root / "fig" / "odor_identity_fmri"
+        else project_root / "fig" / "fig3_fmri"
     )
     rsa_paths = _subject_paths(project_root, "rsa")
     decoding_paths = _subject_paths(project_root, "decoding")
