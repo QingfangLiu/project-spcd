@@ -302,7 +302,11 @@ def make_figure(data: dict[str, pd.DataFrame]) -> plt.Figure:
             )
     for ax, letter in zip(axes, "ABCDE"):
         style_axis(ax)
-        add_panel_header(ax, letter, ax.get_title(loc="left"))
+        title = ax.get_title(loc="left")
+        if ax is c:
+            # Reserve the same two-line heading height as panels D and E.
+            title += "\n"
+        add_panel_header(ax, letter, title)
         if ax in axes[2:]:
             ax.tick_params(axis="x", labelsize=11)
     fig.legend(

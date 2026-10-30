@@ -319,7 +319,7 @@ def draw_panel_d(axis) -> None:
     participants = simulate_participants()
     x, y = participants["coding_c"], participants["coding_p"]
     draw_correlation(axis, x, y, COMPETITION_COLOR, point_size=25)
-    add_panel_header(axis, "D", "Model prediction", pad=45)
+    add_panel_header(axis, "D", "Predicted trade-off", pad=45)
     axis.text(0.5, 1.045, "Simulated participants", transform=axis.transAxes,
               ha="center", va="bottom", fontsize=13, fontweight="bold", color=COMPETITION_COLOR)
     axis.set_xlabel("Conditioned-cue identity\nrepresentation (a.u.)")
@@ -374,7 +374,7 @@ def create_figure():
     draw_panel_e(axes[4:], empirical)
     header_e = figure.add_subplot(grid[1, 1:], frame_on=False)
     header_e.set_axis_off()
-    add_panel_header(header_e, "E", "Test in fMRI data", pad=45)
+    add_panel_header(header_e, "E", "Testing the trade-off with fMRI", pad=45)
     return figure
 
 

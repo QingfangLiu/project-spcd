@@ -430,7 +430,7 @@ Purpose:
 
 ---
 
-## Panel D — Model prediction
+## Panel D — Predicted trade-off
 
 Simulate 100 participants with a common budget \(R=4\). Draw each
 participant's \(\log(a_P/a_C)\) from a normal distribution with mean
@@ -470,7 +470,7 @@ shared-budget assumption.
 
 ---
 
-## Panel E — Test in fMRI data
+## Panel E — Testing the trade-off with fMRI
 
 Use the existing first-cue, premeal odor-identity RSA coefficients for conditioned and preconditioned odor-predictive cues. Retain the same subject exclusions as Figure 3 (`sub-19`, `sub-31`, and `sub-33`), leaving 31 participants. Place lateral OFC and medial OFC in matched plots under one shared E heading.
 
@@ -684,9 +684,9 @@ The figure should be understandable before reading the detailed mathematical der
 
 **C. Allocation follows utility.** The optimal allocation difference follows \(r_P-r_C=\log(a_P/a_C)\) for interior solutions, with boundary solutions imposed by the finite resource constraint. Thus, preferential representation of inferred outcomes emerges when their explicit identity representation has greater computational value; it is not assumed from cue type itself.
 
-**D. Model prediction.** Simulated participants differ in relative computational value while sharing a fixed budget. Direct and inferred identity representations are quantified by optimal allocations plus independent Gaussian measurement noise, yielding a negative between-participant association. Points show 100 simulated participants, the line is a descriptive linear fit, and shading is its pointwise 95% confidence interval for the mean response. Representational units and parameters are illustrative; the model is not fitted to fMRI RSA values.
+**D. Predicted trade-off.** Simulated participants differ in relative computational value while sharing a fixed budget. Direct and inferred identity representations are quantified by optimal allocations plus independent Gaussian measurement noise, yielding a negative between-participant association. Points show 100 simulated participants, the line is a descriptive linear fit, and shading is its pointwise 95% confidence interval for the mean response. Representational units and parameters are illustrative; the model is not fitted to fMRI RSA values.
 
-**E. Test in fMRI data.** Correlations between conditioned- and preconditioned-cue odor-identity RSA coefficients test the prediction in lateral and medial OFC (31 participants per region). The lateral OFC association is negative (Spearman rho = -0.317, p = 0.041); the medial OFC association is not significant (rho = -0.030, p = 0.437). Tests assess negative associations and are one-sided. Lines show descriptive linear least-squares fits; shading indicates pointwise 95% confidence intervals for the fitted mean response.
+**E. Testing the trade-off with fMRI.** Correlations between conditioned- and preconditioned-cue odor-identity RSA coefficients test the prediction in lateral and medial OFC (31 participants per region). The lateral OFC association is negative (Spearman rho = -0.317, p = 0.041); the medial OFC association is not significant (rho = -0.030, p = 0.437). Tests assess negative associations and are one-sided. Lines show descriptive linear least-squares fits; shading indicates pointwise 95% confidence intervals for the fitted mean response.
 
 ---
 

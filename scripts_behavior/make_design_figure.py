@@ -38,13 +38,13 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from figure_style import (
-    DIRECT_COLOR, GRID_COLOR, INFERRED_COLOR, MUTED_TEXT_COLOR, NOTE_SIZE,
+    DIRECT_COLOR, GRID_COLOR, INFERRED_COLOR, NOTE_SIZE,
     PANEL_SIZE, REFERENCE_COLOR, SPINE_COLOR, TEXT_COLOR, TITLE_SIZE,
     configure_matplotlib,
 )
 
 WIDTH = 13.4
-YMIN, YMAX = 1.82, 8.6
+YMIN, YMAX = 1.22, 8.6
 CUES = {
     "A1": ROOT / "cues/characters_gray/charmander.jpeg",
     "A2": ROOT / "cues/characters_gray/stitch.jpg",
@@ -128,15 +128,13 @@ def association_panels(ax):
     panel_header(ax, .28, "A", "Preconditioning")
     panel_header(ax, 3.40, "B", "Conditioning")
     panel_header(ax, 6.76, "C", "Probe tests")
-    text(ax, 9.12, 8.22, "Before and after selective satiation",
-         size=12, color=MUTED_TEXT_COLOR, ha="left")
     text(ax, 1.57, 7.78, "Learn cue pairs", color="black")
     text(ax, 4.86, 7.78, "Learn cue-outcome associations", size=12, color="black")
     text(ax, 9.97, 7.78, "Choose the cue predicting the preferred odor", color="black")
 
     for y, first, second, outcome, color in zip(
             (7.12, 6.10, 5.08), ("A1", "A2", "C"), ("B1", "B2", "D"),
-            ("Sweet odor", "Savory odor", "Clean air"), OUTCOME_COLORS):
+            ("Non-devalued odor", "Devalued odor", "Clean air"), OUTCOME_COLORS):
         cue(ax, first, .94, y)
         arrow(ax, 1.40, y, 1.97, y)
         cue(ax, second, 2.40, y)
@@ -147,18 +145,26 @@ def association_panels(ax):
         else:
             asset = "sweet_odor.png" if second == "B1" else "savory_odor.png"
             image(ax, ROOT / "fig/design_assets" / asset, 5.55, y, .65)
-        text(ax, 5.55, y - .49, outcome, size=13, color=color)
+        text(ax, 5.55, y - .49, outcome, size=12, color=color)
 
-    text(ax, 8.26, 7.42, "Preconditioned cues", color=MUTED_TEXT_COLOR)
-    text(ax, 11.39, 7.42, "Conditioned cues", color=MUTED_TEXT_COLOR)
+    text(ax, 8.26, 7.42, "Preconditioned cues", color="black")
+    text(ax, 11.39, 7.42, "Conditioned cues", color="black")
     comparisons = (("A1", "C", "B1", "D"),
                    ("A2", "C", "B2", "D"),
                    ("A1", "A2", "B1", "B2"))
     for y, codes in zip((6.92, 5.92, 4.92), comparisons):
         for center, pair in ((8.26, codes[:2]), (11.39, codes[2:])):
             cue(ax, pair[0], center - .66, y, width=.58)
-            text(ax, center, y, "vs", size=13, color=MUTED_TEXT_COLOR)
+            text(ax, center, y, "vs", size=13, color="black")
             cue(ax, pair[1], center + .66, y, width=.58)
+
+    # Keep stage-specific notes together below the boxes, on a shared top line.
+    for x, note in (
+        (1.65, "Character/place cue positions\ncounterbalanced"),
+        (4.86, "Example mapping; sweet/savory\nassignment counterbalanced"),
+        (9.94, "Before and after\nselective satiation"),
+    ):
+        text(ax, x, 4.07, note, size=11, color="black", va="top")
 
 
 def screen(ax, x, y, label, duration, *, content=(), fixation=False,
@@ -173,7 +179,7 @@ def screen(ax, x, y, label, duration, *, content=(), fixation=False,
     if feedback:
         # Alternative accuracy messages; feedback does not show a cue image.
         text(ax, x, y + .19, "Correct", size=10)
-        text(ax, x, y, "or", size=8, color=MUTED_TEXT_COLOR)
+        text(ax, x, y, "or", size=8, color="black")
         text(ax, x, y - .19, "Incorrect", size=10)
     elif prediction:
         # The cue remains visible during prediction, as described in Methods.
@@ -191,11 +197,11 @@ def screen(ax, x, y, label, duration, *, content=(), fixation=False,
         for dx, number in ((-.16, "1"), (.16, "2")):
             text(ax, x + dx, y, number, size=17, weight="bold")
     text(ax, x, y - .57, label, size=13, va="top")
-    text(ax, x, y - .83, duration, size=13, color=MUTED_TEXT_COLOR, va="top")
+    text(ax, x, y - .83, duration, size=13, color="black", va="top")
 
 
 def trial_timelines(ax, conditioning_delay):
-    ax.plot([.28, 13.12], [4.12, 4.12], color=GRID_COLOR, linewidth=1)
+    ax.plot([.28, 13.12], [3.52, 3.52], color=GRID_COLOR, linewidth=1)
     sections = (
         (.28, "Preconditioning trial", (.70, 1.70, 2.70, 3.70), (
             dict(label="First cue", duration="3 s", content=("A1",)),
@@ -217,11 +223,11 @@ def trial_timelines(ax, conditioning_delay):
         )),
     )
     for start, title, xs, steps in sections:
-        text(ax, start, 3.73, title, size=TITLE_SIZE, weight="bold", ha="left")
+        text(ax, start, 3.13, title, size=TITLE_SIZE, weight="bold", ha="left")
         for i, (x, step) in enumerate(zip(xs, steps)):
-            screen(ax, x, 3.05, **step)
+            screen(ax, x, 2.45, **step)
             if i + 1 < len(xs):
-                arrow(ax, x + .43, 3.05, xs[i + 1] - .43, 3.05)
+                arrow(ax, x + .43, 2.45, xs[i + 1] - .43, 2.45)
 
 
 def main():
