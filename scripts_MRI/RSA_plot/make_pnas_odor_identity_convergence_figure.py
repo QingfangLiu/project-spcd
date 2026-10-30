@@ -36,6 +36,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 from matplotlib import patches
+from matplotlib.colors import BoundaryNorm, ListedColormap
 from matplotlib.path import Path as MplPath
 import nibabel as nib
 from nibabel.processing import resample_from_to
@@ -274,7 +275,9 @@ def _plot_roi_anatomy(ax, project_root: Path) -> None:
                 fontsize=14, fontweight="bold", color=ROI_COLORS[roi], va="center")
 
 
-def _example_rdms(project_root: Path, subject: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _example_rdms(
+    project_root: Path, subject: str,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Use the first retained participant, without selecting on RSA strength."""
     root = (project_root / "rsa_roi" / "probe_imagewise_odor_identity_no_image_first_image"
             / "premeal_ofc_k2_spearman" / ROI_FILE_KEYS[LATERAL_ROI]
@@ -291,36 +294,85 @@ def _example_rdms(project_root: Path, subject: str) -> tuple[np.ndarray, np.ndar
     neural = (1 - np.corrcoef(patterns))[np.ix_(order, order)]
     model = (odors[:, None] != odors[None, :]).astype(float)[np.ix_(order, order)]
     runs = runs[order]
+    odors = odors[order]
     mask = runs[:, None] == runs[None, :]
-    return np.ma.array(neural, mask=mask), np.ma.array(model, mask=mask), runs
+    return np.ma.array(neural, mask=mask), np.ma.array(model, mask=mask), runs, odors
 
 
 def _plot_rsa_logic(ax, project_root: Path, subject: str) -> None:
     ax.set_axis_off()
     add_panel_header(ax, "B", "Representational\nsimilarity analysis")
-    neural, model, _ = _example_rdms(project_root, subject)
-    positions = ((0.0, neural, "Neural RDM"), (0.62, model, "Odor-identity\nRDM"))
+    neural, model, runs, odors = _example_rdms(project_root, subject)
+    positions = ((0.0, neural, "Neural RDM"), (0.62, model, "Odor-identity RDM"))
+    excluded_color = "#E5E7E9"
     cmap = plt.get_cmap("viridis").copy()
-    cmap.set_bad("#E5E7E9")
+    cmap.set_bad(excluded_color)
+    identity_colors = [cmap(0.0), cmap(1.0)]
+    identity_cmap = ListedColormap(identity_colors)
+    identity_cmap.set_bad(excluded_color)
+    identity_norm = BoundaryNorm([-0.5, 0.5, 1.5], identity_cmap.N)
+    run_groups = []
+    odor_centers, odor_labels = [], []
+    for run in np.unique(runs):
+        indices = np.flatnonzero(runs == run)
+        run_groups.append((indices[0], indices[-1], run))
+        for odor in np.unique(odors[indices]):
+            odor_indices = indices[odors[indices] == odor]
+            odor_centers.append(float(odor_indices.mean()))
+            odor_labels.append(f"O{odor}")
     for x, matrix, title in positions:
-        child = ax.inset_axes([x, 0.33, 0.37, 0.53])
-        low, high = (float(matrix.min()), float(matrix.max())) if x == 0 else (0.0, 1.0)
-        im = child.imshow(matrix, cmap=cmap, vmin=low, vmax=high, interpolation="nearest")
-        child.set_title(title, fontsize=12, pad=7)
-        child.set_xticks([])
-        child.set_yticks([])
+        child = ax.inset_axes([x, 0.26, 0.37, 0.53])
+        if x == 0:
+            low, high = float(matrix.min()), float(matrix.max())
+            im = child.imshow(matrix, cmap=cmap, vmin=low, vmax=high,
+                              interpolation="nearest")
+        else:
+            child.imshow(matrix, cmap=identity_cmap, norm=identity_norm,
+                         interpolation="nearest")
+        child.set_title(title, fontsize=12, y=1.28, pad=7)
+        child.set_xticks(odor_centers, odor_labels)
+        child.set_yticks(odor_centers, odor_labels)
+        child.tick_params(axis="both", which="both", length=0, labelsize=8, pad=2)
+        child.xaxis.tick_top()
+        # Put the outer row labels away from the central correlation label.
+        if x != 0:
+            child.yaxis.tick_right()
+        for start, end, run in run_groups:
+            center = (start + end) / 2
+            child.text(center, 1.16, f"Run {run}", transform=child.get_xaxis_transform(),
+                       ha="center", va="bottom", fontsize=8.5)
+            child.text(-0.25 if x == 0 else 1.25, center, f"Run {run}",
+                       transform=child.get_yaxis_transform(), ha="center", va="center",
+                       rotation=90 if x == 0 else -90, fontsize=8.5)
+            if end < len(runs) - 1:
+                child.axvline(end + 0.5, color="white", linewidth=0.65)
+                child.axhline(end + 0.5, color="white", linewidth=0.65)
         for spine in child.spines.values():
             spine.set_visible(False)
-        bar_ax = ax.inset_axes([x, 0.24, 0.37, 0.025])
-        bar = ax.figure.colorbar(im, cax=bar_ax, orientation="horizontal")
-        bar.set_ticks([low, high])
-        bar.set_ticklabels(["Low", "High"] if x == 0 else ["Same (0)", "Different (1)"])
-        bar.ax.tick_params(labelsize=11, length=2)
+        legend_ax = ax.inset_axes([x - 0.025, 0.015, 0.42, 0.24])
+        legend_ax.set_axis_off()
+        legend_ax.text(
+            0.5, 0.82, "Neural dissimilarity" if x == 0 else "Odor dissimilarity",
+            transform=legend_ax.transAxes, ha="center", va="center", fontsize=10,
+        )
         if x == 0:
-            bar.set_label("Dissimilarity", fontsize=11, labelpad=3)
-    ax.text(0.495, 0.58, "Spearman\nρ", transform=ax.transAxes,
+            bar_ax = legend_ax.inset_axes([0.13, 0.40, 0.74, 0.15])
+            bar = ax.figure.colorbar(im, cax=bar_ax, orientation="horizontal")
+            bar.set_ticks([low, high], labels=["Low", "High"])
+            bar.ax.tick_params(labelsize=10, length=2, pad=3)
+        else:
+            for y, color, label in zip(
+                (0.47, 0.18), identity_colors, ("Same odor (0)", "Different odors (1)"),
+            ):
+                legend_ax.add_patch(patches.Rectangle(
+                    (0.06, y - 0.075), 0.075, 0.15,
+                    transform=legend_ax.transAxes, facecolor=color, edgecolor="none",
+                ))
+                legend_ax.text(0.18, y, label, transform=legend_ax.transAxes,
+                               va="center", fontsize=10)
+    ax.text(0.495, 0.50, "Spearman\nρ", transform=ax.transAxes,
             ha="center", va="center", fontsize=12, color="black")
-    ax.text(0.49, 0.035, "Cross-run pairs only", transform=ax.transAxes,
+    ax.text(0.49, -0.07, "Cross-run pairs only", transform=ax.transAxes,
             ha="center", fontsize=12, fontweight="bold")
 
 
