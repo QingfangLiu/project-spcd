@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create the four-panel adaptive identity-allocation figure.
+"""Create the five-panel adaptive identity-allocation and fMRI figure.
 
 The figure visualizes a normative model in which inferred/preconditioned (P)
 and directly conditioned (C) cues share a finite identity-representation
@@ -7,18 +7,26 @@ budget. All numerical choices used for illustration are collected near the
 top of this file so the figure can be revised without changing plotting logic.
 Panel D uses noisy readouts of optimal allocations in simulated participants;
 these readouts are illustrative coding proxies, not fitted fMRI RSA values.
+Panel E tests the prediction using existing participant-level OFC RSA results.
 """
 
 from __future__ import annotations
 
+import csv
+import os
 from pathlib import Path
+import sys
+import tempfile
+
+os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "spcd_matplotlib_cache"))
+os.environ.setdefault("XDG_CACHE_HOME", str(Path(tempfile.gettempdir()) / "spcd_font_cache"))
 
 import matplotlib
 import numpy as np
 
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
-from matplotlib.ticker import FixedLocator
+from matplotlib.ticker import FixedLocator, MaxNLocator
 from scipy import stats
 
 
@@ -27,6 +35,9 @@ from scipy import stats
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
+from figure_style import configure_matplotlib as configure_shared, style_axis as style_shared
+
 FIGURES_DIR = REPO_ROOT / "fig"
 PDF_PATH = FIGURES_DIR / "fig_model.pdf"
 PNG_PATH = FIGURES_DIR / "fig_model.png"
@@ -50,7 +61,6 @@ MEASUREMENT_NOISE_SD = 0.75
 TEXT_COLOR = "#20252B"
 MUTED_TEXT_COLOR = "#5D6871"
 GRID_COLOR = "#E5E7E9"
-SPINE_COLOR = "#9AA3AA"
 # Local model palette distinguishes allocation from behavioral outcomes and fMRI ROIs.
 INFERRED_COLOR = "#B43C39"
 DIRECT_COLOR = "#29343D"
@@ -61,27 +71,9 @@ LOSS_COLORS = ("#EBC8C7", "#DDA19F", "#CA6B68", "#B43C39")
 
 
 def configure_matplotlib() -> None:
-    """Set journal-friendly defaults and preserve editable PDF text."""
-
-    plt.rcParams.update(
-        {
-            "font.family": "DejaVu Sans",
-            "font.size": 9,
-            "axes.labelsize": 9,
-            "axes.titlesize": 9.6,
-            "axes.titleweight": "bold",
-            "axes.labelcolor": TEXT_COLOR,
-            "axes.edgecolor": SPINE_COLOR,
-            "xtick.color": TEXT_COLOR,
-            "ytick.color": TEXT_COLOR,
-            "text.color": TEXT_COLOR,
-            "legend.fontsize": 7.8,
-            "axes.unicode_minus": False,
-            "pdf.fonttype": 42,
-            "ps.fonttype": 42,
-            "savefig.facecolor": "white",
-        }
-    )
+    """Match manuscript figures at the shared 13.4-inch drawing width."""
+    configure_shared()
+    plt.rcParams.update({"legend.fontsize": 12})
 
 
 # ---------------------------------------------------------------------------
@@ -163,300 +155,71 @@ def simulate_participants(
 
 
 def style_axis(axis, *, grid_axis: str = "y") -> None:
-    """Apply the same restrained axis treatment to every panel."""
-
-    axis.set_facecolor("white")
-    axis.set_axisbelow(True)
-    axis.grid(axis=grid_axis, color=GRID_COLOR, linewidth=0.7)
-    axis.tick_params(axis="both", labelsize=8, length=3, width=0.7)
-    axis.spines["top"].set_visible(False)
-    axis.spines["right"].set_visible(False)
-    axis.spines["left"].set_color(SPINE_COLOR)
-    axis.spines["bottom"].set_color(SPINE_COLOR)
-    axis.spines["left"].set_linewidth(0.8)
-    axis.spines["bottom"].set_linewidth(0.8)
+    """Use the same axes, labels and faint guides as Figures 2 and 3."""
+    style_shared(axis)
+    axis.grid(axis=grid_axis, color=GRID_COLOR, linewidth=0.8)
+    axis.tick_params(axis="both", labelsize=13)
 
 
-def add_panel_header(axis, panel_label: str, title: str) -> None:
-    """Place a bold panel letter and left-aligned title above an axis."""
-
-    axis.text(
-        -0.10,
-        1.105,
-        panel_label,
-        transform=axis.transAxes,
-        fontsize=11,
-        fontweight="bold",
-        ha="left",
-        va="bottom",
-        clip_on=False,
-    )
-    axis.set_title(title, loc="left", pad=15, color=TEXT_COLOR)
-
-
-def add_example_note(axis) -> None:
-    """Label the example parameter values in panel B."""
-
-    axis.text(
-        0.98,
-        0.96,
-        r"Example: $R=4$, $a_P=4$, $a_C=1$",
-        transform=axis.transAxes,
-        ha="right",
-        va="top",
-        fontsize=7.4,
-        color=MUTED_TEXT_COLOR,
-        bbox={
-            "boxstyle": "round,pad=0.22",
-            "facecolor": "white",
-            "edgecolor": "none",
-            "alpha": 0.90,
-        },
-    )
-
-
-# ---------------------------------------------------------------------------
-# Panels
-# ---------------------------------------------------------------------------
-
-
-def draw_panel_a(axis) -> None:
-    """Plot single-cue loss functions for several computational values."""
-
-    resource = np.linspace(0.0, 5.0, 500)
-    a_values = (0.5, 1.0, 2.0, 4.0)
-    for a_value, color in zip(a_values, LOSS_COLORS):
-        axis.plot(
-            resource,
-            single_cue_loss(a_value, resource),
-            color=color,
-            linewidth=2.0,
-            label=rf"$a_i={a_value:g}$",
+def add_panel_header(axis, panel_label: str, title: str, *, pad: float = 18) -> None:
+    """Use a fixed letter offset for both single plots and the paired E panel."""
+    for text, offset, size in ((panel_label, -28, 20), (title, 0, 17)):
+        axis.annotate(
+            text, xy=(0, 1), xycoords="axes fraction", xytext=(offset, pad),
+            textcoords="offset points", fontsize=size, fontweight="bold",
+            color=TEXT_COLOR, ha="left", va="bottom", annotation_clip=False,
         )
 
-    style_axis(axis)
-    add_panel_header(axis, "A", "Identity resources have diminishing returns")
-    axis.set_xlim(0.0, 5.0)
-    axis.set_ylim(0.0, 4.25)
-    axis.set_xlabel(r"Identity representational resource, $r_i$")
-    axis.set_ylabel(r"Decision loss, $L_i$")
-    axis.legend(
-        loc="upper right",
-        frameon=False,
-        handlelength=2.2,
-        borderaxespad=0.3,
-        labelspacing=0.35,
-    )
-    axis.text(
-        0.96,
-        0.48,
-        "Higher computational value\nraises the cost of weak\nidentity representation",
-        transform=axis.transAxes,
-        ha="right",
-        va="top",
-        fontsize=7.5,
-        color=MUTED_TEXT_COLOR,
-        linespacing=1.3,
-    )
+
+# ---------------------------------------------------------------------------
+# Empirical inputs: identical RSA metric, cue subsets and exclusions as Figure 3
+# ---------------------------------------------------------------------------
+
+EMPIRICAL_ROIS = (
+    ("OFC_K2_cluster2_central_anterior_lateral", "cluster2_central_anterior_lateral", "Lateral OFC", "#238B8E"),
+    ("OFC_K2_cluster1_medial_posterior_lateral", "cluster1_medial_posterior_lateral", "Medial OFC", "#8C6BB1"),
+)
+EMPIRICAL_SKIP_SUBS = ("sub-19", "sub-31", "sub-33")
+EMPIRICAL_METRIC = "odor_identity_no_image_spearman_rho"
+EMPIRICAL_CUES = ("conditioned_odor_only", "preconditioned_odor_only")
 
 
-def draw_panel_b(axis) -> None:
-    """Plot total loss across all feasible allocations of a fixed budget."""
-
-    budget = EXAMPLE_BUDGET
-    resource_p = np.linspace(0.0, budget, 600)
-    resource_c = budget - resource_p
-    total_loss = single_cue_loss(EXAMPLE_A_P, resource_p) + single_cue_loss(
-        EXAMPLE_A_C, resource_c
-    )
-    r_p_star, r_c_star = optimal_allocation(
-        EXAMPLE_A_P, EXAMPLE_A_C, EXAMPLE_BUDGET
-    )
-    minimum_loss = float(
-        single_cue_loss(EXAMPLE_A_P, r_p_star)
-        + single_cue_loss(EXAMPLE_A_C, r_c_star)
-    )
-
-    axis.plot(resource_p, total_loss, color=TOTAL_COLOR, linewidth=2.4)
-    axis.axvline(
-        r_p_star,
-        color=REFERENCE_COLOR,
-        linestyle=(0, (3, 3)),
-        linewidth=1.0,
-    )
-    axis.scatter(
-        [r_p_star],
-        [minimum_loss],
-        s=34,
-        facecolor="white",
-        edgecolor=TOTAL_COLOR,
-        linewidth=1.3,
-        zorder=4,
-    )
-
-    style_axis(axis)
-    add_panel_header(axis, "B", "Optimal allocation under a fixed budget")
-    add_example_note(axis)
-    axis.set_xlim(0.0, budget)
-    axis.set_ylim(0.0, 4.25)
-    axis.set_xlabel(r"Resource to inferred identity, $r_P$")
-    axis.set_ylabel("Total decision loss")
-    axis.annotate(
-        "Optimum\n"
-        + rf"$r_P^*={r_p_star:.2f}$"
-        + "\n"
-        + rf"$r_C^*={r_c_star:.2f}$",
-        xy=(r_p_star, minimum_loss),
-        xytext=(1.85, 1.38),
-        fontsize=7.8,
-        fontweight="bold",
-        ha="center",
-        va="center",
-        arrowprops={
-            "arrowstyle": "-",
-            "color": REFERENCE_COLOR,
-            "linewidth": 0.9,
-        },
-    )
-    axis.text(
-        0.04,
-        0.68,
-        "Too little resource\nfor inferred identity",
-        transform=axis.transAxes,
-        color=INFERRED_COLOR,
-        fontsize=7.5,
-        ha="left",
-        va="center",
-    )
-    axis.text(
-        0.96,
-        0.55,
-        "Too little resource\nfor directly learned identity",
-        transform=axis.transAxes,
-        color=DIRECT_COLOR,
-        fontsize=7.5,
-        ha="right",
-        va="center",
-    )
+def load_empirical_correlations() -> list[dict]:
+    """Retain complete paired coefficients and the original negative-direction test."""
+    root = (REPO_ROOT / "rsa_roi" / "probe_imagewise_odor_identity_no_image_first_image"
+            / "premeal_ofc_k2_spearman")
+    results = []
+    for roi, folder, label, color in EMPIRICAL_ROIS:
+        path = root / folder / f"roi-{roi}_subject_spearman.csv"
+        pairs = {}
+        with path.open(newline="") as handle:
+            for row in csv.DictReader(handle):
+                if (row["sub"] in EMPIRICAL_SKIP_SUBS or row["roi"] != roi
+                        or row["cue_subset"] not in EMPIRICAL_CUES):
+                    continue
+                subject = pairs.setdefault(row["sub"], {})
+                cue = row["cue_subset"]
+                if cue in subject:
+                    raise ValueError(f"Duplicate coefficient: {roi}, {row['sub']}, {cue}")
+                subject[cue] = float(row[EMPIRICAL_METRIC])
+        subjects = sorted(pairs)
+        if len(subjects) < 3 or any(set(pairs[sub]) != set(EMPIRICAL_CUES) for sub in subjects):
+            raise ValueError(f"Incomplete conditioned/preconditioned pairs: {roi}")
+        values = np.array([[pairs[sub][cue] for cue in EMPIRICAL_CUES] for sub in subjects])
+        if not np.isfinite(values).all():
+            raise ValueError(f"Nonfinite empirical RSA coefficients: {roi}")
+        x, y = values.T
+        test = stats.spearmanr(x, y, alternative="less")
+        results.append({"roi": roi, "label": label, "color": color,
+                        "subjects": subjects, "x": x, "y": y,
+                        "rho": float(test.statistic), "p": float(test.pvalue)})
+    if results[0]["subjects"] != results[1]["subjects"]:
+        raise ValueError("Both empirical ROIs must contain the same participants")
+    return results
 
 
-def draw_panel_c(axis) -> None:
-    """Plot the constrained allocation difference across relative values."""
-
-    budget = EXAMPLE_BUDGET
-    value_ratio = np.logspace(-2.2, 2.2, 800)
-    allocation_difference = np.clip(np.log(value_ratio), -budget, budget)
-    direct_mask = value_ratio <= 1.0
-    inferred_mask = value_ratio >= 1.0
-
-    axis.plot(
-        value_ratio[direct_mask],
-        allocation_difference[direct_mask],
-        color=DIRECT_COLOR,
-        linewidth=2.4,
-    )
-    axis.plot(
-        value_ratio[inferred_mask],
-        allocation_difference[inferred_mask],
-        color=INFERRED_COLOR,
-        linewidth=2.4,
-    )
-    axis.fill_between(
-        value_ratio[direct_mask],
-        allocation_difference[direct_mask],
-        0.0,
-        color=DIRECT_COLOR,
-        alpha=0.08,
-    )
-    axis.fill_between(
-        value_ratio[inferred_mask],
-        0.0,
-        allocation_difference[inferred_mask],
-        color=INFERRED_COLOR,
-        alpha=0.08,
-    )
-    axis.axhline(0.0, color=REFERENCE_COLOR, linewidth=0.9)
-    axis.axvline(
-        1.0,
-        color=REFERENCE_COLOR,
-        linestyle=(0, (3, 3)),
-        linewidth=0.9,
-    )
-    axis.axhline(
-        budget,
-        color=GRID_COLOR,
-        linestyle=(0, (2, 3)),
-        linewidth=0.8,
-    )
-    axis.axhline(
-        -budget,
-        color=GRID_COLOR,
-        linestyle=(0, (2, 3)),
-        linewidth=0.8,
-    )
-
-    style_axis(axis, grid_axis="y")
-    add_panel_header(axis, "C", "Allocation follows relative value")
-    axis.set_xscale("log")
-    axis.set_xlim(value_ratio.min(), value_ratio.max())
-    axis.set_ylim(-4.4, 4.4)
-    axis.xaxis.set_major_locator(FixedLocator([0.01, 0.1, 1.0, 10.0, 100.0]))
-    axis.set_xticklabels(["0.01", "0.1", "1", "10", "100"])
-    axis.set_yticks([-4, -2, 0, 2, 4])
-    axis.set_xlabel(r"Relative computational value, $a_P/a_C$")
-    axis.set_ylabel(r"Optimal allocation difference, $r_P^*-r_C^*$")
-    axis.text(
-        0.08,
-        -2.0,
-        "More resource to\ndirectly learned identity",
-        color=DIRECT_COLOR,
-        fontsize=7.7,
-        fontweight="bold",
-        ha="center",
-        va="center",
-    )
-    axis.text(
-        13.0,
-        1.80,
-        "More resource to\ninferred identity",
-        color=INFERRED_COLOR,
-        fontsize=7.7,
-        fontweight="bold",
-        ha="center",
-        va="center",
-    )
-    axis.annotate(
-        "Equal utility",
-        xy=(1.0, 0.0),
-        xytext=(1.45, -1.15),
-        fontsize=7.5,
-        color=MUTED_TEXT_COLOR,
-        ha="left",
-        arrowprops={
-            "arrowstyle": "-",
-            "color": REFERENCE_COLOR,
-            "linewidth": 0.8,
-        },
-    )
-    axis.text(
-        0.985,
-        0.09,
-        rf"Boundary solutions at $\pm R$ ($R={budget:g}$)",
-        transform=axis.transAxes,
-        ha="right",
-        va="bottom",
-        fontsize=7.3,
-        color=MUTED_TEXT_COLOR,
-    )
-
-
-def draw_panel_d(axis) -> None:
-    """Show the noisy between-participant prediction of a shared budget."""
-
-    participants = simulate_participants()
-    x = participants["coding_c"]
-    y = participants["coding_p"]
-    rho = float(stats.spearmanr(x, y).statistic)
+def draw_correlation(axis, x, y, color, *, point_size: float) -> None:
+    """Draw the original descriptive OLS line and pointwise mean-response CI."""
     fit = stats.linregress(x, y)
     fit_x = np.linspace(x.min(), x.max(), 250)
     fit_y = fit.intercept + fit.slope * fit_x
@@ -465,37 +228,128 @@ def draw_panel_d(axis) -> None:
         1 / len(x) + (fit_x - x.mean())**2 / np.sum((x - x.mean())**2)
     )
     half_width = stats.t.ppf(0.975, len(x) - 2) * mean_se
-
-    axis.fill_between(
-        fit_x, fit_y - half_width, fit_y + half_width,
-        color=COMPETITION_COLOR, alpha=0.16, linewidth=0,
-    )
-    axis.plot(fit_x, fit_y, color=COMPETITION_COLOR, linewidth=2.0)
-    axis.scatter(
-        x, y, s=17, color=COMPETITION_COLOR, alpha=0.75,
-        edgecolor="white", linewidth=0.35, zorder=3,
-    )
+    axis.fill_between(fit_x, fit_y - half_width, fit_y + half_width,
+                      color=color, alpha=0.18, linewidth=0, zorder=1)
+    axis.plot(fit_x, fit_y, color=color, linewidth=2.0, zorder=2)
+    axis.scatter(x, y, s=point_size, color=color, alpha=0.85,
+                 edgecolor="white", linewidth=0.5, zorder=3)
     style_axis(axis)
-    add_panel_header(axis, "D", "Direct and inferred coding compete")
-    axis.set_xlabel("Direct identity coding (a.u.)")
-    axis.set_ylabel("Inferred identity coding (a.u.)")
+
+
+# ---------------------------------------------------------------------------
+# Panels
+# ---------------------------------------------------------------------------
+
+
+def draw_panel_a(axis) -> None:
+    """Plot unchanged loss functions, with their interpretation in the caption."""
+    resource = np.linspace(0.0, 5.0, 500)
+    for a_value, color in zip((0.5, 1.0, 2.0, 4.0), LOSS_COLORS):
+        axis.plot(resource, single_cue_loss(a_value, resource), color=color,
+                  linewidth=2.4, label=rf"$a_i={a_value:g}$")
+    style_axis(axis)
+    add_panel_header(axis, "A", "Benefits of identity coding")
+    axis.set_xlim(0.0, 5.0)
+    axis.set_ylim(0.0, 4.25)
+    axis.set_xlabel("Representational\nresource, $r_i$")
+    axis.set_ylabel(r"Decision loss, $L_i$")
+    axis.legend(loc="upper right", frameon=False, handlelength=1.8,
+                borderaxespad=0.3, labelspacing=0.35)
+
+
+def draw_panel_b(axis) -> None:
+    """Show the same illustrative optimum without dense parameter annotations."""
+    budget = EXAMPLE_BUDGET
+    resource_p = np.linspace(0.0, budget, 600)
+    total_loss = (single_cue_loss(EXAMPLE_A_P, resource_p)
+                  + single_cue_loss(EXAMPLE_A_C, budget - resource_p))
+    r_p_star, r_c_star = optimal_allocation(EXAMPLE_A_P, EXAMPLE_A_C, budget)
+    minimum_loss = float(single_cue_loss(EXAMPLE_A_P, r_p_star)
+                         + single_cue_loss(EXAMPLE_A_C, r_c_star))
+    axis.plot(resource_p, total_loss, color=TOTAL_COLOR, linewidth=2.5)
+    axis.axvline(r_p_star, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.2)
+    axis.scatter([r_p_star], [minimum_loss], s=50, facecolor="white",
+                 edgecolor=TOTAL_COLOR, linewidth=1.5, zorder=4)
+    style_axis(axis)
+    add_panel_header(axis, "B", "Optimal allocation")
+    axis.set_xlim(0.0, budget)
+    axis.set_ylim(0.0, 4.25)
+    axis.set_xlabel("Resource to preconditioned\nidentity, $r_P$")
+    axis.set_ylabel("Total decision loss")
+    axis.annotate("Optimum", xy=(r_p_star, minimum_loss), xytext=(1.9, 1.40),
+                  fontsize=13, fontweight="bold", ha="center", va="center",
+                  arrowprops={"arrowstyle": "-", "color": REFERENCE_COLOR, "linewidth": 1.0})
+
+
+def draw_panel_c(axis) -> None:
+    """Keep the full constrained allocation curve and simplify its annotations."""
+    budget = EXAMPLE_BUDGET
+    value_ratio = np.logspace(-2.2, 2.2, 800)
+    difference = np.clip(np.log(value_ratio), -budget, budget)
+    for mask, color in ((value_ratio <= 1, DIRECT_COLOR), (value_ratio >= 1, INFERRED_COLOR)):
+        axis.plot(value_ratio[mask], difference[mask], color=color, linewidth=2.5)
+        axis.fill_between(value_ratio[mask], 0, difference[mask], color=color, alpha=0.08)
+    axis.axhline(0, color=REFERENCE_COLOR, linewidth=1.0)
+    axis.axvline(1, color=REFERENCE_COLOR, linestyle=(0, (3, 3)), linewidth=1.0)
+    for boundary in (-budget, budget):
+        axis.axhline(boundary, color=GRID_COLOR, linestyle=(0, (2, 3)), linewidth=0.9)
+    style_axis(axis)
+    add_panel_header(axis, "C", "Allocation follows utility")
+    axis.set_xscale("log")
+    axis.set_xlim(value_ratio.min(), value_ratio.max())
+    axis.set_ylim(-4.4, 4.4)
+    axis.xaxis.set_major_locator(FixedLocator([0.01, 0.1, 1.0, 10.0, 100.0]))
+    axis.set_xticklabels(["0.01", "0.1", "1", "10", "100"])
+    axis.set_yticks([-4, -2, 0, 2, 4])
+    axis.set_xlabel("Relative computational\nvalue, $a_P/a_C$")
+    axis.set_ylabel("Allocation difference,\n$r_P^*-r_C^*$")
+    axis.text(0.04, 0.40, "More to $C$", transform=axis.transAxes,
+              color=DIRECT_COLOR, fontsize=13, fontweight="bold", ha="left", va="top")
+    axis.text(0.96, 0.64, "More to $P$", transform=axis.transAxes,
+              color=INFERRED_COLOR, fontsize=13, fontweight="bold", ha="right", va="top")
+    axis.annotate("Equal utility", xy=(1, 0), xytext=(1.6, -1.25), fontsize=12,
+                  color=MUTED_TEXT_COLOR, ha="left",
+                  arrowprops={"arrowstyle": "-", "color": REFERENCE_COLOR, "linewidth": 0.9})
+
+
+def draw_panel_d(axis) -> None:
+    """Show the unchanged simulated shared-budget prediction."""
+    participants = simulate_participants()
+    x, y = participants["coding_c"], participants["coding_p"]
+    draw_correlation(axis, x, y, COMPETITION_COLOR, point_size=25)
+    add_panel_header(axis, "D", "Model prediction", pad=45)
+    axis.text(0.5, 1.045, "Simulated participants", transform=axis.transAxes,
+              ha="center", va="bottom", fontsize=13, fontweight="bold", color=COMPETITION_COLOR)
+    axis.set_xlabel("Conditioned-cue identity\ncoding (a.u.)")
+    axis.set_ylabel("Preconditioned-cue identity\ncoding (a.u.)")
     axis.margins(x=0.08)
     span_y = np.ptp(y)
     axis.set_ylim(y.min() - 0.18 * span_y, y.max() + 0.30 * span_y)
-    axis.text(
-        0.97, 0.97,
-        rf"Simulated Spearman $\rho={rho:.3f}$" + "\n"
-        + rf"$n={len(x)}$ simulated participants",
-        transform=axis.transAxes, ha="right", va="top", fontsize=7.5,
-        bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.9, "pad": 1.5},
-    )
-    axis.text(
-        0.03, 0.04,
-        "Shared budget + independent measurement noise\nIllustrative prediction; no fit to fMRI",
-        transform=axis.transAxes, ha="left", va="bottom", fontsize=6.9,
-        color=MUTED_TEXT_COLOR,
-        bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.9, "pad": 1.5},
-    )
+    rho = float(stats.spearmanr(x, y).statistic)
+    axis.text(0.98, 0.97, rf"$\rho={rho:.3f}$", transform=axis.transAxes,
+              ha="right", va="top", fontsize=13)
+
+
+def draw_panel_e(axes, empirical: list[dict]) -> None:
+    """Test the prediction in two OFC ROIs using their original RSA coefficients."""
+    all_values = np.concatenate([np.concatenate([r["x"], r["y"]]) for r in empirical])
+    padding = 0.12 * np.ptp(all_values)
+    limits = (float(all_values.min() - padding), float(all_values.max() + padding))
+    for index, (axis, result) in enumerate(zip(axes, empirical)):
+        draw_correlation(axis, result["x"], result["y"], result["color"], point_size=36)
+        axis.axhline(0, color=REFERENCE_COLOR, linewidth=0.9, linestyle="--")
+        axis.axvline(0, color=REFERENCE_COLOR, linewidth=0.9, linestyle="--")
+        axis.set_xlim(*limits)
+        axis.set_ylim(*limits)
+        axis.xaxis.set_major_locator(MaxNLocator(nbins=4))
+        axis.yaxis.set_major_locator(MaxNLocator(nbins=4))
+        axis.set_xlabel("Conditioned-cue identity\ncoding (RSA ρ)")
+        if index == 0:
+            axis.set_ylabel("Preconditioned-cue identity\ncoding (RSA ρ)")
+        axis.text(0.5, 1.045, result["label"], transform=axis.transAxes,
+                  ha="center", va="bottom", fontsize=13, fontweight="bold", color=result["color"])
+        axis.text(0.98, 0.97, f"ρ = {result['rho']:.3f}\np = {result['p']:.3f}",
+                  transform=axis.transAxes, ha="right", va="top", fontsize=12)
 
 
 # ---------------------------------------------------------------------------
@@ -504,63 +358,45 @@ def draw_panel_d(axis) -> None:
 
 
 def create_figure():
-    """Assemble the four panels at two-column journal width."""
-
+    """Three model-mechanism plots above a prediction and its paired empirical test."""
     configure_matplotlib()
-    figure, axes = plt.subplots(
-        2,
-        2,
-        figsize=(7.4, 6.35),
-        facecolor="white",
-    )
-    draw_panel_a(axes[0, 0])
-    draw_panel_b(axes[0, 1])
-    draw_panel_c(axes[1, 0])
-    draw_panel_d(axes[1, 1])
-    figure.subplots_adjust(
-        left=0.095,
-        right=0.985,
-        top=0.925,
-        bottom=0.095,
-        wspace=0.34,
-        hspace=0.46,
-    )
+    empirical = load_empirical_correlations()
+    figure = plt.figure(figsize=(13.4, 9.8), facecolor="white")
+    grid = figure.add_gridspec(2, 3, left=0.075, right=0.985, top=0.90, bottom=0.15,
+                              wspace=0.50, hspace=0.75)
+    axes = [figure.add_subplot(grid[row, col]) for row in range(2) for col in range(3)]
+    draw_panel_a(axes[0])
+    draw_panel_b(axes[1])
+    draw_panel_c(axes[2])
+    draw_panel_d(axes[3])
+    draw_panel_e(axes[4:], empirical)
+    header_e = figure.add_subplot(grid[1, 1:], frame_on=False)
+    header_e.set_axis_off()
+    add_panel_header(header_e, "E", "Test in fMRI data", pad=45)
     return figure
 
 
 def save_figure(figure) -> None:
     """Write an editable vector PDF and a high-resolution PNG preview."""
-
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-    figure.savefig(
-        PDF_PATH,
-        bbox_inches="tight",
-        pad_inches=0.04,
-        facecolor=figure.get_facecolor(),
-    )
-    figure.savefig(
-        PNG_PATH,
-        dpi=450,
-        bbox_inches="tight",
-        pad_inches=0.04,
-        facecolor=figure.get_facecolor(),
-    )
+    figure.savefig(PDF_PATH, bbox_inches="tight", pad_inches=0.04, facecolor="white")
+    figure.savefig(PNG_PATH, dpi=300, bbox_inches="tight", pad_inches=0.04, facecolor="white")
     plt.close(figure)
     print(f"Wrote: {PDF_PATH.relative_to(REPO_ROOT)}")
     print(f"Wrote: {PNG_PATH.relative_to(REPO_ROOT)}")
 
 
 def main() -> None:
-    """Validate displayed calculations, build the figure, and export it."""
-
+    """Validate calculations, export the figure and report simulation/data statistics."""
     validate_example()
     save_figure(create_figure())
     participants = simulate_participants()
     rho = stats.spearmanr(participants["coding_c"], participants["coding_p"]).statistic
-    print(
-        f"Panel D: n={PARTICIPANT_COUNT}, Spearman rho={rho:.6f}, "
-        f"seed={PARTICIPANT_SEED}, measurement noise SD={MEASUREMENT_NOISE_SD}"
-    )
+    print(f"Panel D: n={PARTICIPANT_COUNT}, Spearman rho={rho:.6f}, "
+          f"seed={PARTICIPANT_SEED}, measurement noise SD={MEASUREMENT_NOISE_SD}")
+    for result in load_empirical_correlations():
+        print(f"Panel E / {result['label']}: n={len(result['subjects'])}, "
+              f"rho={result['rho']:.6f}, one-sided p={result['p']:.6f}")
 
 
 if __name__ == "__main__":

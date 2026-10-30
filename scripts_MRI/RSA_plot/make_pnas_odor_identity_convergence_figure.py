@@ -9,7 +9,8 @@ C. Probe-only odor-identity Spearman RSA results.
 D. Passive-odor to premeal-cue decoding schematic.
 E. Cross-task decoding results.
 
-The former correlation panel is saved separately for the model figure.
+The former correlation panel remains available as a standalone inspection export;
+Figure 4 presents the same empirical analysis alongside the model prediction.
 """
 
 from __future__ import annotations
@@ -810,7 +811,7 @@ def main() -> None:
         print(f"Saved: {output_path}")
     plt.close(figure)
 
-    # Preserve the removed empirical panel for the forthcoming model figure.
+    # Retain the standalone correlation export for inspection alongside Figure 4.
     correlation_figure, correlation_ax = plt.subplots(figsize=(8.2, 4.7))
     correlation_figure.subplots_adjust(left=0.14, right=0.98, bottom=0.29, top=0.77)
     correlation_summaries = _plot_rsa_correlations(correlation_ax, rsa_data)

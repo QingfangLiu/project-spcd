@@ -297,9 +297,11 @@ The model should make clear that this is a **normative explanation**, not a caus
 
 # Figure plan
 
-Create one publication-quality figure with **4 main panels**. A 5th panel may be added if useful.
+Create one publication-quality figure with **five labeled panels and six plots** arranged in two rows of three. Panels A, B, and C occupy the top row. Panel D shows the simulated prediction at bottom left; panel E spans the remaining two bottom positions and tests the prediction in lateral and medial OFC.
 
-## Panel A — Single-cue loss function
+Match the typography and spacing of Figures 2 and 3. Keep long parameter explanations in the caption, and use gray for simulation, teal for lateral OFC, and purple for medial OFC. Simulated coding has arbitrary units, while empirical coding uses RSA coefficients.
+
+## Panel A — Benefits of identity coding
 
 Plot:
 
@@ -328,7 +330,7 @@ Do not over-interpret \(r_i\) biologically. Label it as **representational resou
 
 ---
 
-## Panel B — Total loss under a fixed budget
+## Panel B — Optimal allocation
 
 Use an illustrative parameter set such as:
 
@@ -381,7 +383,7 @@ Suggested annotations:
 
 ---
 
-## Panel C — Allocation follows relative computational value
+## Panel C — Allocation follows utility
 
 Plot:
 
@@ -428,7 +430,7 @@ Purpose:
 
 ---
 
-## Panel D — Competition between direct and inferred identity coding
+## Panel D — Model prediction
 
 Simulate 100 participants with a common budget \(R=4\). Draw each
 participant's \(\log(a_P/a_C)\) from a normal distribution with mean
@@ -468,7 +470,18 @@ shared-budget assumption.
 
 ---
 
-## Optional Panel E — Phase diagram
+## Panel E — Test in fMRI data
+
+Use the existing first-cue, premeal odor-identity RSA coefficients for conditioned and preconditioned odor-predictive cues. Retain the same subject exclusions as Figure 3 (`sub-19`, `sub-31`, and `sub-33`), leaving 31 participants. Place lateral OFC and medial OFC in matched plots under one shared E heading.
+
+Plot conditioned-cue identity coding on x and preconditioned-cue identity coding on y, with RSA Spearman coefficients as the units. Use common empirical axis limits, zero-reference lines, and the original one-sided, uncorrected Spearman tests of negative associations:
+
+- Lateral OFC: rho = -0.316564, p = 0.041365.
+- Medial OFC: rho = -0.029640, p = 0.437117.
+
+Draw descriptive linear least-squares fits with pointwise 95% confidence intervals for the mean response, using the same convention as panel D. The empirical correlation supports a qualitative prediction; it does not by itself establish resource competition or provide a numerical fit of the simulation.
+
+## Optional future panel — Phase diagram
 
 Create a heat map or contour plot with:
 
@@ -652,7 +665,7 @@ Use:
 - sans-serif fonts
 - labels large enough for two-column journal reproduction
 - minimal legends where direct labeling is possible
-- panel letters `A`, `B`, `C`, `D` (and `E` if included)
+- panel letters `A`, `B`, `C`, `D`, and `E`, with E spanning both empirical ROI plots
 - consistent notation across panels
 - clean white background
 - no unnecessary 3D effects or decoration
@@ -663,12 +676,17 @@ The figure should be understandable before reading the detailed mathematical der
 
 # Draft figure caption
 
-**Figure X. A normative model of adaptive outcome-identity representation.**  
-**A.** Decision loss for a cue decreases with the amount of representational resource allocated to its outcome identity, \(L_i=a_i e^{-r_i}\). The parameter \(a_i\) determines the computational value of explicitly representing that outcome identity, whereas \(r_i\) denotes representational resource. The exponential form produces diminishing returns.  
-**B.** When inferred and directly learned cues share a finite representational budget, \(r_P+r_C=R\), total loss is minimized by balancing the costs associated with insufficient representation of each cue. An example with \(a_P>a_C\) yields greater optimal allocation to the inferred cue.  
-**C.** The optimal allocation difference follows \(r_P-r_C=\log(a_P/a_C)\) for interior solutions, with boundary solutions imposed by the finite resource constraint. Thus, preferential representation of inferred outcomes emerges when their explicit identity representation has greater computational value; it is not assumed from cue type itself.
-**D.** Simulated participants differ in relative computational value while sharing a fixed budget. Direct and inferred identity coding are represented by optimal allocations plus independent Gaussian measurement noise, yielding a negative between-participant association. Points show 100 simulated participants, the line is a descriptive linear fit, and shading is its pointwise 95% confidence interval for the mean response. Coding units and parameters are illustrative; the model is not fitted to fMRI RSA values.
-**E.** [Optional] A parameter sweep illustrates how relative computational value and total representational budget jointly determine whether resources are shared or preferentially allocated.
+**Figure 4. A resource-limited model of outcome-identity representation.**
+
+**A. Benefits of identity coding.** Decision loss for a cue decreases with the amount of representational resource allocated to its outcome identity, \(L_i=a_i e^{-r_i}\). The parameter \(a_i\) determines the computational value of explicitly representing that outcome identity, whereas \(r_i\) denotes representational resource. The exponential form produces diminishing returns.
+
+**B. Optimal allocation.** When inferred and directly learned cues share a finite representational budget, \(r_P+r_C=R\), total loss is minimized by balancing the costs associated with insufficient representation of each cue. An example with \(a_P>a_C\) yields greater optimal allocation to the inferred cue.
+
+**C. Allocation follows utility.** The optimal allocation difference follows \(r_P-r_C=\log(a_P/a_C)\) for interior solutions, with boundary solutions imposed by the finite resource constraint. Thus, preferential representation of inferred outcomes emerges when their explicit identity representation has greater computational value; it is not assumed from cue type itself.
+
+**D. Model prediction.** Simulated participants differ in relative computational value while sharing a fixed budget. Direct and inferred identity coding are represented by optimal allocations plus independent Gaussian measurement noise, yielding a negative between-participant association. Points show 100 simulated participants, the line is a descriptive linear fit, and shading is its pointwise 95% confidence interval for the mean response. Coding units and parameters are illustrative; the model is not fitted to fMRI RSA values.
+
+**E. Test in fMRI data.** Correlations between conditioned- and preconditioned-cue odor-identity RSA coefficients test the prediction in lateral and medial OFC (31 participants per region). The lateral OFC association is negative (Spearman rho = -0.317, p = 0.041); the medial OFC association is not significant (rho = -0.030, p = 0.437). Tests assess negative associations and are one-sided. Lines show descriptive linear least-squares fits; shading indicates pointwise 95% confidence intervals for the fitted mean response.
 
 ---
 
