@@ -1,0 +1,69 @@
+{
+  "exploratory": true,
+  "source_group_model": "temp_maps/spm_value/SPM.mat",
+  "contrast": "RSA both | subset-subset-all | model-odor_value > 0",
+  "n_participants": 30,
+  "participant_ids": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-31",
+    "sub-32",
+    "sub-34",
+    "sub-35",
+    "sub-37",
+    "sub-38",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "df_error": 28.999999999999964,
+  "smoothness_FWHM_voxels": [
+    8.012207319983803,
+    7.71670569215293,
+    7.70296422286418
+  ],
+  "spatial_correction": "Native SPM12 spm_P(1,0,T,df,T,resels,1,search_voxels); full ROI resels via spm_resels(...,I), ROI voxels overlapping group search volume for S; follows spm_VOI",
+  "vmPFC_mask": "26-connected Bartra component containing MNI [0,44,-6], 1245 native voxels, 1233 group-mask overlap",
+  "regional_correction": "Holm over the three spatially corrected regional peak p values",
+  "checks": [
+    "Regional peak T/coordinates and overlap counts independently checked with Python",
+    "Uncorrected peak p values checked with scipy.stats.t.sf",
+    "Holm correction independently verified",
+    "vmPFC p and critical T reproduce manuscript rounding"
+  ],
+  "peak_distance_vmPFC_medial_OFC_mm": 6.6332495807108,
+  "mask_overlap_voxels": {
+    "vmPFC_medial": 818,
+    "vmPFC_lateral": 1,
+    "medial_lateral": 0
+  },
+  "limitation": "Existing group model includes sub-31 and sub-38 but omits sub-10; no participant-level maps are available here to refit the cohort",
+  "source_sha256": {
+    "temp_maps/spm_value/SPM.mat": "43fbc6cdf1475d5c4904792a37f2a5e7022b0dab64fa389d8eefcc2a21a36ad0",
+    "temp_maps/spm_value/spmT_0001.nii": "e4309783514d9d732bdb15c49ee598879f9b0bb94063bd5833f083c758480799",
+    "temp_maps/spm_value/mask.nii": "4913f26790c228c4af53b74717f39e9c8e196fcddcda40983b6e7c8128c4c970",
+    "rsa_roi/probe_imagewise_value/raw_patterns/masks/roi-Bartra_vmPFC_gm0p1.nii.gz": "820f4450e98b19077da54c675ad384193be05da69aeb45f8bef52d55ab972d4c",
+    "rsa_roi/probe_imagewise_value/raw_patterns/masks/roi-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii.gz": "931fa984f2c0de4262e69716fca0241c56482d26a1a1f14897949a7930c17952",
+    "rsa_roi/probe_imagewise_value/raw_patterns/masks/roi-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii.gz": "341cb36f94dade37f508b13a007e376947890a9a2a369dbffe171c974190b7d5",
+    "masks/nifti_roi-masks_fig03/fig03D/C_POSvsNEG_kda10_clust_tstat1_bin.nii.gz": "d1b21af4a40a24752b72e8e50d5d107e93ea7c5b6b0a7c33f9e3a2f756a13e56"
+  }
+}

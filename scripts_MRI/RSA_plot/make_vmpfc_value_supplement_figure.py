@@ -2,8 +2,10 @@
 """Render orthogonal views of the whole-brain odor-value RSA map.
 
 Anatomy: SPM-normalized ICBM152NLin2009, copied from MRIcroGL's
-standard/spm152.nii.gz into masks/. The independent vmPFC ROI selects
-only the illustrated peak; the displayed map is not clipped to that ROI.
+standard/spm152.nii.gz into masks/. Independent vmPFC and medial OFC
+masks select the illustrated peaks and provide outlines. Both rows show
+the same whole-brain map, without clipping it to either ROI. The table
+reports peak-level SVC within each of three ROIs, without a Holm column.
 """
 
 from __future__ import annotations
@@ -25,6 +27,7 @@ from matplotlib.colors import LinearSegmentedColormap, Normalize
 import nibabel as nib
 from nibabel.processing import resample_from_to
 import numpy as np
+import pandas as pd
 from scipy import ndimage, stats
 from scipy.io import loadmat
 
@@ -57,19 +60,35 @@ def main() -> None:
 
     statistic_image = nib.as_closest_canonical(nib.load(source / "spmT_0001.nii"))
     model_image = nib.as_closest_canonical(nib.load(source / "mask.nii"))
-    native_roi = np.asarray(resample_from_to(roi_image, statistic_image, order=0).dataobj) > 0
-    native_roi &= np.asarray(model_image.dataobj) > 0
     statistic = np.asarray(statistic_image.dataobj)
-    candidates = np.argwhere(native_roi & np.isfinite(statistic))
-    peak_index = candidates[np.argmax(statistic[tuple(candidates.T)])]
-    peak = nib.affines.apply_affine(statistic_image.affine, peak_index)
-    peak_t = float(statistic[tuple(peak_index)])
-    displayed = np.where((np.asarray(model_image.dataobj) > 0) & np.isfinite(statistic)
+    model_mask = np.asarray(model_image.dataobj) > 0
+    summaries = pd.read_csv(root / "rsa_roi/probe_imagewise_value/"
+                            "searchlight_svc_existing_group_v1/peak_svc_summary.csv")
+    summaries = summaries.set_index("ROI").loc[["vmPFC", "Medial_OFC", "Lateral_OFC"]]
+    medial_image = nib.load(root / "masks/OFC_clusterMap_K2_gm0p1/"
+                           "mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii.gz")
+    roi_specs = [
+        ("vmPFC", "vmPFC", roi_image, "#4A99D3"),
+        ("Medial_OFC", "Medial OFC", medial_image, "#A58BC5"),
+    ]
+    peaks = []
+    for key, label, image, color in roi_specs:
+        mask = np.asarray(resample_from_to(image, statistic_image, order=0).dataobj) > 0
+        mask &= model_mask
+        candidates = np.argwhere(mask & np.isfinite(statistic))
+        index = candidates[np.argmax(statistic[tuple(candidates.T)])]
+        xyz = nib.affines.apply_affine(statistic_image.affine, index)
+        peak_t = float(statistic[tuple(index)])
+        row = summaries.loc[key]
+        np.testing.assert_allclose(xyz, row[["MNI_x", "MNI_y", "MNI_z"]].to_numpy(float), atol=1e-8)
+        np.testing.assert_allclose(peak_t, row.peak_T, atol=1e-8)
+        assert int(mask.sum()) == int(row.analysis_overlap_voxels)
+        peaks.append(dict(label=label, mask=mask, index=index, xyz=xyz, t=peak_t, color=color))
+    displayed = np.where(model_mask & np.isfinite(statistic)
                          & (statistic > threshold), statistic, 0)
     display_max = float(displayed.max())
     anatomy = nib.as_closest_canonical(nib.load(root / "masks/MNI152NLin2009_SPM_T1_0p74mm.nii.gz"))
     anatomy_data = np.asarray(anatomy.dataobj)
-    anatomy_peak = np.rint(nib.affines.apply_affine(np.linalg.inv(anatomy.affine), peak)).astype(int)
     edge_arrays = []
     for image in (anatomy, statistic_image):
         spacing = np.diag(image.affine)[:3]
@@ -80,75 +99,104 @@ def main() -> None:
                             for i, c in enumerate(coords)])
 
     configure_matplotlib()
-    fig = plt.figure(figsize=(10.2, 9.4), facecolor="black")
-    grid = fig.add_gridspec(2, 2, left=0.025, right=0.975, bottom=0.025, top=0.91,
-                            wspace=0.015, hspace=0.04)
-    fig.suptitle("Odor-value representation", fontsize=18, fontweight="bold", color="white", y=0.985)
+    fig = plt.figure(figsize=(11.2, 8.8), facecolor="white")
+    grid = fig.add_gridspec(3, 3, left=0.045, right=0.98, bottom=0.025, top=0.865,
+                            height_ratios=[1, 1, 0.58], wspace=0.045, hspace=0.38)
+    fig.suptitle("Searchlight RSA of subjective outcome value", fontsize=17,
+                 fontweight="bold", y=0.99)
+    fig.text(0.5, 0.948, r"Same group-level $t$ map in A and B; display: $p < 0.001$, uncorrected",
+             ha="center", fontsize=11)
     norm = Normalize(vmin=threshold, vmax=display_max)
     cmap = LinearSegmentedColormap.from_list("value_activation", ["#FF7000", "#FFA000", "#FFFF35"])
     anatomy_max = np.percentile(anatomy_data[anatomy_data > 0], 99)
-    views = [
-        # fixed axis, horizontal axis, vertical axis, grid position, title
-        (1, 0, 2, (0, 0), f"Coronal: y = {peak[1]:.0f} mm"),
-        (0, 1, 2, (0, 1), f"Sagittal: x = {peak[0]:.0f} mm"),
-        (2, 0, 1, (1, 0), f"Axial: z = {peak[2]:.0f} mm"),
-    ]
-    for fixed, horizontal, vertical, position, title in views:
-        ax = fig.add_subplot(grid[position])
-        brain = np.take(anatomy_data, anatomy_peak[fixed], axis=fixed).T
-        values = np.take(displayed, peak_index[fixed], axis=fixed).T
-        ae, se = edge_arrays
-        extent = (ae[horizontal][0], ae[horizontal][-1], ae[vertical][0], ae[vertical][-1])
-        ax.set_facecolor("black")
-        ax.imshow(brain, origin="lower", extent=extent, cmap="gray", vmin=0,
-                  vmax=anatomy_max, interpolation="bicubic")
-        # Statistical cells retain their exact native 2 mm bounds as vectors.
-        for iv, ih in np.argwhere(values > 0):
+    for row_idx, peak in enumerate(peaks):
+        xyz, index, color = peak["xyz"], peak["index"], peak["color"]
+        anatomy_index = np.rint(nib.affines.apply_affine(np.linalg.inv(anatomy.affine), xyz)).astype(int)
+        row_top = grid[row_idx, :].get_position(fig).y1
+        fig.text(0.045, row_top + 0.040, f"{'AB'[row_idx]}  {peak['label']}",
+                 fontsize=14, fontweight="bold", color=color, va="bottom")
+        fig.text(0.98, row_top + 0.040, "Outline: independent ROI; crosshairs: regional peak",
+                 fontsize=10, ha="right", va="bottom")
+        views = [(1, 0, 2, f"Coronal: y = {xyz[1]:.0f} mm"),
+                 (0, 1, 2, f"Sagittal: x = {xyz[0]:.0f} mm"),
+                 (2, 0, 1, f"Axial: z = {xyz[2]:.0f} mm")]
+        for col_idx, (fixed, horizontal, vertical, title) in enumerate(views):
+            ax = fig.add_subplot(grid[row_idx, col_idx])
+            brain = np.take(anatomy_data, anatomy_index[fixed], axis=fixed).T
+            values = np.take(displayed, index[fixed], axis=fixed).T
+            outline = np.take(peak["mask"], index[fixed], axis=fixed).T
+            ae, se = edge_arrays
+            extent = (ae[horizontal][0], ae[horizontal][-1], ae[vertical][0], ae[vertical][-1])
+            ax.set_facecolor("black")
+            ax.imshow(brain, origin="lower", extent=extent, cmap="gray", vmin=0,
+                      vmax=anatomy_max, interpolation="bicubic")
+            # Statistical cells retain their exact native 2 mm bounds as vectors.
             xe, ye = se[horizontal], se[vertical]
-            ax.fill([xe[ih], xe[ih + 1], xe[ih + 1], xe[ih]],
-                    [ye[iv], ye[iv], ye[iv + 1], ye[iv + 1]],
-                    color=cmap(norm(values[iv, ih])), linewidth=0, antialiased=False)
-        ax.axvline(peak[horizontal], color="#B955BA", lw=0.6, alpha=0.7)
-        ax.axhline(peak[vertical], color="#B955BA", lw=0.6, alpha=0.7)
-        if fixed == 1:
-            ax.set_xlim(-78, 78)
-            ax.set_ylim(-60, 88)
-        elif fixed == 0:
-            ax.set_xlim(-110, 80)
-            ax.set_ylim(-60, 88)
-        else:
-            ax.set_xlim(-78, 78)
-            ax.set_ylim(-110, 80)
-        ax.set_title(title, color="white", fontsize=13, fontweight="normal", loc="center", pad=7)
-        left, right = ("P", "A") if fixed == 0 else ("L", "R")
-        ax.text(0.025, 0.04, left, color="white", transform=ax.transAxes, fontsize=11)
-        ax.text(0.975, 0.04, right, color="white", transform=ax.transAxes, ha="right", fontsize=11)
-        ax.set_xticks([])
-        ax.set_yticks([])
-        for spine in ax.spines.values():
-            spine.set_visible(False)
+            for iv, ih in np.argwhere(values > 0):
+                ax.fill([xe[ih], xe[ih + 1], xe[ih + 1], xe[ih]],
+                        [ye[iv], ye[iv], ye[iv + 1], ye[iv + 1]],
+                        color=cmap(norm(values[iv, ih])), linewidth=0, antialiased=False)
+            xc, yc = (xe[:-1] + xe[1:]) / 2, (ye[:-1] + ye[1:]) / 2
+            ax.contour(xc, yc, outline.astype(float), levels=[0.5], colors=[color], linewidths=0.8)
+            ax.axvline(xyz[horizontal], color=color, lw=0.45, alpha=0.75)
+            ax.axhline(xyz[vertical], color=color, lw=0.45, alpha=0.75)
+            if fixed == 1:
+                ax.set_xlim(-66, 66)
+                ax.set_ylim(-36, 66)
+            elif fixed == 0:
+                ax.set_xlim(-54, 80)
+                ax.set_ylim(-36, 66)
+            else:
+                ax.set_xlim(-66, 66)
+                ax.set_ylim(-48, 80)
+            ax.set_title(title, fontsize=11, fontweight="normal", loc="center", pad=5)
+            left, right = ("P", "A") if fixed == 0 else ("L", "R")
+            ax.text(0.025, 0.04, left, color="white", transform=ax.transAxes, fontsize=10)
+            ax.text(0.975, 0.04, right, color="white", transform=ax.transAxes, ha="right", fontsize=10)
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(False)
 
-    info = fig.add_subplot(grid[1, 1])
-    info.set_facecolor("black")
+    table_ax = fig.add_subplot(grid[2, :2])
+    table_ax.set_axis_off()
+    table_ax.text(0, 1.02, "C  Peak-level small-volume correction", fontsize=13,
+                  fontweight="bold", transform=table_ax.transAxes, va="bottom")
+    cells = []
+    for label, (_, row) in zip(["vmPFC", "Medial OFC", "Lateral OFC"], summaries.iterrows()):
+        xyz = ", ".join(f"{row[k]:.0f}" for k in ["MNI_x", "MNI_y", "MNI_z"])
+        cells.append([label, f"[{xyz}]", f"{row.peak_T:.2f}", f"{row.peak_p_FWE_SVC:.3f}"])
+    table = table_ax.table(cellText=cells,
+                          colLabels=["ROI", "Peak MNI (mm)", rf"$t({df:.0f})$", "SVC-FWE p"],
+                          colWidths=[0.24, 0.34, 0.16, 0.26],
+                          cellLoc="center", bbox=[0, 0.08, 1, 0.80])
+    table.auto_set_font_size(False)
+    table.set_fontsize(10.5)
+    for (r, c), cell in table.get_celld().items():
+        cell.set_edgecolor("#E1E5E8")
+        cell.set_linewidth(0.5)
+        cell.set_facecolor("#EDF0F3" if r == 0 else "white")
+        if r == 0:
+            cell.set_text_props(weight="bold")
+    info = fig.add_subplot(grid[2, 2])
     info.set_axis_off()
-    info.text(0.5, 0.62, "Group-level RSA T map", ha="center", color="white", fontsize=14)
-    info.text(0.5, 0.51, "Display: p < 0.001, uncorrected", ha="center", color="white", fontsize=12)
-    info.text(0.5, 0.40, "Crosshairs: MNI [12, 48, 0]", ha="center", color="#D9ACDC", fontsize=12)
-    color_axis = info.inset_axes([0.16, 0.24, 0.68, 0.045])
+    info.text(0.5, 0.88, r"Shared $t$ scale", ha="center", fontsize=11)
+    color_axis = info.inset_axes([0.10, 0.50, 0.80, 0.12])
     colorbar = fig.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap), cax=color_axis,
                            orientation="horizontal", ticks=[threshold, display_max])
     colorbar.ax.set_xticklabels([f"{threshold:.2f}", f"{display_max:.2f}"])
-    colorbar.ax.tick_params(labelsize=10, length=2, colors="white")
-    colorbar.set_label("T value", fontsize=11, labelpad=4, color="white")
-    colorbar.outline.set_edgecolor("white")
+    colorbar.ax.tick_params(labelsize=10, length=2)
+    colorbar.outline.set_edgecolor("#7A858D")
+    info.text(0.5, 0.04, "SVC p values corrected\nwithin each ROI", ha="center", va="bottom", fontsize=10)
 
     output = root / "supp_fig/vmpfc_value_rsa"
     for suffix in ("pdf", "png"):
-        fig.savefig(output.with_suffix(f".{suffix}"), dpi=600, bbox_inches="tight", pad_inches=0.12, facecolor="black")
+        fig.savefig(output.with_suffix(f".{suffix}"), dpi=600, bbox_inches="tight", pad_inches=0.10, facecolor="white")
     plt.close(fig)
-    print(f"Peak: {peak.tolist()}; T({df:g}) = {peak_t:.8f}")
+    for peak in peaks:
+        print(f"{peak['label']} peak: {peak['xyz'].tolist()}; T({df:g}) = {peak['t']:.8f}")
     print(f"Display threshold: T > {threshold:.8f}; p < 0.001 uncorrected")
-    print(f"Whole-brain displayed voxels: {(displayed > 0).sum()}; SVC overlap: {native_roi.sum()}")
+    print(f"Whole-brain displayed voxels: {(displayed > 0).sum()}")
     print(f"Saved: {output}.pdf and {output}.png")
 
 
