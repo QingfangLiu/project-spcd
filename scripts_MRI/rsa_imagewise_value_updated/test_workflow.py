@@ -4,6 +4,7 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -163,6 +164,71 @@ class WorkflowTests(unittest.TestCase):
         (output / "ratings.csv").write_text("modified\n")
         with self.assertRaisesRegex(ValueError, "Prepared input changed"):
             workflow.load_plan(output)
+
+    def test_swarm_generator_reuses_cohort_and_initializes_every_job(self):
+        conda_root = self.root / "Conda's installation"
+        conda_sh = conda_root / "etc/profile.d/conda.sh"
+        conda_sh.parent.mkdir(parents=True)
+        conda_sh.write_text('conda() { [ "$1" = activate ] || return 12; export CONDA_PREFIX="$2"; }\n')
+        target_env = Path(sys.executable).parent.parent
+        output = self.root / "biowulf swarm"
+        result = subprocess.run([
+            sys.executable, "-B", str(HERE / "make_swarm.py"),
+            "--base_dir", str(self.base), "--output_dir", str(output),
+            "--conda_root", str(conda_root), "--conda_env", str(target_env),
+            "--ratings_file", str(self.ratings), "--subjects",
+            "sub-10", "sub-11", "sub-19", "sub-31", "sub-33", "sub-36", "sub-38",
+            "--n_jobs", "2", "--mem_gb", "20", "--time", "12:00:00",
+        ], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        files = list(output.glob("*.swarm"))
+        self.assertEqual([p.name for p in files], ["jobs.swarm"])
+        commands = files[0].read_text().splitlines()
+        plan = json.loads((output / "analysis_config.json").read_text())
+        self.assertEqual(plan["subjects"], ["sub-10", "sub-11", "sub-38"])
+        self.assertEqual(len(commands), 3)
+        for sub, line in zip(plan["subjects"], commands):
+            prefix, command = line.rsplit(" && ", 1)
+            tokens = shlex.split(command)
+            self.assertEqual(tokens[-2:], ["--subjects", sub])
+            self.assertEqual(Path(tokens[0]).parent.parent, target_env)
+            # Execute only the generated setup, replacing the analysis with an
+            # environment probe. This also tests quoted paths containing spaces/apostrophes.
+            probe = "import json, os; print(json.dumps({k:os.environ.get(k) for k in ['CONDA_PREFIX','OMP_NUM_THREADS','MKL_NUM_THREADS','OPENBLAS_NUM_THREADS','NUMEXPR_NUM_THREADS']}))"
+            checked = subprocess.run(["bash", "-c", prefix + " && " + shlex.join(
+                [sys.executable, "-B", "-c", probe])], capture_output=True, text=True)
+            self.assertEqual(checked.returncode, 0, checked.stderr)
+            env = json.loads(checked.stdout)
+            self.assertEqual(env.pop("CONDA_PREFIX"), str(target_env))
+            self.assertEqual(set(env.values()), {"1"})
+        metadata = json.loads((output / "submission_config.json").read_text())
+        submit = shlex.split(metadata["submission_command"])
+        self.assertEqual(submit[submit.index("-t") + 1], "2")
+        self.assertEqual(submit[submit.index("-g") + 1], "20")
+        self.assertEqual(submit[submit.index("--time") + 1], "12:00:00")
+        self.assertFalse(metadata["submitted"])
+        self.assertFalse((output / "subjects").exists())
+        self.assertTrue((output / "swarm_logs").is_dir())
+
+    def test_swarm_stops_before_preparation_if_conda_activation_fails(self):
+        conda_root = self.root / "broken Conda"
+        conda_sh = conda_root / "etc/profile.d/conda.sh"
+        conda_sh.parent.mkdir(parents=True)
+        conda_sh.write_text("conda() { return 17; }\n")
+        output = self.root / "no invalid swarm"
+        result = subprocess.run([
+            sys.executable, "-B", str(HERE / "make_swarm.py"),
+            "--base_dir", str(self.base), "--output_dir", str(output),
+            "--conda_root", str(conda_root), "--conda_env", str(Path(sys.executable).parent.parent),
+        ], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(output.exists())
+
+    def test_swarm_rejects_zero_workers(self):
+        result = subprocess.run([sys.executable, "-B", str(HERE / "make_swarm.py"),
+                                 "--n_jobs", "0"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("n_jobs", result.stderr)
 
 
 if __name__ == "__main__":
