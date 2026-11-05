@@ -6,7 +6,7 @@ Build a small simulation project that formalizes and visualizes a **normative mo
 
 The model is intended to support the following theoretical idea:
 
-> Detailed outcome-identity representations should be allocated where they provide the greatest marginal improvement in decision quality. In a task containing both directly learned and inferred cues, explicit identity representation can be more computationally valuable for inferred outcomes because directly learned cues may already have a reliable alternative associative route to outcome identity.
+> Detailed outcome-identity representations should be allocated where they provide the greatest marginal improvement in decision quality. In a task containing both directly learned and inferred cues, explicit identity representation can be more computationally valuable for inferred outcomes because directly learned cues may have a lower baseline probability of outcome-identity retrieval errors.
 
 This project is **not** intended to fit behavioral or fMRI data. The goal is to produce a transparent proof-of-principle simulation and a publication-quality conceptual figure that makes the optimization logic intuitive.
 
@@ -73,7 +73,7 @@ a_i = q_i D_i
 where:
 
 - \(D_i\): behavioral cost of using the wrong outcome identity for cue \(i\)
-- \(q_i\): probability that an alternative route fails to recover the correct outcome identity without requiring this explicit representation
+- \(q_i\): baseline probability of failing to recover the correct outcome identity for cue \(i\)
 
 This gives the model a concrete interpretation.
 
@@ -83,7 +83,7 @@ For a directly conditioned cue:
 C \rightarrow O
 \]
 
-the system may already have a relatively reliable direct associative route, so \(q_C\) can be low.
+only one association needs to be retrieved, so \(q_C\) can be low.
 
 For a preconditioned cue:
 
@@ -91,7 +91,7 @@ For a preconditioned cue:
 P \rightarrow C \rightarrow O
 \]
 
-there is no directly experienced \(P \rightarrow O\) association, so the alternative route may be less reliable and \(q_P\) may be higher.
+both associations need to be retrieved correctly, creating an additional opportunity for error, so \(q_P\) may be higher.
 
 If \(D_P=D_C\) and \(q_P>q_C\), then:
 
