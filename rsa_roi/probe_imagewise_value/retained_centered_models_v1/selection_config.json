@@ -1,0 +1,100 @@
+{
+  "created_utc": "2026-10-30T17:16:28.042763+00:00",
+  "exploratory": true,
+  "selection_basis": "User selected rows 1, 5, and 6 after reviewing the exploratory one-sided t-test results.",
+  "selected_designs": [
+    "centered_baseline",
+    "centered_drop_image_identity",
+    "centered_value_only"
+  ],
+  "design_labels": {
+    "centered_baseline": "Centered full model",
+    "centered_drop_image_identity": "Centered without image identity",
+    "centered_value_only": "Centered value only"
+  },
+  "definitions": {
+    "centered_baseline": {
+      "images": "both",
+      "centered": true,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity",
+        "button_presence",
+        "button_side"
+      ],
+      "new": false
+    },
+    "centered_drop_image_identity": {
+      "images": "both",
+      "centered": true,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "button_presence",
+        "button_side"
+      ],
+      "new": true
+    },
+    "centered_value_only": {
+      "images": "both",
+      "centered": true,
+      "models": [
+        "odor_value"
+      ],
+      "new": true
+    }
+  },
+  "subjects": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-10",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-32",
+    "sub-34",
+    "sub-35",
+    "sub-37",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "n": 29,
+  "session": "both",
+  "image_positions": [
+    1,
+    2
+  ],
+  "center_within_run": true,
+  "trial_averaging": false,
+  "group_test": "one-sided one-sample t test against zero",
+  "alternative": "positive odor-value coefficient",
+  "source": "/Users/liuq13/project-spcd/rsa_roi/probe_imagewise_value/exploratory_centered_v1",
+  "source_subject_betas_sha256": "ced2bd1f3791f916e35551d5a4936285061532d70c51403a27c5f741faffc7b0",
+  "source_group_summary_sha256": "f4cccdc2057b6c3b9df96b21abcab308c97a60cfe7ede3eb75ff296a4ac91f3f",
+  "correction_family_source": "/Users/liuq13/project-spcd/rsa_roi/probe_imagewise_value/nonparametric_group_tests_v1/cumulative_group_tests.csv",
+  "correction_family_sha256": "6bca111c1f3f70b7388f98f45776a2af0b7d8e76e2828b3a09ab86df4b5b6beb",
+  "correction_note": "Retain the full 105-test exploratory family and labeled within-design three-ROI adjustments; selection does not reset multiplicity.",
+  "full_exploration_paths": [
+    "/Users/liuq13/project-spcd/rsa_roi/probe_imagewise_value/exploratory_centered_v1",
+    "/Users/liuq13/project-spcd/rsa_roi/probe_imagewise_value/exploratory_premeal_v1",
+    "/Users/liuq13/project-spcd/rsa_roi/probe_imagewise_value/nonparametric_group_tests_v1"
+  ]
+}

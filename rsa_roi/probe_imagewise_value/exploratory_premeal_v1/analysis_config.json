@@ -1,0 +1,137 @@
+{
+  "created_utc": "2026-10-30T17:07:10.300747+00:00",
+  "exploratory": true,
+  "source_export": "/Users/liuq13/project-spcd/rsa_roi/probe_imagewise_value/raw_patterns",
+  "source_export_config_sha256": "66887f16cab179432bd9016b6cba6dceef8ee5b4c4a390ee6360c770d75ad67e",
+  "source_ratings_sha256": "759ae12236f8780df015b732ffc95f93346c34e57e6b42e495a82417873c8de0",
+  "previous_group_summary_sha256": "f4cccdc2057b6c3b9df96b21abcab308c97a60cfe7ede3eb75ff296a4ac91f3f",
+  "phase": "premeal",
+  "subjects": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-10",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-32",
+    "sub-34",
+    "sub-35",
+    "sub-37",
+    "sub-38",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "matched_subjects": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-10",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-32",
+    "sub-34",
+    "sub-35",
+    "sub-37",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "rois": [
+    "Bartra_vmPFC",
+    "OFC_K2_cluster1_medial_posterior_lateral",
+    "OFC_K2_cluster2_central_anterior_lateral"
+  ],
+  "primary_n": 30,
+  "sensitivity": "centered baseline only, same 29 subjects as pooled analyses",
+  "rating_standardization": "three premeal outcome ratings only, within participant, ddof=0",
+  "pattern_processing": "individual presentations, finite voxel intersection per selection, mean-center within each run, no averaging",
+  "neural_distance": "1 - Pearson correlation",
+  "regression": "OLS with intercept",
+  "pair_scope": "unique pairs from different premeal runs; no postmeal samples or ratings",
+  "correction_family": "previous 30 tests + 18 premeal tests at n=30 + 3 matched-cohort baseline tests at n=29",
+  "definitions": {
+    "centered_baseline": {
+      "images": "both",
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity",
+        "button_presence",
+        "button_side"
+      ]
+    },
+    "centered_first_only": {
+      "images": "first",
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity"
+      ]
+    },
+    "centered_drop_buttons": {
+      "images": "both",
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity"
+      ]
+    },
+    "centered_drop_cue_type": {
+      "images": "both",
+      "models": [
+        "odor_value",
+        "image_identity",
+        "button_presence",
+        "button_side"
+      ]
+    },
+    "centered_drop_image_identity": {
+      "images": "both",
+      "models": [
+        "odor_value",
+        "cue_type",
+        "button_presence",
+        "button_side"
+      ]
+    },
+    "centered_value_only": {
+      "images": "both",
+      "models": [
+        "odor_value"
+      ]
+    }
+  }
+}

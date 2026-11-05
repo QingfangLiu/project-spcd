@@ -1,0 +1,164 @@
+{
+  "created_utc": "2026-10-30T16:57:49.945587+00:00",
+  "exploratory": true,
+  "reference_design": "centered_baseline",
+  "source_export": "/Users/liuq13/project-spcd/rsa_roi/probe_imagewise_value/raw_patterns",
+  "source_export_config_sha256": "66887f16cab179432bd9016b6cba6dceef8ee5b4c4a390ee6360c770d75ad67e",
+  "source_ratings_sha256": "759ae12236f8780df015b732ffc95f93346c34e57e6b42e495a82417873c8de0",
+  "subjects": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-10",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-32",
+    "sub-34",
+    "sub-35",
+    "sub-37",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "rois": [
+    "Bartra_vmPFC",
+    "OFC_K2_cluster1_medial_posterior_lateral",
+    "OFC_K2_cluster2_central_anterior_lateral"
+  ],
+  "n_subjects": 29,
+  "joint_rating_standardization": "six pre/post outcome ratings within participant, ddof=0",
+  "centering": "voxel mean across selected presentations within each unique run; no variance scaling",
+  "finite_voxels": "finite across selected samples before centering; separate phase intersections for previous combined redesign",
+  "neural_distance": "1 - Pearson correlation",
+  "regression": "OLS with intercept",
+  "pair_scope": "unique cross-run pairs including cross-phase pairs unless specified otherwise",
+  "correction_family": "10 designs x 3 ROIs, including all five previously tested designs",
+  "definitions": {
+    "original": {
+      "images": "both",
+      "centered": false,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity",
+        "button_presence",
+        "button_side"
+      ],
+      "new": false
+    },
+    "centered_baseline": {
+      "images": "both",
+      "centered": true,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity",
+        "button_presence",
+        "button_side"
+      ],
+      "new": false
+    },
+    "uncentered_first_only": {
+      "images": "first",
+      "centered": false,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity"
+      ],
+      "new": false
+    },
+    "uncentered_phase_nuisance": {
+      "images": "both",
+      "centered": false,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity",
+        "button_presence",
+        "button_side",
+        "phase"
+      ],
+      "new": false
+    },
+    "previous_combined_redesign": {
+      "images": "first",
+      "centered": true,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity"
+      ],
+      "new": false,
+      "average": "cue_within_run",
+      "pair_scope": "within_phase_only",
+      "phase_aggregation": "mean_beta"
+    },
+    "centered_first_only": {
+      "images": "first",
+      "centered": true,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity"
+      ],
+      "new": true
+    },
+    "centered_drop_buttons": {
+      "images": "both",
+      "centered": true,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity"
+      ],
+      "new": true
+    },
+    "centered_drop_cue_type": {
+      "images": "both",
+      "centered": true,
+      "models": [
+        "odor_value",
+        "image_identity",
+        "button_presence",
+        "button_side"
+      ],
+      "new": true
+    },
+    "centered_drop_image_identity": {
+      "images": "both",
+      "centered": true,
+      "models": [
+        "odor_value",
+        "cue_type",
+        "button_presence",
+        "button_side"
+      ],
+      "new": true
+    },
+    "centered_value_only": {
+      "images": "both",
+      "centered": true,
+      "models": [
+        "odor_value"
+      ],
+      "new": true
+    }
+  }
+}

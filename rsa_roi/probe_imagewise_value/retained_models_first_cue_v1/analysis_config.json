@@ -1,0 +1,89 @@
+{
+  "created_utc": "2026-10-30T17:29:25.896655+00:00",
+  "exploratory": true,
+  "subjects": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-10",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-32",
+    "sub-34",
+    "sub-35",
+    "sub-37",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "n": 29,
+  "source_raw_export": "/Users/liuq13/project-spcd/rsa_roi/probe_imagewise_value/raw_patterns",
+  "source_export_sha256": "66887f16cab179432bd9016b6cba6dceef8ee5b4c4a390ee6360c770d75ad67e",
+  "source_ratings_sha256": "759ae12236f8780df015b732ffc95f93346c34e57e6b42e495a82417873c8de0",
+  "reference_retained_models": "/Users/liuq13/project-spcd/rsa_roi/probe_imagewise_value/retained_centered_models_v1",
+  "reference_selection_sha256": "c85120ed296b3cca8202c616dc8bbe895ceb9f1910505620155e748f1fdda3e0",
+  "image_selection": "img_index == 1",
+  "phase": "premeal and postmeal pooled",
+  "centering": "mean-center each voxel over selected first-cue presentations within each run (24 samples per run)",
+  "voxel_qc": "finite in all selected first-cue presentations, before centering",
+  "averaging": false,
+  "ratings": "six premeal/postmeal outcome ratings jointly z-scored within participant, ddof=0",
+  "neural_distance": "1 - Pearson correlation",
+  "pairs": "unique different-run pairs, including cross-phase comparisons; 8640 pairs per participant",
+  "regression": "OLS with intercept",
+  "group_test": "one-sided one-sample t test of participant value coefficients against zero",
+  "button_note": "All selected samples have button label none; button-presence RDM is zero and button-side RDM is constant over retained pairs. Both are omitted as uninformative.",
+  "definitions": {
+    "centered_first_only": {
+      "label": "Value + cue type + image identity",
+      "models": [
+        "odor_value",
+        "cue_type",
+        "image_identity"
+      ],
+      "reference_both_design": "centered_baseline"
+    },
+    "centered_first_drop_image_identity": {
+      "label": "Value + cue type",
+      "models": [
+        "odor_value",
+        "cue_type"
+      ],
+      "reference_both_design": "centered_drop_image_identity"
+    },
+    "centered_first_value_only": {
+      "label": "Value only",
+      "models": [
+        "odor_value"
+      ],
+      "reference_both_design": "centered_value_only"
+    }
+  },
+  "correction_family": "previous 105 tests plus six new first-cue reduced-model tests; first-cue full-model tests were already counted",
+  "equivalence_check": {
+    "designs": [
+      "centered_first_drop_image_identity",
+      "centered_first_value_only"
+    ],
+    "reason": "Value and cue-type predictor vectors are orthogonal on the retained cross-run pairs; dropping cue type leaves value coefficients unchanged.",
+    "max_absolute_value_beta_difference": 6.002143226879753e-16,
+    "max_absolute_predictor_correlation": 1.4612877824315658e-18,
+    "interpretation": "These rows are the same value-coefficient result and are not independent replications; the 111-test adjustment remains conservative."
+  }
+}
