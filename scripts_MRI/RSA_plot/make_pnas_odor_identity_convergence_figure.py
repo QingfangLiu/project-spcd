@@ -479,10 +479,10 @@ def _plot_decoding_logic(ax, project_root: Path) -> None:
         (0.37, ("A2", "B2"), "odor2", orange),
     ):
         for offset, cue in zip((-0.055, 0.055), cues):
-            _decoding_asset(ax, project_root, cue, center + offset, 0.31, 0.09, 0.15)
+            _decoding_asset(ax, project_root, cue, center + offset, 0.325, 0.09, 0.14)
             ax.text(center + offset, 0.205, cue, transform=ax.transAxes,
-                    fontsize=11, fontweight="bold", ha="center")
-        ax.annotate("", xy=(center, 0.085), xytext=(center, 0.165),
+                    fontsize=11, fontweight="bold", ha="center", va="center")
+        ax.annotate("", xy=(center, 0.085), xytext=(center, 0.15),
                     xycoords=ax.transAxes, textcoords=ax.transAxes,
                     arrowprops={"arrowstyle": "-|>", "lw": 1.0,
                                 "linestyle": (0, (3, 3)), "color": color})

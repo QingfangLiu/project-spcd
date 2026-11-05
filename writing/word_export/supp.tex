@@ -54,11 +54,130 @@ Qingfang Liu, Yao Zhao, Taaseen Khan, Nicole Moussa, Geoffrey Schoenbaum, and Th
 
 \subsection*{Supplementary Methods}
 
-\paragraph*{Nuisance regressors}
+\subsubsection*{Study participants}
 
-Nuisance regressors were constructed following procedures used in our previous work \citep{liu2025distinct,liuyaoatt24}. Each run included six rigid-body motion parameters, their first temporal differences, and the squared terms of both, yielding 24 motion regressors, together with the respiratory regressors described in the main text. To capture image artifacts, two additional measures were calculated from the unprocessed shortest-echo images: the difference in mean signal between odd- and even-numbered slices and the variance of mean signal across slices. Each measure was expressed as an absolute standardized deviation using its mean and standard deviation across all runs within each participant. These two time series, their first temporal differences, and their squared temporal differences were included as nuisance regressors. Volumes exceeding four standard deviations on either artifact measure were modeled using separate indicator regressors. All nuisance regressors were z-scored within each run before inclusion in the GLMs.
+Thirty-five healthy, right-handed participants with no history of major psychiatric or neuro-logical disorders provided written informed consent to participate in the study. One participant withdrew due to scheduling constraints, leaving 34 individuals who completed all experimental sessions. All participants fasted for approximately 2–4 hours before each study visit. Two participants were excluded from data analysis because they did not demonstrate learning during the conditioning task, rendering their data unsuitable for further analyses. One additional participant was excluded because of a persistent preference for clean-air cues and absent odor devaluation, suggesting limited engagement with the odor outcomes central to the study. The final sample comprised 31 participants (11 males, 20 females; ages 21–42, $M = 28.58$, $SD = 6.03$). The study protocol was approved by the NIDA-IRP Institutional Review Board (Study~\#001156) and registered on ClinicalTrials.gov (NCT05707806).
 
-\paragraph*{Behavioral data analysis}
+\subsubsection*{Experimental design}
+
+This study used a modified sensory preconditioning paradigm combined with outcome devaluation. Participants first completed a preconditioning phase, during which they learned associations between pairs of visual cues (A1-B1, A2-B2, and C-D). For a given participant, cues A1, A2 and C were images of places whereas B1, B2 and D cues were cartoon characters (counterbalanced across participants). There were two sets of cue pairs, and each set comprised two A-B pairs (A1-B1 and A2-B2) and one C-D pair (Table~\ref{tab:cue-mapping}). This was followed by a conditioning phase, where participants learned associations between the second cue in each pair and a non-devalued (B1) or subsequently devalued (B2) food odor, or clean air (D). The assignment of sweet and savory odors to B1 and B2 was counterbalanced across participants. Finally, participants completed a probe task in which they made choices among both conditioned and preconditioned cues, reflecting their preferences for the associated odors. The probe task was administered twice: once before and once after participants consumed a meal that was matched to either the sweet or the savory food odor (counterbalanced across participants).
+
+
+\par\bigskip\begingroup
+\refstepcounter{table}
+
+
+\par\noindent\textbf{Table~\thetable. }Cue–outcome mapping structure for preconditioned cues, conditioned cues, and their associated odor outcomes.
+In this illustration, the sweet odor is paired with A1 and B1 for consistency with main-text Fig.~1;
+in the actual experiment, the sweet–savory assignment was counterbalanced across participants.
+\par
+
+\label{tab:cue-mapping}
+\small\setlength{\tabcolsep}{4pt}\begin{tabular}{ccccc}
+\hline
+\textbf{Cue set} & \textbf{Preconditioned cue} & \textbf{Conditioned cue} & \textbf{Outcome} \\
+\hline
+Set 1 & $A1_{1}$ & $B1_{1}$ & sweet odor \\
+Set 1 & $A2_{1}$ & $B2_{1}$ & savory odor \\
+Set 1 & $C_{1}$ & $D_{1}$ & clean air \\
+Set 2 & $A1_{2}$ & $B1_{2}$ & sweet odor \\
+Set 2 & $A2_{2}$ & $B2_{2}$ & savory odor \\
+Set 2 & $C_{2}$ & $D_{2}$ & clean air \\
+\hline
+\end{tabular}
+
+\par\endgroup\bigskip
+
+
+\subsubsection*{Study sessions}
+
+The study spanned three days, consisting of a stimulus selection session, Day 1, and Day 2. During the stimulus selection session, participants rated the images and odors. Day 1 included an MRI localizer scan followed by preconditioning training. Day 2 began with a brief preconditioning refresher (outside the scanner), followed by the conditioning task (three runs, inside the scanner) and two probe tasks (three runs each, inside the scanner), separated by the meal. Immediately before and after the meal, participants rated odor pleasantness and self-reported satiation. Day 2 concluded with a recognition memory task outside the scanner, followed by a post-task interview. The interval between the stimulus selection session and Day~1 was, on average, \(8.03 \pm 11.13\) days, and the interval between Day~1 and Day~2 was \(7.41 \pm 5.06\) days.
+
+\paragraph*{Stimulus selection session}
+
+In the stimulus selection session, participants first completed an image rating task outside the scanner, in which they evaluated a series of character images followed by place images, indicating how much they liked each one. The purpose of this task was to identify images with neutral---or as similar as possible---liking ratings so that these images could be used as visual cues, ensuring that subsequent preference-based choices would primarily reflect participants' odor preferences rather than any preexisting preferences for particular visual stimuli. Participants rated each image three times, and we selected eight character images and eight place images based on their average ratings.
+
+Next, participants completed an odor rating and selection procedure in which they evaluated the pleasantness and intensity of ten food odors. On each trial, participants smelled one odor for 2 s and then rated how much they liked it using a visual analog scale ranging from “Most Disliked Sensation Imaginable” to “Most Liked Sensation Imaginable.” Ratings were made by positioning a cursor along the scale. Each odor was presented three times in a pseudo-randomized order, and the three ratings for each odor were averaged. Based on these averaged ratings, two odors—one savory and one sweet—were selected for each participant. We selected odors that were rated above neutral and as closely matched in pleasantness as possible, and at least medium in perceived intensity. These individualized odors served as the reward outcomes for the remainder of the experiment.
+
+\paragraph*{Study day 1 – Localizer (fMRI)}
+
+On study day 1, participants completed a series of fMRI localizer scans designed to obtain neural responses to all visual and olfactory stimuli before any associative learning occurred. The session included two odor localizer runs, four character localizer runs, and four place localizer runs.
+
+\textit{Odor localizer.}
+
+Participants completed two runs of the odor localizer, in which each trial consisted of a 2\,s sniff cue followed by 2\,s of odor delivery (one of the two participant-specific food odors or clean air), separated by a jittered 9--13\,s ITI. Each run contained 30 trials (3 odor types $\times$ 10 repetitions). Participants were instructed to inhale deeply at the sniff cue while minimizing head and body movement.
+
+\paragraph*{Study day 1 – Preconditioning training}
+
+On Day 1, following the localizer MRI scans, participants completed preconditioning training outside the scanner. During this phase, they learned six deterministic associations comprising six cue pairs: two A1–B1 pairs, two A2–B2 pairs, and two C–D pairs. For each participant, the A1, A2, and C cues were places, whereas the B1, B2, and D cues were characters. Participants were instructed to learn and remember which place was associated with each character. Instead of a passive viewing paradigm, we implemented a choice-based design to facilitate active engagement and promote more robust encoding of the paired associations \citep{bunsey1996conservation}.
+
+Each trial began with a 3\,s presentation of the first cue (e.g., A1), followed by a 0.3\,s gap and then a 3\,s presentation of two possible second cues, one of which was the correct associate (e.g., B1), whereas the incorrect cue was from one of the other cue pairs within the same cue set (i.e., B2 or D). During this 3\,s choice period, participants indicated which of the two cues was associated with the preceding cue A1 by pressing left or right arrow key. Trials were separated by a jittered 3–8\,s inter-trial interval. Feedback (correct, incorrect) was provided after each choice. Whether the character or the place served as cue A1 and B1 (appeared first and second) was counterbalanced across participants as part of the experimental design.
+
+Each run comprised 24 trials (6 cue pairs $\times$ 2 incorrect alternatives drawn from the same cue set $\times$ left/right balancing). Participants completed 3--5 runs in total, with the task terminating early if they achieved $\geq 90\%$ accuracy after the third or fourth run.
+
+\paragraph*{Preconditioning refresher}
+
+Day 2 began with a brief preconditioning refresher outside the scanner to reinforce the character–place associations learned on Day 1. Participants were allowed up to three refresher runs; those who achieved greater than 90\% accuracy after the first or second run skipped the remaining runs. The structure of each run was identical to the preconditioning training on day 1. Of the 32 participants retained after conditioning-performance exclusions, 30 met the accuracy threshold after one run, whereas only 2 participants required a second run.
+
+\paragraph*{Conditioning task}
+
+In the conditioning task, participants viewed the second cue of each pair (i.e., B1, B2, and D) and predicted which odor (or clean air) would follow. Cues B1 and B2 predicted the non-devalued and subsequently devalued food odors, respectively, with sweet/savory identity counterbalanced across participants; cues D predicted clean air. To encourage retrieval of the associated, absent preconditioned cues (A1, A2 and C), participants were provided with a cover story instructing them to think about the related cue while making their predictions. Each trial began with a 2\,s presentation of a conditioned cue, followed by a 3\,s prediction period during which the cue remained on the screen and three odor abbreviations were displayed. Participants indicated which odor they expected. After a 4\,s delay following the prediction period, the associated odor (or clean air) was delivered for 2\,s. If no response was made, no odor was delivered and a “too slow” message appeared. Trials concluded with a jittered 4--10\,s inter-trial interval. Each run comprised 36 trials (6 cues $\times$ 6 orderings of odor names).
+
+\paragraph*{Probe task (pre-meal and post-meal)}
+
+In the probe task, administered both before and after the meal, participants made choices between two sequentially presented cues based on which associated odor (or clean air) they preferred to smell. The two sequentially presented cues could either be two conditioned cues (i.e., B1 vs. B2, B1 vs. D, or B2 vs. D) or two preconditioned cues (i.e., A1 vs. A2, A1 vs. C, or A2 vs. C). Participants were informed that no odors would be delivered during the task; instead, five trials would be randomly selected and the odor corresponding to their choice would be delivered at the end of the experiment.
+
+Each trial began with a 3\,s presentation of the first cue (cue\,1), followed by a jittered 4--10\,s interval before the second cue (cue\,2) appeared for 3\,s. Participants then had 2\,s to indicate their choice, after which the trial ended with a jittered 4--10\,s inter-trial interval. Each run comprised 24 trials (6 pairwise choice pairs $\times$ 2 cue sets $\times$ left/right balancing).
+
+\paragraph*{Meal consumption}
+
+Between the pre- and post-meal probe tasks, participants exited the scanner and consumed a meal matched to one of the two food odors (sweet or savory, counterbalanced across participants). Participants were given 15\,minutes and instructed to eat until they felt very full. Food items were chosen to match the target odor as closely as possible, and water was provided. Participants in the savory group consumed an average of $693.5 \pm 318.3$~kcal, whereas those in the sweet group consumed $705.0 \pm 232.2$~kcal. A two-sample $t$-test confirmed no significant difference between groups ($t(30) = -0.12$, $p = 0.91$), indicating that caloric intake was comparable across conditions.
+
+\paragraph*{Odor pleasantness ratings}
+
+Participants rated the pleasantness of each odor before and after the meal using a horizontal slider ranging from –4 (very unpleasant) to +4 (very pleasant) in 0.5-point increments. Each odor was rated three times, and the average of the three ratings was used in subsequent analyses. Because of an operational error, pleasantness, hunger, and satiety ratings were unavailable for one participant, leaving 30 participants for these analyses.
+
+\paragraph*{Self-reported hunger and satiety}
+
+Participants also rated hunger and satiety before and after the meal by responding to three questions: “How would you rate your current level of hunger?”, “How would you rate your current level of satiety (feeling full)?”, and “How would you rate your current desire to eat?”. Ratings were made using the same horizontal slider scale as the odor pleasantness ratings.
+
+\paragraph*{Recognition memory task}
+
+During the recognition memory task, participants judged whether specific character--place pairs had been encountered during preconditioning. Each trial consisted of a 3\,s presentation of the first cue (cue\,1), followed by a 0.3\,s blank interval and a 3\,s presentation of the second cue (cue\,2). Participants then indicated whether the pair was ``old'' or a recombined foil. No corrective feedback was provided. Trials were separated by a jittered 3--8\,s inter-trial interval. The task comprised 36 trials in total (6 cue pairs $\times$ old/foil $\times$ 3 repetitions). Foil pairs were constructed by randomly pairing each first cue (A1, A2 or C) with a second cue (B1, B2 or D) that had not been associated with it during pre-conditioning.
+
+\paragraph*{Post-task interview}
+
+After completing all tasks, participants took part in a brief post-task interview designed to assess awareness, subjective experience, and task compliance.
+
+\subsubsection*{Task stimuli}
+
+\paragraph*{Visual stimuli}
+
+We used two categories of visual stimuli—cartoon characters and landmark places—along with ten food-related odors. The visual stimulus set comprised 30 familiar cartoon characters (e.g., Jerry Mouse, Snoopy, Charmander) and 30 commonly recognizable places (e.g., office buildings, university campuses, bridges). Images were selected to avoid strong positive or negative affective content and to minimize any real-world associations with specific odors. For cartoon characters, we also excluded images with pronounced lateral gaze directions to prevent potential biases in participants’ left–right choices during the task. All images were converted to grayscale to reduce visual saliency and to ensure that any differences in preference or neural representation were not driven by low-level perceptual features.
+
+\paragraph*{Odor stimuli and delivery}
+
+We used five savory odors (potato chip, garlic, cheddar, pizza, tuna) and five sweet odors (strawberry, chocolate, apple cinnamon, peach, vanilla). Food odors were sourced from several commercial suppliers: Takasago International Corporation (Tokyo, Japan), International Flavors \& Fragrances (New York, NY), The Flaming Candle (Strongsville, OH), The Candlemaker’s Store (Butler County, OH), and the Midwest Sea Salt Company (West Chester, OH).
+
+We used a custom-built computer-controlled olfactometer to deliver food odors with precise timing directly to nasal masks worn by subjects. This olfactometer directed medical-grade air through the headspace of amber bottles containing liquid solutions of food odors, maintaining a constant flow rate of 3.2~L/min. Using two independent mass flow controllers (Alicat, Tucson, AZ), the olfactometer enabled the dilution of odorized air with odorless air. Throughout the experiment, a constant stream of odorless air was delivered to subjects’ noses. Odorized air was mixed into this airstream at specific time points, while ensuring no impact on the overall flow rate and preventing any alteration in somatosensory stimulation.
+
+\subsubsection*{MRI data acquisition}
+
+MRI data were acquired on a Siemens 3T Prisma-Fit system using a 32-channel head coil. Functional images were collected with a multi-echo gradient-echo EPI sequence (TR = 1.5\,s; TE$_1$--TE$_4$ = 12.60, 29.16, 45.72, and 62.28\,ms; flip angle = 67$^\circ$; in-plane voxel size = 2.51~$\times$~2.51\,mm; slice thickness = 2.5\,mm (no gap); matrix size = 86~$\times$~86 voxels; field of view = 216~$\times$~216\,mm; 60 axial slices acquired in an interleaved order; multiband acceleration factor = 4). The short first echo time helps reduce susceptibility-induced signal dropout in orbitofrontal cortex, as demonstrated in previous resting-state and task-based fMRI studies \citep{RN619,RN524,kirlutpos16,zhao24img}. High-resolution T1-weighted structural images (1\,mm isotropic) were acquired on Day~1 to facilitate spatial normalization.
+
+Across the two study days, functional MRI runs varied in length depending on the task. On Day~1, the odor localizer scan comprised 320 volumes, and each character and place localizer run comprised 244 volumes. On Day~2, the odor prediction task consisted of 404 volumes, and each pre- and post-meal probe run contained 372 volumes.
+
+\subsubsection*{Multi-echo MRI data processing}
+
+Preprocessing of the multi-echo fMRI data followed the procedures described in our recent work \citep{liu2025distinct}. First, all functional images from the shortest echo across all fMRI runs were realigned to the first volume of the first echo using SPM12, and the resulting voxel-to-world mapping matrix was applied to the other three echoes, volume by volume. All functional images were then resliced for each echo. Next, the images across the four echoes were combined using temporal signal-to-noise ratio (tSNR) weighting, following parallel-acquired inhomogeneity desensitized (PAID) approach \citep{RN524}. Specifically, voxel-wise tSNR maps were computed for each echo, multiplied by the echo time (TE), and normalized across the four echoes to generate weight maps. These weight maps were then used to combine the resliced images by multiplying each volume by its respective weight map. Finally, the combined multi-echo data were coregistered, normalized to MNI space, resampled to 2 mm isotropic resolution, and smoothed with a 2\,mm full-width at half-maximum (FWHM) Gaussian kernel, all using SPM12.
+
+\subsubsection*{Sniff recording and analysis}
+
+We measured subjects’ nasal airflow (i.e., sniffing) directly at the nose using a nasal mask connected to a respiratory flow head and spirometer. Nasal airflow was recorded with PowerLab equipment (ADInstruments, Dunedin, New Zealand) at a sampling rate of 1\,kHz. Airflow traces for each fMRI run were preprocessed by smoothing with a 250\,ms moving window, down-sampling to 10\,Hz, applying a high-pass filter (50\,s cutoff) to remove slow drifts, normalizing each run by subtracting the mean and dividing by the standard deviation, and finally down-sampling to match the fMRI repetition time of 1.5\,s (TR). Sniff volume was computed as the integral of the nasal airflow. Nasal airflow, sniff volume, and their squared terms were included as nuisance regressors in the fMRI GLM analyses. Additional nuisance regressors accounting for head motion and image artifacts are described under Single-presentation GLMs below.
+
+\subsubsection*{Behavioral data analysis}
+
+We analyzed behavioral performance from the preconditioning task, the conditioning task, as well as the pre- and post-meal probe tasks. We excluded data from two participants whose run-wise accuracies in the conditioning task were consistently below 0.40. Among the 32 participants meeting this learning criterion (before the additional exclusion described above), accuracy in the final run of conditioning was high: all participants achieved at least 0.75, with a mean of 0.94 and a standard deviation of 0.068. These results indicate robust learning of the cue–odor (or clean-air) associations by the end of the conditioning task.
 
 Preconditioning and conditioning performance were quantified as the proportion of correct responses within each run. For comparisons among preconditioning cue-pair types, accuracy from the final Day 2 refresher run was calculated separately for each cue pair and then averaged across the two stimulus sets with equal weighting. Conditioning accuracy was compared among the three outcome-associated cue types in the final conditioning run, pooling across stimulus sets. Differences among cue-pair or cue types were assessed using Friedman tests.
 
@@ -68,31 +187,49 @@ For each probe phase, choice proportions were calculated separately for each par
 
 To assess selective devaluation while accounting for changes common to both conditions over time, we compared participants' pre- to post-meal changes using one-sided Wilcoxon signed-rank tests. For odor pleasantness, we compared changes for the devalued and non-devalued odors ($n = 30$). For choices, we compared changes for $B2>D$ versus $B1>D$ and, separately, $A2>C$ versus $A1>C$ ($n = 31$ for each comparison). The directional hypothesis was that the devalued condition would show a greater decrease than the non-devalued condition. Changes were defined as post-meal minus pre-meal values, and contrasts were oriented as devalued minus non-devalued changes. Tests assessed whether these paired contrasts were shifted below zero. Contrasts were rounded to 12 decimal places before ranking to preserve numerical ties, and zero contrasts were excluded from ranking. The reported $W$ statistic is the sum of ranks for positive contrasts. These comparisons used an uncorrected significance threshold of $p < 0.05$.
 
-\paragraph*{Meal consumption}
+\subsubsection*{Single-presentation GLMs}
 
-Food items were chosen to match the target odor as closely as possible, and water was provided. Participants in the savory group consumed an average of $693.5 \pm 318.3$~kcal, whereas those in the sweet group consumed $705.0 \pm 232.2$~kcal. A two-sample $t$-test confirmed no significant difference between groups ($t(30) = -0.12$, $p = 0.91$), indicating that caloric intake was comparable across conditions.
+\paragraph*{Nuisance regressors}
 
-\paragraph*{Self-reported hunger and satiety}
+Nuisance regressors were constructed following procedures used in our previous work \citep{liu2025distinct,liuyaoatt24}. Each run included six rigid-body motion parameters, their first temporal differences, and the squared terms of both, yielding 24 motion regressors, together with the respiratory regressors described under Sniff recording and analysis. To capture image artifacts, two additional measures were calculated from the unprocessed shortest-echo images: the difference in mean signal between odd- and even-numbered slices and the variance of mean signal across slices. Each measure was expressed as an absolute standardized deviation using its mean and standard deviation across all runs within each participant. These two time series, their first temporal differences, and their squared temporal differences were included as nuisance regressors. Volumes exceeding four standard deviations on either artifact measure were modeled using separate indicator regressors. All nuisance regressors were z-scored within each run before inclusion in the GLMs.
 
-Participants also rated hunger and satiety before and after the meal by responding to three questions: “How would you rate your current level of hunger?”, “How would you rate your current level of satiety (feeling full)?”, and “How would you rate your current desire to eat?”. Ratings were made using the same horizontal slider scale as the odor pleasantness ratings.
+\paragraph*{Probe and odor-localizer models}
 
-\paragraph*{Recognition memory task.}
+We estimated single-presentation GLMs for the premeal and postmeal probe tasks using the least-squares-separate approach \citep{mumford2012deconvolving}. A separate GLM was fitted for each cue presentation, modeling the target cue at its onset with a duration of 3 s and pooling all other cue presentations within the same run into a second regressor. Both cue positions were estimated, yielding two GLMs per trial. Each model additionally included decision periods, modeled with a duration of 2 s; separate left- and right-hand button-press regressors, modeled as zero-duration events; and the nuisance regressors described above. Models were estimated on resliced, coregistered, normalized functional EPIs smoothed with a 2 mm FWHM Gaussian kernel. A high-pass filter with a cutoff of 128 s was applied.
 
-During the recognition memory task, participants judged whether specific character--place pairs had been encountered during preconditioning. Each trial consisted of a 3\,s presentation of the first cue (cue\,1), followed by a 0.3\,s blank interval and a 3\,s presentation of the second cue (cue\,2). Participants then indicated whether the pair was ``old'' or a recombined foil. No corrective feedback was provided. Trials were separated by a jittered 3--8\,s inter-trial interval. The task comprised 36 trials in total (6 cue pairs $\times$ old/foil $\times$ 3 repetitions). Foil pairs were constructed by randomly pairing each first cue (A1, A2 or C) with a second cue (B1, B2 or D) that had not been associated with it during pre-conditioning.
+Single-trial beta estimates were also obtained from the passive odor localizer using the least-squares-separate approach. A separate GLM was fitted for each presentation, with the target presentation modeled as a zero-duration event at sniff-cue onset and all remaining presentations within the same run pooled into a second regressor. Models used the same preprocessed functional images and nuisance regressors described above, with a high-pass filter cutoff of 128 s. Beta estimates for the two food odors were used to train the cross-task decoder.
 
-\paragraph*{Post-task interview}
+\subsubsection*{Representational similarity analysis}
 
-After completing all tasks, participants took part in a brief post-task interview designed to assess awareness, subjective experience, and task compliance.
+We conducted a region-of-interest (ROI) RSA examining odor-associated representational structure in the premeal probe task, before devaluation could introduce confounding changes in odor value. Analyses used the two bilateral orbitofrontal cortex (OFC) regions defined below.
 
-\paragraph*{Searchlight RSA of subjective odor value}
+Single-image beta estimates were selected for the first cue presentation of each trial. Conditioned and preconditioned cues were analyzed separately, each comprising four odor-predictive cue identities across the two stimulus sets. Clean-air-associated cues were excluded. Individual presentation patterns were retained without averaging across trials or runs. Each cue subset ordinarily contained 24 samples across three runs, with two presentations of each cue per run. Participant 36 contributed 16 samples from two runs.
+
+Within each ROI and cue subset, voxels with nonfinite values in any selected sample were removed. Each voxel’s responses were mean-centered across the selected samples within each run. Neural representational dissimilarity matrices were constructed using one minus the Pearson correlation between activity patterns. An odor-identity model assigned zero to pairs associated with the same odor and one to pairs associated with different odors. Correspondence between neural and model dissimilarities was assessed using Spearman correlation, retaining only pairs of samples acquired in different runs. Group inference used one-sided one-sample t tests of participant-level Spearman coefficients against zero.
+
+Within each OFC ROI, participant-level odor-identity RSA coefficients for conditioned and preconditioned cues were correlated across participants using Spearman rank correlation. Negative associations were assessed using one-sided tests, with an uncorrected significance threshold of $p < 0.05$.
+
+\subsubsection*{Cross-task decoding of odor identity}
+
+We tested whether multivoxel representations of perceived odor identity generalized to odor-associated visual cues. Analyses used the same two bilateral OFC regions as RSA. For each participant and ROI, a linear support vector machine with a fixed regularization parameter of C = 1 was trained to distinguish the two odors using single-trial beta patterns from the passive odor task conducted before associative learning. Training included 40 odor presentations across two runs, with 20 presentations per odor. Clean-air trials were excluded.
+
+The classifier was subsequently tested on single-image beta patterns from the premeal probe task, during which no odors were delivered. Only the first cue presentation of each trial was included. Conditioned and preconditioned cues were evaluated separately, retaining four odor-predictive cue identities per subset across the two stimulus sets. Each subset ordinarily contained 24 samples across three runs; participant 36 contributed 16 samples from two runs. Test labels indicated the odor associated with each cue.
+
+For each participant, ROI, and cue subset, voxels with nonfinite values in any training or test sample were excluded. Voxel responses were z-scored across samples separately within each run and task, with the two stimulus sets pooled within each probe run. Normalization statistics were calculated independently for the passive odor and probe datasets. The classifier was fitted using both passive odor runs and applied to the probe patterns without further fitting or hyperparameter selection. Decoding accuracy was calculated as the mean proportion of correct classifications across the two odor identities. One-sided one-sample t tests assessed whether participant-level decoding accuracy exceeded the chance level of 50\%.
+
+\subsubsection*{Region-of-interest definition}
+
+Analyses used two independently defined bilateral orbitofrontal cortex (OFC) regions from the connectivity-based K = 2 parcellation: medial/posterior-lateral OFC (hereafter medial OFC) and central/anterior-lateral OFC (hereafter lateral OFC) \citep{kahnt2012connectivity}. The parcellation map was resampled to the 2 mm isotropic analysis grid using nearest-neighbor interpolation. Each region was then intersected with a gray-matter mask derived from the SPM12 gray-matter tissue probability map thresholded at probability $>0.1$. The same ROI definitions were used for odor-identity RSA and cross-task decoding.
+
+\subsubsection*{Searchlight RSA of subjective odor value}
 
 We examined subjective odor-value representations by combining single-image beta estimates from the premeal and postmeal probe tasks in one searchlight multiple-regression RSA. Both cue-presentation positions and all cue identities were included, including cues associated with clean air. Neural RDMs were constructed using one minus the Pearson correlation between activity patterns. Model fitting retained only pairs acquired in different runs, with premeal and postmeal runs assigned distinct identifiers so that cross-phase pairs were included.
 
 For each participant, the three outcome pleasantness ratings from each phase were jointly z-scored across the six phase-by-outcome values. Each cue presentation was assigned its associated outcome's rating from the corresponding phase. The odor-value RDM contained absolute differences between these assigned values. Neural dissimilarities were regressed on odor-value dissimilarity together with cue type (conditioned versus preconditioned), image identity, button presence, and button side RDMs, using ordinary least squares with an intercept. Image identity was defined independently of first versus second presentation position. Button labels were assigned to second-cue presentations, whereas first-cue presentations were labeled as having no response. Separate odor-identity and phase RDMs were not included in this regression.
 
-Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction used the independently defined vmPFC component of the positive-greater-than-negative subjective-value meta-analysis map from Bartra et al.\ \citeyearpar{bartra2013valuation}, Fig.~3D. The vmPFC component contained 1,245 voxels at 2\,mm isotropic resolution, of which 1,233 overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within this volume, using the smoothness estimated from the group model. Cluster-level inference was additionally evaluated with a voxelwise cluster-defining threshold of $p < 0.001$, uncorrected.
+Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction was applied separately within the independently defined bilateral medial and lateral OFC connectivity-based masks used for the odor-identity analyses \citep{kahnt2012connectivity}. The medial and lateral OFC masks contained 5,500 and 4,445 voxels at 2\,mm isotropic resolution, respectively, all of which overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within each ROI, using the smoothness estimated from the group model.
 
-\paragraph*{Optimal allocation of representational resources}
+\subsubsection*{Optimal allocation of representational resources}
 
 We derive the allocation that minimizes the total decision loss in the resource-limited model. Let $P$ and $C$ denote preconditioned and directly conditioned cue classes, respectively. The computational values $a_P,a_C>0$ are held fixed during optimization. Representational resources are nonnegative and share a fixed budget $r_P+r_C=R$, with $R>0$. Substituting $r_C=R-r_P$ expresses total loss as a function of one allocation:
 \begin{equation}
@@ -130,7 +267,7 @@ r_C^*=R-r_P^*,
 \end{equation}
 where $\operatorname{clip}(x,0,R)=\min\{R,\max\{0,x\}\}$. The solution is interior when $-R<\log(a_P/a_C)<R$. All resources are assigned to the preconditioned cue class when $\log(a_P/a_C)\geq R$, and to the conditioned cue class when $\log(a_P/a_C)\leq -R$. If $R=0$, both allocations are zero.
 
-For an interior solution, $a_P>a_C$ implies $r_P^*>r_C^*$: outcome identities receive more resources when representing them has greater computational value. For the illustrative parameters in Figure~4B ($R=4$, $a_P=4$, and $a_C=1$), the solution is $r_P^*=2.69$ and $r_C^*=1.31$.
+For an interior solution, $a_P>a_C$ implies $r_P^*>r_C^*$: outcome identities receive more resources when representing them has greater computational value. For the illustrative parameters in main-text Figure~5B ($R=4$, $a_P=4$, and $a_C=1$), the solution is $r_P^*=2.69$ and $r_C^*=1.31$.
 
 \subsection*{Supplementary Results}
 
@@ -148,9 +285,9 @@ We examined the relationship between probe choices and odor pleasantness in part
 
 Choice proportions were also positively correlated with the pleasantness difference between the associated outcomes for all six comparisons, both before the meal ($r = 0.43$--$0.77$, all $p \leq 0.018$) and after the meal ($r = 0.42$--$0.81$, all $p \leq 0.020$; Fig.~\ref{fig_probe_corr_pre_post}). All choice--pleasantness tests were two-sided Pearson correlations, uncorrected for multiple comparisons.
 
-\paragraph*{vmPFC representation of odor value.}
+\paragraph*{Representation of subjective outcome value.}
 
-Across the premeal and postmeal probe phases, searchlight multiple-regression RSA identified a positive association between neural dissimilarity and subjective odor-value differences in vmPFC ($n = 30$; peak MNI coordinates: $[12, 48, 0]$; $t(29) = 3.79$; peak-level $p_{\mathrm{FWE}} = 0.045$, small-volume corrected; Fig.~\ref{fig_vmpfc_value}). The voxelwise FWE-corrected critical threshold within the vmPFC volume was $t = 3.743$. The effect did not reach cluster-level significance ($p_{\mathrm{FWE}} = 0.096$ at a voxelwise cluster-defining threshold of $p < 0.001$, uncorrected).
+Across the premeal and postmeal probe phases, searchlight multiple-regression RSA identified a positive association between neural dissimilarity and subjective odor-value differences in medial OFC ($n = 30$; peak MNI coordinates: $[14, 46, -6]$; $t(29) = 4.42$; peak-level $p_{\mathrm{FWE}} = 0.032$, small-volume corrected; Fig.~\ref{fig_ofc_value}). The corresponding peak in lateral OFC did not reach significance ($[36, 48, -2]$; $t(29) = 2.87$; $p_{\mathrm{FWE}} = 0.503$). All peak-level p values were FWE-corrected within the respective ROI. The FWE-corrected critical t thresholds were 4.218 for medial OFC and 4.140 for lateral OFC. The medial OFC peak did not survive additional correction across the three regional tests in the original analysis.
 
 
 \clearpage
@@ -228,12 +365,14 @@ Panels A--C show preconditioned cues, and panels D--F show conditioned cues. Eac
 
 
 \begin{center}
-\includegraphics[width=\linewidth]{../../supp_fig/vmpfc_value_rsa.png}
+\includegraphics[width=\linewidth]{../../supp_fig/ofc_value_rsa.png}
 \end{center}
-\par\noindent\textbf{Figure~\thefigure. }\textbf{vmPFC representation of subjective odor value.}
-Coronal ($y = 48$), sagittal ($x = 12$), and axial ($z = 0$) views show the positive group-level odor-value RSA t map from the combined premeal and postmeal probe analysis ($n = 30$), overlaid on the SPM-normalized ICBM152NLin2009 anatomical reference distributed with MRIcroGL. Crosshairs intersect at MNI $[12, 48, 0]$. Colored voxels show the whole-brain map at $p < 0.001$, uncorrected, with no extent threshold, for visualization; native 2\,mm statistical voxels are displayed without interpolation. Peak-level FWE correction was confined to the independently defined vmPFC component of the meta-analysis mask from Bartra et al.\ \citeyearpar{bartra2013valuation}, Fig.~3D. The vmPFC peak survived correction within that volume ($t(29) = 3.79$, peak-level $p_{\mathrm{FWE}} = 0.045$), whereas cluster-level correction within the vmPFC volume did not reach significance ($p_{\mathrm{FWE}} = 0.096$). The color bar indicates t values. Coronal and axial views use neurological orientation (left hemisphere shown on the left).\par
+\par\noindent\textbf{Figure~\thefigure. }\textbf{Searchlight RSA of subjective outcome value.}
+\textbf{A. Medial OFC peak.} Coronal ($y = 46$), sagittal ($x = 14$), and axial ($z = -6$) views intersect at MNI $[14, 46, -6]$.
+Views show the positive group-level odor-value RSA t map from the combined premeal and postmeal probe analysis ($n = 30$), overlaid on the SPM-normalized ICBM152NLin2009 anatomical reference distributed with MRIcroGL. Views focus on frontal regions. Purple contours delineate the independently defined medial OFC connectivity-based mask \citep{kahnt2012connectivity}; matching crosshairs mark the regional peak. Colored voxels show the whole-brain map at $p < 0.001$, uncorrected, with no extent threshold, for visualization; native 2\,mm statistical voxels are displayed without interpolation. The color bar indicates t values. Coronal and axial views use neurological orientation (left hemisphere shown on the left).
+\textbf{B. Regional peak statistics.} Peak-level p values control family-wise error within each independently defined OFC ROI, using the smoothness estimated from the group model. The medial OFC peak survived correction within its mask but did not survive additional correction across the three regional tests in the original analysis. Lateral OFC did not contain a significant peak and had no voxels above the display threshold.\par
 
-\label{fig_vmpfc_value}
+\label{fig_ofc_value}
 
 \par\endgroup\bigskip
 

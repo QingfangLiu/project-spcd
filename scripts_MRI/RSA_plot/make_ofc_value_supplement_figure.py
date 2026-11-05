@@ -2,10 +2,10 @@
 """Render orthogonal views of the whole-brain odor-value RSA map.
 
 Anatomy: SPM-normalized ICBM152NLin2009, copied from MRIcroGL's
-standard/spm152.nii.gz into masks/. Independent vmPFC and medial OFC
-masks select the illustrated peaks and provide outlines. Both rows show
-the same whole-brain map, without clipping it to either ROI. The table
-reports peak-level SVC within each of three ROIs, without a Holm column.
+standard/spm152.nii.gz into masks/. The independent medial OFC mask
+selects the illustrated peak and provides its outline. Views show the
+whole-brain map without clipping it to the ROI. The table reports the
+existing peak-level SVC results for medial and lateral OFC.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ import nibabel as nib
 from nibabel.processing import resample_from_to
 import numpy as np
 import pandas as pd
-from scipy import ndimage, stats
+from scipy import stats
 from scipy.io import loadmat
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -45,30 +45,16 @@ def main() -> None:
     df = float(spm["xX"]["erdf"])
     threshold = stats.t.isf(0.001, df)
 
-    roi_image = nib.load(root / "masks/nifti_roi-masks_fig03/fig03D/C_POSvsNEG_kda10_clust_tstat1_bin.nii.gz")
-    labels, _ = ndimage.label(np.asarray(roi_image.dataobj) > 0, structure=np.ones((3, 3, 3)))
-    # A fixed anatomical seed selects the published vmPFC component, before
-    # consulting the current statistic map; striatum and PCC remain excluded.
-    seed = np.rint(nib.affines.apply_affine(np.linalg.inv(roi_image.affine), [0, 44, -6])).astype(int)
-    component = labels[tuple(seed)]
-    if component == 0:
-        raise ValueError("The anatomical vmPFC seed is outside the supplied mask.")
-    roi = labels == component
-    if int(roi.sum()) != 1245:
-        raise ValueError("Unexpected vmPFC component: expected 1,245 native voxels.")
-    roi_image = nib.Nifti1Image(roi.astype(np.uint8), roi_image.affine)
-
     statistic_image = nib.as_closest_canonical(nib.load(source / "spmT_0001.nii"))
     model_image = nib.as_closest_canonical(nib.load(source / "mask.nii"))
     statistic = np.asarray(statistic_image.dataobj)
     model_mask = np.asarray(model_image.dataobj) > 0
     summaries = pd.read_csv(root / "rsa_roi/probe_imagewise_value/"
                             "searchlight_svc_existing_group_v1/peak_svc_summary.csv")
-    summaries = summaries.set_index("ROI").loc[["vmPFC", "Medial_OFC", "Lateral_OFC"]]
+    summaries = summaries.set_index("ROI").loc[["Medial_OFC", "Lateral_OFC"]]
     medial_image = nib.load(root / "masks/OFC_clusterMap_K2_gm0p1/"
                            "mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii.gz")
     roi_specs = [
-        ("vmPFC", "vmPFC", roi_image, "#4A99D3"),
         ("Medial_OFC", "Medial OFC", medial_image, "#A58BC5"),
     ]
     peaks = []
@@ -99,13 +85,9 @@ def main() -> None:
                             for i, c in enumerate(coords)])
 
     configure_matplotlib()
-    fig = plt.figure(figsize=(11.2, 8.8), facecolor="white")
-    grid = fig.add_gridspec(3, 3, left=0.045, right=0.98, bottom=0.025, top=0.865,
-                            height_ratios=[1, 1, 0.58], wspace=0.045, hspace=0.38)
-    fig.suptitle("Searchlight RSA of subjective outcome value", fontsize=17,
-                 fontweight="bold", y=0.99)
-    fig.text(0.5, 0.948, r"Same group-level $t$ map in A and B; display: $p < 0.001$, uncorrected",
-             ha="center", fontsize=11)
+    fig = plt.figure(figsize=(11.2, 4.9), facecolor="white")
+    grid = fig.add_gridspec(2, 3, left=0.045, right=0.98, bottom=0.035, top=0.91,
+                            height_ratios=[1, 0.52], wspace=0.045, hspace=0.48)
     norm = Normalize(vmin=threshold, vmax=display_max)
     cmap = LinearSegmentedColormap.from_list("value_activation", ["#FF7000", "#FFA000", "#FFFF35"])
     anatomy_max = np.percentile(anatomy_data[anatomy_data > 0], 99)
@@ -115,8 +97,6 @@ def main() -> None:
         row_top = grid[row_idx, :].get_position(fig).y1
         fig.text(0.045, row_top + 0.040, f"{'AB'[row_idx]}  {peak['label']}",
                  fontsize=14, fontweight="bold", color=color, va="bottom")
-        fig.text(0.98, row_top + 0.040, "Outline: independent ROI; crosshairs: regional peak",
-                 fontsize=10, ha="right", va="bottom")
         views = [(1, 0, 2, f"Coronal: y = {xyz[1]:.0f} mm"),
                  (0, 1, 2, f"Sagittal: x = {xyz[0]:.0f} mm"),
                  (2, 0, 1, f"Axial: z = {xyz[2]:.0f} mm")]
@@ -157,13 +137,15 @@ def main() -> None:
             ax.set_yticks([])
             for spine in ax.spines.values():
                 spine.set_visible(False)
+            if fixed == 2:
+                axial_position = ax.get_position()
 
-    table_ax = fig.add_subplot(grid[2, :2])
+    table_ax = fig.add_subplot(grid[1, :2])
     table_ax.set_axis_off()
-    table_ax.text(0, 1.02, "C  Peak-level small-volume correction", fontsize=13,
+    table_ax.text(0, 1.02, "B  Peak-level small-volume correction", fontsize=13,
                   fontweight="bold", transform=table_ax.transAxes, va="bottom")
     cells = []
-    for label, (_, row) in zip(["vmPFC", "Medial OFC", "Lateral OFC"], summaries.iterrows()):
+    for label, (_, row) in zip(["Medial OFC", "Lateral OFC"], summaries.iterrows()):
         xyz = ", ".join(f"{row[k]:.0f}" for k in ["MNI_x", "MNI_y", "MNI_z"])
         cells.append([label, f"[{xyz}]", f"{row.peak_T:.2f}", f"{row.peak_p_FWE_SVC:.3f}"])
     table = table_ax.table(cellText=cells,
@@ -178,18 +160,17 @@ def main() -> None:
         cell.set_facecolor("#EDF0F3" if r == 0 else "white")
         if r == 0:
             cell.set_text_props(weight="bold")
-    info = fig.add_subplot(grid[2, 2])
-    info.set_axis_off()
-    info.text(0.5, 0.88, r"Shared $t$ scale", ha="center", fontsize=11)
-    color_axis = info.inset_axes([0.10, 0.50, 0.80, 0.12])
+    color_axis = fig.add_axes([axial_position.x0 + 0.25 * axial_position.width,
+                              axial_position.y0 - 0.065,
+                              0.50 * axial_position.width, 0.014])
     colorbar = fig.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap), cax=color_axis,
                            orientation="horizontal", ticks=[threshold, display_max])
+    colorbar.ax.set_title(r"$t$", fontsize=10, pad=2, loc="center")
     colorbar.ax.set_xticklabels([f"{threshold:.2f}", f"{display_max:.2f}"])
-    colorbar.ax.tick_params(labelsize=10, length=2)
+    colorbar.ax.tick_params(labelsize=9, length=2, pad=1)
     colorbar.outline.set_edgecolor("#7A858D")
-    info.text(0.5, 0.04, "SVC p values corrected\nwithin each ROI", ha="center", va="bottom", fontsize=10)
 
-    output = root / "supp_fig/vmpfc_value_rsa"
+    output = root / "supp_fig/ofc_value_rsa"
     for suffix in ("pdf", "png"):
         fig.savefig(output.with_suffix(f".{suffix}"), dpi=600, bbox_inches="tight", pad_inches=0.10, facecolor="white")
     plt.close(fig)
