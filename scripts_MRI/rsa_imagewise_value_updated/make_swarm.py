@@ -1,126 +1,99 @@
 #!/usr/bin/env python3
-"""Prepare one Biowulf Swarm file for the updated value searchlights.
+"""Adapt rsa_imagewise/make_swarm_imagewise.py for three combined-phase value runs.
 
-Run from the repository clone on Biowulf. This calls the existing preparation
-command, then adds the established Conda setup and thread caps to every job.
-It prints a submission command but never submits jobs or runs searchlights.
+Generate locally, copy the prepared subset to Biowulf, then submit this single
+Swarm file. Each line calls the unchanged rsa_imagewise.run_rsa module.
 """
-from __future__ import annotations
-
 import argparse
-import hashlib
-import json
 import math
-import os
-from pathlib import Path
-import re
+from pathlib import Path, PurePosixPath
 import shlex
-import subprocess
+import sys
+
+import pandas as pd
+
+PROJECT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT / "scripts_MRI"))
+from rsa_imagewise.make_swarm_imagewise import (
+    default_ratings_file, load_subjects_with_odor_value_ratings,
+)
+
+SKIP_SUBS = {"sub-19", "sub-31", "sub-33"}
+CUE_SUBSETS = ("all", "conditioned_only", "preconditioned_only")
 
 
-HERE = Path(__file__).resolve().parent
-THREAD_VARIABLES = ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS",
-                    "NUMEXPR_NUM_THREADS")
-
-
-def environment_prefix(conda_sh, conda_env):
-    return " && ".join([
-        shlex.join(["source", str(conda_sh)]),
-        shlex.join(["conda", "activate", str(conda_env)]),
-        "export " + " ".join(f"{name}=1" for name in THREAD_VARIABLES),
-    ])
+def select_subjects(ratings_file, subjects=None):
+    """Use the original ratings eligibility rule plus current paper exclusions."""
+    eligible = load_subjects_with_odor_value_ratings(Path(ratings_file))
+    table = pd.read_csv(ratings_file)
+    if table["sub"].duplicated().any():
+        raise ValueError("Duplicate participants in compiled ratings")
+    rating_columns = [f"{p}_{g}" for p in ("pre", "post") for g in ("odor1", "odor2", "clean")]
+    finite = table[rating_columns].apply(lambda col: col.map(lambda v: math.isfinite(float(v)))).all(axis=1)
+    eligible &= set(table.loc[finite, "sub"].astype(str))
+    candidates = sorted(set(subjects if subjects is not None else
+        (p.name for p in (PROJECT / "beh_processed_subs").glob("sub-*") if p.is_dir())))
+    if not candidates:
+        raise ValueError("No candidates found; run from a full clone or provide --subjects")
+    report = [dict(sub=sub, status=("excluded_paper_rule" if sub in SKIP_SUBS else
+                  "excluded_missing_ratings" if sub not in eligible else "included"))
+              for sub in candidates]
+    included = [r["sub"] for r in report if r["status"] == "included"]
+    if not included:
+        raise ValueError("No participants with complete ratings after paper exclusions")
+    return included, report
 
 
 def generate(args):
-    base = args.base_dir.expanduser().resolve()
-    output = (args.output_dir.expanduser().resolve() if args.output_dir else
-              base / "rsa_maps/probe_imagewise_value_updated_v1")
-    conda_sh = args.conda_root.expanduser().resolve() / "etc/profile.d/conda.sh"
-    conda_env = args.conda_env.expanduser().resolve()
-    python = conda_env / "bin/python"
-    if not conda_sh.is_file():
-        raise FileNotFoundError(f"Conda initialization script not found: {conda_sh}")
-    if not python.is_file() or not os.access(python, os.X_OK):
-        raise FileNotFoundError(f"Executable Python not found in Conda environment: {python}")
-    if output.exists() and (not output.is_dir() or any(output.iterdir())):
-        raise FileExistsError(f"Output directory is not empty: {output}")
-
-    runner = HERE / "run_searchlights.py"
-    prefix = environment_prefix(conda_sh, conda_env)
-    # Check the target environment, even when this generator is started with a
-    # different Python. Preparation then records the target interpreter in jobs.
-    imports = (
-        "import sys; assert sys.version_info >= (3, 10), 'Python 3.10+ required'; "
-        "import numpy, pandas, scipy, nibabel, sklearn, nilearn; "
-        "print('RSA environment:', sys.executable, flush=True)"
-    )
-    check = shlex.join([str(python), "-B", "-c", imports])
-    prepare = [str(python), "-B", str(runner), "prepare", "--base_dir", str(base),
-               "--output_dir", str(output), "--radius", str(args.radius),
-               "--n_jobs", str(args.n_jobs)]
-    if args.ratings_file:
-        prepare.extend(["--ratings_file", str(args.ratings_file.expanduser().resolve())])
-    if args.subjects:
-        prepare.extend(["--subjects", *args.subjects])
-    subprocess.run(["bash", "-c", f"{prefix} && {check} && exec {shlex.join(prepare)}"],
-                   check=True)
-
-    swarm = output / "jobs.swarm"
-    commands = swarm.read_text().splitlines()
-    config_path = output / "analysis_config.json"
-    config = json.loads(config_path.read_text())
-    if len(commands) != len(config["subjects"]) or not commands:
-        raise ValueError("Prepared Swarm commands do not match the eligible cohort")
-    temporary = output / "jobs.swarm.tmp"
-    temporary.write_text("\n".join(f"{prefix} && {command}" for command in commands) + "\n")
-    temporary.replace(swarm)
-    logs = output / "swarm_logs"
-    logs.mkdir()
-    submit = shlex.join(["swarm", "-f", str(swarm), "-g", f"{args.mem_gb:g}",
-                         "-t", str(config["n_jobs"]), "--time", args.time,
-                         "--logdir", str(logs)])
-    metadata = dict(
-        generator_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        analysis_config_sha256=hashlib.sha256(config_path.read_bytes()).hexdigest(),
-        conda_sh=str(conda_sh), conda_env=str(conda_env),
-        thread_caps={name: 1 for name in THREAD_VARIABLES},
-        n_subjects=len(config["subjects"]), n_jobs=config["n_jobs"],
-        memory_gb_per_job=args.mem_gb, walltime_per_job=args.time,
-        swarm_file=str(swarm), swarm_sha256=hashlib.sha256(swarm.read_bytes()).hexdigest(),
-        log_dir=str(logs), submission_command=submit, submitted=False,
-    )
-    (output / "submission_config.json").write_text(json.dumps(metadata, indent=2) + "\n")
-    print(f"\nWrote one Swarm file: {swarm}")
-    print(f"{len(commands)} participant jobs; each runs all three cue analyses.")
-    print("Memory and walltime are requested allocations, not measured requirements.")
-    print("Submit manually with:\n" + submit)
-    return swarm
+    subjects, report = select_subjects(args.ratings_file, args.subjects)
+    base = PurePosixPath(args.base_dir)
+    if not base.is_absolute():
+        raise ValueError("base_dir must be an absolute Biowulf path")
+    maps = args.map_dir or str(base / "rsa_maps/probe_imagewise_value_updated/both")
+    ratings_remote = str(base / "compiled_pleasantness_ratings.csv")
+    prefix = [shlex.join(["source", str(PurePosixPath(args.conda_root) / "etc/profile.d/conda.sh")]),
+              shlex.join(["conda", "activate", args.conda_env]),
+              "export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1",
+              shlex.join(["cd", str(base)])]
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    with args.out.open("w") as stream:
+        for sub in subjects:
+            for subset in CUE_SUBSETS:
+                command = ["python", "-B", "-m", "rsa_imagewise.run_rsa", "--sub", sub,
+                    "--session", "both", "--base_dir", str(base),
+                    "--ratings_file", ratings_remote, "--target", "odor_value",
+                    "--cue_subset", subset, "--button_scope", "second_image_only",
+                    "--radius", str(args.radius), "--n_jobs", str(args.n_jobs),
+                    "--output_dir", str(maps)]
+                stream.write(" && ".join(prefix + [shlex.join(command)]) + "\n")
+    (args.out.parent / "subjects.txt").write_text("\n".join(subjects) + "\n")
+    pd.DataFrame(report).to_csv(args.out.parent / "subject_selection.csv", index=False)
+    remote_swarm = str(base / args.out.name)
+    logs = str(base / "logs_value_rsa_updated")
+    print(f"Wrote {len(subjects) * 3} commands for {len(subjects)} participants: {args.out}")
+    print("All commands call the original rsa_imagewise.run_rsa; no analyses were started.")
+    print("After copying this file to Biowulf, submit manually:")
+    print(shlex.join(["mkdir", "-p", logs]))
+    print(shlex.join(["swarm", "--no-comment", "-f", remote_swarm, "-g", str(args.mem_gb),
+                     "-t", str(args.n_jobs), "--time", args.time, "--logdir", logs]))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--base_dir", type=Path, default=Path("/data/liuq13"),
-                        help="Parent of GLM/, nii/, and masks/; default: /data/liuq13")
-    parser.add_argument("--output_dir", type=Path,
-                        help="Fresh output directory; default: BASE/rsa_maps/probe_imagewise_value_updated_v1")
-    parser.add_argument("--conda_root", type=Path, default=Path("/data/liuq13/conda"))
-    parser.add_argument("--conda_env", type=Path,
-                        default=Path("/data/liuq13/conda/envs/project_rsa"))
-    parser.add_argument("--ratings_file", type=Path,
-                        help="Optional compiled ratings; default: current clone's participant ratings")
-    parser.add_argument("--subjects", nargs="+", help="Optional candidate list; default: all repository participants")
-    parser.add_argument("--n_jobs", type=int, default=4, help="Workers and Swarm -t allocation per job")
+    parser.add_argument("--base_dir", default="/data/liuq13/SPCD_mini", help="Biowulf data/code root")
+    parser.add_argument("--ratings_file", type=Path, default=default_ratings_file(), help="LOCAL compiled ratings")
+    parser.add_argument("--subjects", nargs="+", help="Default: participant folders in the local clone")
+    parser.add_argument("--out", type=Path, default=Path("value_rsa.swarm"))
+    parser.add_argument("--map_dir", help="Fresh BIOWULF map directory; default: BASE/rsa_maps/probe_imagewise_value_updated/both")
     parser.add_argument("--radius", type=float, default=8.)
-    parser.add_argument("--mem_gb", type=float, default=16., help="Requested GB per job, printed as Swarm -g")
-    parser.add_argument("--time", default="24:00:00", help="Requested walltime, HH:MM:SS or D-HH:MM:SS")
+    parser.add_argument("--n_jobs", type=int, default=4)
+    parser.add_argument("--conda_root", default="/data/liuq13/conda")
+    parser.add_argument("--conda_env", default="/data/liuq13/conda/envs/project_rsa")
+    parser.add_argument("--mem_gb", type=int, default=16, help="Printed allocation request, not measured usage")
+    parser.add_argument("--time", default="24:00:00", help="Printed allocation request per command")
     args = parser.parse_args()
-    if args.n_jobs < 1 or not math.isfinite(args.radius) or args.radius <= 0:
-        parser.error("n_jobs must be at least 1; radius must be positive and finite")
-    if not math.isfinite(args.mem_gb) or args.mem_gb <= 0:
-        parser.error("mem_gb must be positive and finite")
-    if not re.fullmatch(r"(?:\d+-)?\d{1,3}:[0-5]\d:[0-5]\d", args.time) or not any(
-            int(n) for n in re.split(r"[-:]", args.time)):
-        parser.error("time must be a positive HH:MM:SS or D-HH:MM:SS duration")
+    if args.n_jobs < 1 or not math.isfinite(args.radius) or args.radius <= 0 or args.mem_gb < 1:
+        parser.error("n_jobs, radius, and mem_gb must be positive; radius must be finite")
     generate(args)
 
 

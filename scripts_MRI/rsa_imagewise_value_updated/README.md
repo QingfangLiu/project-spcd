@@ -1,208 +1,137 @@
-# Updated value searchlights
+# Updated value searchlights using the original RSA pipeline
 
-Run this workflow from a complete clone on the computer holding the beta
-images. It calls `rsa_imagewise.searchlight.searchlight_rsa_single_subject`
-directly; the existing estimator, model RDMs, ratings loader, sample loader,
-and map writer are reused without changes. Older results are preserved.
+This folder only adapts preparation, Swarm generation, and group aggregation
+from `rsa_imagewise`. Every job directly runs **the unchanged
+`python -m rsa_imagewise.run_rsa`**. There is no additional subject runner,
+preparation job, submission helper, or scheduler dependency.
 
-The three analyses are pooled cues (`all`), conditioned B/D cues
-(`conditioned_only`), and preconditioned A/C cues (`preconditioned_only`).
-Each fits combined premeal/postmeal data, both cue presentations, and both
-food odors plus clean air. The default radius is 8 mm (the old runner's
-default; the saved group SPM does not itself record the original radius).
-Patterns are not centered within run. The value model uses absolute
-differences of the six jointly standardized phase-by-outcome ratings.
-Image identity, button presence, and button side are nuisance regressors;
-the pooled analysis also includes cue type. The constant cue-type regressor
-is removed for single-class subsets by the existing code. There is an
-intercept, and no odor-identity or phase regressor. Only different-run pairs
-are fitted, including cross-phase pairs. Saving only the value target still
-fits the full corresponding multiple-regression model.
+The three analyses use `--session both --target odor_value` and cue subsets
+`all`, `conditioned_only`, and `preconditioned_only`. They retain both cue
+positions, food odors and clean air, 8 mm spheres, the original value/nuisance
+RDMs, cross-run pairs including cross-phase pairs, and no within-run centering.
+The existing runner drops the constant cue-type RDM in single-class subsets.
+Saving only the value target still fits the full applicable regression model.
 
-## Generate one Swarm file on Biowulf
+The candidate list defaults to the local clone's participant folders. Apply
+the current paper exclusions (sub-19, sub-31, sub-33) and require complete finite
+pre/post ratings. This currently gives **30 participants**, including sub-10
+and sub-38; sub-36 lacks ratings. No participant is removed because a job
+later fails. The generated `subjects.txt` records the planned group cohort.
 
-From the repository clone on Biowulf, run:
+## 1. Prepare locally
 
-```bash
-python -B scripts_MRI/rsa_imagewise_value_updated/make_swarm.py
-```
+Local preparation needs pandas. Biowulf needs Python 3.10+ and the original
+RSA dependencies listed in `requirements.txt`, using your existing environment.
 
-This uses the previously configured private Conda environment
-`/data/liuq13/conda/envs/project_rsa` and data root **`/data/liuq13`** (the
-parent of `/data/liuq13/GLM/`). It initializes Conda from
-`/data/liuq13/conda/etc/profile.d/conda.sh`, checks Python 3.10+ and the RSA
-dependencies there, and calls the existing preparation command below.
-It does not install or upgrade packages.
-
-The default destination is
-`/data/liuq13/rsa_maps/probe_imagewise_value_updated_v1/`, which must be
-fresh/empty. It writes **one `jobs.swarm` for the entire eligible cohort**,
-with the same handling for sub-10 as everyone else. Each participant's job
-runs pooled, conditioned-only, and preconditioned-only analyses in sequence.
-Every command explicitly activates the Conda environment and sets
-`OMP_NUM_THREADS`, `MKL_NUM_THREADS`, `OPENBLAS_NUM_THREADS`, and
-`NUMEXPR_NUM_THREADS` to 1, while the searchlight uses four workers by default.
-No separate pilot file is generated.
-
-The script creates `swarm_logs/`, records the submission settings and hashes
-in `submission_config.json`, and prints the exact command for **you to submit**:
+From the repository root on the computer containing the full local dataset:
 
 ```bash
-swarm -f /data/liuq13/rsa_maps/probe_imagewise_value_updated_v1/jobs.swarm \
-  -g 16 -t 4 --time 24:00:00 \
-  --logdir /data/liuq13/rsa_maps/probe_imagewise_value_updated_v1/swarm_logs
+python scripts_MRI/rsa_imagewise_value_updated/prepare_rsa_subset.py \
+  --full_data_dir /Users/liuq13/SPCD_data \
+  --subset_dir /Users/liuq13/SPCD_value_rsa_subset
 ```
 
-It never submits Swarm jobs or runs the analyses during generation. The
-16 GB/24 hour defaults are initial allocation requests, not benchmarked
-requirements for these data. Set them to your intended allocation when
-generating; `-t` always matches `--n_jobs`:
+Replace the local paths if needed. This reuses the original subset-copy
+functions to stage:
+
+- `rsa_imagewise/`: the original execution package, including `ratings.py`,
+  which the older copier omitted.
+- `compiled_pleasantness_ratings.csv` from the current local clone.
+- Premeal/postmeal probe event TSVs under `nii/sub-XX/func_PAID/<phase>/`.
+- `subjects.txt`, `subject_selection.csv`, `missing_events.csv`, and the
+  adapted `aggregate_rsa_group.m` for later local group analysis.
+
+Review `missing_events.csv` before proceeding. The old cross-task mini-data
+preparation copied odor-scan events, so the probe events may need adding.
+The script copies no betas or GM mask by default: Biowulf already has them.
+Optional `--copy_betas` and `--copy_mask` reuse the original copying helpers
+if those inputs need staging too. Neither script contacts Biowulf.
+
+The compiled ratings format is unchanged: `sub`, `pre_odor1`, `pre_odor2`,
+`pre_clean`, `post_odor1`, `post_odor2`, and `post_clean`. Both scripts accept
+`--ratings_file` and `--subjects` for explicit local inputs; use the same
+arguments for preparation and Swarm generation.
+
+## 2. Make one Swarm file locally
 
 ```bash
-python -B scripts_MRI/rsa_imagewise_value_updated/make_swarm.py \
-  --base_dir /data/liuq13 \
-  --output_dir /data/liuq13/rsa_maps/probe_imagewise_value_updated_v2 \
-  --n_jobs 4 --mem_gb 24 --time 48:00:00
+python scripts_MRI/rsa_imagewise_value_updated/make_swarm.py \
+  --base_dir /data/liuq13/SPCD_mini \
+  --out /Users/liuq13/SPCD_value_rsa_subset/value_rsa.swarm \
+  --n_jobs 4
 ```
 
-`--conda_root`, `--conda_env`, `--ratings_file`, `--subjects`, and `--radius`
-are also configurable. Defaults use the current clone's participant ratings
-and the existing paper exclusion rules. Keep the clone and environment in
-place throughout execution. After the Swarm finishes, use `check` and the
-SPM group stage below.
+`--base_dir` is the **Biowulf** root shown in your screenshot; it is not
+opened locally. The local output is **one Swarm file with 90 commands**:
+30 participants × three cue subsets. Each command activates the established
+`/data/liuq13/conda/envs/project_rsa` environment, caps numerical-library
+threads at 1, changes into `SPCD_mini`, and calls the original RSA runner.
+`subjects.txt` and `subject_selection.csv` are written beside the Swarm file.
 
-## Prepare on the data computer
+Maps go to the fresh analysis location:
 
-Use Python 3.10+ in a dedicated environment; do not upgrade the environment
-of an already prepared run. MATLAB/SPM12 are needed only for the group stage.
+```text
+/data/liuq13/SPCD_mini/rsa_maps/probe_imagewise_value_updated/both/
+  sub-XX_model-odor_value_subset-all.nii.gz
+  sub-XX_model-odor_value_subset-conditioned_only.nii.gz
+  sub-XX_model-odor_value_subset-preconditioned_only.nii.gz
+```
+
+Use a fresh `--map_dir` for another analysis version: the original map writer
+overwrites an existing map with the same filename when rerun. The radius,
+worker count, Conda paths, and printed resource requests are configurable.
+
+## 3. Copy and submit as before
+
+On the local computer:
 
 ```bash
-python -m pip install -r scripts_MRI/rsa_imagewise_value_updated/requirements.txt
-python -B scripts_MRI/rsa_imagewise_value_updated/run_searchlights.py prepare \
-  --base_dir /Users/liuq13/SPCD_data \
-  --output_dir /Users/liuq13/SPCD_data/rsa_maps/probe_imagewise_value_updated_v1
+rsync -avP /Users/liuq13/SPCD_value_rsa_subset/ biowulf:/data/liuq13/SPCD_mini/
 ```
 
-Replace both paths for another computer. `base_dir` must contain the old
-pipeline's `GLM/{premeal,postmeal}_trialwise_2mm/sub-XX/` beta images and
-beta-index CSVs, `nii/sub-XX/func_PAID/{premeal,postmeal}/` events, and
-`masks/gm_0.1.nii`. Preparation freezes a copy of that GM mask and a compiled
-ratings table. Ratings default to the clone's
-`beh_processed_subs/sub-XX/pleasantness_summary.csv`; `--ratings_file` accepts
-the old wide compiled format. Do not copy only the old package with
-`prepare_rsa_subset.py`: that older copier omits `ratings.py`. Use the clone.
-
-The candidate list comes from the clone's participant folders. **Sub-10 is
-included**, subject to validation. Sub-19, sub-31, and sub-33 are excluded.
-Complete finite pre/post ratings are required; sub-36 currently lacks them.
-The expected planned cohort is **30 participants**, including sub-38, whose
-previously identified postmeal coverage problem must be examined on the
-data computer. A failure is recorded, never silently converted to exclusion.
-Final group n is not assumed from this planned count.
-
-Preparation requires a fresh/empty output directory and writes
-`analysis_config.json`, `subject_inclusion.csv`, `ratings.csv`, `gm_mask.nii`,
-and `jobs.swarm`. Settings, source hashes, and input hashes are retained.
-The runtime versions are recorded per participant; group preparation
-requires identical versions across the cohort.
-
-## Execute and inspect failures
-
-For execution without Swarm, run all planned participants with:
+This merges the staged code, ratings, and events into the existing mini
+dataset, preserving other remote files. It does not delete remote files.
+On Biowulf:
 
 ```bash
-python -B scripts_MRI/rsa_imagewise_value_updated/run_searchlights.py run \
-  --run_dir /Users/liuq13/SPCD_data/rsa_maps/probe_imagewise_value_updated_v1
+cd /data/liuq13/SPCD_mini
+mkdir -p logs_value_rsa_updated
+swarm --no-comment -f value_rsa.swarm -g 16 -t 4 \
+  --time 24:00:00 --logdir logs_value_rsa_updated
 ```
 
-An optional `--subjects sub-XX ...` restricts execution to selected planned
-participants. Successful participants are skipped, and failed participants
-get a fresh numbered attempt that
-preserves the previous logs/maps. The runner continues after participant
-failures and exits nonzero if any requested participant fails. Logs and
-status live under `subjects/sub-XX/attempt-001/`; each attempt includes
-`run.log`, `status.json`, `input_coverage.csv`, `input_problems.json`, and,
-after successful fits, `maps/sub-XX_model-odor_value_subset-<subset>.nii.gz`.
-Original participant maps elsewhere are never reused implicitly.
+The generator also prints this command. Match `-t` to `--n_jobs`; the
+16 GB/24 hour requests are initial allocations, not measured requirements.
+Swarm saves ordinary stdout/stderr logs, with the participant and subset
+printed by the original runner. Inspect failures and `[SKIP]` messages and
+confirm both phases/all intended runs were loaded before group inference.
+The original loader and nonfinite-value handling are unchanged. Sub-38's
+known postmeal coverage issue still needs inspection; a successful exit
+alone does not resolve that data problem.
 
-Each participant is checked for all six runs, 24 trials/48 presentations
-per run, both positions per trial, 24 presentations per cue class per run,
-two repetitions of each cue identity at each position, matching events,
-readable beta files, and agreement with the GM grid.
-**Any nonfinite value inside the GM mask blocks the participant** and is
-reported per presentation; no filling or mask changes are introduced.
-This deliberately surfaces input problems that the old loader could skip
-or downstream libraries could replace with zeros. A whole-mask constant
-pattern also fails. These are validation failures to inspect, not automatic
-scientific exclusions. Finite patterns can still be constant within an
-individual sphere; the existing estimator's local behavior is retained.
+## 4. Group analysis locally
 
-Use `--n_jobs` during preparation to set parallel workers (default 4).
-For Biowulf, use `make_swarm.py` above to add the Conda setup and thread caps
-to every command. The generic `prepare` command writes plain Python commands;
-it is useful outside Biowulf or when you manage the environment yourself.
-Both use absolute clone/data paths and the target Python executable.
-This workflow does not submit jobs automatically. Do not run two jobs for the
-same participant concurrently. An interrupted job can leave a `.running`
-directory: verify that job has stopped before removing only that empty lock
-directory and rerunning. No successful analysis is overwritten.
+Copy `rsa_maps/probe_imagewise_value_updated/` back to the local data folder.
+Edit the paths at the top of the staged `aggregate_rsa_group.m`, then run
+that script in MATLAB with SPM12, as in the original workflow. It expects
+`subjects.txt` beside it and checks every planned map in all three subsets
+before estimating group models. Missing jobs cause an explicit error rather
+than a smaller, silently changed cohort. The same GM masking, 6 mm smoothing,
+one-sample model, and positive contrast are used; full SPM models are saved
+under `both/group_spm/model-odor_value/subset-<subset>/`.
 
-## Validate the shared cohort and run SPM
+Inspect the new models in SPM Results and repeat the paper's medial/lateral
+OFC small-volume corrections. This does not automatically change the paper,
+figures, or multiple-testing correction. The separate subset tests do not
+establish a between-subset difference; that requires a paired contrast.
 
-```bash
-python -B scripts_MRI/rsa_imagewise_value_updated/run_searchlights.py check \
-  --run_dir /Users/liuq13/SPCD_data/rsa_maps/probe_imagewise_value_updated_v1
-```
-
-Inspect `check_report.csv`. Only a complete, validated cohort in all three
-analyses produces `group_inputs.json`. No partial group model is allowed.
-For unresolved failures, inspect/repair the inputs and rerun that participant.
-If a scientific exclusion is later approved, prepare a fresh run with an
-explicit `--subjects` list and document the reason separately; do not edit
-the prepared cohort or silently drop participants at aggregation.
-
-In MATLAB on the same computer:
-
-```matlab
-addpath('/path/to/project-spcd/scripts_MRI/rsa_imagewise_value_updated');
-aggregate_group( ...
-  '/Users/liuq13/SPCD_data/rsa_maps/probe_imagewise_value_updated_v1', ...
-  '/path/to/spm12', ...
-  '/path/to/the/python/environment/bin/python');
-```
-
-The function reruns the Python validation, then applies the old group's
-GM-to-NaN masking, 6 mm smoothing, explicit GM mask, one-sample SPM model,
-and positive t contrast. All three models use the identical ordered cohort.
-It preserves full models and smoothed inputs at
-`group_spm/subset-<subset>/SPM.mat`. Nonempty group outputs are refused, so
-the old "skip existing SPM" behavior cannot retain an outdated cohort.
-If a group attempt fails, preserve/move its `group_spm` directory before
-retrying. This does not require recomputing subject searchlights.
-
-For updated paper statistics, inspect each new `SPM.mat` in SPM Results and
-repeat peak-level small-volume correction in the independent medial and
-lateral masks used by the paper:
-
-- `masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii.gz`
-- `masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii.gz`
-
-The MATLAB function estimates group models; it does not automatically
-calculate SVC p values, update figures, or change the manuscript. Retain
-all regional results and account for the expanded testing family when
-interpreting the separate cue analyses. A significant effect in one subset
-alone does not establish a between-subset difference; that would require a
-paired contrast, which is outside this three-analysis rerun.
-
-## Local verification
+## Verification
 
 ```bash
 python -B -m unittest discover \
   -s scripts_MRI/rsa_imagewise_value_updated -p 'test_*.py' -v
 ```
 
-Tests use synthetic images, compare new-wrapper maps with direct calls to
-the old searchlight, and check eligibility, failure reporting, retry
-preservation, common-cohort group gating, and Swarm environment/CPU setup.
-Real participant runs and
-MATLAB/SPM execution require the data computer.
+Tests check participant selection, event/code staging, generated commands,
+and execution against direct calls to the original searchlight on synthetic
+data. Real Biowulf submission and MATLAB/SPM require the other computers.
