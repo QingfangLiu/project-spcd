@@ -250,7 +250,7 @@ def draw_panel_a(axis) -> None:
         axis.plot(resource, single_cue_loss(a_value, resource), color=color,
                   linewidth=2.4, label=rf"$a_i={a_value:g}$")
     style_axis(axis)
-    add_panel_header(axis, "A", "Benefits of identity\nrepresentation")
+    add_panel_header(axis, "A", "Representation reduces\ndecision loss")
     axis.set_xlim(0.0, 5.0)
     axis.set_ylim(0.0, 4.25)
     axis.set_xlabel("Representational\nresource, $r_i$")

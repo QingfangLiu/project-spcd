@@ -67,13 +67,13 @@ r_P+r_C=R.
 A useful decomposition is:
 
 \[
-a_i = D_i(1-q_i)
+a_i = q_i D_i
 \]
 
 where:
 
 - \(D_i\): behavioral cost of using the wrong outcome identity for cue \(i\)
-- \(q_i\): reliability of an alternative route that can provide outcome identity without requiring this explicit representation
+- \(q_i\): probability that an alternative route fails to recover the correct outcome identity without requiring this explicit representation
 
 This gives the model a concrete interpretation.
 
@@ -83,7 +83,7 @@ For a directly conditioned cue:
 C \rightarrow O
 \]
 
-the system may already have a relatively reliable direct associative route, so \(q_C\) can be high.
+the system may already have a relatively reliable direct associative route, so \(q_C\) can be low.
 
 For a preconditioned cue:
 
@@ -91,9 +91,9 @@ For a preconditioned cue:
 P \rightarrow C \rightarrow O
 \]
 
-there is no directly experienced \(P \rightarrow O\) association, so the alternative route may be less reliable and \(q_P\) may be lower.
+there is no directly experienced \(P \rightarrow O\) association, so the alternative route may be less reliable and \(q_P\) may be higher.
 
-If \(D_P=D_C\) and \(q_C>q_P\), then:
+If \(D_P=D_C\) and \(q_P>q_C\), then:
 
 \[
 a_P>a_C.
@@ -301,7 +301,7 @@ Create one publication-quality figure with **five labeled panels and six plots**
 
 Match the typography and spacing of Figures 2 and 3. Keep long parameter explanations in the caption, and use gray for simulation, teal for lateral OFC, and purple for medial OFC. Simulated representational strength has arbitrary units, while empirical representational strength is measured using RSA coefficients.
 
-## Panel A — Benefits of identity representation
+## Panel A — Representation reduces decision loss
 
 Plot:
 
@@ -678,7 +678,7 @@ The figure should be understandable before reading the detailed mathematical der
 
 **Figure 5. A resource-limited model of outcome-identity representation.**
 
-**A. Benefits of identity representation.** Decision loss for a cue decreases with the amount of representational resource allocated to its outcome identity, \(L_i=a_i e^{-r_i}\). The parameter \(a_i\) determines the computational value of explicitly representing that outcome identity, whereas \(r_i\) denotes representational resource. The exponential form produces diminishing returns.
+**A. Representation reduces decision loss.** Decision loss for a cue decreases with the amount of representational resource allocated to its outcome identity, \(L_i=a_i e^{-r_i}\). The parameter \(a_i\) determines the computational value of explicitly representing that outcome identity, whereas \(r_i\) denotes representational resource. The exponential form produces diminishing returns.
 
 **B. Optimal allocation.** When inferred and directly learned cues share a finite representational budget, \(r_P+r_C=R\), total loss is minimized by balancing the costs associated with insufficient representation of each cue. An example with \(a_P>a_C\) yields greater optimal allocation to the inferred cue.
 

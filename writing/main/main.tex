@@ -201,20 +201,22 @@ Neural dissimilarity increased with differences in expected outcome value in vmP
 
 \subsection*{A resource-limited model of outcome-identity representation}
 
-To explain the unexpected preferential representation of outcome-specific expectations evoked by preconditioned over conditioned cues in lateral OFC, we propose a resource-limited account in which explicit outcome-identity representations are allocated according to their computational value (\autoref{fig-identity-simu}A). For cue class $i \in \{P,C\}$, where $P$ and $C$ denote preconditioned and directly conditioned cues, respectively, we define decision loss as
+To explain the unexpected preferential representation of outcome-specific expectations evoked by preconditioned over conditioned cues in lateral OFC, we propose a resource-limited account in which explicit outcome-identity representations are allocated according to their computational value (\autoref{fig-identity-simu}). For cue class $i \in \{P,C\}$, where $P$ and $C$ denote preconditioned and directly conditioned cues, respectively, we assume that decision loss decreases exponentially with the resource devoted to outcome-identity representation (\autoref{fig-identity-simu}A):
 
 
 \begin{equation}
 L_i = a_i e^{-r_i},
 \end{equation}
 
-where $r_i$ is the representational resource devoted to that cue's outcome identity and $a_i$ reflects the computational value of explicitly representing that identity. We define this value as
+where $r_i$ is the representational resource devoted to that cue's outcome identity, and $a_i$ captures the computational value of explicitly representing it. The exponential form captures diminishing returns: additional representational resources produce progressively smaller reductions in decision loss. We adopt this form as a simple, analytically tractable implementation of that assumption.
+
+To illustrate computational value with an everyday analogy, consider shipping a fragile item: the value of preventing breakage is the probability that it breaks multiplied by the cost of replacing it. Similarly, the computational value of explicit identity representation depends on how likely the alternative associative route is to fail and how costly that failure would be. We therefore define
 
 \begin{equation}
-a_i = (1-q_i) D_i,
+a_i = q_i D_i,
 \end{equation}
 
-where $D_i$ is the behavioral cost of failing to recover the correct identity, and $q_i$ is the probability of recovering the correct outcome identity through an alternative associative route without relying on the explicit identity representation modeled here. $q_P$ and $q_C$ denote this probability for preconditioned and conditioned cues, respectively. Conditioned cues were directly paired with their outcomes ($C \rightarrow O$), whereas preconditioned cues require combining separately learned associations ($P \rightarrow C \rightarrow O$). We therefore assume that the alternative route is more reliable for conditioned cues ($q_P < q_C$). Assuming identical behavioral costs of an identity error across cue types ($D_P = D_C$), this reliability difference implies $a_P > a_C$.
+where $q_i$ is the probability that an alternative associative route fails to recover the correct outcome identity without relying on the explicit identity representation modeled here, and $D_i$ is the behavioral cost of that failure. $q_P$ and $q_C$ denote this failure probability for preconditioned and conditioned cues, respectively. Conditioned cues were directly paired with their outcomes ($C \rightarrow O$), whereas preconditioned cues require combining separately learned associations ($P \rightarrow C \rightarrow O$). Each associative step can fail to retrieve the correct associate. Recovering the outcome identity through the two-step route therefore requires successful retrieval at both steps, introducing an additional opportunity for error compared with the direct route. We consequently assume that the alternative route is more likely to fail to recover the correct outcome identity for preconditioned than for conditioned cues ($q_P > q_C$). Assuming identical behavioral costs of an identity error across cue types ($D_P = D_C$), this difference in failure probability implies $a_P > a_C$.
 
 When preconditioned and directly conditioned cue classes share a fixed representational budget,
 $r_P + r_C = R$, total loss is
@@ -244,7 +246,7 @@ Together, this resource-limited account explains how allocating representational
 \includegraphics[width=0.95\linewidth]{../../fig/fig5_model.pdf}
 \caption{
 \textbf{A resource-limited model of outcome-identity representation.}
-\textbf{A. Benefits of outcome representation.} Decision loss for cue $i$ decreases as representational resource $r_i$ is allocated to its outcome representation, according to $L_i=a_i e^{-r_i}$. Larger values of $a_i$ indicate a greater computational cost of weak outcome representations, while the exponential form produces diminishing returns.
+\textbf{A. Representation reduces decision loss.} Decision loss for cue $i$ decreases as representational resource $r_i$ is allocated to its outcome representation, according to $L_i=a_i e^{-r_i}$. Larger values of $a_i$ indicate a greater computational cost of weak outcome representations, while the exponential form produces diminishing returns.
 \textbf{B. Optimal allocation.} When expectations based on preconditioned cues ($P$) and conditioned cues ($C$) share a finite representational budget, $r_P+r_C=R$, total decision loss is minimized by allocating resources according to their relative computational value. For the illustrative parameters $R=4$, $a_P=4$, and $a_C=1$, the optimum is $r_P^*=2.69$ and $r_C^*=1.31$.
 \textbf{C. Allocation follows utility.} The optimal allocation difference is $r_P^*-r_C^*=\log(a_P/a_C)$ for interior solutions and is bounded by $\pm R$ because allocations must be nonnegative. Positive values indicate greater allocation to preconditioned cues ($P$), and negative values indicate greater allocation to conditioned cues ($C$). Thus, preferential representation of inferred outcomes emerges when their explicit representation has greater computational value ($a_P>a_C$); it is not imposed by cue category.
 \textbf{D. Predicted trade-off.} A shared budget held constant across simulated participants predicts a negative relationship between direct and inferred identity representations. For 100 participants, $\log(a_P/a_C)$ was sampled from $\mathcal{N}(\log 4,1.2^2)$, and independent Gaussian measurement noise (standard deviation $0.75$) was added to each optimal allocation. Points show simulated representational strengths in arbitrary units, yielding Spearman $\rho=-0.307$. Parameters are illustrative and were not fitted to the fMRI data.
