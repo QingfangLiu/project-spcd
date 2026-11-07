@@ -1,0 +1,185 @@
+% SfN 2026: 72 x 46.25 inches. Compile twice with XeLaTeX from this directory.
+% Selected layout: behavior + RSA in the middle; decoding + expanded model on the right.
+% Adapted from the latex-posters skill's beamerposter_template.tex.
+% Scientific sources: ../../writing/main/main.tex and original ../../fig PDFs.
+% Submitted title/authorship: Liu_SfN_2026_final_SPCD.docx.
+% All five main figures are included once, complete and without cropping.
+% Only proportional scaling and poster-level positioning are applied.
+% Design guidance: Scantox SfN2024 Depression poster and K-Dense latex-posters v1.10.
+% Software/reference: Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M.
+% (2026). Scientific Agent Skills: A Library of Procedural Knowledge for Research
+% Agents. https://doi.org/10.48550/arXiv.2609.00065 (current record checked 2026-11-06).
+% This design reference belongs to the source, not the study's scientific references.
+\documentclass[final,t,professionalfonts]{beamer}
+\usepackage[size=custom,width=182.88,height=117.475,scale=1.0]{beamerposter}
+\usetheme{default}
+\setbeamersize{text margin left=0pt,text margin right=0pt}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\usepackage{fontspec}
+\setmainfont{Arial}
+\setsansfont{Arial}
+\usepackage{unicode-math}
+\setmathfont{latinmodern-math.otf}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{ragged2e}
+\setlength{\RaggedRightRightskip}{0pt plus 1fil}
+\setlength{\CenteringLeftskip}{0pt plus 1fil}
+\setlength{\CenteringRightskip}{0pt plus 1fil}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\hypersetup{hidelinks,pdftitle={Model-based inference of specific rewards in the lateral orbitofrontal cortex},pdfauthor={Qingfang Liu and colleagues},pdfsubject={Society for Neuroscience 2026 poster}}
+\definecolor{ink}{HTML}{243641}
+\definecolor{muted}{HTML}{58676F}
+\definecolor{teal}{HTML}{247C80}
+\definecolor{header}{HTML}{F1F4F4}
+\definecolor{sectionborder}{HTML}{78999B}
+\setbeamercolor{normal text}{fg=ink,bg=white}
+\setbeamercolor{structure}{fg=teal}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\textblockorigin{0in}{0in}
+\newcommand{\bodyfont}{\fontsize{30}{38}\selectfont}
+\newcommand{\sectiontitle}[1]{{\fontsize{48}{56}\selectfont\bfseries\color{teal}#1\par}}
+\newcommand{\sidehead}[1]{{\fontsize{44}{52}\selectfont\bfseries\color{teal}#1\par}}
+\newcommand{\bulletpoint}[1]{%
+  \par\hangindent=0.32in\hangafter=1\noindent
+  \makebox[0.32in][l]{\color{teal}\textbullet}#1\par\vspace{0.10in}}
+\newsavebox{\layoutbox}
+% \place{name}{x}{top}{width}{maximum height}{content}; coordinates in inches.
+% Each text block is measured before placement to reject clipped layouts.
+\newcommand{\place}[6]{%
+  \sbox{\layoutbox}{\begin{minipage}{#4in}\RaggedRight\bodyfont\color{ink}#6\par\end{minipage}}%
+  \typeout{POSTER BLOCK #1 height=\the\dimexpr\ht\layoutbox+\dp\layoutbox\relax; maximum=#5in}%
+  \ifdim\dimexpr\ht\layoutbox+\dp\layoutbox\relax>#5in
+    \PackageError{poster}{Block #1 is too tall}{Adjust the panel placement or shorten the text.}%
+  \fi
+  \begin{textblock*}{#4in}(#2in,#3in)\usebox{\layoutbox}\end{textblock*}}
+% \wholefigure{file}{x}{top}{width}: complete PDF, scaled proportionally.
+% Intentionally no viewport, trim, clip, height, or panel extraction options.
+\newcommand{\wholefigure}[4]{\begin{textblock*}{#4in}(#2in,#3in)\includegraphics[width=#4in]{../../fig/#1.pdf}\end{textblock*}}
+% Thicker outlines enclose section contents; every heading sits above its box.
+\newcommand{\sectionoutline}[4]{\draw[draw=sectionborder,line width=6pt]
+  ([xshift=#1in,yshift=-#2in]current page.north west) rectangle
+  ([xshift=#3in,yshift=-#4in]current page.north west);}
+\setbeamertemplate{background}{%
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[header] (current page.north west) rectangle ([yshift=-3.95in]current page.north east);
+  \fill[header] ([yshift=-43.00in]current page.north west) rectangle (current page.south east);
+  \sectionoutline{0.60}{5.65}{24.40}{13.61}  % Top border aligns across all three columns
+  \sectionoutline{0.60}{15.06}{24.40}{33.86} % Design follows the introduction closely
+  \sectionoutline{0.60}{35.31}{24.40}{42.70} % Shared bottom baseline across all three columns
+  \sectionoutline{24.65}{5.65}{47.90}{26.08}% Behavioral results, proportionally scaled figure
+  \sectionoutline{24.65}{27.43}{47.90}{42.70}% Inferred reward identity
+  \sectionoutline{48.15}{5.65}{71.40}{17.24}% Cross-task decoding
+  \sectionoutline{48.15}{18.73}{71.40}{42.70}% Expanded equation explanations and panel E finding
+  \sectionoutline{0.60}{44.05}{27.60}{46.10}% Six references in two columns
+  \sectionoutline{28.60}{44.05}{71.40}{46.10}% Acknowledgements
+\end{tikzpicture}}
+\begin{document}
+\begin{frame}[t,plain]
+\null
+
+% Header: submitted SfN title and current manuscript author names.
+\place{title}{1}{0.65}{70}{3.95}{%
+  \Centering
+  {\fontsize{99}{116}\selectfont\bfseries Model-based inference of specific rewards in the lateral orbitofrontal cortex\par}
+  \vspace{0.28in}
+  {\fontsize{40}{49}\selectfont Qingfang Liu\textsuperscript{1}, Yao Zhao\textsuperscript{2}, Taaseen Khan\textsuperscript{3}, Nicole Moussa\textsuperscript{1}, Geoffrey Schoenbaum\textsuperscript{1}, Thorsten Kahnt\textsuperscript{1}\par}
+  \vspace{0.18in}
+  {\fontsize{27}{34}\selectfont\color{muted}\textsuperscript{1}National Institute on Drug Abuse, Baltimore, MD\qquad\textsuperscript{2}University of Pennsylvania, Philadelphia, PA\qquad\textsuperscript{3}Northwestern University, Chicago, IL\par}}
+
+\place{contact}{1}{2.30}{19}{1.25}{%
+  {\fontsize{28}{34}\selectfont\color{muted}Contact:\par}
+  {\fontsize{34}{42}\selectfont\bfseries\color{teal}\href{mailto:qingfang.liu@nih.gov}{qingfang.liu@nih.gov}\par}}
+
+\place{presentation-number}{59}{2.30}{12}{1.25}{%
+  \raggedleft
+  {\fontsize{28}{34}\selectfont\color{muted}Presentation Number:\par}
+  {\fontsize{40}{48}\selectfont\bfseries\color{teal}PSTR280.09\par}}
+
+% Section headings reproduce the corresponding manuscript subsection wording.
+% The manuscript introduction is unheaded in the PNAS format.
+% Left column: introduction and complete original design figure.
+\place{background-heading}{1}{4.70}{22}{0.75}{\sidehead{Introduction}}
+% Each background bullet summarizes one consecutive manuscript introduction paragraph.
+\place{background}{1}{5.95}{22}{7.40}{\fontsize{32}{42}\selectfont
+\bulletpoint{\textbf{Model-based inference:} Animals can infer outcomes they have never directly experienced by combining learned associations. Sensory preconditioning (SPC) tests this ability by linking neutral cue pairs and later pairing one cue with reward [1].}
+\bulletpoint{\textbf{Role of OFC:} Inactivating orbitofrontal cortex (OFC) in rats or disrupting the human OFC network selectively impairs responding to preconditioned cues, supporting its role in inference [2,3].}
+\bulletpoint{\textbf{Unresolved content:} OFC represents directly learned reward identities [4], but whether preconditioned cues retrieve specific identities or scalar values remains unclear, as does how OFC represents inferred outcomes.}
+\bulletpoint{\textbf{Selective devaluation:} Reducing a specific reward's value should reduce responding to its cues if they evoke that outcome's identity [5]. Responses based on a cached scalar value should be less sensitive.}
+\bulletpoint{\textbf{This study:} We combined SPC, selective outcome devaluation, and fMRI to test the identity content of inferred rewards and their OFC representation, then developed a resource-limited account of the neural pattern.}}
+\place{methods-heading}{1}{14.06}{22}{0.75}{\sidehead{Experimental design}}
+\wholefigure{fig1_design}{1.75}{15.36}{21.5}
+\place{methods}{1}{30.50}{22}{3.10}{%
+\bulletpoint{\textbf{Participants:} 31 adults; six visual cue pairs across two stimulus sets.}
+\bulletpoint{\textbf{Schedule:} Preconditioning on Day 1; refresher training and three conditioning runs on Day 2.}
+\bulletpoint{\textbf{Probe tests and ratings:} Three probe runs before and three after the meal. Odor pleasantness was rated before and after the meal.}}
+\place{conclusions-heading}{1}{34.31}{22}{0.95}{\sectiontitle{Conclusions}}
+\place{conclusions}{1}{35.62}{22}{6.80}{%
+\textbf{Inference retrieves specific outcome information.}
+Devaluation changed choices for preconditioned as well as directly conditioned cues, consistent with retrieving a specific reward identity rather than only a cached value.
+\par\vspace{0.533in}
+\textbf{Lateral OFC links inferred and experienced outcomes.}
+RSA detected inferred odor identity, and cross-decoding generalized from smelled odors to preconditioned cues, supporting a shared representational format.
+\par\vspace{0.533in}
+\textbf{Computational utility may guide representation.}
+The resource-limited model proposes allocating more resources to outcome identity when this benefits decisions. The negative correlation between direct and inferred identity representations is consistent with a trade-off.
+\par\vspace{0.533in}
+\textbf{Key limits and next steps.}
+Selectivity relative to clean-air cues was limited, and non-significant conditioned-cue effects do not establish a cue-type difference. The model is a proposed account; varying retrieval difficulty and error costs could test its predictions.}
+
+% Each figure precedes its explanatory bullets, with its internal layout intact.
+\place{behavior-heading}{25}{4.70}{22.5}{0.95}{\sectiontitle{Devaluation reduces choices for conditioned and preconditioned cues}}
+\wholefigure{fig2_behavior}{26.30}{5.90}{19.9}
+\place{behavior-bullets}{25}{22.56}{22.5}{3.35}{%
+\bulletpoint{\textbf{Analysis:} Wilcoxon signed-rank tests assessed pre-to-post changes in odor pleasantness and cue choices, and selective devaluation contrasts.}
+\bulletpoint{\textbf{Finding:} \textbf{C:} Meal-matched odor pleasantness decreased ($p<0.001$), more than non-matched odor ($p=0.0013$). \textbf{D:} Conditioned-cue choices decreased for $B2>B1$ ($p=0.0021$) and $B2>D$ ($p=0.0168$). \textbf{E:} Preconditioned-cue choices decreased for $A2>A1$ ($p=0.0021$) and $A2>C$ ($p=0.0069$). These changes support specific outcome inference; selectivity relative to clean-air cues remained limited.}}
+\place{rsa-heading}{25}{26.43}{22.5}{0.95}{\sectiontitle{Lateral OFC represents inferred reward identity}}
+\wholefigure{fig3_rsa}{26.30}{27.68}{19.9}
+\place{rsa-bullets}{25}{39.68}{22.5}{2.80}{%
+\bulletpoint{\textbf{Analysis:} Representational similarity analysis (RSA) tested odor identity in pre-meal first-cue responses from independently defined OFC regions [6], using different-run comparisons and excluding clean air.}
+\bulletpoint{\textbf{Finding:} \textbf{C:} Lateral OFC represented inferred odor identity for preconditioned cues (mean $\rho=0.029$, $p=0.013$). The medial OFC effect was not significant (mean $\rho=0.013$, $p=0.186$). Conditioned-cue effects were not significant in either region (lateral: mean $\rho=0.001$, $p=0.459$; medial: mean $\rho=0.007$, $p=0.346$).}}
+
+% Right column: shorter decoding figure leaves room for model explanations.
+\place{decoding-heading}{48.5}{4.05}{22.5}{1.65}{\sectiontitle{Preconditioned cues reinstate representations of experienced rewards in lateral OFC}}
+\wholefigure{fig4_decoding}{48.5}{5.95}{22.5}
+\place{decoding-bullets}{48.5}{13.14}{22.5}{3.85}{%
+\bulletpoint{\textbf{Analysis:} Train on passive odor responses, then decode odor identity from pre-meal first-cue responses without odor delivery; clean-air cues excluded.}
+\bulletpoint{\textbf{Finding:}\newline
+\textbf{B:} Preconditioned-cue decoding exceeded 50\% chance in lateral OFC (54.10\%, $p=0.017$), supporting shared codes for experienced and inferred odors.\newline
+Medial OFC decoding was not significant (52.62\%, $p=0.084$).\newline
+Conditioned-cue decoding was not significant in either region (lateral: 50.40\%, $p=0.428$; medial: 48.86\%, $p=0.718$).}}
+\place{model-heading}{48.5}{17.69}{22.5}{0.95}{\sectiontitle{A resource-limited model of outcome-identity representation}}
+\wholefigure{fig5_model}{48.5}{19.03}{22.5}
+\place{model-bullets}{48.5}{34.80}{22.5}{7.65}{\fontsize{32}{42}\selectfont
+\bulletpoint{\textbf{Decision loss:} \(L_i=a_i e^{-r_i}\). Increasing resource $r_i$ reduces decision loss $L_i$, with diminishing returns: added resource helps less when more has already been allocated.}
+\vspace{0.21in}
+\bulletpoint{\textbf{Computational value:} \(a_i=q_iD_i\). Computational value combines the baseline probability of an identity-retrieval error ($q_i$) with its behavioral cost ($D_i$). With equal error costs, greater retrieval-failure risk for preconditioned cues implies $a_P>a_C$.}
+\vspace{0.21in}
+\bulletpoint{\textbf{Shared budget:} \(r_P+r_C=R\). $P$ and $C$ denote preconditioned and directly conditioned cues. Their nonnegative allocations share a fixed total $R$; more resource for one leaves less for the other.}
+\vspace{0.21in}
+\bulletpoint{\textbf{Optimal allocation:} \(r_P^*-r_C^*=\ln(a_P/a_C)\) for an interior optimum. The cue class with greater computational value receives more resource. Allocations are clipped to $[0,R]$. Parameters are illustrative and were not fitted to fMRI data.}
+\vspace{0.21in}
+{\bodyfont\bulletpoint{\textbf{Finding (E):} Direct and inferred identity RSA scores in lateral OFC were negatively correlated ($\rho=-0.317$, $p=0.041$).}}}
+
+% Dedicated acknowledgement section uses the manuscript's funding statement.
+\place{reference-heading}{1}{43.20}{26}{0.70}{\fontsize{44}{52}\selectfont\bfseries\color{teal}References}
+\place{reference-left}{1}{44.35}{12.75}{1.55}{\bodyfont\color{ink}
+[1] Brogden (1939). \textit{J. Exp. Psychol.} 25, 323.\par
+[2] Jones et al. (2012). \textit{Science} 338, 953--956.\par
+[3] Wang et al. (2020). \textit{J. Neurosci.} 40, 8726--8733.}
+\place{reference-right}{14.25}{44.35}{12.75}{1.55}{\bodyfont\color{ink}
+[4] Howard et al. (2015). \textit{PNAS} 112, 5195--5200.\par
+[5] Howard \& Kahnt (2017). \textit{J. Neurosci.} 37, 2627--2638.\par
+[6] Kahnt et al. (2012). \textit{J. Neurosci.} 32, 6240--6250.}
+\place{acknowledgements-heading}{29}{43.20}{42}{0.70}{\fontsize{44}{52}\selectfont\bfseries\color{teal}Acknowledgements}
+\place{acknowledgements}{29}{44.35}{42}{1.55}{\bodyfont\color{ink}
+This work was supported by the National Institute on Deafness and Other Communication Disorders (R01DC015426 to T.K.), the NIDA Intramural Research Program (ZIA DA000642 to T.K.; DA000587 to G.S.), and an NIH Center on Compulsive Behaviors fellowship (to Q.L.). Additional support came from the NIH Intramural Research Program. Contributions by NIH authors are works of the United States government. The findings and conclusions are those of the authors and do not necessarily reflect the views of the NIH or the U.S. Department of Health and Human Services.}
+\end{frame}
+\end{document}

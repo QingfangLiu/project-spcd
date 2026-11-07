@@ -7,6 +7,14 @@ shared `figure_style.py`. The main manuscript uses the PDF, and the generated
 Word-export manuscript uses the PNG. The obsolete Adobe files have been
 removed; their earlier versions remain available in Git history.
 
+The current layout separates the experimental sequence (A), preconditioning
+associations (B), conditioning associations (C), shared probe comparisons (D),
+and trial structure (E). The sequence shows pre-meal and post-meal probe sessions
+around selective satiation, illustrated by a person eating the matching meal.
+Conditioning labels identify food odors 1 and 2 without implying that devaluation
+had already occurred. The preference bracket groups only those two food odors;
+vertical counterbalancing notes describe cue roles and sweet/savory assignment.
+
 Six higher-resolution stimulus images are loaded directly from `cues/`:
 Charmander (A1), Stitch (A2), Tigger (C), waterfall_small (B1), museum (B2),
 and city_road_night (D). These match the examples in the original figure.
