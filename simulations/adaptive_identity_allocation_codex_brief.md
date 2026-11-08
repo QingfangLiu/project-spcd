@@ -433,9 +433,16 @@ Purpose:
 ## Panel D — Predicted trade-off
 
 Simulate 100 participants with a common budget \(R=4\). Draw each
-participant's \(\log(a_P/a_C)\) from a normal distribution with mean
-\(\log 4\) and standard deviation 1.2, set \(a_C=1\), and calculate
-\(r_P^*,r_C^*\) using the same constrained optimum as Panel B.
+participant's \(\log(a_P/a_C)\) from a normal distribution with underlying mean
+\(\log 4\) and standard deviation 1.2, conditional on a positive draw. Use
+`scipy.stats.truncnorm.rvs` with standardized lower bound
+\(-\log(4)/1.2\), upper bound infinity, `loc=log(4)`, and `scale=1.2`.
+These parameters describe the parent normal, not the mean and SD after truncation.
+Set \(a_C=1\), \(a_P=\exp[\log(a_P/a_C)]\), and calculate
+\(r_P^*,r_C^*\) using the same constrained optimum as Panel B. Enforce
+\(a_P>a_C\) for every simulated participant; do not clip rejected values to zero.
+Panel C remains a visualization of the general optimization across both value
+orderings, while Panel D implements the task-specific ordering.
 
 Plot direct identity representation on the x-axis and inferred identity representation on
 the y-axis, using noisy measurements of those latent allocations:
@@ -447,7 +454,9 @@ y_j=r_{P,j}^*+\epsilon_{P,j}.
 
 The measurement errors are independent, zero-mean Gaussian draws with
 standard deviation 0.75 in arbitrary resource units. Use random seed
-20261023 for reproducibility. Latent allocations remain nonnegative and sum
+20261023 for reproducibility, drawing ratios first and then independent noise
+with the same NumPy default generator. The resulting noisy Spearman correlation
+is -0.324 (rounded). Latent allocations remain nonnegative and sum
 to \(R\); noisy readouts are not clipped. These readouts are illustrative
 proxies for representational strength, not simulated RSA coefficients, and need not lie in
 \([-1,1]\).

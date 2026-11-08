@@ -25,7 +25,7 @@ Thirty-five healthy, right-handed participants with no history of major psychiat
 
 \subsubsection*{Experimental design}
 
-This study used a modified sensory preconditioning paradigm combined with outcome devaluation. Participants first completed a preconditioning phase, during which they learned associations between pairs of visual cues (A1-B1, A2-B2, and C-D). For a given participant, cues A1, A2 and C were images of places whereas B1, B2 and D cues were cartoon characters (counterbalanced across participants). There were two sets of cue pairs, and each set comprised two A-B pairs (A1-B1 and A2-B2) and one C-D pair (Table~\ref{tab:cue-mapping}). This was followed by a conditioning phase, where participants learned associations between the second cue in each pair and a non-devalued (B1) or subsequently devalued (B2) food odor, or clean air (D). The assignment of sweet and savory odors to B1 and B2 was counterbalanced across participants. Finally, participants completed a probe task in which they made choices among both conditioned and preconditioned cues, reflecting their preferences for the associated odors. The probe task was administered twice: once before and once after participants consumed a meal that was matched to either the sweet or the savory food odor (counterbalanced across participants).
+This study used a modified sensory preconditioning paradigm combined with outcome devaluation. Participants first completed a preconditioning phase, during which they learned associations between pairs of visual cues (A1-B1, A2-B2, and C-D). The assignment of places and cartoon characters to preconditioned cues (A1, A2, and C) and conditioned cues (B1, B2, and D) was counterbalanced across participants. There were two sets of cue pairs, and each set comprised two A-B pairs (A1-B1 and A2-B2) and one C-D pair (Table~\ref{tab:cue-mapping}). This was followed by a conditioning phase, where participants learned associations between the second cue in each pair and a non-devalued (B1) or subsequently devalued (B2) food odor, or clean air (D). The assignment of sweet and savory odors to B1 and B2 was counterbalanced across participants. Finally, participants completed a probe task in which they made choices among both conditioned and preconditioned cues, reflecting their preferences for the associated odors. The probe task was administered twice: once before and once after participants consumed a meal that was matched to either the sweet or the savory food odor (counterbalanced across participants).
 
 \begin{table}[!htbp]
 \centering
@@ -68,7 +68,7 @@ Participants completed two runs of the odor localizer, in which each trial consi
 
 \paragraph*{Study day 1 – Preconditioning training}
 
-On Day 1, following the localizer MRI scans, participants completed preconditioning training outside the scanner. During this phase, they learned six deterministic associations comprising six cue pairs: two A1–B1 pairs, two A2–B2 pairs, and two C–D pairs. For each participant, the A1, A2, and C cues were places, whereas the B1, B2, and D cues were characters. Participants were instructed to learn and remember which place was associated with each character. Instead of a passive viewing paradigm, we implemented a choice-based design to facilitate active engagement and promote more robust encoding of the paired associations \cite{bunsey1996conservation}.
+On Day 1, following the localizer MRI scans, participants completed preconditioning training outside the scanner. During this phase, they learned six deterministic associations comprising six cue pairs: two A1–B1 pairs, two A2–B2 pairs, and two C–D pairs. In one counterbalanced assignment, the A1, A2, and C cues were places, whereas the B1, B2, and D cues were characters; the reverse category assignment was used for other participants. Participants were instructed to learn and remember which place was associated with each character. Instead of a passive viewing paradigm, we implemented a choice-based design to facilitate active engagement and promote more robust encoding of the paired associations \cite{bunsey1996conservation}.
 
 Each trial began with a 3\,s presentation of the first cue (e.g., A1), followed by a 0.3\,s gap and then a 3\,s presentation of two possible second cues, one of which was the correct associate (e.g., B1), whereas the incorrect cue was from one of the other cue pairs within the same cue set (i.e., B2 or D). During this 3\,s choice period, participants indicated which of the two cues was associated with the preceding cue A1 by pressing left or right arrow key. Trials were separated by a jittered 3–8\,s inter-trial interval. Feedback (correct, incorrect) was provided after each choice. Whether the character or the place served as cue A1 and B1 (appeared first and second) was counterbalanced across participants as part of the experimental design.
 
@@ -227,6 +227,23 @@ r_C^*=R-r_P^*,
 where $\operatorname{clip}(x,0,R)=\min\{R,\max\{0,x\}\}$. The solution is interior when $-R<\log(a_P/a_C)<R$. All resources are assigned to the preconditioned cue class when $\log(a_P/a_C)\geq R$, and to the conditioned cue class when $\log(a_P/a_C)\leq -R$. If $R=0$, both allocations are zero.
 
 For an interior solution, $a_P>a_C$ implies $r_P^*>r_C^*$: outcome identities receive more resources when representing them has greater computational value. For the illustrative parameters in main-text Figure~5B ($R=4$, $a_P=4$, and $a_C=1$), the solution is $r_P^*=2.69$ and $r_C^*=1.31$.
+
+\subsubsection*{Simulation of the representational trade-off}
+
+To illustrate the shared-budget prediction in main-text Figure~5D, we simulated 100 participants with a common representational budget $R=4$. For participant $j$, we fixed $a_{C,j}=1$ and sampled the log computational-value ratio $z_j=\log(a_{P,j}/a_{C,j})$ from a normal distribution conditional on a positive value:
+\begin{equation}
+z_j\sim\mathcal{N}(\log 4,1.2^2)\quad\text{conditional on }z_j>0,\qquad a_{P,j}=e^{z_j}.
+\tag{S7}
+\end{equation}
+The mean $\log 4$ and standard deviation $1.2$ specify the underlying, untruncated normal distribution. Sampling from its positive tail, rather than clipping negative draws to zero, ensures $a_{P,j}>a_{C,j}$ for every simulated participant, consistent with the task-specific retrieval-error assumption. We used SciPy's truncated-normal sampler with NumPy's default random-number generator initialized with seed 20261023. Main-text Figure~5C shows the general allocation rule across both orderings of computational value; the participant simulation in Figure~5D is restricted to $a_P>a_C$.
+
+For each draw, we calculated the constrained optimum using Eq.~S6. The resulting latent allocations were nonnegative, summed to $R$, and assigned more resources to preconditioned than conditioned outcome identities. To obtain illustrative measurements of representational strength, we then added independent, zero-mean Gaussian noise to the two allocations:
+\begin{equation}
+x_j=r_{C,j}^*+\epsilon_{C,j},\qquad y_j=r_{P,j}^*+\epsilon_{P,j},\qquad
+\epsilon_{C,j},\epsilon_{P,j}\sim\mathcal{N}(0,0.75^2).
+\tag{S8}
+\end{equation}
+Noise was drawn independently across participants and cue classes using the same generator after sampling the computational-value ratios. Noisy measurements were not clipped; they are expressed in arbitrary resource units and are not simulated RSA coefficients. At fixed $R$, the latent allocations obey $r_{P,j}^*=R-r_{C,j}^*$ and therefore have a Spearman correlation of $-1$ when they vary across participants. Independent measurement noise attenuated this relationship, yielding a Spearman correlation of $-0.324$ between $x_j$ and $y_j$ in the illustrated sample. The line in Figure~5D shows a descriptive ordinary least-squares fit, with a pointwise 95\% confidence interval for the fitted mean. All simulation parameters are illustrative and were not fitted to the empirical fMRI correlation; the simulation demonstrates a possible consequence of a shared budget rather than an estimate of its empirical magnitude.
 
 \subsection*{Supplementary Results}
 

@@ -123,8 +123,11 @@ def simulate_participants(
 ) -> dict[str, np.ndarray]:
     """Allocate a common budget, then add independent readout noise.
 
-    Participants differ in log(a_P/a_C); a_C is held at one. The same
-    constrained optimizer used in B determines their latent allocations.
+    Participants differ in log(a_P/a_C), drawn from a normal distribution
+    truncated below at zero to enforce a_P > a_C; a_C is held at one.
+    LOG_VALUE_RATIO_MEAN and LOG_VALUE_RATIO_SD describe the underlying
+    untruncated normal. The constrained optimizer used in B determines
+    their latent allocations.
     Gaussian readouts remain unclipped because they are noisy measurements,
     whereas latent resources must remain nonnegative and sum to R.
     """
@@ -132,9 +135,13 @@ def simulate_participants(
     if not np.isfinite(noise_sd) or noise_sd < 0:
         raise ValueError("noise_sd must be finite and nonnegative")
     rng = np.random.default_rng(seed)
-    log_value_ratio = rng.normal(
-        LOG_VALUE_RATIO_MEAN, LOG_VALUE_RATIO_SD, PARTICIPANT_COUNT,
+    lower_bound = -LOG_VALUE_RATIO_MEAN / LOG_VALUE_RATIO_SD
+    log_value_ratio = stats.truncnorm.rvs(
+        lower_bound, np.inf, loc=LOG_VALUE_RATIO_MEAN,
+        scale=LOG_VALUE_RATIO_SD, size=PARTICIPANT_COUNT, random_state=rng,
     )
+    if not np.all(log_value_ratio > 0):
+        raise AssertionError("Simulated computational values must satisfy a_P > a_C")
     allocation = np.array([
         optimal_allocation(float(np.exp(log_ratio)), 1.0, EXAMPLE_BUDGET)
         for log_ratio in log_value_ratio
@@ -315,7 +322,7 @@ def draw_panel_c(axis) -> None:
 
 
 def draw_panel_d(axis) -> None:
-    """Show the unchanged simulated shared-budget prediction."""
+    """Show the shared-budget prediction with a_P > a_C for every participant."""
     participants = simulate_participants()
     x, y = participants["coding_c"], participants["coding_p"]
     draw_correlation(axis, x, y, COMPETITION_COLOR, point_size=25)
@@ -396,6 +403,7 @@ def main() -> None:
     rho = stats.spearmanr(participants["coding_c"], participants["coding_p"]).statistic
     print(f"Panel D: n={PARTICIPANT_COUNT}, Spearman rho={rho:.6f}, "
           f"seed={PARTICIPANT_SEED}, measurement noise SD={MEASUREMENT_NOISE_SD}")
+    print("Panel D sampling: log(a_P/a_C) ~ N(log(4), 1.2^2), conditional on > 0")
     for result in load_empirical_correlations():
         print(f"Panel E / {result['label']}: n={len(result['subjects'])}, "
               f"rho={result['rho']:.6f}, one-sided p={result['p']:.6f}")
