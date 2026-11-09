@@ -1,0 +1,163 @@
+% Blank style template. Copy to a new poster folder and replace sample content.
+% Default: 72 x 46.25 inches; compile twice with XeLaTeX.
+% Edit coordinates and panel bounds when changing the canvas or arrangement.
+\documentclass[final,t,professionalfonts]{beamer}
+\usepackage[size=custom,width=182.88,height=117.475,scale=1.0]{beamerposter}
+\usetheme{default}
+\setbeamersize{text margin left=0pt,text margin right=0pt}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\usepackage{fontspec}
+\IfFontExistsTF{Arial}{\setmainfont{Arial}\setsansfont{Arial}}{%
+  \setmainfont{TeX Gyre Heros}\setsansfont{TeX Gyre Heros}}
+\usepackage{unicode-math}
+\setmathfont{latinmodern-math.otf}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{ragged2e}
+\setlength{\RaggedRightRightskip}{0pt plus 1fil}
+\setlength{\CenteringLeftskip}{0pt plus 1fil}
+\setlength{\CenteringRightskip}{0pt plus 1fil}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\hypersetup{hidelinks,pdftitle={Scientific poster template},pdfauthor={}}
+\definecolor{ink}{HTML}{243641}
+\definecolor{muted}{HTML}{58676F}
+\definecolor{teal}{HTML}{247C80}
+\definecolor{header}{HTML}{F1F4F4}
+\definecolor{sectionborder}{HTML}{78999B}
+\setbeamercolor{normal text}{fg=ink,bg=white}
+\setbeamercolor{structure}{fg=teal}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\textblockorigin{0in}{0in}
+\newcommand{\bodyfont}{\fontsize{30}{38}\selectfont}
+\newcommand{\sectiontitle}[1]{{\fontsize{48}{56}\selectfont\bfseries\color{teal}#1\par}}
+\newcommand{\sidehead}[1]{{\fontsize{44}{52}\selectfont\bfseries\color{teal}#1\par}}
+\newcommand{\bulletpoint}[1]{%
+  \par\hangindent=0.32in\hangafter=1\noindent
+  \makebox[0.32in][l]{\color{teal}\textbullet}#1\par\vspace{0.10in}}
+\newsavebox{\layoutbox}
+% Check each allotted rectangle, not just the paper's nominal dimensions.
+\newcommand{\posterbounds}[5]{%
+  \ifdim#2in<0pt\PackageError{poster}{Block #1 has a negative x coordinate}{}\fi
+  \ifdim#3in<0pt\PackageError{poster}{Block #1 has a negative y coordinate}{}\fi
+  \ifdim\dimexpr#2in+#4in\relax>\paperwidth
+    \PackageError{poster}{Block #1 exceeds page width}{Reflow its coordinates.}\fi
+  \ifdim\dimexpr#3in+#5in\relax>\paperheight
+    \PackageError{poster}{Block #1 exceeds page height}{Reflow its coordinates.}\fi}
+% \place{name}{x}{top}{width}{maximum height}{content}; units are inches.
+\newcommand{\place}[6]{%
+  \posterbounds{#1}{#2}{#3}{#4}{#5}%
+  \sbox{\layoutbox}{\begin{minipage}{#4in}\RaggedRight\bodyfont\color{ink}#6\par\end{minipage}}%
+  \typeout{POSTER BLOCK #1 height=\the\dimexpr\ht\layoutbox+\dp\layoutbox\relax; maximum=#5in}%
+  \ifdim\dimexpr\ht\layoutbox+\dp\layoutbox\relax>#5in
+    \PackageError{poster}{Block #1 is too tall}{Shorten text or reflow panel positions.}%
+  \fi
+  \begin{textblock*}{#4in}(#2in,#3in)\usebox{\layoutbox}\end{textblock*}}
+% \posterfigure{relative PDF path}{x}{top}{width}{maximum height}.
+% Whole figures only: width scaling preserves the aspect ratio; no cropping.
+\newcommand{\posterfigure}[5]{%
+  \place{figure-#1}{#2}{#3}{#4}{#5}{%
+    \IfFileExists{#1}{\includegraphics[width=#4in]{#1}}{%
+      \fcolorbox{sectionborder}{header}{%
+        \parbox[c][\dimexpr#5in-10pt\relax][c]{\dimexpr#4in-10pt\relax}{%
+          \centering\color{muted}Complete figure PDF\par\vspace{0.15in}\texttt{\detokenize{#1}}}}}}}
+\newcommand{\sectionoutline}[4]{\draw[draw=sectionborder,line width=6pt]
+  ([xshift=#1in,yshift=-#2in]current page.north west) rectangle
+  ([xshift=#3in,yshift=-#4in]current page.north west);}
+\setbeamertemplate{background}{%
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[header] (current page.north west) rectangle ([yshift=-3.95in]current page.north east);
+  \fill[header] ([yshift=-43.00in]current page.north west) rectangle (current page.south east);
+  \sectionoutline{0.60}{5.65}{24.40}{13.61}
+  \sectionoutline{0.60}{15.06}{24.40}{33.86}
+  \sectionoutline{0.60}{35.31}{24.40}{42.70}
+  \sectionoutline{24.65}{5.65}{47.90}{26.08}
+  \sectionoutline{24.65}{27.43}{47.90}{42.70}
+  \sectionoutline{48.15}{5.65}{71.40}{17.24}
+  \sectionoutline{48.15}{18.73}{71.40}{42.70}
+  \sectionoutline{0.60}{44.05}{27.60}{46.10}
+  \sectionoutline{28.60}{44.05}{71.40}{46.10}
+\end{tikzpicture}}
+\begin{document}
+\begin{frame}[t,plain]
+\null
+
+\place{title}{1}{0.65}{70}{3.20}{\Centering
+  {\fontsize{99}{116}\selectfont\bfseries A concise scientific title\par}
+  \vspace{0.28in}
+  {\fontsize{40}{49}\selectfont Lead Author\textsuperscript{1}, Coauthor\textsuperscript{2}, Senior Author\textsuperscript{1}\par}
+  \vspace{0.18in}
+  {\fontsize{27}{34}\selectfont\color{muted}\textsuperscript{1}Institution, City\qquad\textsuperscript{2}Institution, City\par}}
+\place{contact}{1}{2.30}{19}{1.25}{%
+  {\fontsize{28}{34}\selectfont\color{muted}Contact:\par}
+  {\fontsize{34}{42}\selectfont\bfseries\color{teal}Author contact\par}}
+\place{presentation-number}{59}{2.30}{12}{1.25}{\raggedleft
+  {\fontsize{28}{34}\selectfont\color{muted}Presentation Number:\par}
+  {\fontsize{40}{48}\selectfont\bfseries\color{teal}Conference ID\par}}
+
+\place{background-heading}{1}{4.70}{22}{0.75}{\sidehead{Introduction}}
+\place{background}{1}{5.95}{22}{7.40}{\fontsize{32}{42}\selectfont
+  \bulletpoint{\textbf{Motivation:} Explain the scientific problem and why it matters.}
+  \bulletpoint{\textbf{Known evidence:} Summarize the relevant prior work with a citation.}
+  \bulletpoint{\textbf{Open question:} State what the existing evidence does not establish.}
+  \bulletpoint{\textbf{Approach:} Describe how this study addresses the question.}}
+\place{methods-heading}{1}{14.06}{22}{0.75}{\sidehead{Experimental design}}
+\posterfigure{figures/design.pdf}{1.75}{15.36}{21.5}{15.00}
+\place{methods}{1}{30.50}{22}{3.10}{%
+  \bulletpoint{\textbf{Participants:} Report the current sample and relevant exclusions.}
+  \bulletpoint{\textbf{Procedure:} Give the sequence needed to interpret the results.}
+  \bulletpoint{\textbf{Measurements:} State what was measured and when.}}
+\place{conclusions-heading}{1}{34.31}{22}{0.95}{\sectiontitle{Conclusions}}
+\place{conclusions}{1}{35.62}{22}{6.80}{%
+  \textbf{Main finding.} State the principal conclusion supported by the evidence.
+  \par\vspace{0.533in}
+  \textbf{Mechanism or interpretation.} Explain what the results suggest.
+  \par\vspace{0.533in}
+  \textbf{Key limits and next steps.} Include limitations needed to interpret the claims.}
+
+\place{result-one-heading}{25}{4.70}{22.5}{0.95}{\sectiontitle{Primary result}}
+\posterfigure{figures/result-one.pdf}{26.30}{5.90}{19.9}{16.50}
+\place{result-one}{25}{22.56}{22.5}{3.35}{%
+  \bulletpoint{\textbf{Analysis:} Explain the comparison and the statistical test.}
+  \bulletpoint{\textbf{Finding:} Report the effect, sample size, and relevant uncertainty or significance.}}
+\place{result-two-heading}{25}{26.43}{22.5}{0.95}{\sectiontitle{Second result}}
+\posterfigure{figures/result-two.pdf}{26.30}{27.68}{19.9}{11.85}
+\place{result-two}{25}{39.68}{22.5}{2.80}{%
+  \bulletpoint{\textbf{Analysis:} Describe the measurement and the tested hypothesis.}
+  \bulletpoint{\textbf{Finding:} State the supported result with the decisive numbers.}}
+
+\place{result-three-heading}{48.5}{4.70}{22.5}{0.95}{\sectiontitle{Generalization or third result}}
+\posterfigure{figures/result-three.pdf}{48.5}{5.95}{22.5}{7.00}
+\place{result-three}{48.5}{13.14}{22.5}{3.85}{%
+  \bulletpoint{\textbf{Analysis:} Explain how this analysis complements the preceding results.}
+  \bulletpoint{\textbf{Finding:} Report the main result and any essential comparison.}}
+\place{model-heading}{48.5}{17.69}{22.5}{0.95}{\sectiontitle{Model or final result}}
+\posterfigure{figures/model.pdf}{48.5}{19.03}{22.5}{15.60}
+\place{model-explanation}{48.5}{34.80}{22.5}{7.65}{\fontsize{32}{42}\selectfont
+  \bulletpoint{\textbf{Question:} Explain what the model or final analysis addresses.}
+  \vspace{0.21in}
+  \bulletpoint{\textbf{Assumptions:} Explain the model variables and the relevant constraints.}
+  \vspace{0.21in}
+  \bulletpoint{\textbf{Prediction:} Describe the prediction without treating it as observed data.}
+  \vspace{0.21in}
+  {\bodyfont\bulletpoint{\textbf{Simulation:} If present, report illustrative parameters and label simulation results explicitly.}
+  \bulletpoint{\textbf{Empirical finding:} State what the measured data establish and the limits of that evidence.}}}
+
+\place{reference-heading}{1}{43.20}{26}{0.70}{\sidehead{References}}
+\place{reference-left}{1}{44.35}{12.75}{1.55}{%
+  [1] Author et al. (Year). \textit{Journal}, volume, pages.\par
+  [2] Author et al. (Year). \textit{Journal}, volume, pages.}
+\place{reference-right}{14.25}{44.35}{12.75}{1.55}{%
+  [3] Author et al. (Year). \textit{Journal}, volume, pages.\par
+  [4] Author et al. (Year). \textit{Journal}, volume, pages.}
+\place{acknowledgements-heading}{29}{43.20}{42}{0.70}{\sidehead{Acknowledgements}}
+\place{acknowledgements}{29}{44.35}{42}{1.55}{%
+  Replace with current funding, contributors, and required institutional statements for this study.}
+\end{frame}
+\end{document}

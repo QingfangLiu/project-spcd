@@ -160,12 +160,13 @@ Conditioned-cue decoding was not significant in either region (lateral: 50.40\%,
 \place{model-bullets}{48.5}{34.80}{22.5}{7.65}{\fontsize{32}{42}\selectfont
 \bulletpoint{\textbf{Decision loss:} \(L_i=a_i e^{-r_i}\). Increasing resource $r_i$ reduces decision loss $L_i$, with diminishing returns: added resource helps less when more has already been allocated.}
 \vspace{0.21in}
-\bulletpoint{\textbf{Computational value:} \(a_i=q_iD_i\). Computational value combines the baseline probability of an identity-retrieval error ($q_i$) with its behavioral cost ($D_i$). With equal error costs, greater retrieval-failure risk for preconditioned cues implies $a_P>a_C$.}
+\bulletpoint{\textbf{Computational value:} \(a_i=q_iD_i\). Computational value is baseline retrieval-failure probability ($q_i$) times behavioral cost ($D_i$). With equal error costs, greater retrieval-failure risk for preconditioned cues implies $a_P>a_C$.}
 \vspace{0.21in}
 \bulletpoint{\textbf{Shared budget:} \(r_P+r_C=R\). $P$ and $C$ denote preconditioned and directly conditioned cues. Their nonnegative allocations share a fixed total $R$; more resource for one leaves less for the other.}
 \vspace{0.21in}
-\bulletpoint{\textbf{Optimal allocation:} \(r_P^*-r_C^*=\ln(a_P/a_C)\) for an interior optimum. The cue class with greater computational value receives more resource. Allocations are clipped to $[0,R]$. Parameters are illustrative and were not fitted to fMRI data.}
+\bulletpoint{\textbf{Optimal allocation:} \(r_P^*-r_C^*=\ln(a_P/a_C)\) for an interior optimum. The cue class with greater computational value receives more resource. Allocations are clipped to $[0,R]$.}
 \vspace{0.21in}
+{\bodyfont\bulletpoint{\textbf{Simulation (D):} Positive log-value-ratio draws enforce $a_P>a_C$ for all 100 simulated participants. With independent measurement noise, $\rho=-0.324$. Parameters are illustrative and were not fitted to fMRI data.}}
 {\bodyfont\bulletpoint{\textbf{Finding (E):} Direct and inferred identity RSA scores in lateral OFC were negatively correlated ($\rho=-0.317$, $p=0.041$).}}}
 
 % Dedicated acknowledgement section uses the manuscript's funding statement.
@@ -180,6 +181,6 @@ Conditioned-cue decoding was not significant in either region (lateral: 50.40\%,
 [6] Kahnt et al. (2012). \textit{J. Neurosci.} 32, 6240--6250.}
 \place{acknowledgements-heading}{29}{43.20}{42}{0.70}{\fontsize{44}{52}\selectfont\bfseries\color{teal}Acknowledgements}
 \place{acknowledgements}{29}{44.35}{42}{1.55}{\bodyfont\color{ink}
-This work was supported by the National Institute on Deafness and Other Communication Disorders (R01DC015426 to T.K.), the NIDA Intramural Research Program (ZIA DA000642 to T.K.; DA000587 to G.S.), and an NIH Center on Compulsive Behaviors fellowship (to Q.L.). Additional support came from the NIH Intramural Research Program. Contributions by NIH authors are works of the United States government. The findings and conclusions are those of the authors and do not necessarily reflect the views of the NIH or the U.S. Department of Health and Human Services.}
+This work was supported by the NIDA Intramural Research Program (ZIA DA000642 to T.K.; DA000587 to G.S.) and an NIH Center on Compulsive Behaviors fellowship (to Q.L.). Contributions by NIH authors are works of the United States government. The findings and conclusions are those of the authors and do not necessarily reflect the views of the NIH or the U.S. Department of Health and Human Services.}
 \end{frame}
 \end{document}

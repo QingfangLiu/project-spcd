@@ -6,6 +6,10 @@ The SPCD task is a multi-day, fMRI-compatible behavioral paradigm designed to st
 
 Participants are asked to **fast for 2–4 hours before arrival** to ensure consistent hunger state for the devaluation manipulation. The full study is completed over **three sessions (Day 0, Day 1, and Day 2)**, typically scheduled within a **2-week window**, although exceptions may occur in practice.
 
+## Poster Style Skill
+
+The [`skills/sfn-poster-style/`](skills/sfn-poster-style/SKILL.md) folder preserves the SfN 2026 poster's style for future posters, including a LaTeX template, visual reference, and build helper. To reuse it, ask Codex to read `skills/sfn-poster-style/SKILL.md`. It is saved here for review and is not automatically activated.
+
 ---
 
 ## Subject Info File
