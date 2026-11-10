@@ -32,7 +32,7 @@ subset_tags = {'subset-all', 'subset-conditioned_only', 'subset-preconditioned_o
 fwhm = 6; % smoothing kernel in mm
 
 mask_file = '/Users/liuq13/SPCD_data/masks/gm_0.1.nii';
-skip_subs = {'sub-19', 'sub-33'};
+skip_subs = {'sub-19', 'sub-31', 'sub-33'};
 
 collapsed_tag = 'collapsed';
 
