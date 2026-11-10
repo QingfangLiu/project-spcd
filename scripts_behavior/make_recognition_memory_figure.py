@@ -10,6 +10,10 @@ each of six pairs, then average the two pairs in each outcome group with
 equal weight. Match the main figure exclusions (19, 31, 33). All plotted
 participants must have both pairs in all three groups. The two-sided
 Friedman test compares the three paired participant-level accuracies.
+Overall recognition accuracy equally averages all six cue pairs within each
+participant. A two-sided Wilcoxon signed-rank test compares these participant
+means with chance (0.5), using differences rounded to 12 decimals and a
+tie-corrected normal approximation without continuity correction.
 
 The figure uses the shared manuscript style and mean +/- t-based 95% CIs,
 replacing the original notebook's SEM bars. Jitter is fixed, independent of
@@ -17,6 +21,9 @@ accuracy, and shared across groups. Original notebook outputs are preserved.
 PDF/PNG files go to supp_fig/; source pair-level observations
 and statistics go to beh_processed_subs/. The joint Friedman result is
 repeated alongside each group summary in the statistics CSV.
+Overall participant accuracies and the chance comparison are saved in
+recognition_memory_overall_source_data.csv and
+recognition_memory_overall_statistics.csv, respectively.
 """
 
 from __future__ import annotations
@@ -114,6 +121,33 @@ def summarize(source: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return participants, summary.reset_index()
 
 
+def summarize_chance(source: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Compare equally weighted six-pair participant means with chance."""
+    overall = source.groupby("subject", as_index=False).agg(
+        mean_accuracy=("mean_accuracy", "mean"), n_pairs=("pair", "nunique"),
+    )
+    if not overall["n_pairs"].eq(6).all():
+        raise ValueError("Overall recognition requires all six cue pairs")
+    if not np.isfinite(overall["mean_accuracy"]).all():
+        raise ValueError("Nonfinite overall recognition accuracy")
+    overall["difference_from_chance"] = np.round(overall["mean_accuracy"] - 0.5, 12)
+    test = stats.wilcoxon(
+        overall["difference_from_chance"].to_numpy(), alternative="two-sided",
+        zero_method="wilcox", correction=False, method="asymptotic",
+    )
+    if not np.isfinite([test.statistic, test.pvalue]).all():
+        raise ValueError("Nonfinite recognition comparison with chance")
+    summary = pd.DataFrame([{
+        "n": len(overall), "mean": overall["mean_accuracy"].mean(),
+        "sd": overall["mean_accuracy"].std(ddof=1), "chance": 0.5,
+        "wilcoxon_W": float(test.statistic), "p_two_sided_uncorrected": float(test.pvalue),
+        "alternative": "two-sided", "zero_method": "wilcox",
+        "method": "asymptotic", "continuity_correction": False,
+        "difference_rounding_decimals": 12,
+    }])
+    return overall, summary
+
+
 def make_figure(participants: pd.DataFrame, summary: pd.DataFrame) -> plt.Figure:
     configure_matplotlib()
     fig, ax = plt.subplots(figsize=(6.2, 6.2))
@@ -151,10 +185,15 @@ def main() -> None:
     destination = args.output_dir.expanduser().resolve() if args.output_dir else root / "supp_fig"
     source = build_source_data(root, tuple(args.skip_subs))
     participants, summary = summarize(source)
+    overall, overall_summary = summarize_chance(source)
     print(f"Excluded: {', '.join(args.skip_subs)}; included n = {participants.subject.nunique()}")
     print(summary.to_string(index=False))
+    print("Overall recognition versus chance:")
+    print(overall_summary.to_string(index=False))
     source.to_csv(root / "beh_processed_subs/recognition_memory_source_data.csv", index=False)
     summary.to_csv(root / "beh_processed_subs/recognition_memory_statistics.csv", index=False)
+    overall.to_csv(root / "beh_processed_subs/recognition_memory_overall_source_data.csv", index=False)
+    overall_summary.to_csv(root / "beh_processed_subs/recognition_memory_overall_statistics.csv", index=False)
     figure = make_figure(participants, summary)
     destination.mkdir(parents=True, exist_ok=True)
     for extension in ("pdf", "png"):
