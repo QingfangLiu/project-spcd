@@ -5,7 +5,8 @@ Anatomy: SPM-normalized ICBM152NLin2009, copied from MRIcroGL's
 standard/spm152.nii.gz into masks/. The independent medial OFC mask
 selects the illustrated peak and provides its outline. Views show the
 whole-brain map without clipping it to the ROI. The table reports the
-existing peak-level SVC results for medial and lateral OFC.
+corrected 30-participant peak-level SVC results for medial and lateral OFC,
+with FWE correction within each ROI.
 """
 
 from __future__ import annotations
@@ -40,7 +41,7 @@ def main() -> None:
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[2])
     args = parser.parse_args()
     root = args.project_root.resolve()
-    source = root / "temp_maps/spm_value"
+    source = root / "temp_maps/spm_value_n30"
     spm = loadmat(source / "SPM.mat", simplify_cells=True)["SPM"]
     df = float(spm["xX"]["erdf"])
     threshold = stats.t.isf(0.001, df)
@@ -50,7 +51,7 @@ def main() -> None:
     statistic = np.asarray(statistic_image.dataobj)
     model_mask = np.asarray(model_image.dataobj) > 0
     summaries = pd.read_csv(root / "rsa_roi/probe_imagewise_value/"
-                            "searchlight_svc_existing_group_v1/peak_svc_summary.csv")
+                            "searchlight_svc_n30_ofc_v1/peak_svc_summary.csv")
     summaries = summaries.set_index("ROI").loc[["Medial_OFC", "Lateral_OFC"]]
     medial_image = nib.load(root / "masks/OFC_clusterMap_K2_gm0p1/"
                            "mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii.gz")

@@ -1,0 +1,60 @@
+{
+  "source_group_model": "temp_maps/spm_value_n30/SPM.mat",
+  "contrast": "RSA both | subset-subset-all | model-odor_value > 0",
+  "n_participants": 30,
+  "participant_ids": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-10",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-32",
+    "sub-34",
+    "sub-35",
+    "sub-37",
+    "sub-38",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "df_error": 28.999999999999964,
+  "smoothness_FWHM_voxels": [
+    8.016286698205226,
+    7.725949627961502,
+    7.698295283594909
+  ],
+  "roi_masks": {
+    "Medial_OFC": "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii",
+    "Lateral_OFC": "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii"
+  },
+  "spatial_correction": "Native SPM12 spm_P(1,0,T,df,'T',R,1,S), with full native ROI resels from spm_resels(FWHM,Vroi,'I') and S equal to finite ROI voxels overlapping the group mask; critical T from spm_uc(0.05,df,'T',R,1,S).",
+  "regional_correction": "None; FWE correction within each ROI only. No Holm correction.",
+  "checks": [
+    "Previous medial and lateral OFC SVC p values reproduced with native SPM12 before rerun.",
+    "Both corrected peaks, coordinates, overlap counts, and uncorrected p values independently checked with Python."
+  ],
+  "source_sha256": {
+    "temp_maps/spm_value_n30/SPM.mat": "b84678b6f3792b6900702eddadc1d8f9a6b7202d411a1e79ba32567f9f6159cb",
+    "temp_maps/spm_value_n30/spmT_0001.nii": "bb530c4c0e6f9f87fd15e948d3c37e7d1d4f60cd0898d1b6fce9dbb76362d9bc",
+    "temp_maps/spm_value_n30/mask.nii": "4913f26790c228c4af53b74717f39e9c8e196fcddcda40983b6e7c8128c4c970",
+    "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii": "92e9f15577e68d82db1e4f35155832b9c6494ae39cdccdecbc289762860d13ce",
+    "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii": "ac0fcbbeca82c487fafbb038fe73222841c1b19c37205941e40579a5b51daa85"
+  }
+}
