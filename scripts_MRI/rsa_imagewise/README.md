@@ -419,6 +419,21 @@ rsa_maps/probe_imagewise/collapsed/group_tmaps/group_model-odor_value_contrast-c
 rsa_maps/probe_imagewise/collapsed/group_tmaps/group_model-odor_value_contrast-preconditioned_minus_conditioned.nii.gz
 ```
 
+The script excludes `sub-19`, `sub-31`, and `sub-33` (the paper exclusions).
+For the `both` session only (`persist_sessions` in the script), it also keeps the
+full second-level SPM model for each contrast, for example for small-volume
+correction:
+
+```text
+rsa_maps/probe_imagewise/both/group_spm/model-odor_value/contrast-conditioned_minus_preconditioned/SPM.mat
+rsa_maps/probe_imagewise/both/group_spm/model-odor_value/contrast-preconditioned_minus_conditioned/SPM.mat
+```
+
+Each folder retains the standard SPM outputs plus the smoothed inputs under
+`spm_inputs/`. The script skips a contrast whose `group_tmaps` file or model
+folder already exists, so delete the existing file or folder before rerunning
+after changing the skip list.
+
 For `conditioned_minus_preconditioned`, positive t-values indicate stronger
 odor-value representation for conditioned than preconditioned cues. For
 `preconditioned_minus_conditioned`, positive t-values indicate the reverse.

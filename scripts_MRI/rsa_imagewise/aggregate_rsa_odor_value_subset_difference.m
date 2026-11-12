@@ -27,11 +27,17 @@ contrast_signs = [1, -1];
 fwhm = 6; % smoothing kernel in mm
 
 mask_file = '/Users/liuq13/SPCD_data/masks/gm_0.1.nii';
-skip_subs = {'sub-19', 'sub-33'};
+skip_subs = {'sub-19', 'sub-31', 'sub-33'};
 
 collapsed_tag = 'collapsed';
 group_out_foldername = 'group_tmaps';
 subject_diff_foldername = 'subject_diffs';
+
+% Sessions whose second-level SPM model folder is kept (SPM.mat, RPV.nii,
+% spm_inputs, etc.) under <session>/group_spm/model-<model>/contrast-<tag>/,
+% e.g., for small-volume correction. Other sessions keep only the t-map.
+persist_sessions = {'both'};
+spm_model_foldername = 'group_spm';
 
 analysis_root = fullfile(base_dir, analysis_subfolder);
 tmp_root = fullfile(analysis_root, '_tmp_spm_work');
@@ -165,8 +171,15 @@ for si = 1:numel(sessions)
         con_name = sprintf('RSA %s | model-%s | %s > 0', ...
             session_tag, model_tag, contrast_tag);
 
+        spm_model_dir = '';
+        if any(strcmp(session_tag, persist_sessions))
+            spm_model_dir = fullfile(analysis_root, session_tag, ...
+                spm_model_foldername, sprintf('model-%s', model_tag), ...
+                sprintf('contrast-%s', contrast_tag));
+        end
+
         run_one_sample_spm(subject_diff_gz{ci}, out_group_gz, tmp_root, mask_file, ...
-            M, fwhm, con_name);
+            M, fwhm, con_name, spm_model_dir);
     end
 end
 
@@ -260,7 +273,7 @@ for ci = 1:numel(contrast_tags)
         model_tag, contrast_tag);
 
     run_one_sample_spm(collapsed_diff_gz, out_group_gz, tmp_root, mask_file, ...
-        M, fwhm, con_name);
+        M, fwhm, con_name, '');
 end
 
 fprintf('\nAll done.\n');
@@ -310,9 +323,17 @@ function assert_same_space(V1, V2, path1, path2)
     end
 end
 
-function run_one_sample_spm(input_gz_files, out_path_gz, tmp_root, mask_file, M, fwhm, con_name)
+function run_one_sample_spm(input_gz_files, out_path_gz, tmp_root, mask_file, M, fwhm, con_name, spm_model_dir)
     if exist(out_path_gz, 'file')
         fprintf('Output exists, skipping: %s\n', out_path_gz);
+        return;
+    end
+
+    keep_model = ~isempty(spm_model_dir);
+    if keep_model && (exist(fullfile(spm_model_dir, 'SPM.mat'), 'file') || ...
+            exist(fullfile(spm_model_dir, 'spmT_0001.nii'), 'file'))
+        fprintf('SPM model output already exists, skipping: %s\n', spm_model_dir);
+        fprintf('Delete that model folder before rerunning this contrast.\n');
         return;
     end
 
@@ -328,7 +349,11 @@ function run_one_sample_spm(input_gz_files, out_path_gz, tmp_root, mask_file, M,
         mkdir(out_dir);
     end
 
-    tmp_dir = tempname(tmp_root);
+    if keep_model
+        tmp_dir = spm_model_dir;
+    else
+        tmp_dir = tempname(tmp_root);
+    end
     if ~exist(tmp_dir, 'dir')
         mkdir(tmp_dir);
     end
@@ -428,7 +453,11 @@ function run_one_sample_spm(input_gz_files, out_path_gz, tmp_root, mask_file, M,
 
     fprintf('Saved group t-map: %s\n', out_path_gz);
 
-    cleanup_tmp_dir(tmp_dir);
+    if keep_model
+        fprintf('Saved SPM group model: %s\n', tmp_dir);
+    else
+        cleanup_tmp_dir(tmp_dir);
+    end
 end
 
 function cleanup_tmp_dir(tmp_dir)
