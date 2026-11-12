@@ -364,11 +364,15 @@ Participant-level value-coefficient maps were smoothed with a 6\,mm FWHM kernel 
 
 
 
-% Balance references on a separate page after the figures and main text.
-\clearpage
-\bibsplit[19]
+% Balance the preceding text and the remaining references on the last page.
+\bibsplit[27]
+% Restore the remaining column height after the balancing strip.
+\makeatletter
+\global\vsize\@colroom
+\makeatother
 
 % Bibliography
+\interlinepenalty=10000 % Keep each reference within one column.
 \bibliography{sn-bibliography}
 
 \end{document}
