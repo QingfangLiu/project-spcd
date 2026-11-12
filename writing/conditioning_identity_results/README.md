@@ -8,13 +8,21 @@ without implying that it has been selected for the main manuscript.
 ## Files
 
 - **`conditioning_identity.pdf`**: combined PI-review document, with Results
-  first, followed by the two-paragraph Methods addition and references.
+  first, Figure X and its caption on a separate page, followed by the
+  two-paragraph Methods addition and references.
   The title is "Lateral OFC represents reward identity during conditioning."
 - **`conditioning_identity.tex`**: single editable source and canonical
   version of the combined document. The Methods cover the EARLY and EXT5s
   conditioning GLMs, pooled odor-delivery regressor, trial/run inclusion,
   RSA, and decoding. General preprocessing, nuisance regressors, ROI
   definitions, and RSA procedures refer back to the existing probe Methods.
+- **Figure X** is loaded from [the shared figure PDF](../../fig/figx.pdf),
+  with [a PNG preview](../../fig/figx.png). Its layout has the conditioning
+  schematic on the left and both result plots on the right. It displays
+  EXT5s cross-run RSA and EARLY balanced accuracy, with the cue windows
+  specified in the caption and significance notation matching Figures 3/4.
+  The caption is included in this document's source; its standalone copy
+  is [here](../../fig/figx_caption.txt). Keep these caption copies consistent.
 - **`README.md`**: analysis provenance and working notes; these notes are
   separate from the proposed Results prose.
 
@@ -234,6 +242,15 @@ From this folder:
 ```bash
 latexmk -pdf -interaction=nonstopmode -halt-on-error conditioning_identity.tex
 ```
+
+If the figure changes, rebuild it first from the repository root:
+
+```bash
+python3 fig/make_figx.py
+```
+
+The [figure generator](../../fig/make_figx.py) validates the plotted statistics
+against the synced group tables and trims only the unused bottom margin.
 
 Compile again after editing the source so the PDF stays synchronized.
 The existing repository ignore rules cover the LaTeX auxiliary files.
