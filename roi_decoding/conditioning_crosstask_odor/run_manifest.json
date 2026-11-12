@@ -1,0 +1,83 @@
+{
+  "phase": "conditioning",
+  "base_dir": "/Users/liuq13/SPCD_data",
+  "behavior_dir": "/Users/liuq13/project-spcd/beh_processed_subs",
+  "mask_dir": "/Users/liuq13/project-spcd/masks/OFC_clusterMap_K2_gm0p1",
+  "output_dir": "/Users/liuq13/project-spcd/roi_decoding/conditioning_crosstask_odor",
+  "plot_dir": "/Users/liuq13/project-spcd/plots/conditioning_crosstask_odor",
+  "sub14_original_events_dir": "/Users/liuq13/SPCD_data/nii/sub-14/func_PAID/odorpred",
+  "windows": {
+    "cueEARLY": "odorpred_cueEARLY_trialwise_2mm",
+    "cueEXT5s": "odorpred_cueEXT5s_trialwise_2mm"
+  },
+  "clusters": [
+    "cluster1",
+    "cluster2"
+  ],
+  "skip_subs": [
+    "sub-19",
+    "sub-31",
+    "sub-33",
+    "sub-26",
+    "sub-38"
+  ],
+  "subjects": null,
+  "passive_runs": [
+    1,
+    2
+  ],
+  "conditioning_runs": [
+    1,
+    2,
+    3
+  ],
+  "svm_c": 1.0,
+  "primary_metric": "cue_balanced_accuracy",
+  "chance": 0.5,
+  "hemisphere": "bilateral",
+  "group_test": "one_sided_t_vs_chance_uncorrected",
+  "focus": "cueEXT5s, lateral OFC; EARLY and medial OFC are comparisons",
+  "normalization": "within_task_window_run_voxelwise_zscore",
+  "finite_voxel_scope": "passive_and_all_selected_conditioning_windows",
+  "trial_selection": "correct responded food trials, matched across selected windows",
+  "known_scan_exclusion": "sub-35 run 3",
+  "skip_plots": false,
+  "run_status": "complete",
+  "discovered_subjects": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-10",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-19",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-31",
+    "sub-32",
+    "sub-33",
+    "sub-34",
+    "sub-35",
+    "sub-36",
+    "sub-37",
+    "sub-38",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "failures": []
+}
