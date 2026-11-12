@@ -212,6 +212,8 @@ We examined subjective odor-value representations by combining single-image beta
 
 For each participant, the three outcome pleasantness ratings from each phase were jointly z-scored across the six phase-by-outcome values. Each cue presentation was assigned its associated outcome's rating from the corresponding phase. The odor-value model RDM contained absolute differences between these assigned values. Neural dissimilarities were regressed on odor-value dissimilarity together with cue type (conditioned versus preconditioned), image identity, button presence, and button side model RDMs, using ordinary least squares with an intercept. Image identity was defined independently of first versus second presentation position. Button labels were assigned to second-cue presentations, whereas first-cue presentations were labeled as having no response. Separate odor-identity and phase model RDMs were not included in this regression.
 
+Additional analyses used only the first or second cue presentation from each trial, retaining all cues and combining premeal and postmeal data. The first-cue analysis used the same cue-associated outcome-value model, omitting the button RDMs because they had no variance. For the second-cue analysis, each trial was assigned the signed difference between the standardized outcome values associated with the second and first cues ($V_2-V_1$); the value RDM contained absolute pairwise differences in this trial-level variable. This model was fitted together with cue type, second-cue image identity, and button RDMs, omitting button RDMs with no variance.
+
 Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction was applied separately within the independently defined bilateral medial and lateral OFC connectivity-based masks used for the odor-identity analyses \cite{kahnt2012connectivity}. The medial and lateral OFC masks contained 5,500 and 4,445 voxels at 2\,mm isotropic resolution, respectively, all of which overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within each ROI, using the smoothness estimated from the group model.
 
 \subsubsection*{Optimal allocation of representational resources}
@@ -290,6 +292,8 @@ Choice proportions were also positively correlated with the pleasantness differe
 \paragraph*{Representation of subjective outcome value.}
 
 Separate analyses of conditioned and preconditioned cues revealed no significant value-related peaks in medial OFC (conditioned: $t(29)=3.73$, $p_{\mathrm{FWE}}=.134$; preconditioned: $t(29)=2.11$, $p_{\mathrm{FWE}}=.938$; peak-level FWE correction within the medial OFC mask). These nonsignificant results may partly reflect reduced statistical power when analyzing each cue class separately.
+
+The first-cue-only analysis revealed no significant outcome-value-related peak in medial OFC ($t(29)=2.54$, $p_{\mathrm{FWE}}=.748$). An analysis of second-cue responses using the signed value difference between the second and first cues likewise revealed no significant peak in medial OFC ($t(29)=3.81$, $p_{\mathrm{FWE}}=.124$; peak-level small-volume correction).
 
 % Supplementary figures, one per page.
 

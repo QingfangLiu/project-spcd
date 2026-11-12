@@ -1,0 +1,87 @@
+{
+  "source_group_model": "temp_maps/spm_value_n30_second_image_signed_difference/SPM.mat",
+  "contrast": "RSA both | subset-subset-all | model-odor_value > 0",
+  "n_participants": 30,
+  "participant_ids": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-10",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-32",
+    "sub-34",
+    "sub-35",
+    "sub-37",
+    "sub-38",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "df_error": 28.999999999999964,
+  "smoothness_FWHM_voxels": [
+    7.810071027949545,
+    7.486178074439854,
+    7.4513654056205265
+  ],
+  "roi_masks": {
+    "Medial_OFC": "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii",
+    "Lateral_OFC": "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii"
+  },
+  "spatial_correction": "Native SPM12 spm_P(1,0,T,df,'T',R,1,S), with full native ROI resels from spm_resels(FWHM,Vroi,'I') and S equal to finite ROI voxels overlapping the group mask; critical T from spm_uc(0.05,df,'T',R,1,S).",
+  "regional_correction": "None; FWE correction within each ROI only. No Holm correction.",
+  "model_correction": "None across the nine model/subset analyses; exploratory checks.",
+  "roi_resels": {
+    "Medial_OFC": [
+      5,
+      24.53891969914039,
+      29.457230874282097,
+      8.288510466014506
+    ],
+    "Lateral_OFC": [
+      5,
+      21.581129484582014,
+      25.693202027189265,
+      6.420095201728766
+    ]
+  },
+  "value_model": "signed_difference",
+  "cue_subset": "all",
+  "session": "both",
+  "image_scope": "second",
+  "spm_version": "SPM12 (7771)",
+  "analysis_script": "scripts_MRI/rsa_imagewise/run_second_image_value_svc.m",
+  "checks": [
+    "Previous n30 OFC SVC summary reproduced with native SPM12.",
+    "ROI and group image grids identical; no ROI resampling.",
+    "Participant IDs match the established n30 analysis.",
+    "Independently verified all summary fields with Python (nibabel/scipy), including native ROI topology/resels, peak coordinates, FWE p and critical T; source hashes match supplied README checks."
+  ],
+  "source_sha256": {
+    "temp_maps/spm_value_n30_second_image_signed_difference/SPM.mat": "cdc769e6f10f01aa5de504f95bbf78f2ba2aa57dc70f990e2a613449bf4d67b5",
+    "temp_maps/spm_value_n30_second_image_signed_difference/spmT_0001.nii": "457f3bbf136cef9566bf8a665d1dd815d302674332574a6223aa77289fec0418",
+    "temp_maps/spm_value_n30_second_image_signed_difference/mask.nii": "4913f26790c228c4af53b74717f39e9c8e196fcddcda40983b6e7c8128c4c970",
+    "temp_maps/spm_value_n30_second_image_signed_difference/RPV.nii": "0b22a30ee3b3c70f08dc8e03fa3776c06e3ebf90f5e1bded0dfc8122f8cceddd",
+    "temp_maps/spm_value_n30_second_image_signed_difference/ResMS.nii": "dc445a73796d83f7153e5b02566dc5abe248a69a41276474cd2284bd353aa218",
+    "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii": "92e9f15577e68d82db1e4f35155832b9c6494ae39cdccdecbc289762860d13ce",
+    "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii": "ac0fcbbeca82c487fafbb038fe73222841c1b19c37205941e40579a5b51daa85",
+    "scripts_MRI/rsa_imagewise/verify_second_image_value_svc.py": "c59d03f49745a8ce54457cd81f528ab3bdc02d258018b014319965893917941f",
+    "scripts_MRI/rsa_imagewise/run_second_image_value_svc.m": "915329e980eed9f756994e4b28b4b9eba695c41901f48fd5aa356cb28f611873"
+  }
+}
