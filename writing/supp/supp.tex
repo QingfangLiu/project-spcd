@@ -216,6 +216,19 @@ Additional analyses used only the first or second cue presentation from each tri
 
 Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction was applied separately within the independently defined bilateral medial and lateral OFC connectivity-based masks used for the odor-identity analyses \cite{kahnt2012connectivity}. The medial and lateral OFC masks contained 5,500 and 4,445 voxels at 2\,mm isotropic resolution, respectively, all of which overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within each ROI, using the smoothness estimated from the group model.
 
+\subsubsection*{Baseline outcome-identity retrieval success}
+
+The main-text model defines computational value as $a_i=(1-p_i)D_i$, where $p_i$ is the probability of correctly retrieving the outcome identity before allocating representational resource $r_i$, and $D_i>0$ is the behavioral cost of an identity error. Thus, at zero resource, expected decision loss is $L_i(0)=(1-p_i)D_i$. These baseline probabilities describe the associative retrieval process; they are not estimates of behavioral accuracy or fMRI decoding accuracy.
+
+Let $A$ denote successful retrieval of the correct conditioned associate from a preconditioned cue, and $B$ denote successful retrieval of the correct outcome from that associate. We assume that recovering the correct outcome through the indirect route requires both steps to succeed. By the probability chain rule, indirect retrieval success is $p_P=\Pr(A\cap B)=\Pr(A)\Pr(B\mid A)$. Define $p_{PC}=\Pr(A)$ and assume that $\Pr(B\mid A)=p_{CO}$, where $p_{CO}$ is also the success probability for retrieving the outcome directly from a conditioned cue. This shared-reliability assumption gives $p_C=p_{CO}$ and $p_P=p_{PC}p_{CO}$ without requiring independence between the two retrieval events. It excludes successful recovery through alternative routes or compensating errors after an incorrect first retrieval.
+
+For $0<p_{PC},p_{CO}<1$, $p_P<p_C$. With equal behavioral error costs, $D_P=D_C=D>0$, the computational-value ratio is
+\[
+\frac{a_P}{a_C}=\frac{(1-p_P)D}{(1-p_C)D}
+=\frac{1-p_{PC}p_{CO}}{1-p_{CO}}>1.
+\]
+The two associations need not have equal success probabilities. The ordering follows from the additional required retrieval step and the assumed common reliability of the $C\rightarrow O$ step across routes.
+
 \subsubsection*{Optimal allocation of representational resources}
 
 We derive the allocation that minimizes the total decision loss in the resource-limited model. Let $P$ and $C$ denote preconditioned and directly conditioned cue classes, respectively. The computational values $a_P,a_C>0$ are held fixed during optimization. Representational resources are nonnegative and share a fixed budget $r_P+r_C=R$, with $R>0$. Substituting $r_C=R-r_P$ expresses total loss as a function of one allocation:
@@ -263,7 +276,7 @@ To illustrate the shared-budget prediction in main-text Figure~5D, we simulated 
 z_j\sim\mathcal{N}(\log 4,1.2^2)\quad\text{conditional on }z_j>0,\qquad a_{P,j}=e^{z_j}.
 \tag{S7}
 \end{equation}
-The mean $\log 4$ and standard deviation $1.2$ specify the underlying, untruncated normal distribution. Sampling from its positive tail, rather than clipping negative draws to zero, ensures $a_{P,j}>a_{C,j}$ for every simulated participant, consistent with the task-specific retrieval-error assumption. We used SciPy's truncated-normal sampler with NumPy's default random-number generator initialized with seed 20261023. Main-text Figure~5C shows the general allocation rule across both orderings of computational value; the participant simulation in Figure~5D is restricted to $a_P>a_C$.
+The mean $\log 4$ and standard deviation $1.2$ specify the underlying, untruncated normal distribution. Sampling from its positive tail, rather than clipping negative draws to zero, ensures $a_{P,j}>a_{C,j}$ for every simulated participant, consistent with lower baseline retrieval success for preconditioned cues and equal behavioral error costs. We sampled computational-value ratios directly, rather than individual retrieval probabilities; the success-probability formulation motivates their ordering but does not specify their distribution. We used SciPy's truncated-normal sampler with NumPy's default random-number generator initialized with seed 20261023. Main-text Figure~5C shows the general allocation rule across both orderings of computational value; the participant simulation in Figure~5D is restricted to $a_P>a_C$.
 
 For each draw, we calculated the constrained optimum using Eq.~S6. The resulting latent allocations were nonnegative, summed to $R$, and assigned more resources to preconditioned than conditioned outcome identities. To obtain illustrative measurements of representational strength, we then added independent, zero-mean Gaussian noise to the two allocations:
 \begin{equation}
