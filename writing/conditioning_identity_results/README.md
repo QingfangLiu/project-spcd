@@ -1,29 +1,29 @@
 # Conditioning identity results: PI review draft
 
-This folder holds a proposed Results section for PI discussion before a
+This folder holds proposed Results and Methods text for PI discussion before a
 decision about integration into the main paper or supplement. It sits beside
 `writing/main/` and `writing/supp/`. The folder name describes the analysis
 without implying that it has been selected for the main manuscript.
 
 ## Files
 
-- **`results.pdf`**: standalone copy of the agreed two-paragraph draft for
-  sharing with the PI. The selected section heading is "Lateral OFC
-  represents reward identity during conditioning."
-- **`results.tex`**: editable source and canonical version of the draft.
-- **`methods.pdf`**: two-paragraph Methods addition for PI review; no
-  allocation to main-text versus supplementary Methods has been made.
-- **`methods.tex`**: editable source focused on the retained 5 s conditioning
-  GLM, pooled odor-delivery regressor, trial/run inclusion, and RSA inference.
-  General preprocessing, nuisance regressors, ROI definitions, and RSA
-  procedures are referenced back to the existing probe Methods.
+- **`conditioning_identity.pdf`**: combined PI-review document, with Results
+  first, followed by the two-paragraph Methods addition and references.
+  The title is "Lateral OFC represents reward identity during conditioning."
+- **`conditioning_identity.tex`**: single editable source and canonical
+  version of the combined document. The Methods cover the EARLY and EXT5s
+  conditioning GLMs, pooled odor-delivery regressor, trial/run inclusion,
+  RSA, and decoding. General preprocessing, nuisance regressors, ROI
+  definitions, and RSA procedures refer back to the existing probe Methods.
 - **`README.md`**: analysis provenance and working notes; these notes are
   separate from the proposed Results prose.
 
-The concluding sentence cites Howard et al. (2015) and Howard and Kahnt
+The Results concluding sentence cites Howard et al. (2015) and Howard and Kahnt
 (2017), using the main paper's existing `howard2015identity` and
 `howard2017identity` keys. The standalone PDF reads their entries directly
 from `../main/sn-bibliography.bib` and includes a short reference list.
+The combined document replaces the separate Results and Methods documents.
+No allocation to main-text versus supplementary Methods has been made.
 The Methods draft is written as an addition to the paper's existing Methods
 and does not repeat their general descriptions or citations. Additional
 implementation details remain in this README and the linked analysis notes.
@@ -42,7 +42,7 @@ preconditioned cues are not also presented. This is a contextual extension of
 the interpretation, rather than a demonstrated task-phase difference or a new
 formal prediction derived from the model equations.
 
-## Result selected for discussion
+## RSA result selected for discussion
 
 The selected result is **EXT5s, all available conditioning runs, cross-run
 RSA**, using the full eligible sample. This is the analysis saved as
@@ -72,7 +72,66 @@ Source files, relative to this folder:
 - [Run manifest](../../rsa_roi/conditioning_odor_identity/run_manifest.json)
 - [Analysis implementation and detailed notes](../../scripts_MRI/rsa_conditioning_odor_identity/README.md)
 
-## Brief method and sample notes
+## Cross-task decoding results selected for discussion
+
+The user chose to report **balanced accuracy**, the primary decoding measure,
+for both EARLY and EXT5s. The decoder was trained on the same two-run passive
+odor localizer used for the manuscript's probe analysis (40 trials, 20 per
+odor; linear SVM, fixed C = 1), then tested without further fitting on correct
+conditioning trials. The 29 participants are the same as in the retained RSA
+sample. EARLY covers 0--2 s after cue onset, whereas EXT5s covers 0--5 s.
+
+| ROI | Window | n | Mean balanced accuracy | t (df = 28) | One-sided, uncorrected p |
+| --- | --- | --- | --- | --- | --- |
+| Lateral OFC | EARLY | 29 | 52.1181681% | 1.833238 | 0.038710 |
+| Lateral OFC | EXT5s | 29 | 51.8711704% | 1.451910 | 0.078820 |
+| Medial OFC | EARLY | 29 | 49.2549038% | -0.576073 | 0.715416 |
+| Medial OFC | EXT5s | 29 | 50.0534632% | 0.039517 | 0.484379 |
+
+The draft rounds accuracy to two decimal places and p to three. EARLY
+lateral OFC is above chance at the uncorrected one-sided threshold; EXT5s
+is numerically positive but does not reach p < 0.05. Both windows are
+reported together. EXT5s lateral OFC was the designated focus before running
+this decoder, with EARLY and medial OFC designated comparisons; balanced
+accuracy remains the primary measure for every ROI/window. The signed-distance
+measure is secondary and is not included in the proposed Results text.
+
+The manuscript's existing cross-task Methods already describe passive
+training, fixed C = 1, and the absence of test-task fitting or tuning. The
+conditioning Methods addition references that procedure and specifies the
+conditioning windows, trial matching, common finite voxels, separate
+task/window/run normalization, and balanced-accuracy inference.
+
+Source files, relative to this folder:
+
+- [EARLY lateral OFC group summary](../../roi_decoding/conditioning_crosstask_odor/cueEARLY/cluster2_central_anterior_lateral/group_summary.csv)
+- [EXT5s lateral OFC group summary](../../roi_decoding/conditioning_crosstask_odor/cueEXT5s/cluster2_central_anterior_lateral/group_summary.csv)
+- [EARLY medial OFC group summary](../../roi_decoding/conditioning_crosstask_odor/cueEARLY/cluster1_medial_posterior_lateral/group_summary.csv)
+- [EXT5s medial OFC group summary](../../roi_decoding/conditioning_crosstask_odor/cueEXT5s/cluster1_medial_posterior_lateral/group_summary.csv)
+- [EARLY figure](../../plots/conditioning_crosstask_odor/cueEARLY/ofc_conditioning_decoding.pdf)
+- [EXT5s figure](../../plots/conditioning_crosstask_odor/cueEXT5s/ofc_conditioning_decoding.pdf)
+- [Decoding run manifest](../../roi_decoding/conditioning_crosstask_odor/run_manifest.json)
+- [Decoding implementation and handoff notes](../../scripts_MRI/Decoding_conditioning_cross_task/README.md)
+
+The synced run has status `complete`, no unexpected failures, matched cue
+trials and the same finite voxel set between windows, and no 20% voxel-loss
+flags. Participant metrics were independently reproduced from
+all 116 ROI/window prediction tables, and group statistics were checked
+against the participant scores. Subject 14 used the original conditioning
+event labels to maintain the physical-odor convention of passive training;
+subject 35 contributed only conditioning runs 1--2.
+
+The EARLY and EXT5s lateral accuracy estimates are similar. An exploratory
+paired two-sided test of their difference gives p = 0.752; significance in
+only EARLY does not establish a timing difference. The primary draft does
+not add this post-run comparison. Passive-localizer leave-one-run-out
+balanced accuracy was 48.10% in lateral OFC (one-sided p = 0.825) and 51.29%
+in medial OFC (p = 0.281), also not above chance. The existing probe workflow
+showed similarly weak passive cross-validation. These diagnostics temper
+the strength of a shared sensory-code interpretation without changing the
+predefined sample or primary outcome.
+
+## Brief RSA method and shared sample notes
 
 - Existing least-squares-separate conditioning betas are used; the analysis
   does not re-estimate GLMs. EXT5s models the first 5 s after cue onset,
@@ -113,8 +172,9 @@ Source files, relative to this folder:
   between learning phases or run selections.
 - Significance in lateral OFC and nonsignificance in medial OFC do not
   establish a difference between the regions. No direct regional contrast
-  is included in this draft. Likewise, task dependence has not been tested
-  by a formal conditioning-versus-probe interaction.
+  is included in this draft for either RSA or decoding. Likewise, task
+  dependence has not been tested by a formal conditioning-versus-probe
+  interaction.
 - "Only conditioned cues" refers to which visual cues were presented during
   conditioning. The cover story still encouraged participants to think about
   their paired, absent preconditioned cues. The draft therefore does not
@@ -130,8 +190,9 @@ Source files, relative to this folder:
 - Before manuscript integration, decide placement and figure presentation,
   and merge the unified Methods draft with the paper's existing Methods.
   Reconcile wording about the null conditioned-cue probe result with the
-  new conditioning result. The Methods draft documents the selected GLM,
-  trial filtering, available runs, exclusions, partial data, and inference.
+  new conditioning result. The Methods draft documents both cue GLMs,
+  trial filtering, available runs, exclusions, partial data, RSA and decoding
+  inference.
 - Detailed pattern/RDM diagnostics remain with the MRI data on the other
   machine; this folder contains the writing draft and notes only.
 
@@ -146,6 +207,8 @@ not reconstructed from a fitted SPM design on this machine. Source links:
 - [Motion and image-artifact nuisance regressors](../../scripts_MRI/preproc_organize_imaging/Do_6_plot_motion_saveNR.m)
 - [Respiratory regressors](../../scripts_MRI/preproc_organize_imaging/Do_5_process_labchart.m)
 - [Conditioning trial selection, RSA, and group orchestration](../../scripts_MRI/rsa_conditioning_odor_identity/run_rsa.py)
+- [Conditioning cross-task decoding and group orchestration](../../scripts_MRI/Decoding_conditioning_cross_task/run_decoding.py)
+- [Shared passive-localizer loading, normalization, and classifier metrics](../../scripts_MRI/Decoding_probe_cross_task/run_roi_crosstask_odor2preconditioned.py)
 - [Shared ROI extraction and within-run centering](../../scripts_MRI/rsa_imagewise_odor_identity_no_image_first_image/run_roi_rsa.py)
 - [Shared Spearman RSA calculation](../../scripts_MRI/rsa_imagewise_odor_identity_no_image_first_image/run_roi_rsa_spearman.py)
 - [Shared participant-level group tests](../../scripts_MRI/rsa_imagewise_odor_identity_no_image_first_image/aggregate_roi_rsa_spearman.py)
@@ -169,7 +232,7 @@ Two details are deliberately recorded rather than assumed:
 From this folder:
 
 ```bash
-latexmk -pdf -interaction=nonstopmode -halt-on-error results.tex methods.tex
+latexmk -pdf -interaction=nonstopmode -halt-on-error conditioning_identity.tex
 ```
 
 Compile again after editing the source so the PDF stays synchronized.
