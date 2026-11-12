@@ -1,0 +1,81 @@
+{
+  "source_group_model": "temp_maps/spm_value_n30_first_image/SPM.mat",
+  "source_sync_commit": "b26d1fbd30cf769b3571c38020bc8dc9a49801d1",
+  "analysis_date": "2026-11-12",
+  "contrast": "RSA both | subset-subset-all | model-odor_value > 0",
+  "n_participants": 30,
+  "participant_ids": [
+    "sub-01",
+    "sub-02",
+    "sub-03",
+    "sub-04",
+    "sub-07",
+    "sub-09",
+    "sub-10",
+    "sub-11",
+    "sub-13",
+    "sub-14",
+    "sub-15",
+    "sub-16",
+    "sub-17",
+    "sub-20",
+    "sub-22",
+    "sub-23",
+    "sub-25",
+    "sub-26",
+    "sub-27",
+    "sub-28",
+    "sub-29",
+    "sub-30",
+    "sub-32",
+    "sub-34",
+    "sub-35",
+    "sub-37",
+    "sub-38",
+    "sub-39",
+    "sub-40",
+    "sub-41"
+  ],
+  "df_error": 28.999999999999964,
+  "image_scope": "First cue presentation only (img_index == 1)",
+  "session": "Premeal and postmeal combined; distinct run IDs across phases; cross-phase pairs included",
+  "cue_subset": "all",
+  "first_level_settings_provenance": "temp_maps/spm_value_n30_first_image/README.md",
+  "center_within_run": true,
+  "rsa_regressors": [
+    "odor_value",
+    "cue_type",
+    "image_identity"
+  ],
+  "smoothness_FWHM_voxels": [
+    8.218065914139714,
+    7.9064296144021915,
+    7.846686763739809
+  ],
+  "roi_masks": {
+    "Medial_OFC": "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii",
+    "Lateral_OFC": "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii"
+  },
+  "spatial_correction": "Native SPM12 spm_P(1,0,T,df,'T',R,1,S), with full native ROI resels from spm_resels(FWHM,Vroi,'I') and S equal to finite ROI voxels overlapping the group mask; critical T from spm_uc(0.05,df,'T',R,1,S).",
+  "regional_correction": "None; FWE correction within each ROI only. No Holm correction.",
+  "checks": [
+    "Native SPM12 reproduced the saved corrected two-image medial and lateral OFC SVC p values to within 1e-10 before running these models.",
+    "Verified 30-participant cohort equals the corrected two-image cohort; sub-10 included; sub-19, sub-31, sub-33, and sub-36 absent.",
+    "Verified one-sample positive T contrast with df=29 and original scan paths for the stated first-image subset.",
+    "Verified copied model and statistic hashes against the sync notes, and analysis mask against the two-image model.",
+    "Regional peak T, MNI coordinates, overlap, uncorrected p, FWE p, critical T, and threshold counts independently checked in Python."
+  ],
+  "limitations": [
+    "Participant-level maps were not copied; first-level run settings follow the synced provenance notes and pipeline, rather than a local refit.",
+    "Separate first-image and two-image tests do not constitute a direct test of their difference."
+  ],
+  "source_sha256": {
+    "temp_maps/spm_value_n30_first_image/SPM.mat": "cbf92e98380b424b1ab29cd285e386ab0046514c1d748a5656f051fe0859caa5",
+    "temp_maps/spm_value_n30_first_image/spmT_0001.nii": "23b1b8ae629c50cbee8d2c8e586210b0b75013f5150439f89a0f4d6f0f33d6e5",
+    "temp_maps/spm_value_n30_first_image/mask.nii": "4913f26790c228c4af53b74717f39e9c8e196fcddcda40983b6e7c8128c4c970",
+    "temp_maps/spm_value_n30_first_image/RPV.nii": "19a40b0ccd69b3e1b4bc0ef8d057a23f722643ab6a3fedf49d4530da609fa74e",
+    "temp_maps/spm_value_n30_first_image/ResMS.nii": "14c7aad23c5763b6f47b2ffd1a6e9883e9d880efb1fc67a6c1ee5e78bb45beb2",
+    "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster1_medial_posterior_lateral_gm0p1.nii": "92e9f15577e68d82db1e4f35155832b9c6494ae39cdccdecbc289762860d13ce",
+    "masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii": "ac0fcbbeca82c487fafbb038fe73222841c1b19c37205941e40579a5b51daa85"
+  }
+}
