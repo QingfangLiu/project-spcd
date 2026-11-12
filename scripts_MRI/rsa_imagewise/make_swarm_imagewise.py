@@ -7,8 +7,15 @@ Create a Biowulf swarm file for the current image-wise RSA pipeline.
 
 import argparse
 from pathlib import Path
+import shlex
 
 import pandas as pd
+import numpy as np
+
+try:
+    from .models import VALUE_MODELS
+except ImportError:
+    from models import VALUE_MODELS
 
 MODEL_NAMES = (
     "odor_value",
@@ -57,7 +64,8 @@ def load_subjects_with_odor_value_ratings(ratings_file: Path) -> set[str]:
             f"Ratings file is missing required columns: {sorted(missing_cols)}"
         )
 
-    complete_mask = df[list(required_cols - {"sub"})].notna().all(axis=1)
+    ratings = df[sorted(required_cols - {"sub"})].apply(pd.to_numeric, errors='coerce')
+    complete_mask = np.isfinite(ratings).all(axis=1)
     return set(df.loc[complete_mask, "sub"].astype(str))
 
 
@@ -73,6 +81,9 @@ def main():
     ap.add_argument("--base_dir", default="/data/liuq13/SPCD_RSA_imagewise_subset")
     ap.add_argument("--package_name", default="rsa_imagewise")
     ap.add_argument("--out", default="imagewise_rsa.swarm")
+    ap.add_argument('--image_scope', choices=['both', 'second'], default='both')
+    ap.add_argument('--value_models', nargs='+', choices=VALUE_MODELS, default=None,
+                    help='Second-image value versions; defaults to all three for second-image jobs')
     ap.add_argument(
         "--ratings_file",
         type=Path,
@@ -116,18 +127,23 @@ def main():
     ap.add_argument("--center_within_run", action="store_true")
 
     args = ap.parse_args()
+    if args.image_scope != 'second' and args.value_models is not None:
+        ap.error('--value_models requires --image_scope second')
+    value_models = (args.value_models or list(VALUE_MODELS)) if args.image_scope == 'second' else ['cue_value']
 
     discovery_session = "premeal" if args.sessions[0] == "both" else args.sessions[0]
     if args.subjects is None:
         subs = discover_subjects(args.base_dir, discovery_session)
     else:
         subs = sorted(args.subjects)
+    if args.image_scope == 'second':
+        subs = [sub for sub in subs if sub not in {'sub-19', 'sub-31', 'sub-33'}]
 
     module_name = f"{args.package_name}.run_rsa"
     odor_value_subjects = None
 
     needs_odor_value = (
-        args.targets is None or "odor_value" in args.targets
+        args.image_scope == 'second' or args.targets is None or "odor_value" in args.targets
     )
     if needs_odor_value:
         odor_value_subjects = load_subjects_with_odor_value_ratings(args.ratings_file)
@@ -158,7 +174,7 @@ def main():
                     job_targets = [None]
                 for target in job_targets:
                     if (
-                        target == "odor_value"
+                        (target == "odor_value" or args.image_scope == 'second')
                         and odor_value_subjects is not None
                         and sub not in odor_value_subjects
                     ):
@@ -185,9 +201,16 @@ def main():
                         cmd.extend(["--target", target])
                     if args.center_within_run:
                         cmd.append("--center_within_run")
-
-                    f.write(" ".join(cmd) + "\n")
-                    n_lines += 1
+                    if args.image_scope == 'second':
+                        cmd.extend(['--image_scope', 'second'])
+                        if target is None:
+                            cmd.extend(['--target', 'odor_value'])
+                    for value_model in value_models:
+                        variant_cmd = list(cmd)
+                        if args.image_scope == 'second':
+                            variant_cmd.extend(['--value_model', value_model])
+                        f.write(shlex.join(variant_cmd) + "\n")
+                        n_lines += 1
 
     print(f"Wrote {n_lines} swarm lines to: {args.out}")
 

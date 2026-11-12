@@ -4,6 +4,25 @@ from __future__ import annotations
 
 import numpy as np
 
+VALUE_MODELS = ("cue_value", "signed_difference", "absolute_difference")
+
+
+def validate_analysis_options(image_scope="both", value_model="cue_value"):
+    if image_scope not in ("both", "second"):
+        raise ValueError("image_scope must be 'both' or 'second'")
+    if value_model not in VALUE_MODELS:
+        raise ValueError(f"Unknown value_model: {value_model}")
+    if image_scope != "second" and value_model != "cue_value":
+        raise ValueError("Value-difference models require --image_scope second")
+
+
+def analysis_subfolder(image_scope="both", value_model="cue_value"):
+    """Keep analysis variants in distinct default output directories."""
+    validate_analysis_options(image_scope, value_model)
+    if image_scope == "both":
+        return "probe_imagewise"
+    return f"probe_imagewise_second_image/{value_model}"
+
 _ODOR_GROUPS = {
     "odor1": {"A11", "B11", "A12", "B12"},
     "odor2": {"A21", "B21", "A22", "B22"},
@@ -99,6 +118,21 @@ def create_odor_value_rdm_by_phase(
         raise ValueError("sample_labels and phase_labels must have the same length")
 
     phase_labels = [str(phase) for phase in phase_labels]
+    group_values_by_phase = _prepare_phase_values(phase_labels, ratings_by_phase, normalize)
+    sample_values = np.array(
+        [
+            group_values_by_phase[phase][condition_to_group(base_condition(lbl))]
+            for lbl, phase in zip(sample_labels, phase_labels)
+        ],
+        dtype=float,
+    )
+    rdm = np.abs(sample_values[:, None] - sample_values[None, :]).astype(float)
+    np.fill_diagonal(rdm, 0.0)
+    return rdm
+
+
+def _prepare_phase_values(phase_labels, ratings_by_phase, normalize=True):
+    """Normalize outcome ratings once across the requested phases, before trials."""
     phase_order = list(dict.fromkeys(phase_labels))
 
     missing_phases = set(phase_order) - set(ratings_by_phase.keys())
@@ -135,17 +169,39 @@ def create_odor_value_rdm_by_phase(
                 group_values_by_phase[phase][group] = float(vals[idx])
                 idx += 1
 
-    sample_values = np.array(
-        [
-            group_values_by_phase[phase][condition_to_group(base_condition(lbl))]
-            for lbl, phase in zip(sample_labels, phase_labels)
-        ],
-        dtype=float,
-    )
+    return group_values_by_phase
 
-    rdm = np.abs(sample_values[:, None] - sample_values[None, :]).astype(float)
-    np.fill_diagonal(rdm, 0.0)
-    return rdm
+
+def create_second_image_value_rdms(first_labels, second_labels, phase_labels,
+                                   ratings_by_phase, normalize=True):
+    """Return trial variables and three alternative value-distance RDMs.
+
+    Signed difference is V2 - V1. Absolute difference is abs(V2 - V1).
+    Each RDM then uses abs(x_i - x_j) BETWEEN trials. These are separate
+    candidate models, not three regressors to enter simultaneously.
+    """
+    if not (len(first_labels) == len(second_labels) == len(phase_labels)):
+        raise ValueError("First/second labels and phases must have equal lengths")
+    if not len(first_labels):
+        raise ValueError("No paired trials provided")
+    phases = [str(p) for p in phase_labels]
+    for phase in set(phases):
+        if phase not in ratings_by_phase:
+            raise ValueError(f"Missing pleasantness ratings for phase: {phase}")
+        values = _prepare_group_values(ratings_by_phase[phase], normalize=False)
+        if not np.isfinite(list(values.values())).all():
+            raise ValueError(f"Nonfinite pleasantness ratings for phase: {phase}")
+    ratings = _prepare_phase_values(phases, ratings_by_phase, normalize)
+    first = np.array([ratings[p][condition_to_group(base_condition(label))]
+                      for label, p in zip(first_labels, phases)])
+    second = np.array([ratings[p][condition_to_group(base_condition(label))]
+                       for label, p in zip(second_labels, phases)])
+    variables = {"first_cue_value": first, "cue_value": second,
+                 "signed_difference": second - first,
+                 "absolute_difference": np.abs(second - first)}
+    rdms = {name: np.abs(variables[name][:, None] - variables[name][None, :])
+            for name in VALUE_MODELS}
+    return variables, rdms
 
 
 def _prepare_group_values(ratings_by_group, normalize: bool = True) -> dict[str, float]:

@@ -28,6 +28,155 @@ the default maps.
 When using a single-class subset (`conditioned_only` or `preconditioned_only`),
 `cue_type` is automatically removed from the multiple-regression RSA model because it has no variance.
 
+## Second-image-only value analyses
+
+The same package supports three alternative value models evaluated on **second
+cue presentations only**. Use `--image_scope second` and choose one
+`--value_model`:
+
+| Value model | Variable assigned to each trial |
+| --- | --- |
+| `cue_value` | Rating of the outcome associated with cue 2, V2 |
+| `signed_difference` | V2 - V1 |
+| `absolute_difference` | abs(V2 - V1) |
+
+For every model, the model RDM is `abs(variable_i - variable_j)` between trials.
+V1 and V2 use the participant's ratings from the trial's probe phase. Ratings
+are z-scored across the three outcomes for a single-phase analysis, or jointly
+across all six phase-by-outcome ratings for `--session both`, **before** ratings
+are expanded to trials. Differences use this same rating scale, without a
+second normalization. The three value models are fitted in **separate
+regressions**, not simultaneously. The selected value RDM is called `odor_value`
+in the regression and output map; `--target` selects the output coefficient,
+whereas `--value_model` selects which value RDM enters the fit.
+
+The loader matches cues using trial IDs within each subject, phase, and run;
+it does not assume adjacent CSV rows. Each trial must contain exactly one
+first and one second cue of the same cue class. Missing/duplicated cue rows,
+unknown cue mappings, or malformed button data stop the second-image analysis.
+An absent run CSV is reported and skipped, allowing participants with a missing
+run; a requested phase with no usable samples fails. The beta index CSV must
+include `trial`, `img_index`, `cue_index`, `odor_index`, and `beta_file`. The
+existing GLM and events files can be reused; no new first-level GLM is required.
+
+The neural RDM, OLS estimator with intercept, searchlight, run-wise centering,
+and cross-run pair selection are shared with the two-image pipeline. In `both`
+mode, cross-phase pairs are included and a phase RDM is not regressed out.
+Nuisance RDMs are second-image identity, button presence, button side, and cue
+type when both cue classes are included. Controls that are constant on the
+retained cross-run pairs are dropped and recorded. In particular, button
+presence is dropped if every trial has a response. The analysis stops if the
+value RDM is constant or the remaining regression is rank deficient. The older
+two-image analysis remains the default and retains its existing model fitting.
+
+From the folder containing the `rsa_imagewise` package, run one subject:
+
+```bash
+python -m rsa_imagewise.run_rsa \
+  --sub sub-01 --session both \
+  --base_dir /Users/liuq13/SPCD_data \
+  --ratings_file /Users/liuq13/project-spcd/beh_processed_subs/compiled_pleasantness_ratings.csv \
+  --image_scope second --value_model signed_difference \
+  --cue_subset all --target odor_value --center_within_run
+```
+
+Repeat with `--value_model cue_value` and `--value_model absolute_difference`.
+Change `--cue_subset` to `conditioned_only` or `preconditioned_only` to estimate
+either cue class separately. The default output folders prevent the three
+versions from overwriting one another:
+
+```text
+<base_dir>/rsa_maps/probe_imagewise_second_image/cue_value/both/
+<base_dir>/rsa_maps/probe_imagewise_second_image/signed_difference/both/
+<base_dir>/rsa_maps/probe_imagewise_second_image/absolute_difference/both/
+```
+
+Each contains `sub-XX_model-odor_value_subset-all.nii.gz` (or the selected
+subset). Use a distinct explicit `--output_dir` if changing centering or any
+other setting. Under `diagnostics/sub-XX/subset-all/`, each run saves:
+
+- `samples.csv`: actual paired cue labels, trial IDs, phase, run, button labels,
+  and all normalized trial variables.
+- `model_rdm_correlations.csv`: correlations on the retained cross-run pairs
+  among all three value RDMs and the controls. First-cue identity and unordered
+  outcome-pair identity are included **for diagnosis only**, not as additional
+  regression controls.
+- `model_rdms.npz`: exact diagnostic RDMs and the cross-run pair mask.
+- `analysis_metadata.json`: fitted/dropped predictors, sample and pair counts,
+  design rank/condition number, target variance remaining after controls, source
+  code hashes, requested outputs, and completion status. A `prepared` status
+  indicates the searchlight did not reach successful completion.
+
+Inspect the correlations and remaining value variance before interpreting
+results, especially absolute value differences with only three outcome-pair
+types per phase. A significant coefficient in one version and a nonsignificant
+coefficient in another is not a direct test of the difference between versions.
+
+### Prepare and submit Biowulf jobs
+
+Refresh the existing subset on the data computer:
+
+```bash
+python scripts_MRI/rsa_imagewise/prepare_rsa_subset.py
+```
+
+This copies the updated package (including `ratings.py` and `diagnostics.py`),
+the compiled ratings CSV, mask, beta index CSVs, betas, and events. Its default
+source is `/Users/liuq13/SPCD_data` and destination is
+`/Users/liuq13/SPCD_RSA_imagewise_subset`; the script prints the rsync command.
+The existing staged data can be reused; refresh the package and ratings before
+submitting. After syncing, generate one job per subject and value model:
+
+```bash
+python scripts_MRI/rsa_imagewise/make_swarm_imagewise.py \
+  --base_dir /data/liuq13/SPCD_RSA_imagewise_subset \
+  --ratings_file /data/liuq13/SPCD_RSA_imagewise_subset/compiled_pleasantness_ratings.csv \
+  --image_scope second --sessions both --cue_subset all \
+  --targets odor_value --center_within_run \
+  --out second_image_value_all.swarm
+```
+
+All three value models are generated by default for second-image jobs. To
+restrict them, pass e.g. `--value_models cue_value signed_difference`. The new
+second-image job generation excludes sub-19, sub-31, and sub-33 and skips
+participants with missing/nonfinite ratings. Full cohort inclusion still
+depends on the data present. Repeat with another `--cue_subset` and output
+swarm filename for cue-specific analyses. Run jobs from the staged subset root,
+so `python -m rsa_imagewise.run_rsa` can find the package. Use the same Biowulf
+resources and swarm submission setup as the existing image-wise RSA jobs.
+
+### Group models
+
+After copying the subject maps back into the same relative `rsa_maps/` layout,
+use the existing MATLAB aggregation script:
+
+```matlab
+base_dir = '/Users/liuq13/SPCD_data/rsa_maps';
+analysis_mode = 'second_image_value';
+run('/Users/liuq13/project-spcd/scripts_MRI/rsa_imagewise/aggregate_rsa_group.m');
+```
+
+It loops over all three value-model folders and the three cue subsets, using
+6 mm smoothing, the existing gray-matter mask, and exclusions sub-19, sub-31,
+sub-33. It saves each available model under
+`<variant>/<session>/group_spm/model-odor_value/subset-<subset>/`.
+Combined-session RSA lives in `both`; `collapsed` is instead an average of
+separately estimated premeal and postmeal maps and is not equivalent to `both`.
+Existing group model folders are skipped to avoid overwriting a fitted model.
+For the original analysis, explicitly set `analysis_mode = 'both_images'`.
+
+### Checks
+
+```bash
+python -B -m unittest discover -s scripts_MRI/rsa_imagewise -p 'test_*.py' -v
+```
+
+The tests use synthetic NIfTI data to check actual searchlight outputs against
+direct OLS, the signed versus absolute definitions, shared normalization,
+trial alignment across runs/phases, cue subsets, button controls, job
+generation, and staged package dependencies. Full subject-data searchlights
+must be run on the data computer or Biowulf.
+
 ## Session options
 - `premeal`: run RSA on premeal image-wise betas only
 - `postmeal`: run RSA on postmeal image-wise betas only

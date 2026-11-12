@@ -21,6 +21,8 @@ PACKAGE_FILES = [
     "neural_rdm.py",
     "rsa_stats.py",
     "save_maps.py",
+    "ratings.py",
+    "diagnostics.py",
 ]
 
 
@@ -129,6 +131,7 @@ def prepare_subset_imagewise(
     subjects=None,
     package_name="rsa_imagewise",
     dry_run=False,
+    ratings_file=None,
 ):
     full_data_dir = Path(full_data_dir)
     subset_dir = Path(subset_dir)
@@ -149,6 +152,9 @@ def prepare_subset_imagewise(
     )
     total_copied += n_pkg
     print(f"Copied package files: {n_pkg}")
+    if ratings_file is None:
+        ratings_file = Path(__file__).resolve().parents[2] / 'beh_processed_subs/compiled_pleasantness_ratings.csv'
+    total_copied += int(copy_file(Path(ratings_file), subset_dir / 'compiled_pleasantness_ratings.csv', dry_run=dry_run))
 
     print("\n[2/3] Copying mask...")
     mask_src = full_data_dir / "masks" / "gm_0.1.nii"
@@ -193,7 +199,7 @@ def prepare_subset_imagewise(
 if __name__ == "__main__":
     full_data_dir = "/Users/liuq13/SPCD_data"
     subset_dir = "/Users/liuq13/SPCD_RSA_imagewise_subset"
-    source_package_dir = "/Users/liuq13/project-SPCD/scripts_MRI/rsa_imagewise"
+    source_package_dir = Path(__file__).resolve().parent
 
     prepare_subset_imagewise(
         full_data_dir=full_data_dir,

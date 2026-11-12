@@ -15,13 +15,31 @@
 %% ---------- Settings ----------
 addpath('/Users/liuq13/Applications/spm12/');
 
-base_dir = '/Users/liuq13/SPCD_data/rsa_maps';
-analysis_subfolder = 'probe_imagewise';
+if ~exist('base_dir', 'var')
+    base_dir = '/Users/liuq13/SPCD_data/rsa_maps';
+end
+% Set analysis_mode = 'second_image_value' before running this script to
+% aggregate all three second-image value versions in their own folders.
+if ~exist('analysis_mode', 'var')
+    analysis_mode = 'both_images';
+end
+if strcmp(analysis_mode, 'both_images')
+    analysis_subfolders = {'probe_imagewise'};
+elseif strcmp(analysis_mode, 'second_image_value')
+    analysis_subfolders = {fullfile('probe_imagewise_second_image', 'cue_value'), ...
+        fullfile('probe_imagewise_second_image', 'signed_difference'), ...
+        fullfile('probe_imagewise_second_image', 'absolute_difference')};
+else
+    error('Unknown analysis_mode: %s', analysis_mode);
+end
 
 sessions = {'premeal', 'postmeal', 'both'};
 
 models = {'odor_value', 'cue_type', 'image_identity', ...
           'button_presence', 'button_side'};
+if strcmp(analysis_mode, 'second_image_value')
+    models = {'odor_value'};
+end
 
 % cue subset versions
 %   subset-all = all cue maps
@@ -31,7 +49,7 @@ subset_tags = {'subset-all', 'subset-conditioned_only', 'subset-preconditioned_o
 
 fwhm = 6; % smoothing kernel in mm
 
-mask_file = '/Users/liuq13/SPCD_data/masks/gm_0.1.nii';
+mask_file = fullfile(fileparts(base_dir), 'masks', 'gm_0.1.nii');
 skip_subs = {'sub-19', 'sub-31', 'sub-33'};
 
 collapsed_tag = 'collapsed';
@@ -40,9 +58,12 @@ collapsed_tag = 'collapsed';
 spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
-analysis_root = fullfile(base_dir, analysis_subfolder);
-
 M = spm_read_vols(spm_vol(mask_file)) > 0;
+
+for analysis_index = 1:numel(analysis_subfolders)
+analysis_subfolder = analysis_subfolders{analysis_index};
+analysis_root = fullfile(base_dir, analysis_subfolder);
+fprintf('\n>>> ANALYSIS FOLDER: %s\n', analysis_root);
 
 %% ---------- Part 1: Per-session group analysis ----------
 for si = 1:numel(sessions)
@@ -404,4 +425,5 @@ for subseti = 1:numel(subset_tags)
     end
 end
 
+end % analysis_subfolders
 fprintf('\nAll done.\n');

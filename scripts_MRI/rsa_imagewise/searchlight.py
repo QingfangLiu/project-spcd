@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import json
 import numpy as np
 from typing import Optional, Sequence
 
@@ -15,6 +16,10 @@ from .models import (
     create_phase_rdm,
     create_button_presence_rdm,
     create_button_side_rdm,
+    create_second_image_value_rdms,
+    validate_analysis_options,
+    condition_to_group,
+    base_condition,
 )
 from .save_maps import save_single_rsa_map
 
@@ -40,19 +45,26 @@ def searchlight_rsa_single_subject(
     targets: Optional[Sequence[str]] = None,
     ratings_by_group: Optional[dict] = None,
     ratings_by_phase: Optional[dict] = None,
+    image_scope: str = "both",
+    value_model: str = "cue_value",
 ):
     from nilearn.decoding import SearchLight
 
     session_tags = (session_tag,) if isinstance(session_tag, str) else tuple(session_tag)
-    run_ids, button_labels, sample_labels, phase_labels, img_list = (
+    validate_analysis_options(image_scope, value_model)
+    loaded = (
         build_imagewise_patterns_for_sessions(
             sub=sub,
             base_dir=base_dir,
             session_tags=session_tags,
             button_scope=button_scope,
             cue_subset=cue_subset,
+            image_scope=image_scope,
+            return_trial_metadata=image_scope == "second",
         )
     )
+    run_ids, button_labels, sample_labels, phase_labels, img_list = loaded[:5]
+    trial_metadata = loaded[5] if image_scope == "second" else None
 
     n_samples = len(img_list)
     if n_samples < 2:
@@ -79,7 +91,15 @@ def searchlight_rsa_single_subject(
         "button_side": button_side_rdm,
     }
 
-    if ratings_by_phase is not None:
+    if image_scope == "second":
+        if ratings_by_phase is None and ratings_by_group is not None and len(session_tags) == 1:
+            ratings_by_phase = {session_tags[0]: ratings_by_group}
+        if ratings_by_phase is None:
+            raise ValueError("Second-image value analyses require complete pleasantness ratings")
+        trial_variables, value_rdms = create_second_image_value_rdms(
+            trial_metadata.first_label, sample_labels, phase_labels, ratings_by_phase)
+        model_rdms['odor_value'] = value_rdms[value_model]
+    elif ratings_by_phase is not None:
         if is_combined_phase:
             odor_value_rdm = create_odor_value_rdm_by_phase(
                 sample_labels=sample_labels,
@@ -112,14 +132,34 @@ def searchlight_rsa_single_subject(
         model_rdms.pop("cue_type", None)
 
     model_rdms = {name: model_rdms[name] for name in MODEL_NAMES if name in model_rdms}
+    metadata_path = None
+    if image_scope == "second":
+        from .diagnostics import check_second_image_design, write_second_image_diagnostics
+
+        diagnostic_rdms = dict(value_rdms)
+        diagnostic_rdms.update({n: r for n, r in model_rdms.items() if n != 'odor_value'})
+        diagnostic_rdms['first_image_identity'] = create_image_identity_rdm(trial_metadata.first_label)
+        pair_labels = np.array(['|'.join(sorted((
+            condition_to_group(base_condition(first)),
+            condition_to_group(base_condition(second)),
+        ))) for first, second in zip(trial_metadata.first_label, sample_labels)])
+        diagnostic_rdms['outcome_pair_identity'] = (pair_labels[:, None] != pair_labels[None, :]).astype(float)
+        model_rdms, pair_mask, design_info = check_second_image_design(model_rdms, run_ids)
+
     available_model_names = tuple(model_rdms.keys())
 
     if targets is None:
-        targets = list(available_model_names)
+        targets = ['odor_value'] if image_scope == 'second' else list(available_model_names)
     else:
         invalid_targets = sorted(set(targets) - set(available_model_names))
         if invalid_targets:
             raise ValueError(f"Unknown target regressor(s): {invalid_targets}")
+
+    if image_scope == 'second' and output_dir is not None:
+        metadata_path = write_second_image_diagnostics(
+            output_dir, sub, cue_subset, value_model, center_within_run,
+            trial_metadata, trial_variables, diagnostic_rdms, pair_mask,
+            design_info, targets)
 
     img_4d = concat_imgs(img_list)
 
@@ -164,5 +204,11 @@ def searchlight_rsa_single_subject(
                 cue_subset=cue_subset,
             )
 
+    if metadata_path is not None:
+        metadata = json.loads(metadata_path.read_text())
+        metadata['status'] = 'complete'
+        metadata['saved_maps'] = [f'{sub}_model-{name}_subset-{cue_subset}.nii.gz'
+                                  for name in rsa_maps]
+        metadata_path.write_text(json.dumps(metadata, indent=2) + '\n')
     return rsa_maps
     

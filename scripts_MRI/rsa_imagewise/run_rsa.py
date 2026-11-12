@@ -16,6 +16,7 @@ import sys
 
 from .searchlight import searchlight_rsa_single_subject, MODEL_NAMES
 from .ratings import load_subject_pleasantness_ratings
+from .models import VALUE_MODELS, analysis_subfolder, validate_analysis_options
 
 
 def main():
@@ -26,6 +27,10 @@ def main():
     parser.add_argument("--session", type=str, choices=["premeal", "postmeal", "both"], required=True, help="Session or combined phase to analyze")
     parser.add_argument("--base_dir", type=str, required=True, help="Base directory containing GLM and nii folders")
     parser.add_argument("--output_dir", type=str, default=None, help="Output directory")
+    parser.add_argument('--image_scope', choices=['both', 'second'], default='both',
+                        help='Use both cue positions or only second-cue patterns')
+    parser.add_argument('--value_model', choices=VALUE_MODELS, default='cue_value',
+                        help='Trial value definition; difference models require second-image scope')
     parser.add_argument(
         "--ratings_file",
         type=str,
@@ -63,6 +68,10 @@ def main():
     )
 
     args = parser.parse_args()
+    try:
+        validate_analysis_options(args.image_scope, args.value_model)
+    except ValueError as exc:
+        parser.error(str(exc))
 
     session_tags = ("premeal", "postmeal") if args.session == "both" else (args.session,)
     session_folders = [f"{session_tag}_trialwise_2mm" for session_tag in session_tags]
@@ -71,7 +80,7 @@ def main():
         args.output_dir = os.path.join(
             args.base_dir,
             "rsa_maps",
-            "probe_imagewise",
+            analysis_subfolder(args.image_scope, args.value_model),
             args.session,
         )
 
@@ -86,6 +95,8 @@ def main():
     print(f"Radius:             {args.radius} mm")
     print(f"N jobs:             {args.n_jobs}")
     print(f"Button scope:       {args.button_scope}")
+    print(f"Image scope:        {args.image_scope}")
+    print(f"Value definition:   {args.value_model}")
     print(f"Cue subset:         {args.cue_subset}")
     print(f"Center within run:   {args.center_within_run}")
     print(f"Target:             {args.target or 'all'}")
@@ -112,7 +123,7 @@ def main():
         sep="",
     )
 
-    if args.target == "odor_value" and ratings_by_phase is None:
+    if (args.target == "odor_value" or args.image_scope == 'second') and ratings_by_phase is None:
         raise ValueError(
             "Target 'odor_value' requires subject pleasantness ratings. "
             "Provide --ratings_file or add the placeholder ratings CSV."
@@ -131,6 +142,8 @@ def main():
             output_dir=args.output_dir,
             targets=[args.target] if args.target is not None else None,
             ratings_by_phase=ratings_by_phase,
+            image_scope=args.image_scope,
+            value_model=args.value_model,
         )
     except Exception as e:
         print(f"\nERROR during searchlight: {e}")

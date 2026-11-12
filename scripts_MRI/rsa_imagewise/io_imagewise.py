@@ -69,7 +69,8 @@ def _load_run_betas(
     return imgs, df
 
 
-def _load_trial_button_map(base_dir: str, sub: str, session_tag: str, run: int):
+def _load_trial_button_map(base_dir: str, sub: str, session_tag: str, run: int,
+                           strict=False):
     """
     Read events.tsv and build a mapping:
         trial -> response_hand
@@ -94,15 +95,49 @@ def _load_trial_button_map(base_dir: str, sub: str, session_tag: str, run: int):
 
     # One button row per trial
     button_rows = ev.loc[ev["trial_type"] == "button", ["trial", "response_hand"]].copy()
+    if strict and button_rows["trial"].duplicated().any():
+        raise ValueError(f"Duplicate button rows for a trial: {events_path}")
 
     trial_to_button = {}
     for _, row in button_rows.iterrows():
         trial = int(row["trial"])
         resp = row["response_hand"]
-        resp = str(resp).strip().lower()
+        resp = "none" if strict and pd.isna(resp) else str(resp).strip().lower()
+        if strict:
+            if resp in ("", "nan", "n/a"):
+                resp = "none"
+            if resp not in ("left", "right", "none"):
+                raise ValueError(f"Invalid response_hand={resp!r}: {events_path}")
         trial_to_button[trial] = resp # some trials may not have a resp column, will later be assigned a 'none'
 
     return trial_to_button
+
+
+def _pair_trial_cues(meta, context):
+    """Validate one first and one second cue for each trial within one run."""
+    required = {"trial", "img_index", "cue_index", "odor_index"}
+    if required - set(meta.columns):
+        raise ValueError(f"Missing pairing columns {sorted(required - set(meta.columns))}: {context}")
+    frame = meta.copy()
+    for column in required:
+        values = pd.to_numeric(frame[column], errors="raise").to_numpy(float)
+        if not np.isfinite(values).all() or not np.equal(values, np.floor(values)).all():
+            raise ValueError(f"Noninteger or missing {column}: {context}")
+        frame[column] = values.astype(int)
+    pairs = {}
+    for trial, rows in frame.groupby("trial", sort=False):
+        if len(rows) != 2 or set(rows.img_index) != {1, 2}:
+            raise ValueError(f"Expected exactly one first and second cue: {context}, trial={trial}")
+        labels = {}
+        for _, row in rows.iterrows():
+            key = (int(row.cue_index), int(row.odor_index))
+            if key not in condition_map:
+                raise ValueError(f"Unknown cue/odor mapping {key}: {context}, trial={trial}")
+            labels[int(row.img_index)] = condition_map[key]
+        if labels[1] == labels[2] or (labels[1][0] in 'AC') != (labels[2][0] in 'AC'):
+            raise ValueError(f"Invalid within-trial cue pair {labels}: {context}, trial={trial}")
+        pairs[int(trial)] = labels
+    return pairs
 
 
 def build_imagewise_patterns(
@@ -112,6 +147,8 @@ def build_imagewise_patterns(
     session_tag: str,
     button_scope: str = "second_image_only",
     cue_subset: str = "all",
+    image_scope: str = "both",
+    return_trial_metadata: bool = False,
 ):
     """
     Build image-wise RSA inputs.
@@ -122,6 +159,11 @@ def build_imagewise_patterns(
         - both_images: attach trial button label to both image presentations
         - second_image_only: attach button label only to img_index == 2,
           and assign 'none' to img_index == 1
+    image_scope : {"both", "second"}
+        Second-image mode validates trial pairs before retaining cue 2.
+    return_trial_metadata : bool
+        Append a sample-aligned DataFrame of paired cue labels and trial IDs
+        for second-image mode. The default return signature is unchanged.
 
     Returns
     -------
@@ -138,6 +180,10 @@ def build_imagewise_patterns(
 
     if cue_subset not in ("all", "conditioned_only", "preconditioned_only"):
         raise ValueError("cue_subset must be one of: all, conditioned_only, preconditioned_only")
+    if image_scope not in ("both", "second"):
+        raise ValueError("image_scope must be 'both' or 'second'")
+    if return_trial_metadata and image_scope != "second":
+        raise ValueError("Trial-pair metadata is available only for second-image analyses")
 
     # all 24 possible labels (len: 24)
     sample_labels_order = [f"{c}_img1" for c in BASE_CONDITION_ORDER] + [
@@ -150,6 +196,7 @@ def build_imagewise_patterns(
     run_ids = []
     button_labels = []
     sample_labels = []
+    trial_metadata = []
 
     runs = [1, 2, 3]
 
@@ -164,6 +211,12 @@ def build_imagewise_patterns(
             )
 
         except Exception as e:
+            csv_path = os.path.join(base_dir, "GLM", session_folder, sub,
+                                   BETA_INDEX_TEMPLATE.format(sub=sub, session_tag=session_tag, run=run))
+            if image_scope == "second" and not (
+                isinstance(e, FileNotFoundError) and not os.path.exists(csv_path)
+            ):
+                raise ValueError(f"Cannot load second-image inputs for {sub} {session_tag} run {run}") from e
             print(f"[SKIP] sub={sub} run={run} (beta/CSV issue): {e}")
             continue
 
@@ -171,8 +224,13 @@ def build_imagewise_patterns(
         missing = required - set(meta.columns)
         
         if missing:
+            if image_scope == "second":
+                raise ValueError(f"Missing pairing columns {sorted(missing)}: {sub} {session_tag} run {run}")
             print(f"[SKIP] sub={sub} run={run} (missing columns): {missing}")
             continue
+
+        pairs = (_pair_trial_cues(meta, f"{sub} {session_tag} run={run}")
+                 if image_scope == "second" else None)
 
         try:
             trial_to_button = _load_trial_button_map(
@@ -180,9 +238,12 @@ def build_imagewise_patterns(
                 sub=sub,
                 session_tag=session_tag,
                 run=run,
+                strict=image_scope == "second",
             )
 
         except Exception as e:
+            if image_scope == "second":
+                raise ValueError(f"Cannot load button controls for {sub} {session_tag} run {run}") from e
             print(f"[SKIP] sub={sub} run={run} (events issue): {e}")
             continue
 
@@ -203,6 +264,8 @@ def build_imagewise_patterns(
                     f"Unexpected img_index={img_index} in run {run}, row {idx}. "
                     "Expected 1 or 2."
                 )
+            if image_scope == "second" and img_index != 2:
+                continue
 
             sample_label = f"{base_cond}_img{img_index}"
             if sample_label not in sample_index:
@@ -223,6 +286,13 @@ def build_imagewise_patterns(
             run_ids.append(run)
             button_labels.append(button_label)
             sample_labels.append(sample_label)
+            if image_scope == "second":
+                trial_metadata.append(dict(
+                    session=session_tag, run_within_phase=run, trial=trial,
+                    first_label=f"{pairs[trial][1]}_img1",
+                    second_label=sample_label, img_index=2,
+                    button_label=button_label,
+                ))
 
     if len(img_list) == 0:
         raise ValueError("No image-wise samples were found.")
@@ -231,7 +301,10 @@ def build_imagewise_patterns(
     button_labels = np.asarray(button_labels, dtype=object)
     sample_labels = np.asarray(sample_labels, dtype=object)
 
-    return run_ids, button_labels, sample_labels, img_list
+    result = (run_ids, button_labels, sample_labels, img_list)
+    if return_trial_metadata:
+        return (*result, pd.DataFrame(trial_metadata))
+    return result
 
 
 def build_imagewise_patterns_for_sessions(
@@ -240,6 +313,8 @@ def build_imagewise_patterns_for_sessions(
     session_tags: Sequence[str],
     button_scope: str = "second_image_only",
     cue_subset: str = "all",
+    image_scope: str = "both",
+    return_trial_metadata: bool = False,
 ):
     """
     Build image-wise RSA inputs for one or more probe sessions.
@@ -260,19 +335,27 @@ def build_imagewise_patterns_for_sessions(
     all_sample_labels = []
     all_phase_labels = []
     all_img_list = []
+    all_trial_metadata = []
 
     for phase_idx, session_tag in enumerate(session_tags):
         session_folder = f"{session_tag}_trialwise_2mm"
-        run_ids, button_labels, sample_labels, img_list = build_imagewise_patterns(
+        loaded = build_imagewise_patterns(
             sub=sub,
             base_dir=base_dir,
             session_folder=session_folder,
             session_tag=session_tag,
             button_scope=button_scope,
             cue_subset=cue_subset,
+            image_scope=image_scope,
+            return_trial_metadata=return_trial_metadata,
         )
+        run_ids, button_labels, sample_labels, img_list = loaded[:4]
 
         run_offset = phase_idx * 100
+        if return_trial_metadata:
+            metadata = loaded[4].copy()
+            metadata["run_id"] = run_ids + run_offset
+            all_trial_metadata.append(metadata)
         all_run_ids.append(run_ids + run_offset)
         all_button_labels.append(button_labels)
         all_sample_labels.append(sample_labels)
@@ -284,10 +367,13 @@ def build_imagewise_patterns_for_sessions(
     if not all_img_list:
         raise ValueError("No image-wise samples were found.")
 
-    return (
+    result = (
         np.concatenate(all_run_ids),
         np.concatenate(all_button_labels),
         np.concatenate(all_sample_labels),
         np.concatenate(all_phase_labels),
         all_img_list,
     )
+    if return_trial_metadata:
+        return (*result, pd.concat(all_trial_metadata, ignore_index=True))
+    return result
