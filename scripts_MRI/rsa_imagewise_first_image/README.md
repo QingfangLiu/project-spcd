@@ -151,7 +151,10 @@ rsa_maps/probe_imagewise_first_image/collapsed/group_spm/model-<model>/<subset>/
 Some requested combinations may be skipped because the corresponding
 subject-level maps do not exist. For example, `cue_type` is dropped for single
 cue-type subsets because it has no variance. The MATLAB script currently
-excludes `sub-19` and `sub-33` from group aggregation.
+excludes `sub-19`, `sub-31`, and `sub-33` from group aggregation, matching the
+paper participant exclusions. Because the script skips any model folder that
+already has an `SPM.mat`, delete the existing model folder before rerunning a
+group model after changing this list.
 
 ## Cue-type pre/post difference
 
