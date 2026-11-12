@@ -5,6 +5,8 @@ blue/orange cue colors, and restrained axes. Text is scaled for these figures'
 13.4-inch canvases so it remains legible at the same displayed journal width.
 """
 
+from __future__ import annotations
+
 import matplotlib.pyplot as plt
 
 
