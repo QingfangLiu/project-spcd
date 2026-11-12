@@ -100,7 +100,7 @@ def main() -> None:
     project_root_default = _default_project_root()
     parser = argparse.ArgumentParser(
         description=(
-            "Run, aggregate, and plot exploratory Spearman odor-identity ROI "
+            "Run, aggregate, and plot Spearman odor-identity ROI "
             "RSA separately for the two Kahnt OFC K=2 clusters."
         )
     )
@@ -248,7 +248,7 @@ def main() -> None:
         _preflight_base_dir(base_dir)
 
     print("=" * 80)
-    print("Kahnt OFC K=2 exploratory Spearman ROI RSA")
+    print("Kahnt OFC K=2 Spearman ROI RSA")
     print("=" * 80)
     print(f"Project root:     {project_root}")
     print(f"SPCD data root:   {base_dir}")

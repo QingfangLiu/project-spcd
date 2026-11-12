@@ -1,11 +1,8 @@
-# Exploratory Spearman RSA for the Kahnt OFC K=2 clusters
+# Spearman RSA for the Kahnt OFC K=2 clusters
 
 This additions-only workflow reruns the established first-image, premeal,
 no-image odor-identity ROI analysis with rank-based RDM statistics. It does not
 change or overwrite the existing OLS regression RSA scripts or results.
-
-The analysis should be described as an exploratory robustness analysis because
-it was selected after inspecting the OLS results.
 
 ## What stays identical to the OLS analysis
 
