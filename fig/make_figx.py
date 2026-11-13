@@ -234,11 +234,12 @@ def main():
     fig = plt.figure(figsize=(13.4, 5.0))
     schematic = fig.add_axes([.015, .18, .345, .65])
     draw_conditioning_schematic(schematic, project)
-    axes = [fig.add_axes([.445, .28, .225, .55]), fig.add_axes([.76, .28, .225, .55])]
+    plot_lefts = (.418, .746)
+    axes = [fig.add_axes([left, .28, .239, .55]) for left in plot_lefts]
     # Reserve the same two-line heading area for all panels.
     for x, letter, title in [(.02, "A", "Odor expectation\nduring conditioning"),
-                             (.415, "B", "Odor-identity RSA"),
-                             (.73, "C", "Cross-task decoding")]:
+                             (plot_lefts[0] - .03, "B", "Odor-identity RSA"),
+                             (plot_lefts[1] - .03, "C", "Cross-task decoding")]:
         fig.text(x, .965, letter, fontsize=PANEL_SIZE, fontweight="bold", va="top")
         fig.text(x + .03, .965, title, fontsize=TITLE_SIZE, fontweight="bold",
                  va="top", linespacing=1.2)
