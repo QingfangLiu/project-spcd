@@ -13,7 +13,7 @@ Panel A reuses Figure 1's actual cue/outcome assets and image/arrow helpers.
 Expected odor images are conceptual, not visual stimuli shown in the task.
 The delivery note describes the pooled nuisance regressor, not proof that
 all delivery-related information was removed from the cue estimates.
-Panel B reuses the Figure 3/4 generator's ROI order/colors, participant jitter,
+Panels B/C reuse the Figure 3/4 generator's ROI order/colors, participant jitter,
 and mean/CI helper, together with the shared manuscript style. Validate plotted
 means and one-sided t tests against every saved group summary before drawing.
 """
@@ -42,9 +42,9 @@ from scipy import stats
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 from figure_style import (
-    DIRECT_COLOR, INFERRED_COLOR, MUTED_TEXT_COLOR, NOTE_SIZE,
-    PANEL_SIZE, REFERENCE_COLOR, SPINE_COLOR, SUMMARY_COLOR, TITLE_SIZE,
-    configure_matplotlib, style_axis,
+    DIRECT_COLOR, INFERRED_COLOR, LABEL_SIZE, NOTE_SIZE,
+    PANEL_SIZE, REFERENCE_COLOR, SUMMARY_COLOR, TITLE_SIZE,
+    add_panel_header, configure_matplotlib, style_axis,
 )
 from scripts_MRI.RSA_plot import make_pnas_odor_identity_convergence_figure as manuscript
 from scripts_behavior import make_design_figure as design
@@ -105,47 +105,55 @@ def draw_conditioning_schematic(axis, project):
     """Illustrate the analyzed food-odor trials, with delivery modeled separately."""
     axis.set_axis_off()
     axis.set_xlim(0, 4.7)
-    axis.set_ylim(0, 4.2)
+    axis.set_ylim(-.65, 4.25)
     axis.set_aspect("equal")
-    cue_x, prediction_x, delivery_x = .50, 2.25, 4.0
-    for x, heading in [(cue_x, "Conditioned\ncue"), (prediction_x, "Expected\nodors"),
-                       (delivery_x, "Delivered\nodors")]:
-        design.text(axis, x, 3.65, heading, size=12.5, weight="bold")
+    cue_x, prediction_x, delivery_x = .50, 1.85, 4.0
+    branch_slope = np.tan(np.deg2rad(30))
+    prediction_offset = (prediction_x - cue_x) * branch_slope
+    for x, y, heading in [(cue_x, 3.30, "Conditioned\ncue"),
+                          (prediction_x, 4.00, "Expected\nodors"),
+                          (delivery_x, 3.30, "Delivered\nodors")]:
+        design.text(axis, x, y, heading, size=12.5, weight="bold")
     for y, code, odor, asset, color in [
-            (2.85, "B1", "Odor 1", "sweet_odor.png", INFERRED_COLOR),
-            (1.5, "B2", "Odor 2", "savory_odor.png", DIRECT_COLOR)]:
+            (2.35, "B1", "Odor 1", "sweet_odor.png", INFERRED_COLOR),
+            (.75, "B2", "Odor 2", "savory_odor.png", DIRECT_COLOR)]:
+        prediction_y = y + prediction_offset
         cue_path = project / design.CUES[code].relative_to(design.ROOT)
         design.image(axis, cue_path, cue_x, y + .04, .66)
         design.text(axis, cue_x, y - .45, code, size=13, weight="bold")
+        # Shallower expectation branches keep the schematic compact; contents stay upright.
         axis.add_patch(FancyArrowPatch(
-            (cue_x + .45, y), (prediction_x - .62, y), arrowstyle="-|>",
+            (cue_x + .42, y + .42 * branch_slope),
+            (prediction_x - .59, prediction_y - .59 * branch_slope),
+            arrowstyle="-|>",
             mutation_scale=13, linewidth=1.25, color=REFERENCE_COLOR,
             linestyle=(0, (3, 3)), zorder=2,
         ))
-        design.arrow(axis, prediction_x + .62, y, delivery_x - .62, y)
-        for x, expected in [(prediction_x, True), (delivery_x, False)]:
+        design.arrow(axis, cue_x + .45, y, delivery_x - .62, y)
+        for x, odor_y, expected in [(prediction_x, prediction_y, True),
+                                    (delivery_x, y, False)]:
             axis.add_patch(FancyBboxPatch(
-                (x - .53, y - .51), 1.06, 1.02,
+                (x - .53, odor_y - .51), 1.06, 1.02,
                 boxstyle="round,pad=0,rounding_size=0.08",
                 edgecolor=color, facecolor="white", linewidth=1.15,
                 linestyle=(0, (3, 3)) if expected else "solid", zorder=1,
             ))
-            design.image(axis, project / "fig" / "design_assets" / asset, x, y + .09, .66)
-            design.text(axis, x, y - .36, odor, size=12, color=color)
+            design.image(axis, project / "fig" / "design_assets" / asset, x, odor_y + .09, .66)
+            design.text(axis, x, odor_y - .36, odor, size=12, color=color)
     # Group cue and prediction responses without extending to odor delivery.
-    axis.plot([.12, .12, 2.80, 2.80], [.97, .84, .84, .97],
-              color=SPINE_COLOR, linewidth=.9)
-    annotation_y = .43
-    annotation_style = {"size": 11, "color": MUTED_TEXT_COLOR}
-    design.text(axis, 1.46, annotation_y,
-                "Does lateral OFC represent\nodor identity during prediction?",
+    axis.plot([.12, .12, 2.40, 2.40], [.22, .08, .08, .22],
+              color="black", linewidth=.9)
+    annotation_y = -.30
+    annotation_style = {"size": 11, "color": "black"}
+    design.text(axis, 1.26, annotation_y,
+                "Does lateral/medial OFC represent\nexpected odor identity\nduring conditioning?",
                 **annotation_style)
-    # Keep the implementation note quiet and local to the delivery column.
+    # Keep the delivery note local to the delivery column.
     design.text(axis, delivery_x, annotation_y, "Delivery modeled\nseparately.",
                 **annotation_style)
 
 
-def draw_panel(axis, wide, baseline, summaries, offsets, *, title, ylabel):
+def draw_panel(axis, wide, baseline, summaries, offsets, *, panel_letter, title, ylabel):
     values = wide.to_numpy()
     intervals = {roi: manuscript._mean_ci(wide[roi].to_numpy()) for roi in manuscript.ROI_ORDER}
     low = min(baseline, float(values.min()), *(ci[1] for ci in intervals.values()))
@@ -156,11 +164,11 @@ def draw_panel(axis, wide, baseline, summaries, offsets, *, title, ylabel):
     axis.set_ylim(low - .12 * span, high + .25 * span)
     jitter = np.array([offsets[sub] for sub in wide.index])
     for x, roi in enumerate(manuscript.ROI_ORDER):
-        axis.scatter(x + jitter, wide[roi], s=25, color=manuscript.INDIVIDUAL_COLOR,
+        axis.scatter(x + jitter, wide[roi], s=28, color=manuscript.INDIVIDUAL_COLOR,
                      alpha=.4, edgecolor="white", linewidth=.3, zorder=2)
         mean, ci_low, ci_high = intervals[roi]
         axis.errorbar(x, mean, yerr=[[mean - ci_low], [ci_high - mean]], fmt="D",
-                      markersize=6, markerfacecolor="white", markeredgecolor=SUMMARY_COLOR,
+                      markersize=6.5, markerfacecolor="white", markeredgecolor=SUMMARY_COLOR,
                       markeredgewidth=1.6, color=SUMMARY_COLOR, linewidth=2.2,
                       capsize=5, capthick=2.2, zorder=4)
         annotation = manuscript._significance_label(float(summaries[roi]["p"]))
@@ -170,53 +178,33 @@ def draw_panel(axis, wide, baseline, summaries, offsets, *, title, ylabel):
     axis.axhline(baseline, color=REFERENCE_COLOR, linewidth=1.2, linestyle=(0, (3, 3)))
     axis.set_xlim(-.48, 1.48)
     axis.set_xticks([0, 1], [manuscript.ROI_SHORT[roi].replace(" OFC", "\nOFC") for roi in manuscript.ROI_ORDER])
-    axis.set_ylabel(ylabel, fontsize=13, labelpad=6)
+    axis.set_ylabel(ylabel, fontsize=LABEL_SIZE, labelpad=6)
     axis.yaxis.set_major_locator(MaxNLocator(nbins=5))
     axis.yaxis.set_major_formatter(FormatStrFormatter("%.2f") if baseline == 0 else PercentFormatter(xmax=1, decimals=0))
     style_axis(axis)
-    axis.tick_params(axis="both", labelsize=12)
-    axis.tick_params(axis="x", pad=9)
+    axis.tick_params(axis="x", labelsize=12, pad=9)
     for label, roi in zip(axis.get_xticklabels(), manuscript.ROI_ORDER):
         label.set_color(manuscript.ROI_COLORS[roi])
         label.set_fontweight("bold")
-    axis.set_title(title, loc="left", fontsize=15, pad=16)
+    add_panel_header(axis, panel_letter, title)
 
 
-def caption(n, full_runs, partial_runs):
-    partial_count = "one" if partial_runs == 1 else str(partial_runs)
+def caption(n):
     return (
         "Figure X. Lateral OFC represents reward identity during conditioning.\n\n"
-        "(A) Cue-evoked odor prediction during conditioning. Illustrative food-odor "
-        "trials show directly conditioned cues (B1/B2), prediction of their "
-        "associated odors, and subsequent odor delivery. Dashed arrows link cues "
-        "to their expected odors; solid arrows indicate subsequent odor delivery. "
-        "Dashed boxes depict "
-        "expected outcomes, not odor images displayed during the task; solid "
-        "boxes indicate delivered odors. The intervening delay is omitted. "
-        "The bracket groups the cue and prediction stages targeted by the analyses. "
-        "Cue and odor assignments follow the illustrative mapping in Figure 1 "
-        "and were counterbalanced across participants. Odor-delivery events "
-        "for both food odors and clean air were included as one pooled nuisance "
-        "regressor in the single-trial cue GLMs, modeling delivery separately "
-        "from cue-evoked responses. "
-        "(B) Conditioning results. Left plot: odor-identity RSA. Spearman correlations "
-        "between neural and expected "
-        "odor-identity RDMs were computed from single-trial estimates spanning the "
-        "cue and prediction period (0-5 s after cue onset; EXT5s), retaining only "
-        "comparisons between presentations from different runs. "
-        "Right plot: cross-task decoding. A linear support vector machine trained to "
-        "distinguish the two food odors in the independent passive localizer "
-        "was tested on early conditioning cue estimates (0-2 s; EARLY). "
-        "Balanced accuracy averages classification accuracy across the two odor identities. "
-        "Both analyses used correct food-odor trials pooled across all available "
-        f"conditioning runs in the same participants (n = {n}; {full_runs} contributed "
-        f"three runs and {partial_count} contributed runs 1-2). The independently defined "
-        "bilateral OFC regions are the same as in Figure 3. Points represent "
-        "individual participants, and open diamonds show means with t-based "
-        "95% confidence intervals. "
-        "Dashed lines indicate zero RSA correlation (left) and 50% chance accuracy (right). "
-        "Asterisks denote uncorrected p < 0.05 from one-sided one-sample t tests "
-        "against these respective baselines; n.s., not significant.\n"
+        "(A) Odor expectation during conditioning. Dashed branches link conditioned "
+        "cues to their expected odors, shown in dashed boxes; solid boxes indicate "
+        "delivered odors. Odor images are illustrative and were not displayed during "
+        "the task. Odor delivery was modeled separately in the single-trial GLMs. "
+        "(B) Odor-identity RSA. Analyses used cue and prediction-period estimates "
+        "(0-5 s; EXT5s). "
+        "(C) Cross-task decoding. A classifier trained on passive odor responses was "
+        "tested on early conditioning cue responses (0-2 s; EARLY). "
+        "In B and C, analyses used the same bilateral OFC regions as Figure 3. Points represent "
+        f"individual participants (n = {n}), and open diamonds indicate means with "
+        "t-based 95% confidence intervals. Dashed lines indicate zero RSA correlation "
+        "(B) and 50% chance accuracy (C). Asterisks denote uncorrected p < 0.05 "
+        "from one-sided one-sample t tests against these baselines; n.s., not significant.\n"
     )
 
 
@@ -231,7 +219,7 @@ def main():
     decoding, decoding_wide, _, decoding_baseline, decoding_stats = load_panel(project, "decoding")
     if not rsa_wide.index.equals(decoding_wide.index):
         raise ValueError("RSA and decoding participant samples differ.")
-    # Confirm the available-run and trial counts used in the shared caption.
+    # Confirm that both analyses use matching trials and available conditioning runs.
     reference = rsa.loc[rsa["roi"].eq(manuscript.LATERAL_ROI)].set_index("sub")
     comparison = decoding.loc[decoding["roi"].eq(manuscript.LATERAL_ROI)].set_index("sub").reindex(reference.index)
     if not np.array_equal(reference["n_samples"], comparison["n_cue_samples"]):
@@ -239,22 +227,23 @@ def main():
     if not reference["runs"].eq(comparison["cue_runs"]).all():
         raise ValueError("RSA and decoding available conditioning runs differ.")
     if not reference["runs"].isin(["1,2,3", "1,2"]).all():
-        raise ValueError("Unexpected available-run pattern; update caption.")
+        raise ValueError("Unexpected available-run pattern in the conditioning inputs.")
     n = len(rsa_wide)
     offsets = manuscript._participant_offsets(rsa_wide.index.tolist(), width=.12)
     configure_matplotlib()
-    fig = plt.figure(figsize=(13.4, 6.7))
-    schematic = fig.add_axes([.02, .17, .35, .67])
+    fig = plt.figure(figsize=(13.4, 5.5))
+    schematic = fig.add_axes([.02, .12, .35, .74])
     draw_conditioning_schematic(schematic, project)
-    axes = [fig.add_axes([.48, .20, .18, .58]), fig.add_axes([.79, .20, .195, .58])]
-    fig.text(.021, .925, "A", fontsize=PANEL_SIZE, fontweight="bold", va="center")
-    fig.text(.05, .925, "Cue-evoked odor prediction", fontsize=TITLE_SIZE, fontweight="bold", va="center")
-    fig.text(.435, .925, "B", fontsize=PANEL_SIZE, fontweight="bold", va="center")
-    fig.text(.465, .925, "Conditioning results", fontsize=TITLE_SIZE, fontweight="bold", va="center")
+    axes = [fig.add_axes([.48, .23, .18, .50]), fig.add_axes([.79, .23, .195, .50])]
+    fig.text(.021, .945, "A", fontsize=PANEL_SIZE, fontweight="bold", va="center")
+    fig.text(.05, .964, "Odor expectation\nduring conditioning", fontsize=TITLE_SIZE,
+             fontweight="bold", va="top", linespacing=1.2)
     draw_panel(axes[0], rsa_wide, rsa_baseline, rsa_stats, offsets,
-               title="Odor-identity RSA", ylabel="Spearman ρ: neural vs\nodor-identity RDM")
+               panel_letter="B", title="Odor-identity RSA",
+               ylabel="Spearman ρ: neural vs\nodor-identity RDM")
     draw_panel(axes[1], decoding_wide, decoding_baseline, decoding_stats, offsets,
-               title="Cross-task decoding", ylabel="Perception-to-cue\nbalanced accuracy")
+               panel_letter="C", title="Cross-task decoding",
+               ylabel="Perception-to-cue\ndecoding accuracy")
     # Trim only the unused bottom margin, retaining a small pad below the labels.
     fig.canvas.draw()
     ink_bounds = fig.get_tightbbox(fig.canvas.get_renderer())
@@ -263,14 +252,13 @@ def main():
     prefix.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(prefix.with_suffix(".pdf"), bbox_inches=export_bounds, pad_inches=0, metadata={
         "Title": "Conditioning odor-identity RSA and cross-task decoding",
-        "Subject": "EXT5s all-available-run cross-run RSA; EARLY balanced accuracy; n=" + str(n),
+        "Subject": "EXT5s all-available-run cross-run RSA; EARLY decoding accuracy; n=" + str(n),
         "Creator": "project-spcd/fig/make_figx.py",
     })
     fig.savefig(prefix.with_suffix(".png"), dpi=300, bbox_inches=export_bounds, pad_inches=0)
     plt.close(fig)
     caption_path = prefix.parent / f"{prefix.name}_caption.txt"
-    caption_path.write_text(caption(n, int(reference["runs"].eq("1,2,3").sum()),
-                                      int(reference["runs"].eq("1,2").sum())))
+    caption_path.write_text(caption(n))
     for analysis, summaries in [("RSA", rsa_stats), ("Decoding", decoding_stats)]:
         for roi, summary in summaries.items():
             print(analysis, manuscript.ROI_SHORT[roi], summary)

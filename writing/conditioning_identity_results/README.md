@@ -9,7 +9,7 @@ without implying that it has been selected for the main manuscript.
 
 - **`conditioning_identity.pdf`**: combined PI-review document, with Results
   first, Figure X and its caption on a separate page, followed by the
-  two-paragraph Methods addition and references.
+  two-paragraph Methods addition.
   The title is "Lateral OFC represents reward identity during conditioning."
 - **`conditioning_identity.tex`**: single editable source and canonical
   version of the combined document. The Methods cover the EARLY and EXT5s
@@ -18,7 +18,10 @@ without implying that it has been selected for the main manuscript.
   definitions, and RSA procedures refer back to the existing probe Methods.
 - **Figure X** is loaded from [the shared figure PDF](../../fig/figx.pdf),
   with [a PNG preview](../../fig/figx.png). Its layout has the conditioning
-  schematic on the left and both result plots on the right. It displays
+  schematic in panel A on the left, RSA in panel B, and cross-task decoding
+  in panel C. Dashed upward
+  branches distinguish expected odors from the horizontal cue-to-delivery
+  paths. It displays
   EXT5s cross-run RSA and EARLY balanced accuracy, with the cue windows
   specified in the caption and significance notation matching Figures 3/4.
   The caption is included in this document's source; its standalone copy
@@ -26,10 +29,10 @@ without implying that it has been selected for the main manuscript.
 - **`README.md`**: analysis provenance and working notes; these notes are
   separate from the proposed Results prose.
 
-The Results concluding sentence cites Howard et al. (2015) and Howard and Kahnt
-(2017), using the main paper's existing `howard2015identity` and
-`howard2017identity` keys. The standalone PDF reads their entries directly
-from `../main/sn-bibliography.bib` and includes a short reference list.
+Citations and the reference list are temporarily omitted from the standalone
+draft. The main paper retains the Howard et al. (2015) and Howard and Kahnt
+(2017) entries under `howard2015identity` and `howard2017identity` in
+`../main/sn-bibliography.bib` for possible restoration.
 The combined document replaces the separate Results and Methods documents.
 No allocation to main-text versus supplementary Methods has been made.
 The Methods draft is written as an addition to the paper's existing Methods
