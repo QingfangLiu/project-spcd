@@ -44,7 +44,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from figure_style import (
     DIRECT_COLOR, INFERRED_COLOR, LABEL_SIZE, NOTE_SIZE,
     PANEL_SIZE, REFERENCE_COLOR, SUMMARY_COLOR, TITLE_SIZE,
-    add_panel_header, configure_matplotlib, style_axis,
+    configure_matplotlib, style_axis,
 )
 from scripts_MRI.RSA_plot import make_pnas_odor_identity_convergence_figure as manuscript
 from scripts_behavior import make_design_figure as design
@@ -105,13 +105,13 @@ def draw_conditioning_schematic(axis, project):
     """Illustrate the analyzed food-odor trials, with delivery modeled separately."""
     axis.set_axis_off()
     axis.set_xlim(0, 4.7)
-    axis.set_ylim(-.65, 4.25)
+    axis.set_ylim(-.40, 4.25)
     axis.set_aspect("equal")
-    cue_x, prediction_x, delivery_x = .50, 1.85, 4.0
+    cue_x, prediction_x, delivery_x = .50, 2.0, 4.0
     branch_slope = np.tan(np.deg2rad(30))
     prediction_offset = (prediction_x - cue_x) * branch_slope
     for x, y, heading in [(cue_x, 3.30, "Conditioned\ncue"),
-                          (prediction_x, 4.00, "Expected\nodors"),
+                          (prediction_x, 4.08, "Expected\nodors"),
                           (delivery_x, 3.30, "Delivered\nodors")]:
         design.text(axis, x, y, heading, size=12.5, weight="bold")
     for y, code, odor, asset, color in [
@@ -141,19 +141,19 @@ def draw_conditioning_schematic(axis, project):
             design.image(axis, project / "fig" / "design_assets" / asset, x, odor_y + .09, .66)
             design.text(axis, x, odor_y - .36, odor, size=12, color=color)
     # Group cue and prediction responses without extending to odor delivery.
-    axis.plot([.12, .12, 2.40, 2.40], [.22, .08, .08, .22],
+    axis.plot([.12, .12, 2.55, 2.55], [.22, .08, .08, .22],
               color="black", linewidth=.9)
-    annotation_y = -.30
+    annotation_y = -.14
     annotation_style = {"size": 11, "color": "black"}
-    design.text(axis, 1.26, annotation_y,
-                "Does lateral/medial OFC represent\nexpected odor identity\nduring conditioning?",
+    design.text(axis, 1.335, annotation_y,
+                "Cue-evoked patterns",
                 **annotation_style)
     # Keep the delivery note local to the delivery column.
     design.text(axis, delivery_x, annotation_y, "Delivery modeled\nseparately.",
                 **annotation_style)
 
 
-def draw_panel(axis, wide, baseline, summaries, offsets, *, panel_letter, title, ylabel):
+def draw_panel(axis, wide, baseline, summaries, offsets, *, ylabel):
     values = wide.to_numpy()
     intervals = {roi: manuscript._mean_ci(wide[roi].to_numpy()) for roi in manuscript.ROI_ORDER}
     low = min(baseline, float(values.min()), *(ci[1] for ci in intervals.values()))
@@ -186,7 +186,6 @@ def draw_panel(axis, wide, baseline, summaries, offsets, *, panel_letter, title,
     for label, roi in zip(axis.get_xticklabels(), manuscript.ROI_ORDER):
         label.set_color(manuscript.ROI_COLORS[roi])
         label.set_fontweight("bold")
-    add_panel_header(axis, panel_letter, title)
 
 
 def caption(n):
@@ -196,7 +195,8 @@ def caption(n):
         "cues to their expected odors, shown in dashed boxes; solid boxes indicate "
         "delivered odors. Odor images are illustrative and were not displayed during "
         "the task. Odor delivery was modeled separately in the single-trial GLMs. "
-        "(B) Odor-identity RSA. Analyses used cue and prediction-period estimates "
+        "(B) Odor-identity RSA. Spearman correlations between neural and expected "
+        "odor-identity RDMs were computed from cue and prediction-period estimates "
         "(0-5 s; EXT5s). "
         "(C) Cross-task decoding. A classifier trained on passive odor responses was "
         "tested on early conditioning cue responses (0-2 s; EARLY). "
@@ -231,19 +231,21 @@ def main():
     n = len(rsa_wide)
     offsets = manuscript._participant_offsets(rsa_wide.index.tolist(), width=.12)
     configure_matplotlib()
-    fig = plt.figure(figsize=(13.4, 5.5))
-    schematic = fig.add_axes([.02, .12, .35, .74])
+    fig = plt.figure(figsize=(13.4, 5.0))
+    schematic = fig.add_axes([.015, .18, .345, .65])
     draw_conditioning_schematic(schematic, project)
-    axes = [fig.add_axes([.48, .23, .18, .50]), fig.add_axes([.79, .23, .195, .50])]
-    fig.text(.021, .945, "A", fontsize=PANEL_SIZE, fontweight="bold", va="center")
-    fig.text(.05, .964, "Odor expectation\nduring conditioning", fontsize=TITLE_SIZE,
-             fontweight="bold", va="top", linespacing=1.2)
+    axes = [fig.add_axes([.445, .28, .225, .55]), fig.add_axes([.76, .28, .225, .55])]
+    # Reserve the same two-line heading area for all panels.
+    for x, letter, title in [(.02, "A", "Odor expectation\nduring conditioning"),
+                             (.415, "B", "Odor-identity RSA"),
+                             (.73, "C", "Cross-task decoding")]:
+        fig.text(x, .965, letter, fontsize=PANEL_SIZE, fontweight="bold", va="top")
+        fig.text(x + .03, .965, title, fontsize=TITLE_SIZE, fontweight="bold",
+                 va="top", linespacing=1.2)
     draw_panel(axes[0], rsa_wide, rsa_baseline, rsa_stats, offsets,
-               panel_letter="B", title="Odor-identity RSA",
-               ylabel="Spearman ρ: neural vs\nodor-identity RDM")
+               ylabel="Spearman ρ")
     draw_panel(axes[1], decoding_wide, decoding_baseline, decoding_stats, offsets,
-               panel_letter="C", title="Cross-task decoding",
-               ylabel="Perception-to-cue\ndecoding accuracy")
+               ylabel="Decoding accuracy (%)")
     # Trim only the unused bottom margin, retaining a small pad below the labels.
     fig.canvas.draw()
     ink_bounds = fig.get_tightbbox(fig.canvas.get_renderer())

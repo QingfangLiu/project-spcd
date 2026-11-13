@@ -19,9 +19,10 @@ without implying that it has been selected for the main manuscript.
 - **Figure X** is loaded from [the shared figure PDF](../../fig/figx.pdf),
   with [a PNG preview](../../fig/figx.png). Its layout has the conditioning
   schematic in panel A on the left, RSA in panel B, and cross-task decoding
-  in panel C. Dashed upward
-  branches distinguish expected odors from the horizontal cue-to-delivery
-  paths. It displays
+  in panel C. Panel headings share a top row, and B/C use matching plot
+  dimensions. The bracket in A marks cue-evoked patterns; dashed upward
+  branches distinguish expected odors from horizontal cue-to-delivery paths.
+  It displays
   EXT5s cross-run RSA and EARLY balanced accuracy, with the cue windows
   specified in the caption and significance notation matching Figures 3/4.
   The caption is included in this document's source; its standalone copy
