@@ -1,17 +1,17 @@
 {
-  "source_sha256": "b40c4ab1fb9cded803e216600525823ff2acb0e1270775556e8adec859763b1e",
+  "source_sha256": "58ada60180ed8eba5b5e5a71126d0d73b76e24c064fafa15a6b4096efb4c58b7",
   "document_kind": "main",
   "checks": {
     "citations": {
-      "count": 30,
+      "count": 34,
       "preserved": true
     },
     "labels": {
-      "count": 9,
+      "count": 11,
       "preserved": true
     },
     "references": {
-      "count": 27,
+      "count": 30,
       "preserved": true
     },
     "equations": {
@@ -23,11 +23,11 @@
       "preserved": true
     },
     "captions": {
-      "count": 5,
+      "count": 6,
       "preserved": true
     },
     "graphics": {
-      "count": 5,
+      "count": 6,
       "preserved": true
     },
     "bibliography": {
@@ -107,13 +107,13 @@
     {
       "command": "bibsplit",
       "argument": [],
-      "option": "19"
+      "option": "27"
     }
   ],
   "citation_style": "author-year",
   "bibliography_style": "plainnat",
   "citation_rewrites": {
-    "parenthetical": 30,
+    "parenthetical": 34,
     "narrative_year": 0
   },
   "layout": "12pt article, one column, 1-inch margins; nonfloating figures and tables; author-year plainnat bibliography",
@@ -146,6 +146,11 @@
     {
       "from": "../../fig/fig5_model.pdf",
       "to": "../../fig/fig5_model.png",
+      "kind": "figure"
+    },
+    {
+      "from": "../../fig/fig6_conditioning_rsa.pdf",
+      "to": "../../fig/fig6_conditioning_rsa.png",
       "kind": "figure"
     },
     {
@@ -189,6 +194,13 @@
       "kind": "figure",
       "status": "linked",
       "origin": "/Users/liuq13/project-spcd/fig/fig5_model.png"
+    },
+    {
+      "path": "../../fig/fig6_conditioning_rsa.png",
+      "source_path": "../../fig/fig6_conditioning_rsa.pdf",
+      "kind": "figure",
+      "status": "linked",
+      "origin": "/Users/liuq13/project-spcd/fig/fig6_conditioning_rsa.png"
     },
     {
       "path": "../main/sn-bibliography.bib",
