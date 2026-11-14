@@ -17,6 +17,8 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{soul}
 \usepackage[authoryear,round,sort]{natbib}
 \setcitestyle{aysep={,},citesep={;}}
 \usepackage[hidelinks]{hyperref}
@@ -231,6 +233,10 @@ We estimated single-presentation GLMs for the premeal and postmeal probe tasks u
 
 Single-trial beta estimates were also obtained from the passive odor localizer using the least-squares-separate approach. A separate GLM was fitted for each odor presentation, with the target presentation modeled as a zero-duration event at sniff-cue onset and all remaining presentations within the same run pooled into a second regressor. Models used the same preprocessed functional images and nuisance regressors described above, with a high-pass filter cutoff of 128 s. Beta estimates for the two food odors were used to train the cross-task decoder.
 
+\paragraph*{Conditioning models}
+
+Single-trial conditioning responses were estimated using least-squares-separate GLMs. Each model contained a target-cue regressor spanning the combined cue and prediction period (0--5\,s from cue onset) and a second regressor pooling all other cue presentations with the same duration. Separate regressors modeled delay (5--7\,s after cue onset), odor delivery (7--9\,s), zero-duration button presses at the recorded response times, and fixation replacing delay and delivery on missed-response trials (5--9\,s). Delivery events for both food odors and clean air were pooled into a single regressor on all responded trials, including incorrect predictions. All cue presentations entered the GLMs; trial filtering was applied after estimation. Models used the same preprocessed functional images and nuisance regressors described above, with a 128\,s high-pass filter.
+
 \subsubsection*{Representational similarity analysis}
 
 We conducted a region-of-interest (ROI)-based representational similarity analysis (RSA) examining if cue-evoked fMRI responses in the premeal probe task (i.e., before devaluation could introduce confounding changes in odor value) reflected the identity of the odors associated with the cues. Analyses used the two bilateral orbitofrontal cortex (OFC) ROIs defined below.
@@ -251,7 +257,7 @@ For each participant, ROI, and cue subset, voxels with nonfinite values in any t
 
 \subsubsection*{Region-of-interest definition}
 
-Analyses used two independently defined bilateral orbitofrontal cortex (OFC) regions from the connectivity-based K = 2 parcellation atlas: medial/posterior-lateral OFC (hereafter medial OFC) and central/anterior-lateral OFC (hereafter lateral OFC) \citep{kahnt2012connectivity}. The parcellation map was resampled to the 2 mm isotropic analysis grid using nearest-neighbor interpolation. Each region was then intersected with a gray-matter mask derived from the SPM12 gray-matter tissue probability map thresholded at probability $>0.1$. The same ROI definitions were used for odor-identity RSA and cross-task decoding.
+Analyses used two independently defined bilateral orbitofrontal cortex (OFC) regions from the connectivity-based K = 2 parcellation atlas: medial/posterior-lateral OFC (hereafter medial OFC) and central/anterior-lateral OFC (hereafter lateral OFC) \citep{kahnt2012connectivity}. The parcellation map was resampled to the 2 mm isotropic analysis grid using nearest-neighbor interpolation. Each region was then intersected with a gray-matter mask derived from the SPM12 gray-matter tissue probability map thresholded at probability $>0.1$. The medial and lateral OFC masks contained 5,500 and 4,445 voxels, respectively, at 2 mm isotropic resolution. The same ROI definitions were used for odor-identity RSA and cross-task decoding.
 
 \subsubsection*{Searchlight RSA of subjective odor value}
 
@@ -261,20 +267,13 @@ For each participant, the three outcome pleasantness ratings from each phase wer
 
 Additional analyses used only the first or second cue presentation from each trial, retaining all cues and combining premeal and postmeal data. The first-cue analysis used the same cue-associated outcome-value model, omitting the button RDMs because they had no variance. For the second-cue analysis, each trial was assigned the signed difference between the standardized outcome values associated with the second and first cues ($V_2-V_1$); the value RDM contained absolute pairwise differences in this trial-level variable. This model was fitted together with cue type, second-cue image identity, and button RDMs, omitting button RDMs with no variance.
 
-Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction was applied separately within the independently defined bilateral medial and lateral OFC connectivity-based masks used for the odor-identity analyses \citep{kahnt2012connectivity}. The medial and lateral OFC masks contained 5,500 and 4,445 voxels at 2\,mm isotropic resolution, respectively, all of which overlapped the analysis search volume. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within each ROI, using the smoothness estimated from the group model.
+Participant-level odor-value coefficient maps were smoothed with a 6\,mm FWHM Gaussian kernel and entered into a one-sided one-sample t test against zero in SPM12, using a gray-matter mask thresholded at probability $>0.1$. Small-volume correction was applied separately within the independently defined bilateral medial and lateral OFC connectivity-based masks used for the odor-identity analyses \citep{kahnt2012connectivity}. Peak-level inference controlled family-wise error (FWE) at $p < 0.05$ within each ROI, using the smoothness estimated from the group model.
 
-\subsubsection*{Baseline outcome-identity retrieval success}
+\subsubsection*{Conditioning RSA}
 
-The main-text model defines computational value as $a_i=(1-p_i)D_i$, where $p_i$ is the probability of correctly retrieving the outcome identity before allocating representational resource $r_i$, and $D_i>0$ is the behavioral cost of an identity error. Thus, at zero resource, expected decision loss is $L_i(0)=(1-p_i)D_i$. These baseline probabilities describe the associative retrieval process; they are not estimates of behavioral accuracy or fMRI decoding accuracy.
+Conditioning RSA used the 0--5\,s cue and prediction-period estimates from all available conditioning runs (runs 1--3) and the same bilateral OFC ROIs. Only food-odor trials with a correct prediction, a recorded response, and a finite positive response time were retained, using behavioral records to determine eligibility. Clean-air, incorrect, and missed-response trials were excluded. Two additional participants were excluded from this analysis: one had sparse correct food-odor trials in runs 1--2 (8 of 24 and 4 of 24 trials, respectively), and one had virtually no usable OFC voxels after removing voxels with nonfinite estimates across runs 1--3 (0 of 4,445 lateral and 4 of 5,500 medial OFC voxels retained). The final sample comprised 29 participants; 28 contributed three runs and one contributed runs 1--2 because the third scan was interrupted. Each contributing run retained trials for both food odors.
 
-Let $A$ denote successful retrieval of the correct conditioned associate from a preconditioned cue, and $B$ denote successful retrieval of the correct outcome from that associate. We assume that recovering the correct outcome through the indirect route requires both steps to succeed. By the probability chain rule, indirect retrieval success is $p_P=\Pr(A\cap B)=\Pr(A)\Pr(B\mid A)$. Define $p_{PC}=\Pr(A)$ and assume that $\Pr(B\mid A)=p_{CO}$, where $p_{CO}$ is also the success probability for retrieving the outcome directly from a conditioned cue. This shared-reliability assumption gives $p_C=p_{CO}$ and $p_P=p_{PC}p_{CO}$ without requiring independence between the two retrieval events. It excludes successful recovery through alternative routes or compensating errors after an incorrect first retrieval.
-
-For $0<p_{PC},p_{CO}<1$, $p_P<p_C$. With equal behavioral error costs, $D_P=D_C=D>0$, the computational-value ratio is
-\[
-\frac{a_P}{a_C}=\frac{(1-p_P)D}{(1-p_C)D}
-=\frac{1-p_{PC}p_{CO}}{1-p_{CO}}>1.
-\]
-The two associations need not have equal success probabilities. The ordering follows from the additional required retrieval step and the assumed common reliability of the $C\rightarrow O$ step across routes.
+Pattern extraction, exclusion of voxels with nonfinite estimates, within-run centering, RDM construction, and Spearman correlation followed the probe RSA procedures described above. Individual trial patterns were retained without averaging. Comparisons were restricted to cross-run pairs, including repeated presentations of the same visual cue. One-sided one-sample t tests assessed participant-level Spearman coefficients against zero, with an uncorrected threshold of $p < 0.05$.
 
 \subsubsection*{Optimal allocation of representational resources}
 
