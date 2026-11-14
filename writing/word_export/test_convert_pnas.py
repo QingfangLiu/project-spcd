@@ -187,6 +187,59 @@ class ConversionTests(unittest.TestCase):
         self.assertEqual(report["citation_rewrites"], {"parenthetical": 1, "narrative_year": 2})
         self.assertTrue(report["checks"]["captions"]["preserved"])
 
+    def test_highlights_preserve_abstract_heading_math_and_citations(self):
+        source = SOURCE.replace(r"\begin{document}",
+                                "\\usepackage{soul}\n\\usepackage{xcolor}\n\\begin{document}")
+        source = source.replace("An abstract with", r"An abstract \hl{with highlighted wording} with")
+        source = source.replace(r"\section*{Discussion}", r"\section*{\hl{Discussion}}")
+        source = source.replace("Original conclusion.",
+                                r"\hl{An error cost \mbox{($D_i$)} and \mbox{\citealp{key1,key2}}.}")
+        source = source.replace("Methods sentence that must never be lost, with \\cite{key3}.",
+                                r"\hl{Methods with \mbox{\cite{key3}} must never be lost.}")
+        output, report = convert(source, TEMPLATE)
+        for text in [r"\hl{with highlighted wording}", r"\section*{\hl{Discussion}}",
+                     r"\hl{An error cost \mbox{($D_i$)} and \mbox{\citealp{key1}}; \mbox{\citealp{key2}}.}",
+                     r"\hl{Methods with \mbox{\citep{key3}} must never be lost.}",
+                     r"\usepackage{soul}", r"\usepackage{xcolor}"]:
+            self.assertIn(text, output)
+        self.assertEqual(report["checks"]["highlights"], {"count": 4, "preserved": True})
+        self.assertEqual(report["checks"]["citations"]["count"], 3)
+        self.assertEqual(report["highlighted_citation_reflows"], 1)
+
+    def test_highlighted_citation_lists_wrap_without_changing_notes_or_other_citations(self):
+        source = SOURCE.replace("Original conclusion.",
+                                r"\hl{Compare \mbox{\cite{key1,key2,key3,key4}}.} "
+                                r"\hl{With notes \mbox{\cite[see][p.~2]{key1,key2}}.} "
+                                r"Unhighlighted \mbox{\cite{key1,key2}}.")
+        output, report = convert(source, TEMPLATE)
+        self.assertIn(r"\hl{Compare (\mbox{\citealp{key1}}; \mbox{\citealp{key2}}; "
+                      r"\mbox{\citealp{key3}}; \mbox{\citealp{key4}}).}", output)
+        self.assertIn(r"\hl{With notes \mbox{\citep[see][p.~2]{key1,key2}}.}", output)
+        self.assertIn(r"Unhighlighted \mbox{\citep{key1,key2}}.", output)
+        self.assertEqual(report["highlighted_citation_reflows"], 1)
+
+    def test_highlight_packages_are_supported_for_supplements(self):
+        source = SUPPLEMENT.replace(r"\usepackage{amsmath}",
+                                    "\\usepackage{amsmath}\n\\usepackage{soul,xcolor}")
+        source = source.replace("Results with $p < 0.05$.", r"\hl{Results with \mbox{$p < 0.05$}.}")
+        output, report = convert(source, TEMPLATE, "supp")
+        self.assertIn(r"\hl{Results with \mbox{$p < 0.05$}.}", output)
+        self.assertEqual(report["checks"]["highlights"], {"count": 1, "preserved": True})
+
+    def test_highlight_support_still_rejects_unreviewed_preamble(self):
+        for kind, source in [("main", SOURCE), ("supp", SUPPLEMENT)]:
+            for insertion in [r"\usepackage[unreviewed]{soul}",
+                              r"\usepackage{soul,unreviewed}", r"\sethlcolor{red}"]:
+                with self.subTest(kind=kind, insertion=insertion), self.assertRaises(ConversionError):
+                    convert(source.replace(r"\begin{document}", insertion + "\n"
+                                           + r"\begin{document}"), TEMPLATE, kind)
+
+    def test_unparenthesized_citation_keys_and_notes_are_checked(self):
+        source = SOURCE.replace(r"\cite{key1,key2}", r"\citealp[see][pp.~{2--3}]{key1,key2}")
+        output, report = convert(source, TEMPLATE)
+        self.assertIn(r"\citealp[see][pp.~{2--3}]{key1,key2}", output)
+        self.assertEqual(report["checks"]["citations"], {"count": 2, "preserved": True})
+
     def test_bibliography_cache_migration_keeps_pdf_and_matching_cache(self):
         with tempfile.TemporaryDirectory() as temp:
             output = Path(temp) / "main.tex"

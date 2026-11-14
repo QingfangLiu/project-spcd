@@ -68,6 +68,12 @@ files, as the current outputs.
   PNAS-specific display controls and running-footer metadata are removed.
 - Body text, equations, citation keys, labels, cross-references, table cells,
   and captions are preserved. Asset paths are rebased to the shared files.
+- Yellow review highlights (`\hl{...}`) are retained in the abstract, headings,
+  body text, and methods. The conversion report checks that every highlighted
+  passage survives, including its citations and boxed inline mathematics.
+  Highlighted citation lists without optional notes can wrap between references;
+  their keys are checked again after this layout adjustment.
+  Check the highlights again after importing the PDF into Word.
 - Figures and tables appear in source order as ordinary blocks with numbered
   captions. Long captions can continue across pages. Figures use PNG artwork;
   their labels and panels are embedded together in each image.
@@ -110,7 +116,9 @@ the same basename and folder as the resolved source figures. Regenerate those
 PNGs when updating the artwork; this command does not rasterize PDF figures.
 
 The converter targets the `pnas-new` structures used by these documents, rather
-than arbitrary LaTeX. Supplement conversion accepts the existing `graphicx`,
+than arbitrary LaTeX. Both exports accept option-free `soul` and `xcolor`
+package declarations; the plain template supplies their highlight support.
+Supplement conversion accepts the existing `graphicx`,
 `amsmath`, and `placeins` packages and S-prefixed figure/table counter setup.
 External `\input`/`\include` files, other custom preambles,
 unfamiliar conditional blocks, and verbatim content stop conversion for review.

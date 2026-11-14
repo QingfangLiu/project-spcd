@@ -105,7 +105,7 @@ SECTIONS = {
     "acknow": "Acknowledgments",
 }
 REJECT = {"input", "include", "includeonly", "endinput", "verbatim", "verb"}
-CITATION_COMMANDS = {"cite", "citep", "citet", "citeyearpar", "citeyear", "citeauthor"}
+CITATION_COMMANDS = {"cite", "citep", "citet", "citealp", "citeyearpar", "citeyear", "citeauthor"}
 
 
 def commands(text):
@@ -178,12 +178,13 @@ def author_year_citations(text):
 def content_items(text):
     """Fingerprint semantic objects that must survive the layout translation."""
     items = {"citations": [], "labels": [], "references": [], "equations": [],
-             "tables": [], "captions": [], "graphics": [], "bibliography": []}
+             "tables": [], "captions": [], "graphics": [], "bibliography": [],
+             "highlights": []}
     for cmd in commands(text):
         names = {"cite": "citations", "label": "labels", "ref": "references",
                  "autoref": "references", "eqref": "references",
                  "caption": "captions", "includegraphics": "graphics",
-                 "bibliography": "bibliography"}
+                 "bibliography": "bibliography", "hl": "highlights"}
         names.update({name: "citations" for name in CITATION_COMMANDS})
         if cmd.name in names:
             end = cmd.end
@@ -239,6 +240,46 @@ def flatten_floats(text):
     return pattern.sub(block, text)
 
 
+def reflow_highlighted_citations(text):
+    """Allow boxed author-year citation lists to wrap between references."""
+    highlighted = []
+    for cmd in commands(text):
+        if cmd.name == "hl":
+            _, end = group(text, cmd.end)
+            highlighted.append((cmd.end, end))
+    edits = []
+    for cmd in commands(text):
+        if cmd.name != "mbox":
+            continue
+        boxed, end = group(text, cmd.end)
+        if not any(start <= cmd.start and end <= stop for start, stop in highlighted):
+            continue
+        boxed = boxed.strip()
+        citation = next(commands(boxed), None)
+        if (citation is None or citation.start != 0
+                or citation.name not in {"citep", "citealp"}):
+            continue
+        if not boxed[skip_space(boxed, citation.end):].startswith("{"):
+            continue  # Preserve optional citation notes verbatim.
+        keys, citation_end = group(boxed, citation.end)
+        if boxed[citation_end:].strip():
+            continue
+        keys = [key.strip() for key in keys.split(",")]
+        if len(keys) < 2 or not all(re.fullmatch(r"[\w:.-]+", key) for key in keys):
+            continue
+        value = "; ".join(r"\mbox{\citealp{" + key + "}}" for key in keys)
+        if citation.name == "citep":
+            value = "(" + value + ")"
+        edits.append((cmd.start, end, value))
+    output = replace_spans(text, edits)
+    def cited_keys(value):
+        return Counter(key.strip() for keys in content_items(value)["citations"]
+                       for key in keys.split(","))
+    if cited_keys(text) != cited_keys(output):
+        raise ConversionError("Citation keys changed while wrapping highlighted citations.")
+    return output, len(edits)
+
+
 def convert(source, template, document_kind="main"):
     if document_kind not in {"main", "supp"}:
         raise ConversionError(f"Unknown document kind: {document_kind}")
@@ -263,16 +304,19 @@ def convert(source, template, document_kind="main"):
     if supplement:
         if not any(c.name == "templatetype" and c.args == ("pnassupportinginfo",) for c in found):
             raise ConversionError("Expected the pnassupportinginfo template for a supplement.")
-        for cmd in commands(preamble):
-            # These packages are supplied by the plain template or only control
-            # floats, which become ordinary blocks. Reject other custom setup.
-            if (cmd.name == "usepackage" and not cmd.option
-                    and set(cmd.args[0].replace(" ", "").split(",")) <= {"graphicx", "amsmath", "placeins"}):
-                preamble_edits.append((cmd.start, cmd.end, ""))
-            elif (cmd.name == "renewcommand" and len(cmd.args) == 2
-                  and any(tuple(plain_space(x) for x in cmd.args) == ("\\the" + kind, "S\\arabic{" + kind + "}")
-                          for kind in ("figure", "table"))):
-                preamble_edits.append((cmd.start, cmd.end, ""))
+    supported_packages = {"soul", "xcolor"}
+    if supplement:
+        supported_packages |= {"graphicx", "amsmath", "placeins"}
+    for cmd in commands(preamble):
+        # Highlight packages are supplied by the plain template. Supplement
+        # float packages and numbering retain their existing treatment.
+        if (cmd.name == "usepackage" and not cmd.option
+                and set(cmd.args[0].replace(" ", "").split(",")) <= supported_packages):
+            preamble_edits.append((cmd.start, cmd.end, ""))
+        elif (supplement and cmd.name == "renewcommand" and len(cmd.args) == 2
+              and any(tuple(plain_space(x) for x in cmd.args) == ("\\the" + kind, "S\\arabic{" + kind + "}")
+                      for kind in ("figure", "table"))):
+            preamble_edits.append((cmd.start, cmd.end, ""))
     if replace_spans(preamble, preamble_edits).strip():
         raise ConversionError("Custom preamble content requires manual review; it was not discarded.")
     metadata = {key: [] for key in FRONT}
@@ -383,10 +427,13 @@ def convert(source, template, document_kind="main"):
     for content in protected:
         if plain_space(canonical_citations(content)) not in normalized:
             raise ConversionError("Protected content did not survive conversion.")
-    for key in ["equations", "tables", "citations", "labels", "references", "graphics", "bibliography"]:
+    for key in ["equations", "tables", "citations", "labels", "references", "graphics", "bibliography", "highlights"]:
         actual_values = content_items(output)[key]
         if Counter(map(canonical_citations, actual_values)) != Counter(map(canonical_citations, expected[key])):
             raise ConversionError(f"Content check failed: {key}.")
+    # Apply this layout-only change after verifying complete source passages;
+    # the helper separately verifies every citation key and its multiplicity.
+    output, highlight_reflows = reflow_highlighted_citations(output)
     report = {"source_sha256": hashlib.sha256(source.encode()).hexdigest(),
               "document_kind": document_kind,
               "checks": {key: {"count": len(value), "preserved": True}
@@ -397,6 +444,7 @@ def convert(source, template, document_kind="main"):
               "citation_style": "author-year",
               "bibliography_style": "plainnat",
               "citation_rewrites": citation_rewrites,
+              "highlighted_citation_reflows": highlight_reflows,
               "layout": "12pt article, one column, 1-inch margins; nonfloating figures and tables; author-year plainnat bibliography",
               "note": "Checks verify source content, not PDF appearance or reference resolution."}
     return output, report
