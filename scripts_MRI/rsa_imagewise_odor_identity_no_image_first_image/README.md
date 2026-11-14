@@ -46,13 +46,13 @@ python scripts_MRI/rsa_imagewise_odor_identity_no_image_first_image/make_swarm_i
 
 ## ROI RSA
 
-Run one thresholded ROI mask:
+Run one binary Kahnt OFC K=2 ROI mask:
 
 ```bash
 python scripts_MRI/rsa_imagewise_odor_identity_no_image_first_image/run_roi_rsa.py \
   --base_dir /Users/liuq13/SPCD_data \
-  --roi_mask rsa_roi/neubert2015_ofc_thresholded_masks/Left_47m_thr50.nii.gz \
-  --roi_name Left_47m_thr50 \
+  --roi_mask /Users/liuq13/project-spcd/masks/OFC_clusterMap_K2_gm0p1/mask-OFC_K2_cluster2_central_anterior_lateral_gm0p1.nii.gz \
+  --roi_name OFC_K2_cluster2_central_anterior_lateral \
   --roi_threshold 0 \
   --drop_nonfinite_voxels
 ```
@@ -68,5 +68,5 @@ Aggregate subject ROI betas:
 ```bash
 python scripts_MRI/rsa_imagewise_odor_identity_no_image_first_image/aggregate_roi_rsa.py \
   --base_dir /Users/liuq13/SPCD_data \
-  --roi_name Left_47m_thr50
+  --roi_name OFC_K2_cluster2_central_anterior_lateral
 ```

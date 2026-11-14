@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
-"""Plot Left 47m threshold-30 ROI RSA subject betas.
-
-The default inputs are the copied project-level ROI RSA outputs for the
-no-image-first-image model variant:
-
-``rsa_roi/probe_imagewise_odor_identity_no_image_first_image/premeal_thr30``.
-"""
+"""Shared paired ROI RSA plotting helpers for Kahnt OFC K=2 figures."""
 
 from __future__ import annotations
 
-import argparse
 import os
 import tempfile
 from pathlib import Path
@@ -33,12 +26,6 @@ import pandas as pd
 
 
 DEFAULT_SKIP_SUBS = ("sub-19", "sub-33")
-DEFAULT_THRESHOLD = "30"
-DEFAULT_ROI = "Left_47m"
-RESULT_ROOT = (
-    Path("rsa_roi")
-    / "probe_imagewise_odor_identity_no_image_first_image"
-)
 BETA_COL = "odor_identity_no_image_beta"
 CUE_ORDER = ("conditioned_odor_only", "preconditioned_odor_only")
 CUE_LABELS = {
@@ -49,22 +36,6 @@ CUE_COLORS = {
     "conditioned_odor_only": "#3B6EA8",
     "preconditioned_odor_only": "#D84A3A",
 }
-
-
-def _default_project_root() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
-def _default_result_dir(project_root: Path, threshold: str) -> Path:
-    return project_root / RESULT_ROOT / f"premeal_thr{threshold}"
-
-
-def _default_output_prefix(project_root: Path, roi: str, threshold: str) -> Path:
-    return (
-        project_root
-        / "plots"
-        / f"{roi}_thr{threshold}_no_image_first_image_roi_rsa_paired"
-    )
 
 
 def _format_p(p_value: float | int | None) -> str:
@@ -282,102 +253,3 @@ def _plot_paired_bar(
 
     plt.close(fig)
     return out_paths
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Plot paired subject-level Left 47m threshold-30 ROI RSA betas."
-    )
-    parser.add_argument(
-        "--project_root",
-        type=Path,
-        default=_default_project_root(),
-        help="Project root. Default: infer from this script location.",
-    )
-    parser.add_argument(
-        "--threshold",
-        default=DEFAULT_THRESHOLD,
-        help="Threshold label. Default: 30.",
-    )
-    parser.add_argument(
-        "--roi",
-        default=DEFAULT_ROI,
-        help="ROI label. Default: Left_47m.",
-    )
-    parser.add_argument(
-        "--input_csv",
-        type=Path,
-        default=None,
-        help="Subject betas CSV. Default: copied project roi result for ROI/threshold.",
-    )
-    parser.add_argument(
-        "--summary_csv",
-        type=Path,
-        default=None,
-        help="Group summary CSV. Default: copied project roi summary for ROI/threshold.",
-    )
-    parser.add_argument(
-        "--output_prefix",
-        type=Path,
-        default=None,
-        help="Output path without extension. Default: plots/<roi>_thr<threshold>_...",
-    )
-    parser.add_argument(
-        "--skip_subs",
-        nargs="*",
-        default=list(DEFAULT_SKIP_SUBS),
-        help="Subjects to exclude. Default: sub-19 sub-33.",
-    )
-    parser.add_argument(
-        "--formats",
-        nargs="+",
-        default=["pdf", "png"],
-        help="Output formats. Default: pdf png.",
-    )
-    parser.add_argument(
-        "--dpi",
-        type=int,
-        default=300,
-        help="DPI for raster outputs. Default: 300.",
-    )
-    args = parser.parse_args()
-
-    project_root = args.project_root.expanduser().resolve()
-    threshold = str(args.threshold)
-    result_dir = _default_result_dir(project_root, threshold)
-    input_csv = (
-        args.input_csv.expanduser().resolve()
-        if args.input_csv is not None
-        else result_dir / f"roi-{args.roi}_subject_betas.csv"
-    )
-    summary_csv = (
-        args.summary_csv.expanduser().resolve()
-        if args.summary_csv is not None
-        else result_dir / f"roi-{args.roi}_group_summary.csv"
-    )
-    output_prefix = (
-        args.output_prefix.expanduser().resolve()
-        if args.output_prefix is not None
-        else _default_output_prefix(project_root, args.roi, threshold)
-    )
-
-    print(f"Input CSV:     {input_csv}")
-    print(f"Summary CSV:   {summary_csv}")
-    print(f"Output prefix: {output_prefix}")
-    print(f"Skip subjects: {', '.join(args.skip_subs) if args.skip_subs else 'none'}")
-
-    data = _load_subject_data(input_csv, args.skip_subs)
-    group_summary = _load_group_summary(summary_csv)
-    title = "Odor identity coding in left lateral OFC"
-    _plot_paired_bar(
-        data=data,
-        group_summary=group_summary,
-        output_prefix=output_prefix,
-        formats=args.formats,
-        dpi=args.dpi,
-        title=title,
-    )
-
-
-if __name__ == "__main__":
-    main()

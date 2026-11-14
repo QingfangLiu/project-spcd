@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Create a paired ROI RSA plot for a prepared Kahnt OFC K=2 cluster.
 
-This standalone command reuses the established plotting implementation without
-changing it.  Explicit input, summary, output, and title arguments prevent the
-new K=2 plots from inheriting the Left 47m defaults or overwriting old figures.
+This command uses shared ROI plotting helpers. Input, summary, output, and
+title arguments are explicit so each K=2 cluster has its own plot.
 """
 
 from __future__ import annotations
@@ -11,7 +10,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-import plot_left47m_thr30_roi_rsa as established_plot
+import roi_rsa_plotting as established_plot
 
 
 def main() -> None:

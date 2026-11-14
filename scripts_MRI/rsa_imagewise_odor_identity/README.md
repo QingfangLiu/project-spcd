@@ -137,19 +137,6 @@ RDM computation. The script prints the raw/used voxel counts for each saved row
 and records `n_voxels_raw`, `n_voxels_used`, `n_voxels_nonfinite`, and
 `n_voxels_dropped_nonfinite` in the output CSV.
 
-For the Neubert 2015 OFC `premeal_thr50`/`premeal_thr60` reruns, use the saved
-binary masks in `rsa_roi/neubert2015_ofc_thresholded_masks/` via:
-
-```bash
-python3 scripts_MRI/roi_mask_prep/run_neubert_thresholded_roi_rsa.py \
-  --base_dir /Users/liuq13/SPCD_data \
-  --variants image
-```
-
-That batch runner passes the thresholded masks as `--roi_mask` and uses
-`--roi_threshold 0`, so the 50/60 threshold is encoded in the mask filename
-rather than applied again inside `run_roi_rsa.py`.
-
 With `--save_diagnostics`, the script also writes per-subject diagnostics:
 
 ```text
