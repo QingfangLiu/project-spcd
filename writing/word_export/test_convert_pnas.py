@@ -200,7 +200,8 @@ class ConversionTests(unittest.TestCase):
         for text in [r"\hl{with highlighted wording}", r"\section*{\hl{Discussion}}",
                      r"\hl{An error cost \mbox{($D_i$)} and \mbox{\citealp{key1}}; \mbox{\citealp{key2}}.}",
                      r"\hl{Methods with \mbox{\citep{key3}} must never be lost.}",
-                     r"\usepackage{soul}", r"\usepackage{xcolor}"]:
+                     r"\DeclareRobustCommand{\hl}{\textcolor{reviewtext}}",
+                     r"\usepackage{xcolor}"]:
             self.assertIn(text, output)
         self.assertEqual(report["checks"]["highlights"], {"count": 4, "preserved": True})
         self.assertEqual(report["checks"]["citations"]["count"], 3)

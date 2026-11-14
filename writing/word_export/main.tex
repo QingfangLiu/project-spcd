@@ -18,7 +18,9 @@
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{xcolor}
-\usepackage{soul}
+% Show source review highlights as ordinary colored text for Word import.
+\definecolor{reviewtext}{HTML}{990000}
+\DeclareRobustCommand{\hl}{\textcolor{reviewtext}}
 \usepackage[authoryear,round,sort]{natbib}
 \setcitestyle{aysep={,},citesep={;}}
 \usepackage[hidelinks]{hyperref}

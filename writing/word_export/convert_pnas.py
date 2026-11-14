@@ -88,7 +88,7 @@ ARG_COUNTS = {
     "dates": 1, "doi": 1, "matmethods": 1, "dataavail": 1, "acknow": 1,
     "showmatmethods": 1, "showacknow": 1, "thispagestyle": 1,
     "ifthenelse": 3, "bibliographystyle": 1,
-    "usepackage": 1, "renewcommand": 2,
+    "usepackage": 1, "renewcommand": 2, "DeclareRobustCommand": 2,
 }
 OPTIONAL = {"documentclass", "author", "affil", "bibsplit", "usepackage"}
 LAYOUT = {
@@ -308,7 +308,7 @@ def convert(source, template, document_kind="main"):
     if supplement:
         supported_packages |= {"graphicx", "amsmath", "placeins"}
     for cmd in commands(preamble):
-        # Highlight packages are supplied by the plain template. Supplement
+        # Review-marking packages are handled by the plain template. Supplement
         # float packages and numbering retain their existing treatment.
         if (cmd.name == "usepackage" and not cmd.option
                 and set(cmd.args[0].replace(" ", "").split(",")) <= supported_packages):
